@@ -111,7 +111,7 @@ public class NMLSurfaceRules {
         SurfaceRules.RuleSource blackwater_river = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.BLACKWATER_RIVER),
                 SurfaceRules.sequence(
-                        SurfaceRules.ifTrue(surfaceNoiseAbove(0.0), MUD),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(-0.75), MUD),
                         SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(62), 0),
                                 SurfaceRules.ifTrue(SurfaceRules.not(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(63), 0)),
                                         SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), WATER))))
