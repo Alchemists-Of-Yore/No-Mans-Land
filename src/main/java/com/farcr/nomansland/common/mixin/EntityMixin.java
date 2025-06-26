@@ -66,13 +66,11 @@ public abstract class EntityMixin {
 
     @Shadow public abstract boolean isInWater();
 
+    @Shadow @Deprecated protected abstract void fixupDimensions();
+
     @Unique @Nullable
     private Vec3 startingToFallPosition;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void init(EntityType<?> entityType, Level level, CallbackInfo ci) {
-        if (entityType == EntityType.COW) dimensions = getDimensions(getPose()) == null ?  entityType.getDimensions() : getDimensions(getPose());
-    }
 
     @Inject(method = "getOnPosLegacy", at = @At("RETURN"), cancellable = true)
     private void getOnPosLegacy(CallbackInfoReturnable<BlockPos> cir) {
