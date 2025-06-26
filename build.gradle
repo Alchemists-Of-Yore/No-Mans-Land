@@ -131,6 +131,7 @@ dependencies {
     localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.9-neoforge"
     localRuntime "me.djtheredstoner:DevAuth-neoforge:1.2.1"
     //localRuntime "maven.modrinth:cyanide:v4LiMGGH"
+    runtimeOnly "maven.modrinth:additionalentityattributes:2.0.0+1.21.1-neoforge"
 }
 
 tasks.withType(ProcessResources).configureEach {

@@ -6,7 +6,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -44,5 +46,10 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Inject(method = "getBlockSpeedFactor", at = @At("RETURN"), cancellable = true)
     private void tryReduceBlockSpeedFactor(CallbackInfoReturnable<Float> cir) {
         if (hasEffect(NMLEffects.FLAMMABLE) && !isInWater()) cir.setReturnValue(0.95F);
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void init(EntityType<?> entityType, Level level, CallbackInfo ci) {
+        fixupDimensions();
     }
 }
