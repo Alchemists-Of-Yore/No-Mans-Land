@@ -46,6 +46,9 @@ public record BlockProperties(BlockLootType lootType, boolean customLang) {
     public static BlockProperties flowerPot(BlockDefinition<?> plant) {
         return new BlockProperties(new FlowerPotBlockLootType(plant::get), false);
     } // flower_pots
+    public static BlockProperties candleCake(Block candle) {
+        return new BlockProperties(new CandleCakeBlockLootType(candle), false);
+    } // candle_cakes
 
     // STONE
     public static BlockProperties stoneLike() {

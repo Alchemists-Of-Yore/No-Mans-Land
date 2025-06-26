@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "nomansland:block/food/fruit_cake/orange_candle_fruit_cake"
+    },
+    "lit=true": {
+      "model": "nomansland:block/food/fruit_cake/orange_candle_fruit_cake_lit"
+    }
+  }
+}

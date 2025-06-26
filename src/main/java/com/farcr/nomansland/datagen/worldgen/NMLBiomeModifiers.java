@@ -869,7 +869,7 @@ public class NMLBiomeModifiers {
                         8960833
                 )
                 .addFeatures(
-                        new FeatureWithStep(feature("pond_stony_shore"), GenerationStep.Decoration.LOCAL_MODIFICATIONS),
+                        new FeatureWithStep(feature("pond_stony_shore"), localModifications),
                         new FeatureWithStep(feature("tuff_boulder"), GenerationStep.Decoration.UNDERGROUND_DECORATION) // later stage to avoid ore generation
                 )
                 .addFeatures(FeatureWithStep.vegetationFeatures(

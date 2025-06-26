@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.integration;
 
+import com.farcr.nomansland.common.block.CandleFruitCakeBlock;
+import com.farcr.nomansland.common.block.FruitCakeBlock;
 import com.farcr.nomansland.common.block.StallionStripsBlock;
 import com.farcr.nomansland.common.block.cauldrons.EmptyWitchStewCauldron;
 import com.farcr.nomansland.common.block.cauldrons.WitchStewBlockItem;
@@ -28,6 +30,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CakeBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import vectorwing.farmersdelight.common.FoodValues;
@@ -123,7 +126,42 @@ public class FDIntegration {
             () -> new Item(new Item.Properties().food(NMLFoods.FRUIT_CAKE_SLICE)));
 
     public static final BlockDefinition<CakeBlock> FRUIT_CAKE = NMLBlocks.registerNoItem("fruit_cake",
-            () -> new CakeBlock(ofFullCopy(Blocks.CAKE)));
+            () -> new FruitCakeBlock(ofFullCopy(Blocks.CAKE)));
+
+    public static final BlockDefinition<CandleFruitCakeBlock> CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.CANDLE, ofFullCopy(FRUIT_CAKE.block()).lightLevel(state -> state.getValue(BlockStateProperties.LIT) ? 3 : 0)), BlockProperties.candleCake(Blocks.CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> WHITE_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("white_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.WHITE_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.WHITE_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> ORANGE_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("orange_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.ORANGE_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.ORANGE_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> MAGENTA_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("magenta_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.MAGENTA_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.MAGENTA_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> LIGHT_BLUE_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("light_blue_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.LIGHT_BLUE_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.LIGHT_BLUE_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> YELLOW_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("yellow_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.YELLOW_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.YELLOW_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> LIME_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("lime_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.LIME_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.LIME_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> PINK_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("pink_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.PINK_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.PINK_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> GRAY_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("gray_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.GRAY_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.GRAY_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> LIGHT_GRAY_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("light_gray_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.LIGHT_GRAY_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.LIGHT_GRAY_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> CYAN_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("cyan_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.CYAN_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.CYAN_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> PURPLE_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("purple_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.PURPLE_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.PURPLE_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> BLUE_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("blue_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.BLUE_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.BLUE_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> BROWN_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("brown_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.BROWN_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.BROWN_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> GREEN_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("green_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.GREEN_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.GREEN_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> RED_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("red_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.RED_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.RED_CANDLE));
+    public static final BlockDefinition<CandleFruitCakeBlock> BLACK_CANDLE_FRUIT_CAKE = NMLBlocks.registerNoItem("black_candle_fruit_cake",
+            () -> new CandleFruitCakeBlock(Blocks.BLACK_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.BLACK_CANDLE));
 
     public static final ItemDefinition<BlockItem> FRUIT_CAKE_ITEM = NMLItems.register("fruit_cake",
             () -> new BlockItem(FRUIT_CAKE.get(), new Item.Properties()));
@@ -162,7 +200,7 @@ public class FDIntegration {
             BlockState state = event.getLevel().getBlockState(pos);
             Block block = state.getBlock();
 
-            if (block == FRUIT_CAKE.block()) {
+            if (block == CANDLE_FRUIT_CAKE.block()) {
                 int bites = state.getValue(CakeBlock.BITES);
                 if (bites < 6) {
                     level.setBlock(pos, state.setValue(CakeBlock.BITES, bites + 1), 3);
