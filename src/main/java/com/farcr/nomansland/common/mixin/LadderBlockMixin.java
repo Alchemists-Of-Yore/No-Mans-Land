@@ -8,12 +8,15 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LadderBlock.class)
-public class LadderBlockMixin {
+public abstract class LadderBlockMixin {
+
+    @Shadow public abstract boolean canAttachTo(BlockGetter blockReader, BlockPos pos, Direction direction);
 
     @Inject(method = "canAttachTo", at = @At("HEAD"), cancellable = true)
     protected void nml$canAttachTo(BlockGetter blockReader, BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
@@ -36,7 +39,7 @@ public class LadderBlockMixin {
                 cir.setReturnValue(false);
                 return;
             }
-            if (blockState.isFaceSturdy(blockReader, mutable, direction)) {
+            if (canAttachTo(blockReader, mutable, direction)) {
                 cir.setReturnValue(true);
                 return;
             }

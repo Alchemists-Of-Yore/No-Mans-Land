@@ -44,12 +44,6 @@ public abstract class EntityMixin {
 
     @Shadow public abstract BlockPos blockPosition();
 
-    @Shadow private EntityDimensions dimensions;
-
-    @Shadow public abstract EntityDimensions getDimensions(Pose pose);
-
-    @Shadow public abstract Pose getPose();
-
     @Shadow public abstract Set<String> getTags();
 
     @Shadow public abstract BlockPos getOnPos();
@@ -70,7 +64,6 @@ public abstract class EntityMixin {
 
     @Unique @Nullable
     private Vec3 startingToFallPosition;
-
 
     @Inject(method = "getOnPosLegacy", at = @At("RETURN"), cancellable = true)
     private void getOnPosLegacy(CallbackInfoReturnable<BlockPos> cir) {

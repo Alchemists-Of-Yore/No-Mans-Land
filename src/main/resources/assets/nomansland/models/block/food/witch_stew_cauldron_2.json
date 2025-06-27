@@ -1,4 +1,5 @@
 {
+	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"parent": "block/block",
 	"ambientocclusion": false,
@@ -9,7 +10,6 @@
 		"6": "nomansland:block/food/witch_stew_side_0",
 		"7": "nomansland:block/food/witch_stew_side_1",
 		"8": "nomansland:block/food/witch_stew_skull",
-		"9": "nomansland:block/food/witch_stew_side_inner",
 		"10": "nomansland:block/food/witch_stew_bones",
 		"top": "nomansland:block/food/witch_stew_top",
 		"particle": "block/cauldron_side",
@@ -22,11 +22,11 @@
 			"to": [2, 16, 16],
 			"faces": {
 				"north": {"uv": [14, 0, 16, 13], "texture": "#side", "cullface": "north"},
-				"east": {"uv": [0, 0, 16, 13], "texture": "#9", "cullface": "up"},
+				"east": {"uv": [0, 0, 16, 13], "texture": "#missing", "cullface": "up"},
 				"south": {"uv": [0, 0, 2, 13], "texture": "#side", "cullface": "south"},
 				"west": {"uv": [0, 0, 16, 13], "texture": "#6", "cullface": "west"},
 				"up": {"uv": [0, 0, 2, 16], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [0, 0, 2, 16], "texture": "#inside"}
+				"down": {"uv": [0, 0, 2, 16], "texture": "#4"}
 			}
 		},
 		{
@@ -34,7 +34,7 @@
 			"to": [14, 4, 14],
 			"faces": {
 				"up": {"uv": [2, 2, 14, 14], "texture": "#inside", "cullface": "up"},
-				"down": {"uv": [2, 2, 14, 14], "texture": "#inside"}
+				"down": {"uv": [2, 2, 14, 14], "texture": "#4"}
 			}
 		},
 		{
@@ -44,9 +44,9 @@
 				"north": {"uv": [0, 0, 2, 13], "texture": "#side", "cullface": "north"},
 				"east": {"uv": [0, 0, 16, 13], "texture": "#6", "cullface": "east"},
 				"south": {"uv": [14, 0, 16, 13], "texture": "#side", "cullface": "south"},
-				"west": {"uv": [0, 0, 16, 13], "texture": "#9", "cullface": "up"},
+				"west": {"uv": [0, 0, 16, 13], "texture": "#missing", "cullface": "up"},
 				"up": {"uv": [14, 0, 16, 16], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [14, 0, 16, 16], "texture": "#inside"}
+				"down": {"uv": [14, 0, 16, 16], "texture": "#4"}
 			}
 		},
 		{
@@ -54,19 +54,19 @@
 			"to": [14, 16, 2],
 			"faces": {
 				"north": {"uv": [2, 0, 14, 13], "texture": "#7", "cullface": "north"},
-				"south": {"uv": [2, 0, 14, 13], "texture": "#9", "cullface": "up"},
+				"south": {"uv": [2, 0, 14, 13], "texture": "#missing", "cullface": "up"},
 				"up": {"uv": [2, 0, 14, 2], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [2, 14, 14, 16], "texture": "#inside"}
+				"down": {"uv": [2, 14, 14, 16], "texture": "#4"}
 			}
 		},
 		{
 			"from": [2, 3, 14],
 			"to": [14, 16, 16],
 			"faces": {
-				"north": {"uv": [2, 0, 14, 13], "texture": "#9", "cullface": "up"},
+				"north": {"uv": [2, 0, 14, 13], "texture": "#missing", "cullface": "up"},
 				"south": {"uv": [2, 0, 14, 13], "texture": "#7", "cullface": "south"},
 				"up": {"uv": [2, 14, 14, 16], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [2, 0, 14, 2], "texture": "#inside"}
+				"down": {"uv": [2, 0, 14, 2], "texture": "#4"}
 			}
 		},
 		{
