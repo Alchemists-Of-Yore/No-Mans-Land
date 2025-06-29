@@ -21,6 +21,7 @@
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LivingEntityMixin",
+    "NoiseBasedChunkGeneratorMixin",
     "PatrolSpawnerMixin",
     "PlayerMixin",
     "RailStateMixin",
