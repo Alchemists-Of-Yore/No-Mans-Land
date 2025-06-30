@@ -6,17 +6,24 @@ import com.farcr.nomansland.common.registry.entities.NMLSensors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -87,9 +94,10 @@ public class MooseAI {
                                         )
                                 )
                         ),
-                        Pair.of(3, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
+                        Pair.of(3, new Stomp()),
+                        Pair.of(4, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
                         Pair.of(
-                                4,
+                                5,
                                 new RunOne<>(
                                         ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                         ImmutableList.of(
@@ -109,5 +117,54 @@ public class MooseAI {
 
     public static Predicate<ItemStack> getTemptations() {
         return item -> item.is(NMLTags.MOOSE_FOOD);
+    }
+
+    public static class Stomp extends Behavior<Moose> {
+        public Stomp() {
+            super(Map.of());
+        }
+
+        protected boolean checkExtraStartConditions(ServerLevel level, Moose owner) {
+            if (!isPlayerTooClose(owner)) {
+                return false;
+            }
+            return true;
+        }
+
+        protected void tick(ServerLevel level, Moose owner, long gameTime) {
+            super.tick(level, owner, gameTime);
+        }
+
+        protected boolean canStillUse(ServerLevel level, Moose entity, long gameTime) {
+            return !entity.shouldEndStomping();
+        }
+
+        protected void start(ServerLevel level, Moose entity, long gameTime) {
+            entity.beginStomp();
+        }
+
+        protected void stop(ServerLevel level, Moose entity, long gameTime) {
+            if (entity.shouldEndStomping()) {
+                entity.endStomp();
+            }
+        }
+
+        private boolean isPlayerTooClose(Moose moose) {
+            Optional<List<LivingEntity>> nearbyEntities = moose.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES);
+            if (!nearbyEntities.isPresent())
+            {
+                return false;
+            }
+            for (LivingEntity entity : nearbyEntities.get())
+            {
+                if (!(entity instanceof Moose))
+                {
+                    if (moose.getPosition(0.0f).distanceTo(entity.getPosition(0.0f)) < 5.0f) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

@@ -35,6 +35,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -47,6 +48,7 @@ public class Moose extends Animal /*implements NeutralMob*/ {
     private static final EntityDataAccessor<MooseState> MOOSE_STATE = SynchedEntityData.defineId(Moose.class, NMLEntityDataSerializers.MOOSE_STATE.get());
     @Nullable
     private UUID persistentAngerTarget;
+    private long inStateTicks = 0L;
     public final AnimationState stompAnimationState = new AnimationState();
 
     public Moose(EntityType<? extends Animal> pEntityType, Level pLevel) {
@@ -69,6 +71,15 @@ public class Moose extends Animal /*implements NeutralMob*/ {
 
     public void switchToState(MooseState state) {
         this.entityData.set(MOOSE_STATE, state);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        if (MOOSE_STATE.equals(key)) {
+            this.inStateTicks = 0L;
+        }
+
+        super.onSyncedDataUpdated(key);
     }
 
     @Override
@@ -101,6 +112,26 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         if (compound.contains("PacificationStage")) {
             setPacificationStage(compound.getInt("PacificationStage"));
         }
+    }
+
+    public void beginStomp() {
+        if (this.getState() == MooseState.IDLE) {
+            this.stopInPlace();
+            this.resetLove();
+            this.gameEvent(GameEvent.ENTITY_ACTION);
+            this.switchToState(MooseState.STOMPING);
+        }
+    }
+
+    public void endStomp() {
+        if (this.getState() == MooseState.STOMPING) {
+            this.gameEvent(GameEvent.ENTITY_ACTION);
+            this.switchToState(MooseState.IDLE);
+        }
+    }
+
+    public boolean shouldEndStomping() {
+        return this.getState() == MooseState.STOMPING && this.inStateTicks >= 1.5 * 20;
     }
 
     @Override
@@ -139,6 +170,11 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         if (this.level().isClientSide()) {
             this.setupAnimationStates();
         }
+        if (shouldEndStomping()) {
+            this.endStomp();
+        }
+
+        this.inStateTicks++;
     }
 
     /*@Override
@@ -193,9 +229,6 @@ public class Moose extends Animal /*implements NeutralMob*/ {
                 } else {
                     this.level().broadcastEntityEvent(this, (byte) 6);
                 }
-                return InteractionResult.SUCCESS;
-            } else if (itemstack.is(Items.STICK)) {
-                this.switchToState(MooseState.STOMPING);
                 return InteractionResult.SUCCESS;
             } else {
                 return super.mobInteract(player, hand);
