@@ -18,14 +18,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -35,6 +34,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 import javax.annotation.Nullable;
@@ -46,11 +46,9 @@ public class Moose extends Animal /*implements NeutralMob*/ {
     //private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(2*20*60, 2*20*60); // figure out how to make this dynamically take day length?
     private static final EntityDataAccessor<Integer> DATA_PACIFICATION_STAGE = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.INT); // number of carrots fed, or 5 if pacified
     private static final EntityDataAccessor<MooseState> MOOSE_STATE = SynchedEntityData.defineId(Moose.class, NMLEntityDataSerializers.MOOSE_STATE.get());
-    private static final long STOMP_COOLDOWN = 30L * 20L;
     @Nullable
     private UUID persistentAngerTarget;
     private long inStateTicks = 0L;
-    private long ticksUntilStompAllowed = 0L;
     public final AnimationState stompAnimationState = new AnimationState();
 
     public Moose(EntityType<? extends Animal> pEntityType, Level pLevel) {
@@ -82,6 +80,14 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         }
 
         super.onSyncedDataUpdated(key);
+    }
+
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        RandomSource randomSource = level.getRandom();
+        MooseAI.initMemories(this, randomSource);
+
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     @Override
@@ -132,10 +138,6 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         }
     }
 
-    public boolean canStomp() {
-        return this.ticksUntilStompAllowed <= 0;
-    }
-
     public boolean shouldEndStomping() {
         return this.getState() == MooseState.STOMPING && this.inStateTicks >= 1.5 * 20;
     }
@@ -182,12 +184,6 @@ public class Moose extends Animal /*implements NeutralMob*/ {
 
         this.inStateTicks++;
 
-        if (this.getState() == MooseState.STOMPING) {
-            this.ticksUntilStompAllowed = STOMP_COOLDOWN;
-        } else if (this.ticksUntilStompAllowed > 0) {
-            this.ticksUntilStompAllowed--;
-        }
-
     }
 
     /*@Override
@@ -218,6 +214,9 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         Moose baby = NMLEntities.MOOSE.get().create(pLevel);
         if (baby != null && isPacified() && ((Moose) pOtherParent).isPacified()) {
             baby.setPacificationStage(5);
+        }
+        if (baby != null) {
+            MooseAI.initMemories(baby, pLevel.getRandom());
         }
         return baby;
     }

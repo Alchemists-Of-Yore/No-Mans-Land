@@ -32,6 +32,7 @@ public class NoMansLand {
         NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(modEventBus);
         NMLEntities.ENTITIES.register(modEventBus);
         NMLSensors.SENSORS.register(modEventBus);
+        NMLMemoryModules.MEMORY_MODULES.register(modEventBus);
         NMLFeatures.FEATURES.register(modEventBus);
         NMLFoliagePlacerTypes.FOLIAGE_PLACER_TYPES.register(modEventBus);
         NMLTrunkPlacerTypes.TRUNK_PLACER_TYPES.register(modEventBus);
