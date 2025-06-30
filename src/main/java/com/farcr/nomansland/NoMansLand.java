@@ -17,11 +17,14 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(NoMansLand.MODID)
 public class NoMansLand {
 
     public static final String MODID = "nomansland";
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public NoMansLand(IEventBus modEventBus, ModContainer modContainer) {
 
