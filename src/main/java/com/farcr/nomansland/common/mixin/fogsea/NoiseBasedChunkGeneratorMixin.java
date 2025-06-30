@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.mixin;
+package com.farcr.nomansland.common.mixin.fogsea;
 
 import com.farcr.nomansland.common.world.generation.fogsea.FogSeaGenerator;
 import net.minecraft.core.Holder;
