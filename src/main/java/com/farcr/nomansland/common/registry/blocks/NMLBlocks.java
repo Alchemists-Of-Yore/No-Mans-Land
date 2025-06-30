@@ -214,6 +214,8 @@ public class NMLBlocks {
                     ofFullCopy(Blocks.POTTED_POPPY).noOcclusion()), BlockProperties.flowerPot(SUCCULENT));
     public static final BlockDefinition<FlowerbedBlock> CLOVER_PATCH = register("clover_patch",
             () -> new FlowerbedBlock(MobEffects.LUCK, 5, Block.Properties.of().mapColor(MapColor.PLANT).replaceable().noCollission().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)), BlockProperties.flowerbed());
+    public static final BlockDefinition<FlowerbedBlock> GROUND_IVY = register("ground_ivy",
+            () -> new FlowerbedBlock(MobEffects.POISON, 10, Block.Properties.of().mapColor(MapColor.PLANT).replaceable().noCollission().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)), BlockProperties.flowerbed());
     public static final BlockDefinition<FlowerbedBlock> WHITE_FLOWERBED = register("white_flowerbed",
             () -> new FlowerbedBlock(MobEffects.MOVEMENT_SLOWDOWN, 10, Block.Properties.of().mapColor(MapColor.PLANT).replaceable().noCollission().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)), BlockProperties.flowerbed());
     public static final BlockDefinition<FlowerbedBlock> YELLOW_FLOWERBED = register("yellow_flowerbed",

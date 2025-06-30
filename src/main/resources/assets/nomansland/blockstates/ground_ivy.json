@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "nomansland:block/plants/ground_ivy"
+      },
+      {
+        "model": "nomansland:block/plants/ground_ivy",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/plants/ground_ivy",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/plants/ground_ivy",
+        "y": 270
+      }
+    ]
+  }
+}

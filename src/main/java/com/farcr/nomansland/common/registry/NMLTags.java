@@ -58,6 +58,7 @@ public class NMLTags {
         public static final TagKey<Biome> HAS_ICICLES = createBiomeTag("feature_addition/has_icicles");
         public static final TagKey<Biome> HAS_OAT_GRASS = createBiomeTag("feature_addition/has_oat_grass");
         public static final TagKey<Biome> HAS_RAFFLESIA = createBiomeTag("feature_addition/has_rafflesia");
+        public static final TagKey<Biome> HAS_GROUND_IVY = createBiomeTag("feature_addition/has_ground_ivy");
 
         // Fallen trees
         public static final TagKey<Biome> HAS_FALLEN_TREES_DRY = createBiomeTag("feature_addition/has_fallen_trees_dry");

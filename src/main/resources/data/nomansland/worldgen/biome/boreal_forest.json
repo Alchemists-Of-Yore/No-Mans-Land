@@ -28,7 +28,8 @@
       "minecraft:lake_lava_surface"
     ],
     [
-      "minecraft:amethyst_geode"
+      "minecraft:amethyst_geode",
+      "minecraft:forest_rock"
     ],
     [
       "minecraft:monster_room",
@@ -200,5 +201,5 @@
     "water_ambient": [],
     "water_creature": []
   },
-  "temperature": 0.7
+  "temperature": 0.4
 }

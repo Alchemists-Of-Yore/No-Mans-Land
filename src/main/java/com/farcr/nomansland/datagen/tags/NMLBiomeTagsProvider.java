@@ -33,6 +33,7 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.BOG,
                 NMLBiomes.DARK_SWAMP,
                 NMLBiomes.DARK_TAIGA,
+                NMLBiomes.BOREAL_FOREST,
                 NMLBiomes.MAPLE_FOREST,
                 NMLBiomes.MAPLE_GROVE,
                 NMLBiomes.FROZEN_WOODS,

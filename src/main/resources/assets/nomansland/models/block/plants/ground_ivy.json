@@ -1,0 +1,8 @@
+{
+  "parent": "nomansland:block/tinted_flowerbed_base",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "1": "nomansland:block/plants/ground_ivy",
+    "particle": "nomansland:item/ground_ivy_inventory"
+  }
+}

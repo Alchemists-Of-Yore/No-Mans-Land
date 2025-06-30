@@ -6,6 +6,7 @@
     "minecraft:cherry_grove",
     "#minecraft:is_savanna",
     "nomansland:autumnal_forest",
-    "nomansland:bog"
+    "nomansland:bog",
+    "nomansland:boreal_forest"
   ]
 }

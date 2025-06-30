@@ -1090,6 +1090,7 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_ICICLES, vegetalDecoration, patch("icicles"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_OAT_GRASS, vegetalDecoration, feature("oat_grass_patch"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_RAFFLESIA, vegetalDecoration, patch("rafflesia"));
+        addFeaturesToTag(NMLTags.FeatureAddition.HAS_GROUND_IVY, vegetalDecoration, feature("ground_ivy_patch"));
 
         // Fallen trees
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_FALLEN_TREES_DRY, vegetalDecoration, feature("fallen_tree_dry"));
