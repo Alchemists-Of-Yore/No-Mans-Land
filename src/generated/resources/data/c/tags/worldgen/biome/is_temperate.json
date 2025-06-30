@@ -2,6 +2,8 @@
   "values": [
     "nomansland:autumnal_forest",
     "nomansland:dark_swamp",
+    "nomansland:boreal_forest",
+    "nomansland:maple_forest",
     "#nomansland:old_growth_forest",
     "nomansland:blackwater_river"
   ]

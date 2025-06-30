@@ -25,6 +25,8 @@ public class NMLBiomes {
     public static final ResourceKey<Biome> OLD_GROWTH_FOREST_CLEARING = createKey("old_growth_forest_clearing");
     public static final ResourceKey<Biome> OLD_GROWTH_FOREST_EDGE = createKey("old_growth_forest_edge");
 
+    public static final ResourceKey<Biome> BOREAL_FOREST = createKey("boreal_forest");
+
     public static final ResourceKey<Biome> DARK_TAIGA = createKey("dark_taiga");
 
     public static final ResourceKey<Biome> DARK_SWAMP = createKey("dark_swamp");
