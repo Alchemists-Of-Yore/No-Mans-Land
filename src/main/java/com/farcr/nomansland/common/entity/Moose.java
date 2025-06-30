@@ -46,9 +46,11 @@ public class Moose extends Animal /*implements NeutralMob*/ {
     //private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(2*20*60, 2*20*60); // figure out how to make this dynamically take day length?
     private static final EntityDataAccessor<Integer> DATA_PACIFICATION_STAGE = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.INT); // number of carrots fed, or 5 if pacified
     private static final EntityDataAccessor<MooseState> MOOSE_STATE = SynchedEntityData.defineId(Moose.class, NMLEntityDataSerializers.MOOSE_STATE.get());
+    private static final long STOMP_COOLDOWN = 30L * 20L;
     @Nullable
     private UUID persistentAngerTarget;
     private long inStateTicks = 0L;
+    private long ticksUntilStompAllowed = 0L;
     public final AnimationState stompAnimationState = new AnimationState();
 
     public Moose(EntityType<? extends Animal> pEntityType, Level pLevel) {
@@ -130,6 +132,10 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         }
     }
 
+    public boolean canStomp() {
+        return this.ticksUntilStompAllowed <= 0;
+    }
+
     public boolean shouldEndStomping() {
         return this.getState() == MooseState.STOMPING && this.inStateTicks >= 1.5 * 20;
     }
@@ -175,6 +181,13 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         }
 
         this.inStateTicks++;
+
+        if (this.getState() == MooseState.STOMPING) {
+            this.ticksUntilStompAllowed = STOMP_COOLDOWN;
+        } else if (this.ticksUntilStompAllowed > 0) {
+            this.ticksUntilStompAllowed--;
+        }
+
     }
 
     /*@Override
@@ -349,7 +362,8 @@ public class Moose extends Animal /*implements NeutralMob*/ {
 
     public static enum MooseState implements StringRepresentable {
         IDLE("idle", 0),
-        STOMPING("stomping", 1);
+        STOMPING("stomping", 1),
+        CHARGING("charging", 2);
 
         private static final StringRepresentable.EnumCodec<MooseState> CODEC = StringRepresentable.fromEnum(MooseState::values);
         private static final IntFunction<MooseState> BY_ID = ByIdMap.continuous(

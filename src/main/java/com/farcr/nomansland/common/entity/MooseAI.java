@@ -128,6 +128,9 @@ public class MooseAI {
             if (!isPlayerTooClose(owner)) {
                 return false;
             }
+            if (!owner.canStomp()) {
+                return false;
+            }
             return true;
         }
 
