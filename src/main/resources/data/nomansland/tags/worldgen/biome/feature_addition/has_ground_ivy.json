@@ -2,6 +2,6 @@
   "values": [
     "#minecraft:is_jungle",
     "#c:is_lush",
-    "#c:is_dense_vegetation"
+    "minecraft:dark_forest"
   ]
 }
