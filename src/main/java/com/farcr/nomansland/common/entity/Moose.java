@@ -18,14 +18,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -35,6 +34,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 import javax.annotation.Nullable;
@@ -80,6 +80,14 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         }
 
         super.onSyncedDataUpdated(key);
+    }
+
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        RandomSource randomSource = level.getRandom();
+        MooseAI.initMemories(this, randomSource);
+
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     @Override
@@ -175,6 +183,7 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         }
 
         this.inStateTicks++;
+
     }
 
     /*@Override
@@ -205,6 +214,9 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         Moose baby = NMLEntities.MOOSE.get().create(pLevel);
         if (baby != null && isPacified() && ((Moose) pOtherParent).isPacified()) {
             baby.setPacificationStage(5);
+        }
+        if (baby != null) {
+            MooseAI.initMemories(baby, pLevel.getRandom());
         }
         return baby;
     }
@@ -349,7 +361,8 @@ public class Moose extends Animal /*implements NeutralMob*/ {
 
     public static enum MooseState implements StringRepresentable {
         IDLE("idle", 0),
-        STOMPING("stomping", 1);
+        STOMPING("stomping", 1),
+        CHARGING("charging", 2);
 
         private static final StringRepresentable.EnumCodec<MooseState> CODEC = StringRepresentable.fromEnum(MooseState::values);
         private static final IntFunction<MooseState> BY_ID = ByIdMap.continuous(

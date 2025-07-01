@@ -1,6 +1,7 @@
 package com.farcr.nomansland.datagen.tags;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.CandleFruitCakeBlock;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.integration.BlueprintIntegration;
 import com.farcr.nomansland.common.registry.NMLTags;
@@ -41,6 +42,8 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 tag(BlockTags.LEAVES).add(definition.block());
             if (definition.get() instanceof SlabBlock)
                 tag(BlockTags.SLABS).add(definition.block());
+            if (definition.get() instanceof CandleFruitCakeBlock)
+                tag(BlockTags.CANDLE_CAKES).add(definition.block());
         }
 
         for (NMLBlocks.Woodset woodset : NMLBlocks.WOODSETS) {

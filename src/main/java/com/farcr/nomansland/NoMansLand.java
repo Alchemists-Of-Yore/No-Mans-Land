@@ -17,11 +17,14 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(NoMansLand.MODID)
 public class NoMansLand {
 
     public static final String MODID = "nomansland";
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public NoMansLand(IEventBus modEventBus, ModContainer modContainer) {
 
@@ -32,6 +35,7 @@ public class NoMansLand {
         NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(modEventBus);
         NMLEntities.ENTITIES.register(modEventBus);
         NMLSensors.SENSORS.register(modEventBus);
+        NMLMemoryModules.MEMORY_MODULES.register(modEventBus);
         NMLFeatures.FEATURES.register(modEventBus);
         NMLFoliagePlacerTypes.FOLIAGE_PLACER_TYPES.register(modEventBus);
         NMLTrunkPlacerTypes.TRUNK_PLACER_TYPES.register(modEventBus);
