@@ -161,6 +161,12 @@ public class NMLBiomePlacements {
                     NMLBiomes.AUTUMNAL_FOREST,
                     NMLBiomes.BOREAL_FOREST
             );
+
+            transitionalBiome(
+                    NMLBiomes.DARK_TAIGA,
+                    NMLBiomes.AUTUMNAL_FOREST,
+                    NMLBiomes.BOREAL_FOREST
+            );
         }
 
         if (NMLConfig.DARK_TAIGA.get()) {
