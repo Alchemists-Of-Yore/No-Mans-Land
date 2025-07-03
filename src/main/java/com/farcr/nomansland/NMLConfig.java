@@ -18,6 +18,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue OLD_GROWTH_BIOMES;
     public static ModConfigSpec.BooleanValue AUTUMNAL_FOREST;
     public static ModConfigSpec.BooleanValue DARK_TAIGA;
+    public static ModConfigSpec.BooleanValue BOREAL_FOREST;
     public static ModConfigSpec.BooleanValue DARK_SWAMP;
     public static ModConfigSpec.BooleanValue FROZEN_WOODS;
     public static ModConfigSpec.BooleanValue BAYOU;

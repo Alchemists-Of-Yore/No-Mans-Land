@@ -143,11 +143,31 @@ public class NMLBiomePlacements {
             );
         }
 
+        if (NMLConfig.BOREAL_FOREST.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.TAIGA,
+                    NMLBiomes.BOREAL_FOREST,
+                    0.1
+            );
+
+            BiomePlacement.replaceOverworld(
+                    Biomes.FOREST,
+                    NMLBiomes.BOREAL_FOREST,
+                    0.2
+            );
+
+            transitionalBiome(
+                    Biomes.TAIGA,
+                    NMLBiomes.AUTUMNAL_FOREST,
+                    NMLBiomes.BOREAL_FOREST
+            );
+        }
+
         if (NMLConfig.DARK_TAIGA.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.TAIGA,
                     NMLBiomes.DARK_TAIGA,
-                    0.2
+                    0.3
             );
         }
 
@@ -162,6 +182,11 @@ public class NMLBiomePlacements {
                     Biomes.DARK_FOREST,
                     NMLBiomes.DARK_SWAMP,
                     0.1
+            );
+            BiomePlacement.replaceOverworld(
+                    Biomes.SWAMP,
+                    NMLBiomes.DARK_SWAMP,
+                    0.2
             );
         }
 
