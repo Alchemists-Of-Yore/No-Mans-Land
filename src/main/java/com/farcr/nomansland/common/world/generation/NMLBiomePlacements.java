@@ -147,13 +147,13 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.TAIGA,
                     NMLBiomes.BOREAL_FOREST,
-                    0.1
+                    0.2
             );
 
             BiomePlacement.replaceOverworld(
                     Biomes.FOREST,
                     NMLBiomes.BOREAL_FOREST,
-                    0.2
+                    0.1
             );
 
             transitionalBiome(
