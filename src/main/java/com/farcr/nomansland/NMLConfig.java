@@ -89,7 +89,7 @@ public class NMLConfig {
         AUTUMNAL_FOREST = COMMON_BUILDER
                 .comment("If the autumnal forest is enabled")
                 .define("autumnal", true);
-        DARK_TAIGA = COMMON_BUILDER
+        BOREAL_FOREST = COMMON_BUILDER
                 .comment("If the boreal forest is enabled")
                 .define("borealForest", true);
         DARK_TAIGA = COMMON_BUILDER
