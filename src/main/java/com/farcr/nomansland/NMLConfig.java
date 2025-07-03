@@ -15,7 +15,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue BIOMES;
     public static ModConfigSpec.BooleanValue CAVES_BIOMES;
     public static ModConfigSpec.BooleanValue MAPLE_BIOMES;
-    public static ModConfigSpec.BooleanValue OLD_GROWTH_BIOMES;
+    public static ModConfigSpec.BooleanValue OLD_GROWTH_FOREST;
     public static ModConfigSpec.BooleanValue AUTUMNAL_FOREST;
     public static ModConfigSpec.BooleanValue DARK_TAIGA;
     public static ModConfigSpec.BooleanValue BOREAL_FOREST;
@@ -83,12 +83,15 @@ public class NMLConfig {
         MAPLE_BIOMES = COMMON_BUILDER
                 .comment("If the maple biomes are enabled")
                 .define("mapleBiomes", true);
-        OLD_GROWTH_BIOMES = COMMON_BUILDER
-                .comment("If the old growth biomes are enabled")
-                .define("oldGrowthBiomes", true);
+        OLD_GROWTH_FOREST = COMMON_BUILDER
+                .comment("If the old growth forest is enabled")
+                .define("oldGrowthForest", true);
         AUTUMNAL_FOREST = COMMON_BUILDER
                 .comment("If the autumnal forest is enabled")
                 .define("autumnal", true);
+        DARK_TAIGA = COMMON_BUILDER
+                .comment("If the boreal forest is enabled")
+                .define("borealForest", true);
         DARK_TAIGA = COMMON_BUILDER
                 .comment("If the dark taiga is enabled")
                 .define("darkTaiga", true);

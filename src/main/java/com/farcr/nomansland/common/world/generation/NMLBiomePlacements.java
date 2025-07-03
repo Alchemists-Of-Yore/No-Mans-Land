@@ -118,7 +118,7 @@ public class NMLBiomePlacements {
             );
         }
 
-        if (NMLConfig.OLD_GROWTH_BIOMES.get()) {
+        if (NMLConfig.OLD_GROWTH_FOREST.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.DARK_FOREST,
                     NMLBiomes.OLD_GROWTH_FOREST,
