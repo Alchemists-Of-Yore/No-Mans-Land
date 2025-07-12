@@ -17,6 +17,8 @@
     "nomansland:chests/warding_effigy_ancient_city",
     "nomansland:chests/warding_effigy_buried_treasure",
     "nomansland:chests/warding_effigy_desert_pyramid",
+    "nomansland:chests/warding_effigy_dungeon1",
+    "nomansland:chests/warding_effigy_dungeon2",
     "nomansland:chests/warding_effigy_jungle_temple",
     "nomansland:chests/warding_effigy_mineshaft",
     "nomansland:chests/warding_effigy_nether_fortress",
@@ -25,7 +27,11 @@
     "nomansland:chests/warding_effigy_stronghold2",
     "nomansland:chests/warding_effigy_village",
     "nomansland:chests/warding_effigy_woodland_mansion",
-    "nomansland:chests/hardtack_dungeon1",
-    "nomansland:chests/hardtack_dungeon2"
+    "nomansland:chests/hardtack_ancient_city",
+    "nomansland:chests/hardtack_bonus_chest",
+    "nomansland:chests/hardtack_igloo",
+    "nomansland:chests/hardtack_mansion",
+    "nomansland:chests/hardtack_shipwreck",
+    "nomansland:chests/hardtack_stronghold"
   ]
 }
