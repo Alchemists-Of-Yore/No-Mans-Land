@@ -3,13 +3,12 @@ package com.farcr.nomansland.common.mixin.integration;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -21,6 +20,7 @@ import sereneseasons.init.ModTags;
 import sereneseasons.season.RandomUpdateHandler;
 import sereneseasons.season.SeasonHooks;
 
+@IfModLoaded("sereneseasons")
 @Mixin(RandomUpdateHandler.class)
 public class RandomUpdateHandlerMixin {
 
