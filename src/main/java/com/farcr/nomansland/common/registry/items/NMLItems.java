@@ -122,11 +122,11 @@ public class NMLItems {
     public static final ItemDefinition<Item> DEER_SPAWN_EGG = register("deer_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.DEER, 8412743, 12828347, new Properties()));
 
-    public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
-            () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
+//    public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
+//            () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
 
-    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
-            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 4335898, 2497045, new Properties()));
+//    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
+//            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 4335898, 2497045, new Properties()));
     // egg color probably temporary - inverted deer lmao
 
 //    public static final ItemDefinition<Item> CAVE_CARP_BUCKET = registerItem("cave_carp_bucket",

@@ -23,6 +23,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue FROZEN_WOODS;
     public static ModConfigSpec.BooleanValue BAYOU;
     public static ModConfigSpec.BooleanValue BOG;
+    public static ModConfigSpec.BooleanValue PRAIRIE;
     public static final String CATEGORY_TAP = "tap";
     public static ModConfigSpec.DoubleValue FILLING_SPEED_MULTIPLIER;
     public static ModConfigSpec.IntValue TICKS_TO_FILL_CAULDRON;
@@ -104,6 +105,9 @@ public class NMLConfig {
         BAYOU = COMMON_BUILDER
                 .comment("If the bayou is enabled")
                 .define("bayou", true);
+        PRAIRIE = COMMON_BUILDER
+                .comment("If the prairie is enabled")
+                .define("prairie", true);
         BOG = COMMON_BUILDER
                 .comment("If the bog is enabled")
                 .define("bog", true);

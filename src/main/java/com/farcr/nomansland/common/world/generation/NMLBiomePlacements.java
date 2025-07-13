@@ -169,6 +169,26 @@ public class NMLBiomePlacements {
             );
         }
 
+        if (NMLConfig.PRAIRIE.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.SAVANNA,
+                    NMLBiomes.PRAIRIE,
+                    0.3
+            );
+
+            transitionalBiome(
+                    Biomes.SAVANNA,
+                    Biomes.PLAINS,
+                    NMLBiomes.PRAIRIE
+            );
+
+            transitionalBiome(
+                    Biomes.DESERT,
+                    Biomes.PLAINS,
+                    NMLBiomes.PRAIRIE
+            );
+        }
+
         if (NMLConfig.DARK_TAIGA.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.TAIGA,
