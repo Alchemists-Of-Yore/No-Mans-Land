@@ -1,15 +1,21 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "farmersdelight"
-    }
-  ],
   "replace": false,
   "values": [
-    "nomansland:maple_cabinet",
-    "nomansland:pine_cabinet",
-    "nomansland:walnut_cabinet",
-    "nomansland:willow_cabinet"
+    {
+      "id": "nomansland:maple_cabinet",
+      "required": false
+    },
+    {
+      "id": "nomansland:pine_cabinet",
+      "required": false
+    },
+    {
+      "id": "nomansland:walnut_cabinet",
+      "required": false
+    },
+    {
+      "id": "nomansland:willow_cabinet",
+      "required": false
+    }
   ]
 }

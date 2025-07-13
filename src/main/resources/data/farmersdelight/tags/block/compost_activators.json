@@ -1,13 +1,10 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "farmersdelight"
-    }
-  ],
   "replace": false,
   "values": [
     "nomansland:field_mushroom",
-    "nomansland:field_mushroom_colony"
+    {
+      "id": "nomansland:field_mushroom_colony",
+      "required": false
+    }
   ]
 }

@@ -6,12 +6,11 @@ import net.minecraft.client.model.AgeableHierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationHolder;
 
 public class MooseModel extends AgeableHierarchicalModel<Moose> {
-    public static final AnimationHolder STOMP = getAnimation(ResourceLocation.fromNamespaceAndPath(NoMansLand.MODID, "moose/stomp"));
+    public static final AnimationHolder STOMP = getAnimation(NoMansLand.location("moose/stomp"));
 
     private final ModelPart root;
     private final ModelPart moose;

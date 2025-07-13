@@ -1,15 +1,21 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "blockbox"
-    }
-  ],
   "replace": false,
   "values": [
-    "nomansland:maple_seat",
-    "nomansland:pine_seat",
-    "nomansland:walnut_seat",
-    "nomansland:willow_seat"
+    {
+      "id": "nomansland:maple_seat",
+      "required": false
+    },
+    {
+      "id": "nomansland:pine_seat",
+      "required": false
+    },
+    {
+      "id": "nomansland:walnut_seat",
+      "required": false
+    },
+    {
+      "id": "nomansland:willow_seat",
+      "required": false
+    }
   ]
 }
