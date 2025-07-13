@@ -27,7 +27,11 @@
     "nomansland:chests/warding_effigy_stronghold2",
     "nomansland:chests/warding_effigy_village",
     "nomansland:chests/warding_effigy_woodland_mansion",
-    "nomansland:chests/hardtack_dungeon1",
-    "nomansland:chests/hardtack_dungeon2"
+    "nomansland:chests/hardtack_ancient_city",
+    "nomansland:chests/hardtack_bonus_chest",
+    "nomansland:chests/hardtack_igloo",
+    "nomansland:chests/hardtack_mansion",
+    "nomansland:chests/hardtack_shipwreck",
+    "nomansland:chests/hardtack_stronghold"
   ]
 }
