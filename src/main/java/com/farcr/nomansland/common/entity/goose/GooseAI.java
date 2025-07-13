@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.entity.goose;
 
-import com.farcr.nomansland.NoMansLand;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
@@ -11,7 +10,6 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.animal.sniffer.Sniffer;
 import net.minecraft.world.entity.schedule.Activity;
 
 import java.util.Map;
@@ -85,7 +83,7 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.SWIM,
                 ImmutableList.of(
-                        Pair.of(0, new Drinking(100, 1000))
+                        Pair.of(0, new Drinking(60, 200))
                 ),
                 Set.of(Pair.of(MemoryModuleType.IS_IN_WATER, MemoryStatus.VALUE_PRESENT))
         );
@@ -101,19 +99,23 @@ public class GooseAI {
             super(Map.of(MemoryModuleType.IS_PANICKING, MemoryStatus.VALUE_ABSENT), minDuration, maxDuration);
         }
 
-        protected boolean checkExtraStartConditions(ServerLevel level, Goose goose) {
+        protected boolean checkExtraStartConditions(ServerLevel level, Goose owner) {
             return true;
         }
 
-        protected boolean canStillUse(ServerLevel level, Goose goose, long gameTime) {
-            return true;
+        protected boolean canStillUse(ServerLevel level, Goose entity, long gameTime) {
+            return !entity.shouldEndDrinking();
         }
 
         protected void start(ServerLevel level, Goose goose, long gameTime) {
-            NoMansLand.LOGGER.debug("drinking");
+            goose.beginDrinking();
         }
 
         protected void stop(ServerLevel level, Goose goose, long gameTime) {
+            if (goose.shouldEndDrinking()) {
+                goose.beginDrinking();
+            }
+//            goose.getBrain().setMemory(NMLMemoryModules.FIGHT_COOLDOWN_TICKS.get(), ((UniformInt) this.getTimeBetweenAttacks.apply(goose)).sample(level.random));
         }
     }
 }

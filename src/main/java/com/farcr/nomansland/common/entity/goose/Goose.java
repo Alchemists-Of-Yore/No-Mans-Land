@@ -1,7 +1,5 @@
 package com.farcr.nomansland.common.entity.goose;
 
-import com.farcr.nomansland.common.entity.Moose;
-import com.farcr.nomansland.common.entity.MooseAI;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
 import com.mojang.serialization.Dynamic;
@@ -19,41 +17,37 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.IntFunction;
 
-import static com.farcr.nomansland.common.entity.Moose.MooseState.STOMPING;
+import static com.farcr.nomansland.common.entity.goose.Goose.GooseState.DRINKING;
 import static com.farcr.nomansland.common.entity.goose.Goose.GooseState.IDLE;
 
 public class Goose extends PathfinderMob {
 
     private static final EntityDataAccessor<GooseState> GOOSE_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
     private long inStateTicks = 0L;
+    public final AnimationState drinkAnimationState = new AnimationState();
 
 
     public Goose(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -204,6 +198,25 @@ public class Goose extends PathfinderMob {
         return super.getNavigation();
     }
 
+    public void beginDrinking() {
+        if (this.getState() == IDLE) {
+            this.stopInPlace();
+            this.gameEvent(GameEvent.ENTITY_ACTION);
+            this.switchToState(DRINKING);
+        }
+    }
+
+    public void endDrink() {
+        if (this.getState() == DRINKING) {
+            this.gameEvent(GameEvent.ENTITY_ACTION);
+            this.switchToState(IDLE);
+        }
+    }
+
+    public boolean shouldEndDrinking() {
+        return this.getState() == DRINKING && this.inStateTicks >= 1.5 * 20;
+    }
+
     public GooseState getState() {
         return this.entityData.get(GOOSE_STATE);
     }
@@ -216,8 +229,10 @@ public class Goose extends PathfinderMob {
     private void setupAnimationStates() {
         switch (this.getState()) {
             case IDLE:
+                drinkAnimationState.stop();
                 break;
             case DRINKING:
+                drinkAnimationState.startIfStopped(tickCount);
                 break;
         }
     }
