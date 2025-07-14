@@ -339,6 +339,10 @@ public class MiscellaneousEvents {
                     break;
                 }
             }
+
+            if (event.getExplosion().getDirectSourceEntity() instanceof ExplosiveEntity explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
+                NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
+            }
         }
     }
 
