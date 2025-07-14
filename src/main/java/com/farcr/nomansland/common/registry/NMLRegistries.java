@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.registry;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.ambience.fogmodifiers.FogModifier;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
+import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
 import com.farcr.nomansland.common.world.feature.decorator.BoulderDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.FallenTreeDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.PondDecoratorType;
@@ -24,4 +25,7 @@ public class NMLRegistries {
     public static final Registry<FogModifier> FOG_MODIFIERS = new RegistryBuilder<>(FOG_MODIFIER_TYPE_KEY).create();
 
     public static final ResourceKey<Registry<TapInteraction>> TAP_INTERACTION_KEY = ResourceKey.createRegistryKey(NoMansLand.location("tapping"));
+
+    public static final ResourceKey<Registry<ExtinguishableBlock>> EXTINGUISHABLE_BLOCKS_KEY = ResourceKey.createRegistryKey(NoMansLand.location("extinguishable_blocks"));
+    public static final Registry<ExtinguishableBlock> EXTINGUISHABLE_BLOCKS = new RegistryBuilder<>(EXTINGUISHABLE_BLOCKS_KEY).create();
 }

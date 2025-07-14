@@ -2,9 +2,11 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
 import com.farcr.nomansland.common.block.torches.ExtinguishedTorchBlock;
 import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -58,6 +60,7 @@ import java.util.Map;
 
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
+
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class MiscellaneousEvents {
@@ -70,48 +73,31 @@ public class MiscellaneousEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
 
-        List<Block> torches = List.of(
-                Blocks.TORCH,
-                Blocks.WALL_TORCH,
-                Blocks.SOUL_TORCH,
-                Blocks.SOUL_WALL_TORCH,
-                NMLBlocks.SCONCE_TORCH.get(),
-                NMLBlocks.SCONCE_WALL_TORCH.get(),
-                NMLBlocks.SCONCE_SOUL_TORCH.get(),
-                NMLBlocks.SCONCE_SOUL_WALL_TORCH.get()
-        );
+        boolean isExtinguishing = stack.is(ItemTags.SHOVELS) && NMLConfig.TORCH_EXTINGUISHING.get();
+        boolean isLighting = stack.is(NMLTags.FIRESTARTERS);
+        if (!player.isSpectator() && (isExtinguishing || isLighting)) {
+            for (Map.Entry<ResourceKey<ExtinguishableBlock>, ExtinguishableBlock> set : NMLRegistries.EXTINGUISHABLE_BLOCKS.entrySet()) {
+                ExtinguishableBlock value = set.getValue();
 
-        // Torch Extinguishing
-        if (torches.contains(state.getBlock()) && stack.is(ItemTags.SHOVELS) && !player.isSpectator() && NMLConfig.TORCH_EXTINGUISHING.get()) {
-            level.playSound(player, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 0.4F, 1.0F);
-
-            if (!level.isClientSide) {
-                stack.hurtAndBreak(1, player, stack.getEquipmentSlot());
-
-                BlockState extinguishedTorchState = ImmutableMap.ofEntries(
-                        Map.entry(Blocks.TORCH, NMLBlocks.EXTINGUISHED_TORCH),
-                        Map.entry(Blocks.WALL_TORCH, NMLBlocks.EXTINGUISHED_WALL_TORCH),
-                        Map.entry(Blocks.SOUL_TORCH, NMLBlocks.EXTINGUISHED_SOUL_TORCH),
-                        Map.entry(Blocks.SOUL_WALL_TORCH, NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_WALL_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_WALL_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_SOUL_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_SOUL_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_SOUL_WALL_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_SOUL_WALL_TORCH)
-                ).get(state.getBlock()).value().withPropertiesOf(state);
-
-                level.setBlockAndUpdate(pos, extinguishedTorchState);
-            }
-            event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
-            event.setCanceled(true);
-        }
-
-        if (state.hasProperty(BlockStateProperties.LIT)) {
-            if (!state.getValue(BlockStateProperties.LIT) && stack.is(NMLTags.FIRESTARTERS) && !stack.is(Items.FLINT_AND_STEEL)) {
-                level.playSound(player, pos, NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
-                level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                level.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
-                event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
-                event.setCanceled(true);
+                if (isExtinguishing) { //extinguishing block
+                    if (state.is(value.litBlock())) {
+                        level.playSound(player, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 0.4F, 1.0F);
+                        level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                        level.setBlockAndUpdate(pos, value.extinguishedBlock().withPropertiesOf(state));
+                        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+                        event.setCanceled(true);
+                        break;
+                    }
+                } else { //lighting block
+                    if (state.is(value.extinguishedBlock())) {
+                        level.playSound(player, pos, NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+                        level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                        level.setBlockAndUpdate(pos, value.litBlock().withPropertiesOf(state));
+                        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+                        event.setCanceled(true);
+                        break;
+                    }
+                }
             }
         }
 
@@ -160,7 +146,7 @@ public class MiscellaneousEvents {
             Direction playerDir = player.getDirection();
             RailShape railShape = null;
             if (state.getBlock() instanceof BaseRailBlock) {
-                railShape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
+                railShape = state.getValue(((BaseRailBlock) state.getBlock()).getShapeProperty());
             }
             if (railShape != null) {
                 int railCount = 0;
@@ -187,7 +173,7 @@ public class MiscellaneousEvents {
                         // Continue along the chain normally
                         RailShape offsetShape = null;
                         if (stateBase.getBlock() instanceof BaseRailBlock) {
-                            offsetShape = stateBase.getValue(((BaseRailBlock)stateBase.getBlock()).getShapeProperty());
+                            offsetShape = stateBase.getValue(((BaseRailBlock) stateBase.getBlock()).getShapeProperty());
                         }
 
                         if (offsetShape == null)
@@ -224,7 +210,7 @@ public class MiscellaneousEvents {
                             else if (playerDir != Direction.EAST) break;
                         }
                         // Edge case
-                        else if (offsetShape != RailShape.EAST_WEST && offsetShape != RailShape.NORTH_SOUTH){
+                        else if (offsetShape != RailShape.EAST_WEST && offsetShape != RailShape.NORTH_SOUTH) {
                             break;
                         }
 
@@ -235,7 +221,7 @@ public class MiscellaneousEvents {
                         boolean canGoDown = false;
                         RailShape offsetShape = null;
                         if (stateBelow.getBlock() instanceof BaseRailBlock) {
-                            offsetShape = stateBelow.getValue(((BaseRailBlock)stateBelow.getBlock()).getShapeProperty());
+                            offsetShape = stateBelow.getValue(((BaseRailBlock) stateBelow.getBlock()).getShapeProperty());
                         }
 
                         if (offsetShape == null) break;
@@ -315,7 +301,7 @@ public class MiscellaneousEvents {
             default -> null;
         };
         if (state.getBlock() instanceof BaseRailBlock) {
-            state = state.setValue(((BaseRailBlock)state.getBlock()).getShapeProperty(), placedShape);
+            state = state.setValue(((BaseRailBlock) state.getBlock()).getShapeProperty(), placedShape);
         }
         if (state.canSurvive(level, position)) {
             SoundType soundtype = state.getSoundType(level, position, player);
@@ -348,10 +334,14 @@ public class MiscellaneousEvents {
                 level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
                 level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 
-                if (state.is(Blocks.TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.WALL_TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_WALL_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.SOUL_TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.SOUL_WALL_TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get().withPropertiesOf(state), 11);
+                if (state.is(Blocks.TORCH))
+                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_TORCH.get().withPropertiesOf(state), 11);
+                if (state.is(Blocks.WALL_TORCH))
+                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_WALL_TORCH.get().withPropertiesOf(state), 11);
+                if (state.is(Blocks.SOUL_TORCH))
+                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_TORCH.get().withPropertiesOf(state), 11);
+                if (state.is(Blocks.SOUL_WALL_TORCH))
+                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get().withPropertiesOf(state), 11);
             }
 
             if (event.getExplosion().getDirectSourceEntity() instanceof ExplosiveEntity explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES))
