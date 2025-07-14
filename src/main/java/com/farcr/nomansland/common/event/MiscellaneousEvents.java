@@ -10,6 +10,7 @@ import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
@@ -76,23 +77,22 @@ public class MiscellaneousEvents {
         boolean isExtinguishing = stack.is(ItemTags.SHOVELS) && NMLConfig.TORCH_EXTINGUISHING.get();
         boolean isLighting = stack.is(NMLTags.FIRESTARTERS);
         if (!player.isSpectator() && (isExtinguishing || isLighting)) {
-            for (Map.Entry<ResourceKey<ExtinguishableBlock>, ExtinguishableBlock> set : NMLRegistries.EXTINGUISHABLE_BLOCKS.entrySet()) {
-                ExtinguishableBlock value = set.getValue();
+            for (ExtinguishableBlock holder : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
 
                 if (isExtinguishing) { //extinguishing block
-                    if (state.is(value.litBlock())) {
+                    if (state.is(holder.litBlock())) {
                         level.playSound(player, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 0.4F, 1.0F);
                         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                        level.setBlockAndUpdate(pos, value.extinguishedBlock().withPropertiesOf(state));
+                        level.setBlockAndUpdate(pos, holder.extinguishedBlock().withPropertiesOf(state));
                         event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
                         event.setCanceled(true);
                         break;
                     }
                 } else { //lighting block
-                    if (state.is(value.extinguishedBlock())) {
+                    if (state.is(holder.extinguishedBlock())) {
                         level.playSound(player, pos, NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
                         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                        level.setBlockAndUpdate(pos, value.litBlock().withPropertiesOf(state));
+                        level.setBlockAndUpdate(pos, holder.litBlock().withPropertiesOf(state));
                         event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
                         event.setCanceled(true);
                         break;
@@ -328,25 +328,18 @@ public class MiscellaneousEvents {
         Explosion explosion = event.getExplosion();
         Level level = event.getLevel();
 
-        event.getAffectedBlocks().forEach(pos -> {
+        for (BlockPos pos : event.getAffectedBlocks()) {
             BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof TorchBlock && !(state.getBlock() instanceof ExtinguishedTorchBlock)) {
-                level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
-                level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 
-                if (state.is(Blocks.TORCH))
-                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.WALL_TORCH))
-                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_WALL_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.SOUL_TORCH))
-                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.SOUL_WALL_TORCH))
-                    level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get().withPropertiesOf(state), 11);
+            for (ExtinguishableBlock block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+                if (state.is(block.litBlock())) {
+                    level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
+                    level.setBlock(pos, block.extinguishedBlock().withPropertiesOf(state), 11);
+                    level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    break;
+                }
             }
-
-            if (event.getExplosion().getDirectSourceEntity() instanceof ExplosiveEntity explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES))
-                NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
-        });
+        }
     }
 
     @SubscribeEvent
