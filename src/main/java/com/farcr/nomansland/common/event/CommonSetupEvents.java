@@ -12,6 +12,7 @@ import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
@@ -60,6 +61,8 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.BOULDER_DECORATOR_TYPE);
         event.register(NMLRegistries.FALLEN_TREE_DECORATOR_TYPE);
         event.register(NMLRegistries.FOG_MODIFIERS);
+
+        event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
     }
 
     @SubscribeEvent

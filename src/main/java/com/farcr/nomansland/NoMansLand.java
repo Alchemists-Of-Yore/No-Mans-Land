@@ -7,6 +7,8 @@ import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
+import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.*;
 import com.farcr.nomansland.common.registry.items.NMLCreativeTabs;
 import com.farcr.nomansland.common.registry.items.NMLItems;
@@ -32,6 +34,7 @@ public class NoMansLand {
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("apple_fruit"), NoMansLand.location("apple"));
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("pear_fruit"), NoMansLand.location("pear"));
         NMLBlocks.BLOCKS.register(modEventBus);
+        NMLExtinguishables.EXTINGUISHABLES.register(modEventBus);
         NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(modEventBus);
         NMLEntities.ENTITIES.register(modEventBus);
         NMLSensors.SENSORS.register(modEventBus);
