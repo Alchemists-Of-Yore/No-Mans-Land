@@ -189,6 +189,14 @@ public class NMLBiomePlacements {
             );
         }
 
+        if (NMLConfig.LAVENDER_FIELD.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.MEADOW,
+                    NMLBiomes.LAVENDER_FIELD,
+                    0.3
+            );
+        }
+
         if (NMLConfig.DARK_TAIGA.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.TAIGA,

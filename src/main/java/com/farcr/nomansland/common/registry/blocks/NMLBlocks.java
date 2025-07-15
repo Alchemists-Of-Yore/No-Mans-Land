@@ -207,6 +207,8 @@ public class NMLBlocks {
     public static final BlockDefinition<FlowerPotBlock> POTTED_BARREL_CACTUS = registerNoItem("potted_barrel_cactus",
             () -> new FlowerPotBlock(() -> ((FlowerPotBlock) Blocks.FLOWER_POT), NMLBlocks.BARREL_CACTUS,
                     ofFullCopy(Blocks.POTTED_POPPY).noOcclusion()), BlockProperties.flowerPot(BARREL_CACTUS));
+    public static final BlockDefinition<SimpleFoliageBlock> LAVENDER_BUSH = register("lavender_bush",
+            () -> new SimpleFoliageBlock(ofFullCopy(Blocks.SHORT_GRASS).offsetType(OffsetType.XYZ)), BlockProperties.flowerbed());
     public static final BlockDefinition<DesertFoliageBlock> SUCCULENT = register("succulent",
             () -> new DesertFoliageBlock(of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.FLOWERING_AZALEA).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<FlowerPotBlock> POTTED_SUCCULENT = registerNoItem("potted_succulent",

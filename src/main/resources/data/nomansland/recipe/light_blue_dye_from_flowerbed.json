@@ -1,6 +1,6 @@
 {
   "category": "misc",
-  "group": "light_blue_dye",
+  "group": "purple_dye",
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "###",
@@ -9,11 +9,11 @@
   ],
   "key": {
     "#": {
-      "item": "nomansland:blue_flowerbed"
+      "item": "nomansland:lavender_bush"
     }
   },
   "result": {
     "count": 1,
-    "id": "minecraft:light_blue_dye"
+    "id": "minecraft:purple_dye"
   }
 }

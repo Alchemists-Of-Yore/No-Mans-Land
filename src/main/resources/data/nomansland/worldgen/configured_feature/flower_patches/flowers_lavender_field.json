@@ -13,7 +13,7 @@
               ],
               "firstOctave": -3
             },
-            "scale": 1.0,
+            "scale": 0.5,
             "seed": 2345,
             "slow_noise": {
               "amplitudes": [
@@ -24,34 +24,28 @@
             "slow_scale": 1.0,
             "states": [
               {
-                "Name": "nomansland:thistle"
-              },
-              {
-                "Name": "minecraft:poppy"
+                "Name": "minecraft:allium"
               },
               {
                 "Name": "minecraft:azure_bluet"
               },
               {
-                "Name": "minecraft:dandelion"
-              },
-              {
-                "Name": "minecraft:cornflower"
-              },
-              {
-                "Name": "minecraft:oxeye_daisy"
-              },
-              {
-                "Name": "nomansland:wild_mint"
+                "Name": "minecraft:lily_of_the_valley"
               },
               {
                 "Name": "nomansland:aconite"
               },
               {
-                "Name": "nomansland:lavender_bush"
+                "Name": "nomansland:wild_mint"
               },
               {
-                "Name": "minecraft:short_grass"
+                "Name": "nomansland:pink_lupine"
+              },
+              {
+                "Name": "nomansland:thistle"
+              },
+              {
+                "Name": "nomansland:lavender_bush"
               }
             ],
             "variety": [
@@ -71,7 +65,7 @@
         }
       ]
     },
-    "tries": 96,
+    "tries": 69,
     "xz_spread": 6,
     "y_spread": 2
   }

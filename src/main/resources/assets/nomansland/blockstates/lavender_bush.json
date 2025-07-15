@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "nomansland:block/plants/lavender_bush"
+      },
+      {
+        "model": "nomansland:block/plants/lavender_bush_alt"
+      }
+    ]
+  }
+}
