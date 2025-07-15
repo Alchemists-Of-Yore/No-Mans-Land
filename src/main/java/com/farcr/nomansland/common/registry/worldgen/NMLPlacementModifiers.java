@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.registry.worldgen;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.feature.*;
 import com.farcr.nomansland.common.world.feature.placementmodifiers.DensityFunctionBasedCountPlacement;
+import com.farcr.nomansland.common.world.feature.placementmodifiers.DensityFunctionBasedProbabilityPlacement;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -17,4 +18,6 @@ public class NMLPlacementModifiers {
 
     public static final Supplier<PlacementModifierType<DensityFunctionBasedCountPlacement>> DENSITY_FUNCTION_BASED_COUNT =
             PLACEMENT_MODIFIER_TYPES.register("density_function_based_count", () -> () -> DensityFunctionBasedCountPlacement.CODEC);
+    public static final Supplier<PlacementModifierType<DensityFunctionBasedProbabilityPlacement>> DENSITY_FUNCTION_BASED_PROBABILITY =
+            PLACEMENT_MODIFIER_TYPES.register("density_function_based_probability", () -> () -> DensityFunctionBasedProbabilityPlacement.CODEC);
 }
