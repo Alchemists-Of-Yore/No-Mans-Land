@@ -198,6 +198,7 @@ public class CreativeModeTabHandler {
             insertAfter(Items.PINK_PETALS, BLUE_FLOWERBED);
             insertAfter(Items.PINK_PETALS, VIOLET_FLOWERBED);
             insertAfter(Items.PINK_PETALS, WHITE_FLOWERBED);
+            insertAfter(Items.LILY_OF_THE_VALLEY, LAVENDER_BUSH);
             insertAfter(Items.LILY_OF_THE_VALLEY, RED_LUPINE);
             insertAfter(Items.LILY_OF_THE_VALLEY, BLUE_LUPINE);
             insertAfter(Items.LILY_OF_THE_VALLEY, PINK_LUPINE);
