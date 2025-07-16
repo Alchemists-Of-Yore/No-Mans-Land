@@ -2,6 +2,7 @@
   "values": [
     "minecraft:flower_forest",
     "minecraft:sunflower_plains",
-    "minecraft:cherry_grove"
+    "minecraft:cherry_grove",
+    "nomansland:lavender_field"
   ]
 }
