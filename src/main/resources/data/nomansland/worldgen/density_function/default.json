@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:noise",
+  "noise": "nomansland:default",
+  "xz_scale": 1,
+  "y_scale": 1
+}

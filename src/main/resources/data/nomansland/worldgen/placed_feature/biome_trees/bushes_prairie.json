@@ -2,10 +2,16 @@
   "feature": "nomansland:oak_bush",
   "placement": [
     {
-      "type": "minecraft:noise_based_count",
-      "noise_factor": 100.0,
-      "noise_offset": 0.0,
-      "noise_to_count_ratio": 8
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.1,
+
+      "noise_minimum": -0.09,                   
+      "noise_maximum": 0.94,  
+
+      "count_minimum": 0,          
+      "count_maximum": 13
     },
     {
       "type": "minecraft:in_square"

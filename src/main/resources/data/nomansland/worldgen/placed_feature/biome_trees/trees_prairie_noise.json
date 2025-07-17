@@ -2,10 +2,16 @@
   "feature": "nomansland:biome_trees/trees_prairie",
   "placement": [
     {
-      "type": "minecraft:noise_based_count",
-      "noise_factor": 261.4,
-      "noise_offset": -0.41,
-      "noise_to_count_ratio": 8
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.65,
+
+      "noise_minimum": 0.43,                   
+      "noise_maximum": 0.62,  
+
+      "count_minimum": 0,          
+      "count_maximum": 16
     },
     {
       "type": "minecraft:in_square"
