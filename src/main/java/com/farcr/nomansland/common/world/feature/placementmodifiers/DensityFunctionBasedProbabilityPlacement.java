@@ -30,7 +30,7 @@ import java.util.stream.Stream;
      EXAMPLE SYNTAX:
        {
           "type": "nomansland:density_function_based_probability",
-          "noise_function": "minecraft:overworld/base_3d_noise", // noise router. defaults to some reasonable noise.
+          "noise_function": "minecraft:overworld/base_3d_noise", // noise router.
                                                                     can be a path to any density function, or inlined.
           "noise_scale": 1.0,         // decimal number. defaults to 1.0.
                                          a multiplier for the frequency of noise.
@@ -54,12 +54,9 @@ import java.util.stream.Stream;
        }
 */
 public class DensityFunctionBasedProbabilityPlacement extends PlacementModifier {
-    private static final DensityFunction DEFAULT_DENSITY_FUNCTION =
-            DensityFunctions.noise(Holder.direct(new NormalNoise.NoiseParameters(-4, 1)));
-
     public static final MapCodec<DensityFunctionBasedProbabilityPlacement> CODEC = RecordCodecBuilder.mapCodec (
             codec -> codec.group(
-                            DensityFunction.HOLDER_HELPER_CODEC.fieldOf("noise_function").orElse(DEFAULT_DENSITY_FUNCTION).forGetter(instance -> instance.densityFunction),
+                            DensityFunction.HOLDER_HELPER_CODEC.fieldOf("noise_function").forGetter(instance -> instance.densityFunction),
                             Codec.DOUBLE.fieldOf("noise_scale").orElse(1.0).forGetter(instance -> instance.noiseScale),
                             Codec.DOUBLE.fieldOf("noise_minimum").orElse(0.0).forGetter(instance -> instance.noiseMinimum),
                             Codec.DOUBLE.fieldOf("noise_maximum").orElse(1.0).forGetter(instance -> instance.noiseMaximum),
