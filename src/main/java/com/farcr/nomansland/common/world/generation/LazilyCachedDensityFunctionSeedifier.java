@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.world.generation;
 
+import com.farcr.nomansland.NoMansLand;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
@@ -30,7 +32,7 @@ public abstract class LazilyCachedDensityFunctionSeedifier implements DensityFun
         visitorCache.clear();
     }
 
-    private final Map<NormalNoise.NoiseParameters, DensityFunction.NoiseHolder> holderCache;
+    private final Map<ResourceKey, DensityFunction.NoiseHolder> holderCache;
 
     public LazilyCachedDensityFunctionSeedifier() {
         this.holderCache = new HashMap<>();
@@ -44,7 +46,7 @@ public abstract class LazilyCachedDensityFunctionSeedifier implements DensityFun
     @Override
     public DensityFunction.NoiseHolder visitNoise(DensityFunction.NoiseHolder noiseHolder) {
         NormalNoise.NoiseParameters noiseParameters = noiseHolder.noiseData().value();
-        return this.holderCache.computeIfAbsent(noiseParameters, (params) -> modifyNoiseHolder(noiseHolder, params));
+        return this.holderCache.computeIfAbsent(noiseHolder.noiseData().unwrapKey().orElseThrow(), (resourceKey) -> modifyNoiseHolder(noiseHolder, noiseParameters));
     }
 
     abstract DensityFunction.NoiseHolder modifyNoiseHolder(DensityFunction.NoiseHolder noiseHolder, NormalNoise.NoiseParameters noiseParameters);
