@@ -2,12 +2,13 @@ package com.farcr.nomansland.common.world.feature.placementmodifiers;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.worldgen.NMLPlacementModifiers;
-import com.farcr.nomansland.common.world.generation.LazyDensityFunctionVisitor;
+import com.farcr.nomansland.common.world.generation.LazilyCachedDensityFunctionSeedifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.DensityFunction;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
-import net.minecraft.world.level.levelgen.placement.RepeatingPlacement;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.stream.Stream;
@@ -72,18 +72,25 @@ public class DensityFunctionBasedProbabilityPlacement extends PlacementModifier 
     public Stream<BlockPos> getPositions(PlacementContext context, RandomSource random, BlockPos pos) {
         // apply seeds to all the noise, if that hasn't been done yet
         // this operation is cached. i hate this nonetheless!
-        double threshold = densityFunction.mapAll(LazyDensityFunctionVisitor.getOrCreate(context.getLevel().getSeed()))
-                .compute(new DensityFunction.SinglePointContext(
-                        (int) ((double) pos.getX() * this.noiseScale),
-                        (int) ((double) pos.getY() * this.noiseScale),
-                        (int) ((double) pos.getZ() * this.noiseScale)
+        DensityFunction seedifiedDensityFunction = densityFunction.mapAll(LazilyCachedDensityFunctionSeedifier.getOrCreate(context.getLevel()));
+        // sample the noise, with the proper seed!
+        double threshold = seedifiedDensityFunction.compute(
+                new DensityFunction.SinglePointContext(
+                        (int) (pos.getX() * this.noiseScale),
+                        (int) (pos.getY() * this.noiseScale),
+                        (int) (pos.getZ() * this.noiseScale)
                 )
         );
+
+        // uncomment this line to preview noise values!
+        // if (random.nextInt(32) == 0) NoMansLand.LOGGER.info(threshold);
+
         if (normalizeNoise) {
             threshold = Mth.clampedMap(threshold, densityFunction.minValue(), densityFunction.maxValue(),  minimumProbability, maximumProbability);
         } else {
             threshold = Mth.clamp(threshold, minimumProbability, maximumProbability);
         }
+
         return random.nextDouble() < threshold ? Stream.of(pos) : Stream.empty();
     }
 

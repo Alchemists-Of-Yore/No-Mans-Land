@@ -14,6 +14,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
+import com.farcr.nomansland.common.world.generation.LazilyCachedDensityFunctionSeedifier;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -53,6 +54,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -431,5 +433,10 @@ public class MiscellaneousEvents {
     public static void onServerStart(ServerAboutToStartEvent event) {
         NMLBiomes.CAVES_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.CAVES);
         NMLBiomes.CAVE_DEPTHS_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.CAVE_DEPTHS);
+    }
+
+    @SubscribeEvent
+    public static void onServerStop(ServerStoppingEvent event) {
+        LazilyCachedDensityFunctionSeedifier.clearCache();
     }
 }

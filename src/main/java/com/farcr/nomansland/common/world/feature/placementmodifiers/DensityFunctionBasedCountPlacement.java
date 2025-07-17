@@ -1,20 +1,18 @@
 package com.farcr.nomansland.common.world.feature.placementmodifiers;
 
 import com.farcr.nomansland.common.registry.worldgen.NMLPlacementModifiers;
-import com.farcr.nomansland.common.world.generation.LazyDensityFunctionVisitor;
+import com.farcr.nomansland.common.world.generation.LazilyCachedDensityFunctionSeedifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
-import net.minecraft.world.level.levelgen.placement.RepeatingPlacement;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.stream.IntStream;
@@ -67,13 +65,18 @@ public class DensityFunctionBasedCountPlacement extends PlacementModifier {
     public Stream<BlockPos> getPositions(PlacementContext context, RandomSource random, BlockPos pos) {
         // apply seeds to all the noise, if that hasn't been done yet
         // this operation is cached. i hate this nonetheless!
-        double noise = densityFunction.mapAll(LazyDensityFunctionVisitor.getOrCreate(context.getLevel().getSeed()))
-                .compute(new DensityFunction.SinglePointContext(
+        DensityFunction seedifiedDensityFunction = densityFunction.mapAll(LazilyCachedDensityFunctionSeedifier.getOrCreate(context.getLevel()));
+        double noise = seedifiedDensityFunction.compute(
+                new DensityFunction.SinglePointContext(
                                 (int) ((double) pos.getX() * this.noiseScale),
                                 (int) ((double) pos.getY() * this.noiseScale),
                                 (int) ((double) pos.getZ() * this.noiseScale)
                         )
                 );
+
+        // uncomment this line to preview noise values!
+        // if (random.nextInt(16) == 0) NoMansLand.LOGGER.info(noise);
+
         int count = (int) Math.ceil((noise + this.noiseOffset) * this.noiseToCountRatio);
         return IntStream.range(0, count)
                 .mapToObj(i -> pos);
