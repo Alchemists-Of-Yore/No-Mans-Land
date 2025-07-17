@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
@@ -17,14 +18,14 @@ import java.util.Map;
 // trying to do this without making a billion extra new objects
 // and overwhelming the garbage collector.
 public abstract class LazilyCachedDensityFunctionSeedifier implements DensityFunction.Visitor {
-    private static final Map<WorldGenLevel, LazilyCachedDensityFunctionSeedifier> visitorCache = new HashMap<>();
+    private static final Map<WorldGeneratorEntry, LazilyCachedDensityFunctionSeedifier> visitorCache = new HashMap<>();
 
     public static DensityFunction.Visitor getOrCreate(WorldGenLevel worldGenLevel) {
-        return visitorCache.computeIfAbsent(worldGenLevel, (level) -> {
-            if (level.getChunkSource() instanceof ServerChunkCache chunkCache) {
+        return visitorCache.computeIfAbsent(new WorldGeneratorEntry(worldGenLevel.getSeed(), worldGenLevel.dimensionType()), (level) -> {
+            if (worldGenLevel.getChunkSource() instanceof ServerChunkCache chunkCache) {
                 return new RandomStateBasedDensityFunctionSeedifier(chunkCache.randomState());
             } else {
-                return new FallbackDensityFunctionSeedifier(RandomSource.create(level.getSeed()));
+                return new FallbackDensityFunctionSeedifier(RandomSource.create(worldGenLevel.getSeed()));
             }
         });
     }
@@ -84,4 +85,6 @@ public abstract class LazilyCachedDensityFunctionSeedifier implements DensityFun
             return new DensityFunction.NoiseHolder(noiseHolder.noiseData(), NormalNoise.create(this.randomSource, noiseParameters));
         }
     }
+
+    private record WorldGeneratorEntry(long seed, DimensionType dimensionType) {}
 }
