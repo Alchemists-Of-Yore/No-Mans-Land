@@ -1,0 +1,24 @@
+{
+  "type": "nomansland:dithered_patch",
+  "config": {
+    "block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:sand"
+      }
+    },
+    "target": {
+      "type": "minecraft:matching_blocks",
+      "blocks": [
+        "minecraft:grass_block",
+        "minecraft:dirt"
+      ]
+    },
+    "depth": {
+      "type": "uniform",
+      "min_inclusive": 2,
+      "max_inclusive": 4
+    },
+    "dither_strength": 1.5
+  }
+}

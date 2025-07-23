@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.world.feature;
 import com.farcr.nomansland.NoMansLand;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 /* "dithered_patch" feature type.
@@ -45,7 +47,15 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
     "radius": {
       "type": "uniform",
       "min_inclusive": 3,
-      "max_inclusive": 8,
+      "max_inclusive": 8
+    },
+    // defaults to 1
+    //   takes in any integer number provider. valid range: 1 - infinity
+    /    determines how far the patch extends below ground, tapering out at its edges.
+    "depth": {
+      "type": "uniform",
+      "min_inclusive": 1,
+      "max_inclusive": 4
     },
     // defaults to 0.5
     //   takes in any floating point number provider.
@@ -83,12 +93,16 @@ public class DitheredPatchFeature extends Feature<DitheredPatchFeatureConfigurat
         BlockPos.MutableBlockPos mutableBlockPos = origin.mutable();
 
         int radius = config.radius().sample(random);
+        int depth = config.depth().sample(random);
 
         float radiusStrength = config.radiusStrength().sample(random);
         float noiseStrength = config.noiseStrength().sample(random);
         float ditherStrength = config.ditherStrength().sample(random);
 
         BlockPredicate targetPredicate = config.target();
+        BlockStateProvider blockProvider = config.blockProvider();
+        float maxValue = radius * radiusStrength + noiseStrength + (15/16.0F) * ditherStrength;
+
         boolean placedBlock = false;
         int range = Math.min(radius + 4, 8);
         for (int xOffset = -range; xOffset <= range; xOffset++) {
@@ -101,10 +115,18 @@ public class DitheredPatchFeature extends Feature<DitheredPatchFeatureConfigurat
                 double noiseFac = NOISE.getValue(x * 0.2, 0, z * 0.2);
                 float ditherFac = DITHER_MATRIX[Math.floorMod(x, 4) * 4 + Math.floorMod(z, 4)] - 0.5F;
 
-                mutableBlockPos.set(x, y, z);
-                if (radiusFac * radiusStrength + noiseFac * noiseStrength + ditherFac * ditherStrength > 0 && targetPredicate.test(level, mutableBlockPos)) {
-                    level.setBlock(mutableBlockPos, Blocks.COARSE_DIRT.defaultBlockState(), 2);
-                    placedBlock = true;
+                double facUndithered = radiusFac * radiusStrength + noiseFac * noiseStrength;
+                double fac = facUndithered + ditherFac * ditherStrength;
+                if (fac > 0) {
+                    // function that tapers around the edges of the feature
+                    int depthAtPos = Math.max(1, Mth.ceil(depth * Math.clamp(facUndithered / (maxValue * 0.3), 0, 1)));
+                    for (int yOffset = 0; yOffset < depthAtPos; yOffset++) {
+                        mutableBlockPos.set(x, y - yOffset, z);
+                        if (targetPredicate.test(level, mutableBlockPos)) {
+                            level.setBlock(mutableBlockPos, blockProvider.getState(random, mutableBlockPos), 2);
+                            placedBlock = true;
+                        }
+                    }
                 }
             }
         }
