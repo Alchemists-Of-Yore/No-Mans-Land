@@ -6,7 +6,7 @@ import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.model.BillhookBassModel;
 import com.farcr.nomansland.client.model.BuriedModel;
 import com.farcr.nomansland.client.model.GooseModel;
-import com.farcr.nomansland.client.model.MooseModel;
+import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;

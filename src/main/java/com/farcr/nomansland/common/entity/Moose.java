@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.DifficultyInstance;
@@ -28,6 +29,8 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -59,10 +62,15 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         return Animal.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 40D)
                 .add(Attributes.FOLLOW_RANGE, 20D)
-                .add(Attributes.MOVEMENT_SPEED, 0.25D)
+                .add(Attributes.MOVEMENT_SPEED, 0.15D)
                 .add(Attributes.ARMOR_TOUGHNESS, 0.1f)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.5f)
                 .add(Attributes.ATTACK_DAMAGE, 2f);
+    }
+
+    @Override
+    protected BodyRotationControl createBodyControl() {
+        return new MooseBodyRotationControl(this);
     }
 
     public MooseState getState() {
@@ -383,5 +391,27 @@ public class Moose extends Animal /*implements NeutralMob*/ {
         public String getSerializedName() {return this.name;}
 
         private int id() {return this.id;}
+    }
+
+    protected static class MooseBodyRotationControl extends BodyRotationControl {
+        final Moose moose;
+
+        public MooseBodyRotationControl(Moose moose) {
+            super(moose);
+            this.moose = moose;
+        }
+
+        public void clientTick() {
+            if (this.isMoving()) {
+                moose.yBodyRot = Mth.rotLerp(0.5F, moose.yBodyRot, moose.getYRot());
+            }
+            moose.yHeadRot = Mth.rotateIfNecessary(moose.yHeadRot, moose.yBodyRot, (float) moose.getMaxHeadYRot());
+        }
+
+        private boolean isMoving() {
+            double d0 = moose.getX() - moose.xo;
+            double d1 = moose.getZ() - moose.zo;
+            return d0 * d0 + d1 * d1 > 2.5000003E-7F;
+        }
     }
 }
