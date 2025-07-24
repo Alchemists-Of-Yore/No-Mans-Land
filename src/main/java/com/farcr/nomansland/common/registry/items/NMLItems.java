@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -108,6 +109,8 @@ public class NMLItems {
             () -> new FirebombItem(new Properties().stacksTo(8)));
     public static final ItemDefinition<Item> EXPLOSIVE = register("explosive",
             () -> new ExplosiveItem(new Properties().stacksTo(8)));
+    public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
+            () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
@@ -125,9 +128,8 @@ public class NMLItems {
 //    public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
 //            () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
 
-//    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
-//            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 4335898, 2497045, new Properties()));
-    // egg color probably temporary - inverted deer lmao
+    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 5323048, 2694937, new Properties()));
 
 //    public static final ItemDefinition<Item> CAVE_CARP_BUCKET = registerItem("cave_carp_bucket",
 //            () -> new MobBucketItem(EntityType.PIG, Fluids.WATER, SoundEvents.BUCKET_EMPTY_FISH,
