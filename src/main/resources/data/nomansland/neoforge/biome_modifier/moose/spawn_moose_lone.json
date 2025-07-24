@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": ["minecraft:dark_forest", "nomansland:old_growth_forest"],
+  "spawners": [
+    {
+      "type": "nomansland:moose",
+      "weight": 2, 
+      "minCount": 1, 
+      "maxCount": 1 
+    }
+  ]
+}

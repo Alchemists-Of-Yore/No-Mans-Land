@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#c:is_taiga",
+  "spawners": [
+    {
+      "type": "nomansland:moose",
+      "weight": 4, 
+      "minCount": 1, 
+      "maxCount": 2 
+    }
+  ]
+}

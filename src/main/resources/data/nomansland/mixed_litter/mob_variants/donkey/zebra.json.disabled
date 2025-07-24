@@ -1,0 +1,5 @@
+{
+  "type": "mixed_litter:donkey",
+  "texture": "nomansland:entity/mob_variants/donkey/zebra",
+  "biomes": "#c:is_savanna"
+}
