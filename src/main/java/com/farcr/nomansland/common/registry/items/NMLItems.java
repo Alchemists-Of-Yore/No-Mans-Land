@@ -109,8 +109,8 @@ public class NMLItems {
             () -> new FirebombItem(new Properties().stacksTo(8)));
     public static final ItemDefinition<Item> EXPLOSIVE = register("explosive",
             () -> new ExplosiveItem(new Properties().stacksTo(8)));
-    public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
-            () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
+//    public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
+//            () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
