@@ -1,20 +1,17 @@
 package com.farcr.nomansland.common.world.feature.placementmodifiers;
 
 import com.farcr.nomansland.common.registry.worldgen.NMLPlacementModifiers;
-import com.farcr.nomansland.common.world.generation.LazilyCachedDensityFunctionSeedifier;
+import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.DensityFunction;
-import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
-import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;

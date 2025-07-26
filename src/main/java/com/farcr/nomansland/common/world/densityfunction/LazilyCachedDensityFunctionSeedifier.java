@@ -1,6 +1,5 @@
-package com.farcr.nomansland.common.world.generation;
+package com.farcr.nomansland.common.world.densityfunction;
 
-import com.farcr.nomansland.NoMansLand;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.util.RandomSource;

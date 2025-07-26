@@ -63,6 +63,7 @@ public class NoMansLand {
         NMLFluids.FLUIDS.register(modEventBus);
         NMLBiomeModifiers.BIOME_MODIFIERS.register(modEventBus);
         NMLPlacementModifiers.PLACEMENT_MODIFIER_TYPES.register(modEventBus);
+        NMLDensityFunctions.DENSITY_FUNCTIONS.register(modEventBus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
