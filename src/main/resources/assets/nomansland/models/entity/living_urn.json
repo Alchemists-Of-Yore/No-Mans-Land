@@ -2,7 +2,8 @@
 	"credit": "Made by Farcr",
 	"texture_size": [48, 48],
 	"textures": {
-		"texture": "nomansland:entity/bombs/living_urn"
+		"texture": "nomansland:entity/bombs/living_urn",
+		"particle": "nomansland:entity/bombs/living_urn"
 	},
 	"elements": [
 		{
@@ -60,7 +61,7 @@
 		{
 			"from": [7, 5, 4],
 			"to": [9, 8, 5],
-			"rotation": {"angle": 15, "axis": "x", "origin": [8, 8, 4]},
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [8, 8, 4]},
 			"faces": {
 				"north": {"uv": [0.33333, 0.33333, 1, 1.33333], "texture": "#texture"},
 				"east": {"uv": [0, 0.33333, 0.33333, 1.33333], "texture": "#texture"},

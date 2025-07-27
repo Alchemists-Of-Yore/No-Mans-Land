@@ -37,6 +37,7 @@ public class ClientSetupEvents {
     public static void registerModels(ModelEvent.RegisterAdditional event) {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/firebomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
     }
 
     @SubscribeEvent
@@ -49,7 +50,7 @@ public class ClientSetupEvents {
 
         event.registerEntityRenderer(NMLEntities.FIREBOMB.get(), FirebombRenderer::new);
         event.registerEntityRenderer(NMLEntities.EXPLOSIVE.get(), ExplosiveRenderer::new);
-
+        event.registerEntityRenderer(NMLEntities.LIVING_URN.get(), LivingUrnRenderer::new);
     }
 
     @SubscribeEvent

@@ -103,8 +103,8 @@ public class GooseAI {
             return true;
         }
 
-        protected boolean canStillUse(ServerLevel level, Goose entity, long gameTime) {
-            return !entity.shouldEndDrinking();
+        protected boolean canStillUse(ServerLevel level, Goose goose, long gameTime) {
+            return !goose.shouldEndDrinking();
         }
 
         protected void start(ServerLevel level, Goose goose, long gameTime) {
