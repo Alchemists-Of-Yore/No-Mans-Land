@@ -5,6 +5,7 @@ import com.farcr.nomansland.common.entity.Moose;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
 import com.farcr.nomansland.common.entity.bombs.FirebombEntity;
+import com.farcr.nomansland.common.entity.bombs.LivingUrnEntity;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import net.minecraft.core.registries.Registries;
@@ -32,6 +33,10 @@ public class NMLEntities {
     public static final Supplier<EntityType<ExplosiveEntity>> EXPLOSIVE =
             ENTITIES.register("explosive", () -> EntityType.Builder.<ExplosiveEntity>of(ExplosiveEntity::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(4).updateInterval(20).build("explosive"));
+
+    public static final Supplier<EntityType<LivingUrnEntity>> LIVING_URN =
+            ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrnEntity>of(LivingUrnEntity::new, MobCategory.MISC)
+                    .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
 
     public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS =
             ENTITIES.register("billhook_bass", () -> EntityType.Builder.of(BillhookBass::new, MobCategory.WATER_CREATURE)

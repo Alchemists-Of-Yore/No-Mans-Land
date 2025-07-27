@@ -6,6 +6,8 @@ import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -148,5 +150,11 @@ public class ExplosiveEntity extends ThrowableBombEntity {
     @Override
     protected ParticleOptions getParticle() {
         return ParticleTypes.SMOKE;
+    }
+
+    @Override
+    public void startFuse(int maxFuse) {
+        super.startFuse(maxFuse);
+        level().playSound(null, getX(), getY(), getZ(), SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }

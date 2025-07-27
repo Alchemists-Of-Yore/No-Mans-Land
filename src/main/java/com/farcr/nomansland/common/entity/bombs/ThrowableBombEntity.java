@@ -117,7 +117,6 @@ public abstract class ThrowableBombEntity extends ThrowableProjectile {
     public void startFuse(int maxFuse) {
         this.maxFuse = maxFuse;
         entityData.set(DATA_SHOULD_FUSE_ID, maxFuse >= 0);
-        level().playSound(null, getX(), getY(), getZ(), SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     protected abstract void explode();
