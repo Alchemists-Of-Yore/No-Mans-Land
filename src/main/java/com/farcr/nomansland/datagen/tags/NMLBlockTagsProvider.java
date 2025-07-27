@@ -3,8 +3,10 @@ package com.farcr.nomansland.datagen.tags;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.CandleFruitCakeBlock;
 import com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock;
+import com.farcr.nomansland.common.block.cauldrons.WitchStewCauldron;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.integration.BlueprintIntegration;
+import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -36,7 +38,7 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 tag(BlockTags.WALLS).add(definition.block());
             if (definition.get() instanceof SaplingBlock)
                 tag(BlockTags.SAPLINGS).add(definition.block());
-            if (definition.get() instanceof FourLayeredCauldronBlock)
+            if (definition.get() instanceof FourLayeredCauldronBlock && !(definition.get() instanceof WitchStewCauldron))
                 tag(BlockTags.CAULDRONS).add(definition.block());
             if (definition.get() instanceof TorchBlock && !(definition.get() instanceof WallTorchBlock))
                 tag(BlockTags.WALL_POST_OVERRIDE).add(definition.block());
@@ -44,8 +46,6 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 tag(BlockTags.LEAVES).add(definition.block());
             if (definition.get() instanceof SlabBlock)
                 tag(BlockTags.SLABS).add(definition.block());
-            if (Mods.FARMERSDELIGHT.isLoaded() && definition.get() instanceof CandleFruitCakeBlock)
-                tag(BlockTags.CANDLE_CAKES).add(definition.block());
         }
 
         tag(BlockTags.CAULDRONS).addOptional(NoMansLand.location("pot_of_witch_stew"));

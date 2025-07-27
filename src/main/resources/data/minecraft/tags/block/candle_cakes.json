@@ -1,0 +1,70 @@
+[
+  {
+    "id": "nomansland:candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:white_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:orange_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:magenta_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:light_blue_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:yellow_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:lime_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:pink_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:gray_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:light_gray_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:cyan_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:purple_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:blue_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:brown_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:green_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:red_candle_fruit_cake",
+    "required": false
+  },
+  {
+    "id": "nomansland:black_candle_fruit_cake",
+    "required": false
+  }
+]
