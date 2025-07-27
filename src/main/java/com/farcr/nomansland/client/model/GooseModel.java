@@ -3,13 +3,13 @@ package com.farcr.nomansland.client.model;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 
-public class GooseModel<T extends Goose> extends EntityModel<T> {
+public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
 
     private final ModelPart root;
     private final ModelPart body;
@@ -74,10 +74,17 @@ public class GooseModel<T extends Goose> extends EntityModel<T> {
 
         rightFlightWing.visible = false;
         leftFlightWing.visible = false;
+
+//        this.animate(goose.drinkAnimationState, STOMP, ageInTicks);
     }
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
         root.getChild("body").render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    }
+
+    @Override
+    public ModelPart root() {
+        return root;
     }
 }
