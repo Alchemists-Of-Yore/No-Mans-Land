@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.effect.FlammableEffect;
+import com.farcr.nomansland.common.effect.PacifiedEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -14,4 +15,7 @@ public class NMLEffects {
 
     public static final DeferredHolder<MobEffect, MobEffect> FLAMMABLE = MOB_EFFECTS.register("flammable",
             () -> new FlammableEffect(MobEffectCategory.NEUTRAL, 4796183));
+
+    public static final DeferredHolder<MobEffect, MobEffect> PACIFIED = MOB_EFFECTS.register("pacified",
+            () -> new PacifiedEffect(MobEffectCategory.NEUTRAL, 4796183));
 }

@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.entity.bombs;
 
+import com.farcr.nomansland.common.entity.LingeringCloud;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.core.Direction;
@@ -7,17 +9,22 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
+import java.util.Optional;
 
 public class LivingUrnEntity extends ThrowableBombEntity {
 
@@ -74,6 +81,18 @@ public class LivingUrnEntity extends ThrowableBombEntity {
 
     @Override
     protected void explode() {
+        LingeringCloud lingeringCloud = new LingeringCloud(level(), getX(), getY(), getZ());
+        Entity owner = getOwner();
+        if (owner instanceof LivingEntity livingentity) {
+            lingeringCloud.setOwner(livingentity);
+        }
+
+        lingeringCloud.setRadius(2.5F);
+        lingeringCloud.setWaitTime(5);
+        lingeringCloud.setDuration(60);
+        lingeringCloud.setRadiusPerTick((float) -1/15);
+        lingeringCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0))));
+        level().addFreshEntity(lingeringCloud);
         level().playSound(null, blockPosition(), SoundEvents.MUD_BRICKS_BREAK, SoundSource.PLAYERS, 1, 1);
         discard();
     }
@@ -144,10 +163,26 @@ public class LivingUrnEntity extends ThrowableBombEntity {
         if (level.isClientSide()) {
             if (shakeTimer > 0) {
                 if (monster != null && !(monster instanceof NeutralMob)) {
-                    shakeTimer++;
+                    if (bounceCooldown > 0) {
+                        if (bounceCooldown > 15 && bounceCooldown < 30) {
+                            Vec3 toTarget = monster.position().subtract(position());
+                            if (toTarget.lengthSqr() > 0.001) {
+                                double dx = toTarget.x;
+                                double dz = toTarget.z;
 
-                    float amplitude = Math.min(25, shakeTimer * 0.8F);
-                    roll += (float) (Math.sin(shakeTimer * 0.4) * amplitude);
+                                float targetYaw = (float) (Mth.atan2(-dx, -dz) * (180F / Math.PI));
+                                setYRot(Mth.approachDegrees(getYRot(), targetYaw, 5));
+                                yRotO = getYRot();
+                            }
+                        }
+
+                        if (bounceCooldown < 15) {
+                            shakeTimer++;
+
+                            float amplitude = Math.min(15, shakeTimer * 0.8F);
+                            roll += (float) (Math.sin(shakeTimer * 0.6) * amplitude);
+                        }
+                    }
                 }
 
                 float delta = -normalizeAngle(roll);

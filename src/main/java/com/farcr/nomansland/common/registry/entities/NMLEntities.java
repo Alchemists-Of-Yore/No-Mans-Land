@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.entity.LingeringCloud;
 import com.farcr.nomansland.common.entity.Moose;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
@@ -38,6 +39,10 @@ public class NMLEntities {
             ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrnEntity>of(LivingUrnEntity::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
 
+    public static final Supplier<EntityType<LingeringCloud>> LINGERING_CLOUD =
+            ENTITIES.register("lingering_cloud", () -> EntityType.Builder.<LingeringCloud>of(LingeringCloud::new, MobCategory.MISC)
+                    .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("lingering_cloud"));
+
     public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS =
             ENTITIES.register("billhook_bass", () -> EntityType.Builder.of(BillhookBass::new, MobCategory.WATER_CREATURE)
             .sized(0.7F, 0.5F).build("billhook_bass"));
@@ -48,7 +53,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<Goose>> GOOSE =
             ENTITIES.register("goose", () -> EntityType.Builder.of(Goose::new, MobCategory.CREATURE)
-                    .sized(0.8F, 1F).build("goose"));
+                    .sized(0.8F, 1).build("goose"));
 
 //    public static final Supplier<EntityType<BuriedEntity>> BURIED =
 //            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)

@@ -13,6 +13,7 @@ import com.farcr.nomansland.client.renderer.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -51,6 +52,8 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.FIREBOMB.get(), FirebombRenderer::new);
         event.registerEntityRenderer(NMLEntities.EXPLOSIVE.get(), ExplosiveRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_URN.get(), LivingUrnRenderer::new);
+
+        event.registerEntityRenderer(NMLEntities.LINGERING_CLOUD.get(), NoopRenderer::new);
     }
 
     @SubscribeEvent
