@@ -6,7 +6,15 @@
     },
     {
       "type": "single",
+      "resource": "nomansland:entity/bombs/ink_bomb"
+    },
+    {
+      "type": "single",
       "resource": "nomansland:entity/bombs/explosive"
+    },
+    {
+      "type": "single",
+      "resource": "nomansland:entity/bombs/living_urn"
     }
   ]
 }

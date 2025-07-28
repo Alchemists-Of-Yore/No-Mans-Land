@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.entity.InkCloud;
 import com.farcr.nomansland.common.entity.LingeringCloud;
 import com.farcr.nomansland.common.entity.Moose;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
@@ -47,6 +48,10 @@ public class NMLEntities {
     public static final Supplier<EntityType<LingeringCloud>> LINGERING_CLOUD =
             ENTITIES.register("lingering_cloud", () -> EntityType.Builder.<LingeringCloud>of(LingeringCloud::new, MobCategory.MISC)
                     .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("lingering_cloud"));
+
+    public static final Supplier<EntityType<InkCloud>> INK_CLOUD =
+            ENTITIES.register("ink_cloud", () -> EntityType.Builder.<InkCloud>of(InkCloud::new, MobCategory.MISC)
+                    .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("ink_cloud"));
 
     public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS =
             ENTITIES.register("billhook_bass", () -> EntityType.Builder.of(BillhookBass::new, MobCategory.WATER_CREATURE)

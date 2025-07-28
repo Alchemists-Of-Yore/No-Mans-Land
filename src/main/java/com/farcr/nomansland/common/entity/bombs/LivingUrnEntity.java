@@ -87,10 +87,10 @@ public class LivingUrnEntity extends ThrowableBombEntity {
             lingeringCloud.setOwner(livingentity);
         }
 
-        lingeringCloud.setRadius(2.5F);
+        lingeringCloud.setRadius(1F);
         lingeringCloud.setWaitTime(5);
         lingeringCloud.setDuration(60);
-        lingeringCloud.setRadiusPerTick((float) -1/15);
+        lingeringCloud.setRadiusPerTick((float) -1/100);
         lingeringCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0))));
         level().addFreshEntity(lingeringCloud);
         level().playSound(null, blockPosition(), SoundEvents.MUD_BRICKS_BREAK, SoundSource.PLAYERS, 1, 1);
@@ -106,7 +106,7 @@ public class LivingUrnEntity extends ThrowableBombEntity {
             setDeltaMovement(Vec3.ZERO);
             setOnGround(true);
             if (motion.x != 0 && motion.z != 0) {
-                bounceCooldown = 40;
+                bounceCooldown = 60;
                 shakeTimer = 1;
             }
             return;
@@ -149,6 +149,13 @@ public class LivingUrnEntity extends ThrowableBombEntity {
     }
 
     @Override
+    protected void updateRotation() {
+        if (bounceCooldown > 0) return;
+
+        super.updateRotation();
+    }
+
+    @Override
     public void tick() {
         super.tick();
 
@@ -164,15 +171,18 @@ public class LivingUrnEntity extends ThrowableBombEntity {
             if (shakeTimer > 0) {
                 if (monster != null && !(monster instanceof NeutralMob)) {
                     if (bounceCooldown > 0) {
-                        if (bounceCooldown > 15 && bounceCooldown < 30) {
+                        if (bounceCooldown < 45) {
                             Vec3 toTarget = monster.position().subtract(position());
                             if (toTarget.lengthSqr() > 0.001) {
                                 double dx = toTarget.x;
                                 double dz = toTarget.z;
 
-                                float targetYaw = (float) (Mth.atan2(-dx, -dz) * (180F / Math.PI));
-                                setYRot(Mth.approachDegrees(getYRot(), targetYaw, 5));
-                                yRotO = getYRot();
+                                float targetYaw = (float) (Mth.atan2(-dx, -dz) * (180F / Math.PI)) + 90;
+                                float currentYaw = getYRot();
+                                float newYaw = Mth.approachDegrees(currentYaw, targetYaw, 5);
+
+                                if (Math.abs(Mth.degreesDifference(currentYaw, targetYaw)) > 1f)
+                                    setYRot(newYaw);
                             }
                         }
 
@@ -220,6 +230,9 @@ public class LivingUrnEntity extends ThrowableBombEntity {
                                 jumpStrength,
                                 direction.z * speed
                         );
+
+                        float targetYaw = (float) (Mth.atan2(-toTarget.x, -toTarget.z) * (180F / Math.PI)) + 90;
+                        setYRot(targetYaw);
 
                         setDeltaMovement(jumpImpulse);
                         setOnGround(false);

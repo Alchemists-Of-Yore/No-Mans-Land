@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.bombs;
 
 import com.farcr.nomansland.NMLConfig;
+import com.farcr.nomansland.common.entity.InkCloud;
 import com.farcr.nomansland.common.entity.LingeringCloud;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -9,6 +10,7 @@ import com.mojang.blaze3d.shaders.Effect;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +33,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,15 +103,14 @@ public class InkBombEntity extends ThrowableBombEntity {
             livingEntity.removeEffect(MobEffects.INVISIBILITY);
             livingEntity.removeEffect(MobEffects.NIGHT_VISION);
         });
-        LingeringCloud lingeringCloud = new LingeringCloud(level(), getX(), getY(), getZ());
+        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY(), getZ());
         Entity owner = getOwner();
         if (owner instanceof LivingEntity livingentity) {
             lingeringCloud.setOwner(livingentity);
         }
 
-        lingeringCloud.setRadius(2.5F);
-        lingeringCloud.setWaitTime(5);
-        lingeringCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(MobEffects.BLINDNESS, 160, 0))));
+        lingeringCloud.setRadius(3);
+        lingeringCloud.setWaitTime(1);
         level().addFreshEntity(lingeringCloud);
         level.broadcastEntityEvent(this, (byte) (isInWater() ? 1 : 0));
         discard();
@@ -155,7 +158,7 @@ public class InkBombEntity extends ThrowableBombEntity {
 
     @Override
     protected ParticleOptions getParticle() {
-            return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 1);
+            return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, Color.BLACK.getRGB());
     }
 
     @Override

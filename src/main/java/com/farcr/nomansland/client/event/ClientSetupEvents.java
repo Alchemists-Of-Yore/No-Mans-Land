@@ -56,6 +56,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.LIVING_URN.get(), LivingUrnRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.LINGERING_CLOUD.get(), NoopRenderer::new);
+        event.registerEntityRenderer(NMLEntities.INK_CLOUD.get(), NoopRenderer::new);
     }
 
     @SubscribeEvent

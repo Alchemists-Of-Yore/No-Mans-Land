@@ -18,6 +18,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.alchemy.Potion;
@@ -44,7 +45,7 @@ public class LingeringCloud extends Entity implements TraceableEntity {
     public static final float DEFAULT_WIDTH = 6.0F;
     public static final float HEIGHT = 0.5F;
     private PotionContents potionContents;
-    private final Map<Entity, Integer> victims;
+    protected final Map<LivingEntity, Integer> victims;
     private int duration;
     private int waitTime;
     private int reapplicationDelay;
