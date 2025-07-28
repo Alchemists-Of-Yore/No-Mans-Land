@@ -6,6 +6,7 @@ import com.farcr.nomansland.common.entity.Moose;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
 import com.farcr.nomansland.common.entity.bombs.FirebombEntity;
+import com.farcr.nomansland.common.entity.bombs.InkBombEntity;
 import com.farcr.nomansland.common.entity.bombs.LivingUrnEntity;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
@@ -30,6 +31,10 @@ public class NMLEntities {
     public static final Supplier<EntityType<FirebombEntity>> FIREBOMB =
             ENTITIES.register("firebomb", () -> EntityType.Builder.<FirebombEntity>of(FirebombEntity::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("firebomb"));
+
+    public static final Supplier<EntityType<InkBombEntity>> INK_BOMB =
+            ENTITIES.register("ink_bomb", () -> EntityType.Builder.<InkBombEntity>of(InkBombEntity::new, MobCategory.MISC)
+                    .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("ink_bomb"));
 
     public static final Supplier<EntityType<ExplosiveEntity>> EXPLOSIVE =
             ENTITIES.register("explosive", () -> EntityType.Builder.<ExplosiveEntity>of(ExplosiveEntity::new, MobCategory.MISC)

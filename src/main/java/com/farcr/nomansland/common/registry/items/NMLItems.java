@@ -107,6 +107,8 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> FIREBOMB = register("firebomb",
             () -> new FirebombItem(new Properties().stacksTo(8)));
+    public static final ItemDefinition<Item> INK_BOMB = register("ink_bomb",
+            () -> new InkBombItem(new Properties().stacksTo(8)));
     public static final ItemDefinition<Item> EXPLOSIVE = register("explosive",
             () -> new ExplosiveItem(new Properties().stacksTo(8)));
     public static final ItemDefinition<Item> LIVING_URN = register("living_urn",
