@@ -112,7 +112,7 @@ public class NMLItems {
     public static final ItemDefinition<Item> EXPLOSIVE = register("explosive",
             () -> new ExplosiveItem(new Properties().stacksTo(8)));
     public static final ItemDefinition<Item> LIVING_URN = register("living_urn",
-            () -> new LivingUrnItem(new Properties().stacksTo(8)));
+            () -> new LivingUrnItem(new Properties().stacksTo(8).rarity(Rarity.UNCOMMON)));
 //    public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
 //            () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
 
