@@ -1,43 +1,31 @@
 package com.farcr.nomansland.common.entity.bombs;
 
-import com.farcr.nomansland.NMLConfig;
-import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.TntBlock;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-
-import static net.minecraft.world.level.block.WallTorchBlock.FACING;
-
 public class LivingUrnEntity extends ThrowableBombEntity {
 
     private static final float VERTICAL_RESTITUTION = 0.3F;
     private static final float HORIZONTAL_RESTITUTION = 0.4F;
-    private int bounceCooldown;
+
+    private int bounceCooldown = -1;
+    private float shakeTimer = 0;
 
     public LivingUrnEntity(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
         super(entityType, level);
@@ -96,9 +84,12 @@ public class LivingUrnEntity extends ThrowableBombEntity {
 
         Vec3 motion = getDeltaMovement();
         if (motion.lengthSqr() < 0.1) {
-            if (motion.x != 0 && motion.z != 0) bounceCooldown = 30;
             setDeltaMovement(Vec3.ZERO);
             setOnGround(true);
+            if (motion.x != 0 && motion.z != 0) {
+                bounceCooldown = 40;
+                shakeTimer = 1;
+            }
             return;
         }
 
@@ -123,8 +114,18 @@ public class LivingUrnEntity extends ThrowableBombEntity {
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
 
-        if (!level().isClientSide() && result.getEntity() instanceof Monster) {
+        if (!level().isClientSide() && result.getEntity() instanceof Monster && !(result.getEntity() instanceof NeutralMob)) {
             explode();
+        } else {
+            Vec3 motion = getDeltaMovement();
+
+            Vec3 normal = position().subtract(result.getEntity().position()).normalize(); // Collision normal
+            double dot = motion.dot(normal);
+
+            Vec3 reflected = motion.subtract(normal.scale(2 * dot));
+            Vec3 bounced = reflected.scale(HORIZONTAL_RESTITUTION);
+
+            setDeltaMovement(bounced);
         }
     }
 
@@ -132,13 +133,38 @@ public class LivingUrnEntity extends ThrowableBombEntity {
     public void tick() {
         super.tick();
 
+        Level level = level();
+        Monster monster = level.getNearestEntity(
+                Monster.class,
+                TargetingConditions.DEFAULT.range(8),
+                null, getX(), getY(), getZ(),
+                new AABB(blockPosition()).inflate(8)
+        );
+
+        if (level.isClientSide()) {
+            if (shakeTimer > 0) {
+                if (monster != null && !(monster instanceof NeutralMob)) {
+                    shakeTimer++;
+
+                    float amplitude = Math.min(25, shakeTimer * 0.8F);
+                    roll += (float) (Math.sin(shakeTimer * 0.4) * amplitude);
+                }
+
+                float delta = -normalizeAngle(roll);
+                roll += delta * 0.075f;
+            } else {
+                double motionLen = getDeltaMovement().lengthSqr();
+                if (motionLen > 0.01) {
+                    roll += Math.sqrt(motionLen) * 45;
+                }
+            }
+        }
+
         if (bounceCooldown > 0) {
             bounceCooldown--;
 
             if (bounceCooldown == 0) {
-                Monster monster = level().getNearestEntity(Monster.class, TargetingConditions.DEFAULT.range(8), null, blockPosition().getX(), blockPosition().getY(), blockPosition().getZ(), new AABB(blockPosition()).inflate(8));
-
-                if (monster != null) {
+                if (monster != null && !(monster instanceof NeutralMob)) {
                     Vec3 toTarget = monster.position().subtract(position());
                     double distance = toTarget.length();
 
@@ -147,12 +173,12 @@ public class LivingUrnEntity extends ThrowableBombEntity {
 
                         double minSpeed = 0.1;
                         double maxSpeed = 0.4;
-
                         double minJump = 0.05;
                         double maxJump = 0.5;
 
-                        double speed = minSpeed + (maxSpeed - minSpeed) * distance / 8;
-                        double jumpStrength = minJump + (maxJump - minJump) * distance / 8;
+                        double clampedDistance = Math.min(8.0, distance);
+                        double speed = minSpeed + (maxSpeed - minSpeed) * clampedDistance / 8.0;
+                        double jumpStrength = minJump + (maxJump - minJump) * clampedDistance / 8.0;
 
                         Vec3 jumpImpulse = new Vec3(
                                 direction.x * speed,
@@ -165,7 +191,7 @@ public class LivingUrnEntity extends ThrowableBombEntity {
                         bounceCooldown = -1;
                     }
                 } else {
-                    level().addFreshEntity(new ItemEntity(level(), position().x, position().y, position().z, NMLItems.LIVING_URN.stack()));
+                    level.addFreshEntity(new ItemEntity(level, getX(), getY(), getZ(), NMLItems.LIVING_URN.stack()));
                     discard();
                 }
             }
@@ -175,5 +201,12 @@ public class LivingUrnEntity extends ThrowableBombEntity {
     @Override
     protected ParticleOptions getParticle() {
         return ParticleTypes.HEART;
+    }
+
+    private float normalizeAngle(float angle) {
+        angle %= 360;
+        if (angle > 180) angle -= 360;
+        if (angle < -180) angle += 360;
+        return angle;
     }
 }

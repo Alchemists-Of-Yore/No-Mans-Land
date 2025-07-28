@@ -19,11 +19,11 @@ public abstract class ThrowableBombEntity extends ThrowableProjectile {
 
     private static final EntityDataAccessor<Boolean> DATA_SHOULD_FUSE_ID = SynchedEntityData.defineId(ThrowableBombEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private float oRoll;
-    private float roll;
-    private int oFuse;
-    private int fuse;
-    private int maxFuse = -1;
+    protected float oRoll;
+    protected float roll;
+    protected int oFuse;
+    protected int fuse;
+    protected int maxFuse = -1;
 
     protected ThrowableBombEntity(EntityType<? extends ThrowableProjectile> entityType, Level level) {
         super(entityType, level);
