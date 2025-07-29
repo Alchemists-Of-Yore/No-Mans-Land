@@ -18,6 +18,7 @@
     "FallLocationMixin",
     "FeatureSorterMixin",
     "FlowerBlockMixin",
+    "FrogMixin",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LivingEntityMixin",
