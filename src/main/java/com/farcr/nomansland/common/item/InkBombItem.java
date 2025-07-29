@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.item;
 
-import com.farcr.nomansland.common.entity.bombs.InkBombEntity;
+import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
@@ -16,12 +16,12 @@ public class InkBombItem extends ThrowableBombItem {
 
     @Override
     public ThrowableBombEntity createBomb(LivingEntity entity, Level level) {
-        return new InkBombEntity(entity, level);
+        return new InkBomb(entity, level);
     }
 
     @Override
     public ThrowableBombEntity createBomb(Level level, BlockPos pos) {
-        return new InkBombEntity(level, pos.getX(), pos.getY(), pos.getZ());
+        return new InkBomb(level, pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

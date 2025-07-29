@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.item;
 
-import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
+import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
@@ -17,12 +17,12 @@ public class ExplosiveItem extends ThrowableBombItem {
 
     @Override
     public ThrowableBombEntity createBomb(LivingEntity entity, Level level) {
-        return new ExplosiveEntity(entity, level);
+        return new Explosive(entity, level);
     }
 
     @Override
     public ThrowableBombEntity createBomb(Level level, BlockPos pos) {
-        return new ExplosiveEntity(level, pos.getX(), pos.getY(), pos.getZ());
+        return new Explosive(level, pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

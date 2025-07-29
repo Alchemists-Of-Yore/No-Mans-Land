@@ -28,7 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.Optional;
 
-public class LivingUrnEntity extends ThrowableBombEntity {
+public class LivingUrn extends ThrowableBombEntity {
 
     private static final float VERTICAL_RESTITUTION = 0.3F;
     private static final float HORIZONTAL_RESTITUTION = 0.4F;
@@ -36,15 +36,15 @@ public class LivingUrnEntity extends ThrowableBombEntity {
     private int bounceCooldown = -1;
     private float shakeTimer = 0;
 
-    public LivingUrnEntity(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
+    public LivingUrn(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public LivingUrnEntity(LivingEntity livingEntity, Level level) {
+    public LivingUrn(LivingEntity livingEntity, Level level) {
         super(NMLEntities.LIVING_URN.get(), livingEntity, level);
     }
 
-    public LivingUrnEntity(Level level, double x, double y, double z) {
+    public LivingUrn(Level level, double x, double y, double z) {
         super(NMLEntities.LIVING_URN.get(), x, y, z, level);
     }
 

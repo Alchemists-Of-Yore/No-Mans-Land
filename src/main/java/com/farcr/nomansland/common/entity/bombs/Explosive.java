@@ -1,11 +1,9 @@
 package com.farcr.nomansland.common.entity.bombs;
 
-
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -13,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -24,21 +23,20 @@ import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.world.level.block.WallTorchBlock.FACING;
 
-public class FirebombEntity extends ThrowableBombEntity {
+public class Explosive extends ThrowableBombEntity {
 
-    private static final float VERTICAL_RESTITUTION = 0.3F;
-    private static final float HORIZONTAL_RESTITUTION = 0.4F;
+    private BlockPos hitPos;
 
-    public FirebombEntity(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
+    public Explosive(EntityType<? extends ThrowableProjectile> entityType, Level level) {
         super(entityType, level);
     }
 
-    public FirebombEntity(LivingEntity livingEntity, Level level) {
-        super(NMLEntities.FIREBOMB.get(), livingEntity, level);
+    public Explosive(LivingEntity livingEntity, Level level) {
+        super(NMLEntities.EXPLOSIVE.get(), livingEntity, level);
     }
 
-    public FirebombEntity(Level level, double x, double y, double z) {
-        super(NMLEntities.FIREBOMB.get(), x, y, z, level);
+    public Explosive(Level level, double x, double y, double z) {
+        super(NMLEntities.EXPLOSIVE.get(), x, y, z, level);
     }
 
     private void spawnParticles(ParticleOptions particle, int amount) {
@@ -78,35 +76,35 @@ public class FirebombEntity extends ThrowableBombEntity {
     protected void explode() {
         Level level = level();
 
-        level.explode(this, getX(), getY(0.0625), getZ(), NMLConfig.FIREBOMB_STRENGTH.get().floatValue(), Level.ExplosionInteraction.NONE);
+        level.explode(this, getX(), getY(0.0625), getZ(), NMLConfig.EXPLOSIVE_STRENGTH.get().floatValue(), Level.ExplosionInteraction.TNT);
 
         // Light nearby campfires on fire
         BlockPos.withinManhattan(blockPosition(), 6, 4, 6).forEach(pos -> {
             BlockState state = level.getBlockState(pos);
             if (state.is(BlockTags.CAMPFIRES) && state.hasProperty(CampfireBlock.LIT) && !state.getValue(CampfireBlock.LIT)) {
-                level.setBlock(pos, state.setValue(CampfireBlock.LIT, true), 3);
+                level.setBlockAndUpdate(pos, state.setValue(CampfireBlock.LIT, true));
             }
-            if (state.getBlock() == Blocks.TNT) {
+            if (state.is(Blocks.TNT)) {
                 TntBlock.explode(level, pos);
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
             }
-            if (state.getBlock() == NMLBlocks.EXTINGUISHED_TORCH.get()) {
-                level.setBlock(pos, Blocks.TORCH.defaultBlockState(), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_WALL_TORCH.get()) {
-                level.setBlock(pos, Blocks.WALL_TORCH.defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SOUL_TORCH.get()) {
-                level.setBlock(pos, Blocks.SOUL_TORCH.defaultBlockState(), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get()) {
-                level.setBlock(pos, Blocks.SOUL_WALL_TORCH.defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_TORCH.get()) {
-                level.setBlock(pos, NMLBlocks.SCONCE_TORCH.get().defaultBlockState(), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_WALL_TORCH.get()) {
-                level.setBlock(pos, NMLBlocks.SCONCE_WALL_TORCH.get().defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_SOUL_TORCH.get()) {
-                level.setBlock(pos, NMLBlocks.SCONCE_SOUL_TORCH.get().defaultBlockState(), 3);
-            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_SOUL_WALL_TORCH.get()) {
+            if (state.is(NMLBlocks.EXTINGUISHED_TORCH.get())) {
+                level.setBlockAndUpdate(pos, Blocks.TORCH.defaultBlockState());
+            } else if (state.is(NMLBlocks.EXTINGUISHED_WALL_TORCH.get())) {
+                level.setBlockAndUpdate(pos, Blocks.WALL_TORCH.defaultBlockState().setValue(FACING, state.getValue(FACING)));
+            } else if (state.is(NMLBlocks.EXTINGUISHED_SOUL_TORCH.get())) {
+                level.setBlockAndUpdate(pos, Blocks.SOUL_TORCH.defaultBlockState());
+            } else if (state.is(NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get())) {
+                level.setBlockAndUpdate(pos, Blocks.SOUL_WALL_TORCH.defaultBlockState().setValue(FACING, state.getValue(FACING)));
+            } else if (state.is(NMLBlocks.EXTINGUISHED_SCONCE_TORCH.get())) {
+                level.setBlockAndUpdate(pos, NMLBlocks.SCONCE_TORCH.get().defaultBlockState());
+            } else if (state.is(NMLBlocks.EXTINGUISHED_SCONCE_WALL_TORCH.get())) {
+                level.setBlockAndUpdate(pos, NMLBlocks.SCONCE_WALL_TORCH.get().defaultBlockState().setValue(FACING, state.getValue(FACING)));
+            } else if (state.is(NMLBlocks.EXTINGUISHED_SCONCE_SOUL_TORCH.get())) {
+                level.setBlockAndUpdate(pos, NMLBlocks.SCONCE_SOUL_TORCH.get().defaultBlockState());
+            } else if (state.is(NMLBlocks.EXTINGUISHED_SCONCE_SOUL_WALL_TORCH.get())) {
 
-                level.setBlock(pos, NMLBlocks.SCONCE_SOUL_WALL_TORCH.get().defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
+                level.setBlockAndUpdate(pos, NMLBlocks.SCONCE_SOUL_WALL_TORCH.get().defaultBlockState().setValue(FACING, state.getValue(FACING)));
             }
 
         });
@@ -115,43 +113,39 @@ public class FirebombEntity extends ThrowableBombEntity {
     }
 
     @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        Vec3 pos = position();
+        Vec3 resultPos = result.getLocation();
+        Vec3 dir = pos.vectorTo(resultPos).normalize();
+        setDeltaMovement(Vec3.ZERO);
+        setPos(new Vec3(resultPos.x - dir.x * getBbWidth() * 0.01, resultPos.y - dir.y * getBbHeight() * 0.01, resultPos.z - dir.z * getBbWidth() * 0.01));
+        setNoGravity(true);
+        if (!shouldFuse()) {
+            startFuse(100);
+        }
+        hitPos = result.getBlockPos();
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
-
-        if (!level().isClientSide()) {
-            explode();
+        setDeltaMovement(getDeltaMovement().scale(-0.1));
+        if (!shouldFuse()) {
+            startFuse(100);
         }
     }
 
     @Override
-    protected void onHitBlock(BlockHitResult result) {
-        super.onHitBlock(result);
+    public void tick() {
+        super.tick();
 
-        Vec3 motion = getDeltaMovement();
-        if (motion.lengthSqr() < 0.1) {
-            setDeltaMovement(Vec3.ZERO);
-            setOnGround(true);
-            return;
+        if (hitPos != null && level().getBlockState(hitPos).getCollisionShape(level(), hitPos).isEmpty()) {
+            hitPos = null;
+            setNoGravity(false);
         }
 
-        Direction direction = result.getDirection();
-        switch (direction.getAxis()) {
-            case X -> setDeltaMovement(
-                    -motion.x() * HORIZONTAL_RESTITUTION,
-                    motion.y(),
-                    motion.z()
-            );
-            case Y ->
-                    setDeltaMovement(motion.x() * VERTICAL_RESTITUTION, -motion.y() * VERTICAL_RESTITUTION, motion.z() * VERTICAL_RESTITUTION);
-            case Z -> setDeltaMovement(
-                    motion.x(),
-                    motion.y(),
-                    -motion.z() * HORIZONTAL_RESTITUTION
-            );
-        }
-        if (!shouldFuse()) {
-            startFuse(30);
-        }
+        if (isOnFire()) explode();
     }
 
     @Override

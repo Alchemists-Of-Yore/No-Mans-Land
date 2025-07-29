@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.item;
 
-import com.farcr.nomansland.common.entity.bombs.LivingUrnEntity;
+import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,12 +15,12 @@ public class LivingUrnItem extends ThrowableBombItem {
 
     @Override
     public ThrowableBombEntity createBomb(LivingEntity entity, Level level) {
-        return new LivingUrnEntity(entity, level);
+        return new LivingUrn(entity, level);
     }
 
     @Override
     public ThrowableBombEntity createBomb(Level level, BlockPos pos) {
-        return new LivingUrnEntity(level, pos.getX(), pos.getY(), pos.getZ());
+        return new LivingUrn(level, pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

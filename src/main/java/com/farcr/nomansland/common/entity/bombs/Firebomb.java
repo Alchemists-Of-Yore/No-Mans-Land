@@ -1,43 +1,45 @@
 package com.farcr.nomansland.common.entity.bombs;
 
-import com.farcr.nomansland.common.entity.InkCloud;
+
+import com.farcr.nomansland.NMLConfig;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.TntBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import java.awt.*;
+import static net.minecraft.world.level.block.WallTorchBlock.FACING;
 
-public class InkBombEntity extends ThrowableBombEntity {
+public class Firebomb extends ThrowableBombEntity {
 
     private static final float VERTICAL_RESTITUTION = 0.3F;
     private static final float HORIZONTAL_RESTITUTION = 0.4F;
 
-    public InkBombEntity(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
+    public Firebomb(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public InkBombEntity(LivingEntity livingEntity, Level level) {
-        super(NMLEntities.INK_BOMB.get(), livingEntity, level);
+    public Firebomb(LivingEntity livingEntity, Level level) {
+        super(NMLEntities.FIREBOMB.get(), livingEntity, level);
     }
 
-    public InkBombEntity(Level level, double x, double y, double z) {
-        super(NMLEntities.INK_BOMB.get(), x, y, z, level);
+    public Firebomb(Level level, double x, double y, double z) {
+        super(NMLEntities.FIREBOMB.get(), x, y, z, level);
     }
-
 
     private void spawnParticles(ParticleOptions particle, int amount) {
         for (int i = 0; i < amount; i++) {
@@ -63,7 +65,7 @@ public class InkBombEntity extends ThrowableBombEntity {
                 double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
                 double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
                 double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
-                level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 1), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
+                level().addParticle(ParticleTypes.FLAME, false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
             }
         } else if (b == 1) {
             spawnParticles(ParticleTypes.SMOKE, 400);
@@ -73,26 +75,48 @@ public class InkBombEntity extends ThrowableBombEntity {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+
+        if (isOnFire()) explode();
+    }
+
+    @Override
     protected void explode() {
         Level level = level();
 
-        level.playSound(null, blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4, (1 + (random.nextFloat() - random.nextFloat()) * 0.2F) * 0.7F);
-        level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3.5F)).forEach(livingEntity -> {
-            livingEntity.hurt(Explosion.getDefaultDamageSource(level, this), 4);
-            livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
-            livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 1));
-            livingEntity.removeEffect(MobEffects.INVISIBILITY);
-            livingEntity.removeEffect(MobEffects.NIGHT_VISION);
-        });
-        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY() + 1, getZ());
-        Entity owner = getOwner();
-        if (owner instanceof LivingEntity livingentity) {
-            lingeringCloud.setOwner(livingentity);
-        }
+        level.explode(this, getX(), getY(0.0625), getZ(), NMLConfig.FIREBOMB_STRENGTH.get().floatValue(), Level.ExplosionInteraction.NONE);
 
-        lingeringCloud.setRadius(3);
-        lingeringCloud.setWaitTime(1);
-        level().addFreshEntity(lingeringCloud);
+        // Light nearby campfires on fire
+        BlockPos.withinManhattan(blockPosition(), 6, 4, 6).forEach(pos -> {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(BlockTags.CAMPFIRES) && state.hasProperty(CampfireBlock.LIT) && !state.getValue(CampfireBlock.LIT)) {
+                level.setBlock(pos, state.setValue(CampfireBlock.LIT, true), 3);
+            }
+            if (state.getBlock() == Blocks.TNT) {
+                TntBlock.explode(level, pos);
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
+            }
+            if (state.getBlock() == NMLBlocks.EXTINGUISHED_TORCH.get()) {
+                level.setBlock(pos, Blocks.TORCH.defaultBlockState(), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_WALL_TORCH.get()) {
+                level.setBlock(pos, Blocks.WALL_TORCH.defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SOUL_TORCH.get()) {
+                level.setBlock(pos, Blocks.SOUL_TORCH.defaultBlockState(), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get()) {
+                level.setBlock(pos, Blocks.SOUL_WALL_TORCH.defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_TORCH.get()) {
+                level.setBlock(pos, NMLBlocks.SCONCE_TORCH.get().defaultBlockState(), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_WALL_TORCH.get()) {
+                level.setBlock(pos, NMLBlocks.SCONCE_WALL_TORCH.get().defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_SOUL_TORCH.get()) {
+                level.setBlock(pos, NMLBlocks.SCONCE_SOUL_TORCH.get().defaultBlockState(), 3);
+            } else if (state.getBlock() == NMLBlocks.EXTINGUISHED_SCONCE_SOUL_WALL_TORCH.get()) {
+
+                level.setBlock(pos, NMLBlocks.SCONCE_SOUL_WALL_TORCH.get().defaultBlockState().setValue(FACING, state.getValue(FACING)), 3);
+            }
+
+        });
         level.broadcastEntityEvent(this, (byte) (isInWater() ? 1 : 0));
         discard();
     }
@@ -139,7 +163,7 @@ public class InkBombEntity extends ThrowableBombEntity {
 
     @Override
     protected ParticleOptions getParticle() {
-            return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, Color.BLACK.getRGB());
+        return ParticleTypes.SMOKE;
     }
 
     @Override

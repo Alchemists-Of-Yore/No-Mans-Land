@@ -4,7 +4,7 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
 import com.farcr.nomansland.common.entity.PacifiedAttackGoal;
-import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
+import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
@@ -355,7 +355,7 @@ public class MiscellaneousEvents {
                 }
             }
 
-            if (event.getExplosion().getDirectSourceEntity() instanceof ExplosiveEntity explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
+            if (event.getExplosion().getDirectSourceEntity() instanceof Explosive explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
                 NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
             }
         }

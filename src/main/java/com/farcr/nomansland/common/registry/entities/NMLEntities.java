@@ -1,14 +1,15 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.entity.IncendiaryArrow;
 import com.farcr.nomansland.common.entity.InkCloud;
 import com.farcr.nomansland.common.entity.LingeringCloud;
 import com.farcr.nomansland.common.entity.Moose;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
-import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
-import com.farcr.nomansland.common.entity.bombs.FirebombEntity;
-import com.farcr.nomansland.common.entity.bombs.InkBombEntity;
-import com.farcr.nomansland.common.entity.bombs.LivingUrnEntity;
+import com.farcr.nomansland.common.entity.bombs.Explosive;
+import com.farcr.nomansland.common.entity.bombs.Firebomb;
+import com.farcr.nomansland.common.entity.bombs.InkBomb;
+import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import net.minecraft.core.registries.Registries;
@@ -29,21 +30,26 @@ public class NMLEntities {
 //            ENTITIES.register("maple_chest_boat", () -> EntityType.Builder.<ChestBoat>of(ChestBoat::new, MobCategory.MISC)
 //                    .sized(1.375f, 0.5625f).build("maple_chest_boat"));
 
-    public static final Supplier<EntityType<FirebombEntity>> FIREBOMB =
-            ENTITIES.register("firebomb", () -> EntityType.Builder.<FirebombEntity>of(FirebombEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<Firebomb>> FIREBOMB =
+            ENTITIES.register("firebomb", () -> EntityType.Builder.<Firebomb>of(Firebomb::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("firebomb"));
 
-    public static final Supplier<EntityType<InkBombEntity>> INK_BOMB =
-            ENTITIES.register("ink_bomb", () -> EntityType.Builder.<InkBombEntity>of(InkBombEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<InkBomb>> INK_BOMB =
+            ENTITIES.register("ink_bomb", () -> EntityType.Builder.<InkBomb>of(InkBomb::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("ink_bomb"));
 
-    public static final Supplier<EntityType<ExplosiveEntity>> EXPLOSIVE =
-            ENTITIES.register("explosive", () -> EntityType.Builder.<ExplosiveEntity>of(ExplosiveEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<Explosive>> EXPLOSIVE =
+            ENTITIES.register("explosive", () -> EntityType.Builder.<Explosive>of(Explosive::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(4).updateInterval(20).build("explosive"));
 
-    public static final Supplier<EntityType<LivingUrnEntity>> LIVING_URN =
-            ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrnEntity>of(LivingUrnEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<LivingUrn>> LIVING_URN =
+            ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrn>of(LivingUrn::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
+
+    public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =
+            ENTITIES.register("incendiary_arrow", () -> EntityType.Builder.<IncendiaryArrow>of(IncendiaryArrow::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
+
 
     public static final Supplier<EntityType<LingeringCloud>> LINGERING_CLOUD =
             ENTITIES.register("lingering_cloud", () -> EntityType.Builder.<LingeringCloud>of(LingeringCloud::new, MobCategory.MISC)
