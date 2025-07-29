@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.entity;
 
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.Holder;
@@ -18,7 +17,6 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.alchemy.Potion;
@@ -28,8 +26,10 @@ import net.minecraft.world.level.material.PushReaction;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class LingeringCloud extends Entity implements TraceableEntity {
     private static final Logger LOGGER = LogUtils.getLogger();

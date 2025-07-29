@@ -1,13 +1,10 @@
 package com.farcr.nomansland.datagen.tags;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.CandleFruitCakeBlock;
 import com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock;
 import com.farcr.nomansland.common.block.cauldrons.WitchStewCauldron;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.integration.BlueprintIntegration;
-import com.farcr.nomansland.common.integration.FDIntegration;
-import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.HolderLookup;

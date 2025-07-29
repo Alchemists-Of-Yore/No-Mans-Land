@@ -76,7 +76,7 @@ public class InkBombEntity extends ThrowableBombEntity {
     protected void explode() {
         Level level = level();
 
-        level.playSound(null, blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 1, 1);
+        level.playSound(null, blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4, (1 + (random.nextFloat() - random.nextFloat()) * 0.2F) * 0.7F);
         level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3.5F)).forEach(livingEntity -> {
             livingEntity.hurt(Explosion.getDefaultDamageSource(level, this), 4);
             livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));

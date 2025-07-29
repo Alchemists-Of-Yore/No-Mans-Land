@@ -12,7 +12,6 @@ import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
