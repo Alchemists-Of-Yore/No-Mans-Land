@@ -25,6 +25,8 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue BOG;
     public static ModConfigSpec.BooleanValue PRAIRIE;
     public static ModConfigSpec.BooleanValue LAVENDER_FIELD;
+    public static ModConfigSpec.BooleanValue BLACKWATER_RIVER;
+    public static ModConfigSpec.BooleanValue LUSH_RIVER;
     public static final String CATEGORY_TAP = "tap";
     public static ModConfigSpec.DoubleValue FILLING_SPEED_MULTIPLIER;
     public static ModConfigSpec.IntValue TICKS_TO_FILL_CAULDRON;
@@ -115,6 +117,12 @@ public class NMLConfig {
         LAVENDER_FIELD = COMMON_BUILDER
                 .comment("If the lavender field is enabled")
                 .define("lavenderField", true);
+        BLACKWATER_RIVER = COMMON_BUILDER
+                .comment("If the blackwater river is enabled")
+                .define("blackwaterRiver", true);
+        LUSH_RIVER = COMMON_BUILDER
+                .comment("If the lush river is enabled")
+                .define("lushRiver", true);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_TAP);

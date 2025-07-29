@@ -228,13 +228,13 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.MANGROVE_SWAMP,
                     NMLBiomes.BAYOU,
-                    0.4
+                    0.3
             );
 
             BiomePlacement.replaceOverworld(
                     Biomes.JUNGLE,
                     NMLBiomes.BAYOU,
-                    0.1
+                    0.2
             );
 
             transitionalBiome(
@@ -259,22 +259,61 @@ public class NMLBiomePlacements {
             BiomePlacement.addSubOverworld(
                     Biomes.SWAMP,
                     NMLBiomes.BOG,
-                    neighbor(Biomes.PLAINS)
+                    neighbor(Tags.Biomes.IS_PLAINS)
+            );
+            BiomePlacement.addSubOverworld(
+                    Biomes.PLAINS,
+                    NMLBiomes.BOG,
+                    neighbor(Tags.Biomes.IS_SWAMP)
+            );
+        }
+
+        if (NMLConfig.BLACKWATER_RIVER.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.BLACKWATER_RIVER,
+                    neighbor(Tags.Biomes.IS_SWAMP)
+            );
+        }
+
+        if (NMLConfig.LUSH_RIVER.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.LUSH_RIVER,
+                    neighbor(Tags.Biomes.IS_LUSH)
+            );
+
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.LUSH_RIVER,
+                    neighbor(Tags.Biomes.IS_JUNGLE)
             );
         }
     }
 
-    public static void transitionalBiome(ResourceKey<Biome> mainBiome, ResourceKey<Biome> secondaryBiome, ResourceKey<Biome> transitionalBiome) {
+    public static void transitionalBiome(ResourceKey<Biome> firstBiome, ResourceKey<Biome> secondBiome, ResourceKey<Biome> transitionalBiome) {
         BiomePlacement.addSubOverworld(
-                mainBiome,
+                firstBiome,
                 transitionalBiome,
-                allOf(neighbor(secondaryBiome), not(NEAR_INTERIOR))
+                allOf(neighbor(secondBiome), not(NEAR_INTERIOR))
         );
 
         BiomePlacement.addSubOverworld(
-                secondaryBiome,
+                secondBiome,
                 transitionalBiome,
-                allOf(alternate(transitionalBiome, mainBiome), not(NEAR_INTERIOR))
+                allOf(neighbor(firstBiome), not(NEAR_INTERIOR))
+        );
+
+        BiomePlacement.addSubOverworld(
+                secondBiome,
+                transitionalBiome,
+                allOf(alternate(transitionalBiome, firstBiome), not(NEAR_INTERIOR))
+        );
+
+        BiomePlacement.addSubOverworld(
+                firstBiome,
+                transitionalBiome,
+                allOf(alternate(transitionalBiome, secondBiome), not(NEAR_INTERIOR))
         );
     }
 
