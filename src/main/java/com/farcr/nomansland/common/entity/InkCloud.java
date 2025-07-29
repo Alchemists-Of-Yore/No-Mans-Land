@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity;
 
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
@@ -8,6 +9,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -66,10 +68,14 @@ public class InkCloud extends LingeringCloud {
             List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, getBoundingBox());
             for (LivingEntity entity : entities) {
                 if (entity.getEyePosition().distanceToSqr(position()) < Mth.square(getRadius()) && entity.isAffectedByPotions()) {
-                    entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30));
-                    entity.removeEffect(MobEffects.INVISIBILITY);
-                    entity.removeEffect(MobEffects.NIGHT_VISION);
-
+                    boolean immune = false;
+                    for (ItemStack stack : entity.getArmorSlots())
+                        if (stack.is(NMLTags.INK_IMMUNE)) immune = true;
+                    if (!immune) {
+                        entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30));
+                        entity.removeEffect(MobEffects.INVISIBILITY);
+                        entity.removeEffect(MobEffects.NIGHT_VISION);
+                    }
                 }
             }
         }

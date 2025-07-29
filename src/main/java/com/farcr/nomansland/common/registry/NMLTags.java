@@ -15,6 +15,7 @@ public class NMLTags {
     public static final TagKey<Item> DEER_FOOD = createItemTag("deer_food");
     public static final TagKey<Item> MOOSE_FOOD = createItemTag("moose_food");
     public static final TagKey<Item> MAKES_RESIN_OIL = createItemTag("makes_resin_oil");
+    public static final TagKey<Item> INK_IMMUNE = createItemTag("ink_immune");
 
     public static final SharedTag MAPLE_LOGS = createSharedTag("maple_logs");
     public static final SharedTag PINE_LOGS = createSharedTag("pine_logs");
