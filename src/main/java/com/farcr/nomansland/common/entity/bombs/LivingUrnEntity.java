@@ -11,12 +11,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -87,7 +89,7 @@ public class LivingUrnEntity extends ThrowableBombEntity {
             lingeringCloud.setOwner(livingentity);
         }
 
-        lingeringCloud.setRadius(1F);
+        lingeringCloud.setRadius(2);
         lingeringCloud.setWaitTime(5);
         lingeringCloud.setDuration(60);
         lingeringCloud.setRadiusPerTick((float) -1/100);

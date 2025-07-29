@@ -2,7 +2,6 @@ package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
-import com.farcr.nomansland.client.model.deer.DeerAntlersLayer;
 import com.farcr.nomansland.client.model.moose.MooseAntlersLayer;
 import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.common.entity.Moose;

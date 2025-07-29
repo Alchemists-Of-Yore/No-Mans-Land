@@ -1,45 +1,25 @@
 package com.farcr.nomansland.common.entity.bombs;
 
-import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.entity.InkCloud;
-import com.farcr.nomansland.common.entity.LingeringCloud;
-import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
-import com.mojang.blaze3d.shaders.Effect;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.projectile.ThrowableProjectile;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.TntBlock;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.awt.*;
-import java.util.List;
-import java.util.Optional;
-
-import static net.minecraft.world.level.block.WallTorchBlock.FACING;
 
 public class InkBombEntity extends ThrowableBombEntity {
 
@@ -96,14 +76,15 @@ public class InkBombEntity extends ThrowableBombEntity {
     protected void explode() {
         Level level = level();
 
-        level.explode(this, getX(), getY(0.0625), getZ(), 1, Level.ExplosionInteraction.NONE);
-        level.getNearbyEntities(LivingEntity.class, TargetingConditions.forNonCombat(), null, getBoundingBox().inflate(4)).forEach(livingEntity -> {
+        level.playSound(null, blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 1, 1);
+        level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3.5F)).forEach(livingEntity -> {
+            livingEntity.hurt(Explosion.getDefaultDamageSource(level, this), 4);
             livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
             livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 1));
             livingEntity.removeEffect(MobEffects.INVISIBILITY);
             livingEntity.removeEffect(MobEffects.NIGHT_VISION);
         });
-        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY(), getZ());
+        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY() + 1, getZ());
         Entity owner = getOwner();
         if (owner instanceof LivingEntity livingentity) {
             lingeringCloud.setOwner(livingentity);

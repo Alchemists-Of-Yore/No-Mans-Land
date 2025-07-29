@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.item;
 
-import com.farcr.nomansland.common.entity.bombs.FirebombEntity;
 import com.farcr.nomansland.common.entity.bombs.InkBombEntity;
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
 import com.farcr.nomansland.common.registry.NMLSounds;

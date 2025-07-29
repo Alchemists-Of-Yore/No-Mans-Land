@@ -12,7 +12,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -77,7 +76,7 @@ public class ExplosiveEntity extends ThrowableBombEntity {
     protected void explode() {
         Level level = level();
 
-        level.explode(this, Explosion.getDefaultDamageSource(level, this), null, getX(), getY(0.0625), getZ(), NMLConfig.EXPLOSIVE_STRENGTH.get().floatValue(), false, Level.ExplosionInteraction.TNT);
+        level.explode(this, getX(), getY(0.0625), getZ(), NMLConfig.EXPLOSIVE_STRENGTH.get().floatValue(), Level.ExplosionInteraction.TNT);
 
         // Light nearby campfires on fire
         BlockPos.withinManhattan(blockPosition(), 6, 4, 6).forEach(pos -> {
