@@ -45,7 +45,8 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
         );
 
         tag(NMLTags.IS_CRAGLAND).add(
-                Biomes.SPARSE_JUNGLE
+                Biomes.SPARSE_JUNGLE,
+                Biomes.WINDSWEPT_GRAVELLY_HILLS
         );
 
         tag(BiomeTags.IS_OVERWORLD).addTags(NMLTags.OLD_GROWTH_FOREST, NMLTags.CAVES);
