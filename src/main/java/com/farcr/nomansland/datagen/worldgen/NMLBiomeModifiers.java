@@ -556,6 +556,10 @@ public class NMLBiomeModifiers {
                                 patch("dried_grass_mycelium")
                         )
                 )
+                .changeSpawns(
+                        new SpawnerData(EntityType.MOOSHROOM, 16, 3, 8),
+                        new SpawnerData(EntityType.FROG, 4, 1, 4)
+                )
                 .removeFeatures(DISK_SAND, DISK_GRAVEL, PATCH_SUGAR_CANE, PATCH_PUMPKIN)
                 .build(featureToBiomes);
 
@@ -1076,6 +1080,9 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_OVERWORLD_FOLIAGE, vegetalDecoration, patch("grass_sprouts_normal"), patch("roots"), patch("cattail"), patch("reeds"), patch("waterlily_common"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_SWAMP_FOLIAGE, vegetalDecoration, patch("duckweed"), patch("pickleweed"), patch("reeds_swamp"), patch("cattail_swamp"));
         addFeaturesToTag(NMLTags.IS_SHORELINE, vegetalDecoration, feature("seashells"));
+
+        // Biome category-based terrain modification
+        addFeaturesToTag(NMLTags.IS_CRAGLAND, localModifications, feature("crag_rock_craglands"));
 
         // Specific foliage patches
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_BEACHGRASS, vegetalDecoration, patch("beachgrass"));

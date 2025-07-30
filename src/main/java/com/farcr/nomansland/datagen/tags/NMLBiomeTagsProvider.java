@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +42,10 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.LAVENDER_FIELD,
                 NMLBiomes.LUSH_RIVER,
                 NMLBiomes.BLACKWATER_RIVER
+        );
+
+        tag(NMLTags.IS_CRAGLAND).add(
+                Biomes.SPARSE_JUNGLE
         );
 
         tag(BiomeTags.IS_OVERWORLD).addTags(NMLTags.OLD_GROWTH_FOREST, NMLTags.CAVES);

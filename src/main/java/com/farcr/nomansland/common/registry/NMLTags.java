@@ -41,6 +41,7 @@ public class NMLTags {
 
     public static final TagKey<Biome> CLASSIC_SOIL = createBiomeTag("classic_soil");
     public static final TagKey<Biome> IS_SHORELINE = createBiomeTag("is_shoreline");
+    public static final TagKey<Biome> IS_CRAGLAND = createBiomeTag("is_cragland");
 
     public static class FeatureAddition {
         // Broad brushes

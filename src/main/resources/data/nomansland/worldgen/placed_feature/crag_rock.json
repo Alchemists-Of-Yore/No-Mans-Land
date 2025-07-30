@@ -5,7 +5,7 @@
       "type": "nomansland:density_function_based_count",
       "noise_function": "nomansland:default",
 
-      "noise_scale": 1.4,
+      "noise_scale": 2.0,
 
       "noise_minimum": 0.8,                   
       "noise_maximum": 1.0,  
