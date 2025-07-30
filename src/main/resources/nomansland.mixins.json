@@ -7,6 +7,7 @@
   "mixins": [
     "AbstractFishMixin",
     "AbstractSkeletonMixin",
+    "AlterGroundDecoratorMixin",
     "BaseRailBlockMixin",
     "BaseSpawnerMixin",
     "BiomeMixin",
