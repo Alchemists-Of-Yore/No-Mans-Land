@@ -556,9 +556,8 @@ public class NMLBiomeModifiers {
                                 patch("dried_grass_mycelium")
                         )
                 )
-                .changeSpawns(
-                        new SpawnerData(EntityType.MOOSHROOM, 16, 3, 8),
-                        new SpawnerData(EntityType.FROG, 4, 1, 4)
+                .addSpawns(
+                        new SpawnerData(EntityType.FROG, 4, 3, 5)
                 )
                 .removeFeatures(DISK_SAND, DISK_GRAVEL, PATCH_SUGAR_CANE, PATCH_PUMPKIN)
                 .build(featureToBiomes);

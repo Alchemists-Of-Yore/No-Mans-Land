@@ -28,7 +28,7 @@ public class CragRockFeature extends Feature<NoneFeatureConfiguration> {
 
         double radius = Math.clamp(random.nextGaussian() * 2 + 5, 2, 6);
         int range = Math.min(Mth.ceil(radius + 3), 8);
-        int height = random.nextIntBetweenInclusive(6, 14);//(int) Math.clamp(random.nextGaussian() * 16 + 32, 3, 24);
+        int height = random.nextIntBetweenInclusive(6, 18);//(int) Math.clamp(random.nextGaussian() * 16 + 32, 3, 24);
         int depth = 16;
 
         boolean placedBlock = false;
