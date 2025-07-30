@@ -1,0 +1,18 @@
+{
+  "type": "nomansland:change_spawn",
+  "biomes": "minecraft:mushroom_fields",
+  "spawners": [
+    {
+      "type": "minecraft:mooshroom",
+      "maxCount": 8,
+      "minCount": 3,
+      "weight": 16
+    },
+    {
+      "type": "minecraft:frog",
+      "maxCount": 4,
+      "minCount": 1,
+      "weight": 4
+    }
+  ]
+}
