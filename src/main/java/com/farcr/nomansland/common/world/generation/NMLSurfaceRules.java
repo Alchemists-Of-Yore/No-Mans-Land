@@ -153,6 +153,16 @@ public class NMLSurfaceRules {
                 SurfaceRules.isBiome(NMLBiomes.TROPICAL_BEACH),
                 SurfaceRules.ifTrue(BEACH, SANDSTONE_UNDER_SAND)
         );
+        SurfaceRules.RuleSource gravel_beach = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.GRAVEL_BEACH),
+                SurfaceRules.ifTrue(
+                        BEACH,
+                        SurfaceRules.ifTrue(
+                                SurfaceRules.UNDER_FLOOR,
+                                SurfaceRules.state(Blocks.GRAVEL.defaultBlockState())
+                        )
+                )
+        );
 
         SurfaceRules.RuleSource caves = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVES),
@@ -179,7 +189,7 @@ public class NMLSurfaceRules {
                                     SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
                             ),
                             // deeper layer biome modifiers - sand, beaches...
-                            SurfaceRules.sequence(desert_river, mud_beach, frozen_beach, tropical_beach)
+                            SurfaceRules.sequence(desert_river, mud_beach, frozen_beach, tropical_beach, gravel_beach)
                         )
                 ),
                 // Cave Biomes
