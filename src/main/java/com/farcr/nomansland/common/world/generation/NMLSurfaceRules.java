@@ -117,6 +117,36 @@ public class NMLSurfaceRules {
                                         SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), WATER))))
         );
 
+        SurfaceRules.RuleSource desert_river = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.DESERT_RIVER),
+                SurfaceRules.sequence(
+                        SurfaceRules.state(Blocks.SAND.defaultBlockState()))
+                //TODO: MAKE THIS GO DEEPER
+        );
+
+        SurfaceRules.RuleSource mud_beach = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.MUD_BEACH),
+                SurfaceRules.sequence(
+                        SurfaceRules.state(Blocks.MUD.defaultBlockState()))
+                //TODO: MAKE THIS GO DEEPER
+        );
+
+        SurfaceRules.RuleSource frozen_beach = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.FROZEN_BEACH),
+                SurfaceRules.sequence(
+                        SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
+                //TODO: MAKE THIS GO DEEPER
+        );
+
+        SurfaceRules.RuleSource tropical_beach = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.TROPICAL_BEACH),
+                SurfaceRules.sequence(
+                        SurfaceRules.state(Blocks.SAND.defaultBlockState())
+                        //TODO: MAKE THIS GO DEEPER
+                        //TODO: ADD GRASS ON HIGH AREAS. POSSIBLY FEATURE?
+                )
+        );
+
         SurfaceRules.RuleSource caves = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVES),
                 SurfaceRules.sequence(
@@ -136,7 +166,7 @@ public class NMLSurfaceRules {
                 SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.sequence(
                                 //Surface Biomes
-                                jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river))),
+                                jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river, desert_river, mud_beach, frozen_beach, tropical_beach))),
                 SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
                     SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR), SurfaceRules.sequence(
                             // Cave Biomes

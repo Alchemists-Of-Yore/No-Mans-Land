@@ -41,7 +41,11 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.PRAIRIE,
                 NMLBiomes.LAVENDER_FIELD,
                 NMLBiomes.LUSH_RIVER,
-                NMLBiomes.BLACKWATER_RIVER
+                NMLBiomes.BLACKWATER_RIVER,
+                NMLBiomes.DESERT_RIVER,
+                NMLBiomes.MUD_BEACH,
+                NMLBiomes.FROZEN_BEACH,
+                NMLBiomes.TROPICAL_BEACH
         );
 
         tag(NMLTags.IS_CRAGLAND).add(
