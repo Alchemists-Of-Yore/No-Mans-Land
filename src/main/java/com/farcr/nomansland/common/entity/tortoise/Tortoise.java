@@ -78,13 +78,14 @@ public class Tortoise extends Animal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new TortoiseSearchForDangerGoal(this));
         this.goalSelector.addGoal(1, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(2, new TortoiseSleepAndWakeUpGoal(this));
         this.goalSelector.addGoal(3, new BreedGoal(this, 0.5F));
         this.goalSelector.addGoal(4, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
         this.goalSelector.addGoal(5, new FollowParentGoal(this, 0.25F));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.25F));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        this.goalSelector.addGoal(8, new TortoiseSearchForDangerGoal(this));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -111,7 +112,7 @@ public class Tortoise extends Animal {
     public void tick() {
         super.tick();
         long gameTime = this.level().getGameTime();
-        if ((gameTime - this.getHurtWhen() > 600L) && this.inShell()) {
+        if ((gameTime - this.getHurtWhen() > 600L) && this.inShell() && this.getLastHurtByUUID() != null) {
             this.setSearching(true);
         }
     }
