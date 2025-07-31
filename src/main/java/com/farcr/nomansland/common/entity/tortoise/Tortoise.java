@@ -147,6 +147,8 @@ public class Tortoise extends Animal {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        if (spawnType == MobSpawnType.STRUCTURE)
+            this.setHomePos(this.blockPosition());
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
@@ -214,7 +216,9 @@ public class Tortoise extends Animal {
             } else {
                 if (amount > this.getMaxHealth()) {
                     amount -= this.getMaxHealth();
+                    this.playSound(this.getHurtSound(source));
                 } else {
+                    this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.2F);
                     return false;
                 }
             }
