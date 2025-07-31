@@ -1,21 +1,14 @@
-package com.farcr.nomansland.common.world.feature.placementmodifiers;
+package com.farcr.nomansland.common.world.feature.placementmodifier;
 
 import com.farcr.nomansland.common.registry.worldgen.NMLPlacementModifiers;
-import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementFilter;
-import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
-
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /*
      "height_filter" placement type!

@@ -1,9 +1,9 @@
 package com.farcr.nomansland.common.registry.worldgen;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.world.feature.placementmodifiers.DensityFunctionBasedCountPlacement;
-import com.farcr.nomansland.common.world.feature.placementmodifiers.DensityFunctionBasedProbabilityPlacement;
-import com.farcr.nomansland.common.world.feature.placementmodifiers.HeightFilterPlacement;
+import com.farcr.nomansland.common.world.feature.placementmodifier.DensityFunctionBasedCountPlacement;
+import com.farcr.nomansland.common.world.feature.placementmodifier.DensityFunctionBasedProbabilityPlacement;
+import com.farcr.nomansland.common.world.feature.placementmodifier.HeightFilterPlacement;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.neoforged.neoforge.registries.DeferredRegister;

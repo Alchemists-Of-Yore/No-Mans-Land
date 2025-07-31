@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.world.feature.placementmodifiers;
+package com.farcr.nomansland.common.world.feature.placementmodifier;
 
 import com.farcr.nomansland.common.registry.worldgen.NMLPlacementModifiers;
 import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
@@ -13,20 +13,20 @@ import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /*
-     "density_function_based_count" placement type!
+     "density_function_based_probability" placement type!
 
-     variation of the noise_based_count placement type,
-     taking in a density function rather than hardcoded
-     noise values. this allows for more complicated curves, etc.
-     the placement position is duplicated based off the noise value.
+     variation of the density_function_based_count placement type,
+     removing placement spots based off a noise value rather than
+     adding new ones.
+     the sampled noise value is remapped to the probability range,
+     then used as a % chance that a given position is KEPT.
 
      EXAMPLE SYNTAX:
        {
-          "type": "nomansland:density_function_based_count",
+          "type": "nomansland:density_function_based_probability",
           "noise_function": "minecraft:overworld/base_3d_noise", // noise router.
                                                                     can be a path to any density function, or inlined.
           "noise_scale": 1.0,         // decimal number. defaults to 1.0.
@@ -37,47 +37,47 @@ import java.util.stream.Stream;
           //     IF YOU DON'T QUITE GET RESCALING - look up the 'Map Range' function.
           //         a good reference: https://processing.org/reference/map_.html
           "noise_minimum": 0.0, // decimal number. defaults to 0.0.
-                                   the noise value that will be mapped to the minimum count
+                                   the noise value that will be mapped to the minimum probability
           "noise_maximum": 1.0, // decimal number. defaults to 1.0.
-                                   the noise value that will be mapped to the maximum count
-          "count_minimum": 0, // integer. defaults to 0.
+                                   the noise value that will be mapped to the maximum probability
+          "probability_minimum": 0.0, // decimal number. defaults to 0.0.
                                          the value which noise_minimum is mapped to.
-                                         is not necessarily the minimum possible count, if clamped is false.
-          "count_maximum": 12, // integer. defaults to 8.
+                                         is not necessarily the minimum possible probability, if clamped is false.
+          "probability_maximum": 1.0, // decimal number. defaults to 1.0.
                                          the value which noise_maximum is mapped to.
-                                         is not necessarily the maximum possible count, if clamped is false.
+                                         is not necessarily the maximum possible probability, if clamped is false.
           "clamped": true // boolean. defaults to true.
                              determines whether to clamp the probability to the given range.
        }
 */
-public class DensityFunctionBasedCountPlacement extends PlacementModifier {
-    public static final MapCodec<DensityFunctionBasedCountPlacement> CODEC = RecordCodecBuilder.mapCodec (
+public class DensityFunctionBasedProbabilityPlacement extends PlacementModifier {
+    public static final MapCodec<DensityFunctionBasedProbabilityPlacement> CODEC = RecordCodecBuilder.mapCodec (
             codec -> codec.group(
                             DensityFunction.HOLDER_HELPER_CODEC.fieldOf("noise_function").forGetter(instance -> instance.densityFunction),
                             Codec.DOUBLE.fieldOf("noise_scale").orElse(1.0).forGetter(instance -> instance.noiseScale),
                             Codec.DOUBLE.fieldOf("noise_minimum").orElse(0.0).forGetter(instance -> instance.noiseMinimum),
                             Codec.DOUBLE.fieldOf("noise_maximum").orElse(1.0).forGetter(instance -> instance.noiseMaximum),
-                            Codec.INT.fieldOf("count_minimum").orElse(0).forGetter(instance -> instance.countMinimum),
-                            Codec.INT.fieldOf("count_maximum").orElse(8).forGetter(instance -> instance.countMaximum),
+                            Codec.DOUBLE.fieldOf("probability_minimum").orElse(0.0).forGetter(instance -> instance.probabilityMinimum),
+                            Codec.DOUBLE.fieldOf("probability_maximum").orElse(1.0).forGetter(instance -> instance.probabilityMaximum),
                             Codec.BOOL.fieldOf("clamped").orElse(true).forGetter(instance -> instance.clamped)
-                    ).apply(codec, DensityFunctionBasedCountPlacement::new)
+            ).apply(codec, DensityFunctionBasedProbabilityPlacement::new)
     );
 
     private final DensityFunction densityFunction;
     private final double noiseScale;
     private final double noiseMinimum;
     private final double noiseMaximum;
-    private final int countMinimum;
-    private final int countMaximum;
+    private final double probabilityMinimum;
+    private final double probabilityMaximum;
     private final boolean clamped;
 
-    public DensityFunctionBasedCountPlacement(DensityFunction densityFunction, double noiseScale, double noiseMinimum, double noiseMaximum, int countMinimum, int countMaximum, boolean clamped) {
+    public DensityFunctionBasedProbabilityPlacement(DensityFunction densityFunction, double noiseScale, double noiseMinimum, double noiseMaximum, double probabilityMinimum, double probabilityMaximum, boolean clamped) {
         this.densityFunction = densityFunction;
         this.noiseScale = noiseScale;
         this.noiseMinimum = noiseMinimum;
         this.noiseMaximum = noiseMaximum;
-        this.countMinimum = countMinimum;
-        this.countMaximum = countMaximum;
+        this.probabilityMinimum = probabilityMinimum;
+        this.probabilityMaximum = probabilityMaximum;
         this.clamped = clamped;
     }
 
@@ -86,26 +86,26 @@ public class DensityFunctionBasedCountPlacement extends PlacementModifier {
         // apply seeds to all the noise, if that hasn't been done yet
         // this operation is cached. i hate this nonetheless!
         DensityFunction seedifiedDensityFunction = densityFunction.mapAll(LazilyCachedDensityFunctionSeedifier.getOrCreate(context.getLevel()));
-        double noise = seedifiedDensityFunction.compute(
+        // sample the noise, with the proper seed!
+        double threshold = seedifiedDensityFunction.compute(
                 new DensityFunction.SinglePointContext(
-                                (int) ((double) pos.getX() * this.noiseScale),
-                                (int) ((double) pos.getY() * this.noiseScale),
-                                (int) ((double) pos.getZ() * this.noiseScale)
-                        )
-                );
+                        (int) (pos.getX() * this.noiseScale),
+                        (int) (pos.getY() * this.noiseScale),
+                        (int) (pos.getZ() * this.noiseScale)
+                )
+        );
 
         // uncomment this line to preview noise values!
-        // if (random.nextInt(16) == 0) NoMansLand.LOGGER.info(noise);
+        // if (random.nextInt(32) == 0) NoMansLand.LOGGER.info(threshold);
 
-        int count = (int) Math.ceil(clamped ?
-                Mth.clampedMap(noise, noiseMinimum, noiseMaximum, countMinimum, countMaximum) :
-                Mth.map(noise, noiseMinimum, noiseMaximum, countMinimum, countMaximum));
-        return IntStream.range(0, count)
-                .mapToObj(i -> pos);
+        threshold = clamped ?
+                Mth.clampedMap(threshold, noiseMinimum, noiseMaximum, probabilityMinimum, probabilityMaximum) :
+                       Mth.map(threshold, noiseMinimum, noiseMaximum, probabilityMinimum, probabilityMaximum);
+        return random.nextDouble() < threshold ? Stream.of(pos) : Stream.empty();
     }
 
     @Override
     public PlacementModifierType<?> type() {
-        return NMLPlacementModifiers.DENSITY_FUNCTION_BASED_COUNT.get();
+        return NMLPlacementModifiers.DENSITY_FUNCTION_BASED_PROBABILITY.get();
     }
 }
