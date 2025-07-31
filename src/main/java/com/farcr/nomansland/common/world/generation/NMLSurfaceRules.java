@@ -24,6 +24,12 @@ public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource SNOW_BLOCK = makeStateRule(Blocks.SNOW_BLOCK);
     private static final SurfaceRules.RuleSource PACKED_ICE = makeStateRule(Blocks.PACKED_ICE);
     private static final SurfaceRules.RuleSource ICE = makeStateRule(Blocks.ICE);
+    private static final SurfaceRules.RuleSource SANDSTONE_UNDER_SAND = SurfaceRules.sequence(
+            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SAND),
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState()))
+    );
+
+    private static final SurfaceRules.ConditionSource BEACH = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(68), true, true);
 
     public static void register() {
 
@@ -57,12 +63,11 @@ public class NMLSurfaceRules {
         SurfaceRules.RuleSource frozenWoods = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.FROZEN_WOODS),
                 SurfaceRules.sequence(
-                        // TODO: MAKE THIS DEEPER THAN ONE BLOCK, AND NORMAL ICE ON THE FIRST BLOCK.
-//                SurfaceRules.ifTrue(surfaceNoiseAbove(3.5), PACKED_ICE),
-                SurfaceRules.ifTrue(surfaceNoiseAbove(2.25), SNOW_BLOCK),
-                SurfaceRules.ifTrue(surfaceNoiseAbove(1.5), MUD),
-                SurfaceRules.ifTrue(surfaceNoiseAbove(1.0), SILT)
-        ));
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(2.25), SNOW_BLOCK),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.5), MUD),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.0), SILT)
+                )
+        );
 
         SurfaceRules.RuleSource bog = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.BOG),
@@ -121,56 +126,67 @@ public class NMLSurfaceRules {
 
         SurfaceRules.RuleSource desert_river = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.DESERT_RIVER),
-                SurfaceRules.sequence(
-                        SurfaceRules.state(Blocks.SAND.defaultBlockState()))
-                //TODO: MAKE THIS GO DEEPER
+                SANDSTONE_UNDER_SAND
         );
 
         SurfaceRules.RuleSource mud_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.MUD_BEACH),
-                SurfaceRules.sequence(
-                        SurfaceRules.state(Blocks.MUD.defaultBlockState()))
-                //TODO: MAKE THIS GO DEEPER
+                SurfaceRules.ifTrue(
+                        BEACH,
+                        SurfaceRules.ifTrue(
+                                SurfaceRules.UNDER_FLOOR,
+                                SurfaceRules.state(Blocks.MUD.defaultBlockState())
+                        )
+                )
         );
-
         SurfaceRules.RuleSource frozen_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.FROZEN_BEACH),
-                SurfaceRules.sequence(
-                        SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
-                //TODO: MAKE THIS GO DEEPER
+                SurfaceRules.ifTrue(
+                        BEACH,
+                        SurfaceRules.ifTrue(
+                                SurfaceRules.UNDER_FLOOR,
+                                SurfaceRules.state(Blocks.GRAVEL.defaultBlockState())
+                        )
+                )
         );
-
         SurfaceRules.RuleSource tropical_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.TROPICAL_BEACH),
-                SurfaceRules.ifTrue(
-                        new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(68)), SAND
-                )
+                SurfaceRules.ifTrue(BEACH, SANDSTONE_UNDER_SAND)
         );
 
         SurfaceRules.RuleSource caves = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVES),
-                SurfaceRules.sequence(
+                SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
                         SurfaceRules.state(Blocks.STONE.defaultBlockState())
                 )
         );
 
         SurfaceRules.RuleSource cave_depths = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVE_DEPTHS),
-                SurfaceRules.sequence(
+                SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
                         SurfaceRules.state(Blocks.DEEPSLATE.defaultBlockState())
                 )
         );
 
         SurfaceGeneration.addOverworldSurfaceRules(
                 NoMansLand.location("rules/overworld"),
-                SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
-                        SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.sequence(
-                                //Surface Biomes
-                                jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river, desert_river, mud_beach, frozen_beach, tropical_beach))),
-                SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
-                    SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR), SurfaceRules.sequence(
-                            // Cave Biomes
-                            caves, cave_depths)))
+                // Surface Biomes
+                SurfaceRules.ifTrue(
+                        SurfaceRules.abovePreliminarySurface(),
+                        SurfaceRules.sequence(
+                            // top layer biome modifiers - grasses, etc.
+                            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+                                    SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
+                            ),
+                            // deeper layer biome modifiers - sand, beaches...
+                            SurfaceRules.sequence(desert_river, mud_beach, frozen_beach, tropical_beach)
+                        )
+                ),
+                // Cave Biomes
+                SurfaceRules.ifTrue(
+                        SurfaceRules.not(SurfaceRules.abovePreliminarySurface()),
+                        SurfaceRules.sequence(caves, cave_depths)
+                )
         );
     }
 
