@@ -1116,6 +1116,7 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_QUARTZITE_GEODE, localModifications, feature("underground/quartzite_geode"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_NETHER_QUARTZITE_GEODE, localModifications, feature("underground/nether_quartzite_geode"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_MUD_PATCH, GenerationStep.Decoration.FLUID_SPRINGS, feature("mud_patch"));
+        addFeaturesToTag(NMLTags.HAS_GRAVEL_SHORE, localModifications, feature("gravel_decorator_pebble"), feature("gravel_decorator_boulder"), feature("gravel_decorator_pond"));
 
         // Extra mushroom stuff
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_FIELD_MUSHROOM_CIRCLE, vegetalDecoration, feature("field_mushroom_circle"));

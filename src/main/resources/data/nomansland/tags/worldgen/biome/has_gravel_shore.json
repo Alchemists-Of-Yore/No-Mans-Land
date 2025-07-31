@@ -1,0 +1,20 @@
+{
+  "values": [
+    "#c:is_icy",
+    "#c:is_cold",
+    "#c:is_temperate"
+  ],
+  "remove":[
+    "#minecraft:is_ocean",
+    "#minecraft:is_beach",
+    "#minecraft:is_river",
+    "#minecraft:is_mountain",
+    "#c:is_hill",
+    "#c:is_plateau",
+    "#c:is_sandy",
+    "#c:is_cave",
+    "#c:is_swamp",
+    "#minecraft:is_nether",
+    "#minecraft:is_end"
+  ]
+}

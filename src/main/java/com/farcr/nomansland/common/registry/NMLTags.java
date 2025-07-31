@@ -44,6 +44,8 @@ public class NMLTags {
     public static final TagKey<Biome> IS_CRAGLAND = createBiomeTag("is_cragland");
     public static final TagKey<Biome> IS_OCEANIC_CRAGLAND = createBiomeTag("is_oceanic_cragland");
 
+    public static final TagKey<Biome> HAS_GRAVEL_SHORE = createBiomeTag("has_gravel_shore");
+
     public static class FeatureAddition {
         // Broad brushes
         public static final TagKey<Biome> HAS_OVERWORLD_FOLIAGE = createBiomeTag("feature_addition/has_overworld_foliage");

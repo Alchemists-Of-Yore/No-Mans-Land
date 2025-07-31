@@ -1,9 +1,11 @@
 package com.farcr.nomansland.common.world.generation;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.world.surfacerule.BelowOrEqualToYConditionSource;
+import com.farcr.nomansland.common.world.surfacerule.BiomeTagConditionSource;
 import com.terraformersmc.biolith.api.surface.SurfaceGeneration;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
@@ -12,6 +14,7 @@ import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.CaveSurface;
+import net.neoforged.neoforge.common.Tags;
 
 public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource COARSE_DIRT = makeStateRule(Blocks.COARSE_DIRT);
@@ -26,21 +29,28 @@ public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource ICE = makeStateRule(Blocks.ICE);
     private static final SurfaceRules.RuleSource SANDSTONE_UNDER_SAND = SurfaceRules.sequence(
             SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SAND),
-            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.SAND.defaultBlockState())),
-            SurfaceRules.ifTrue(SurfaceRules.DEEP_UNDER_FLOOR, SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState()))
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState()))
     );
 
     private static final SurfaceRules.RuleSource DEEP_GRAVEL = SurfaceRules.sequence(
             SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, GRAVEL),
-            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState())),
-            SurfaceRules.ifTrue(SurfaceRules.DEEP_UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
     );
 
     private static final SurfaceRules.ConditionSource BEACH = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(70), true, true);
-    private static final SurfaceRules.ConditionSource SHORE = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(67), true, true);
+    private static final SurfaceRules.ConditionSource SHORE = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(66), true, true);
 
     public static void register() {
-
+        //Multiple-Biome Modifiers
+        SurfaceRules.RuleSource gravel_shores = SurfaceRules.ifTrue(
+                new BiomeTagConditionSource(NMLTags.HAS_GRAVEL_SHORE),
+                SurfaceRules.ifTrue(SHORE, GRAVEL)
+        );
+        SurfaceRules.RuleSource mud_shores = SurfaceRules.ifTrue(
+                new BiomeTagConditionSource(Tags.Biomes.IS_SWAMP),
+                SurfaceRules.ifTrue(SHORE, MUD)
+        );
+        //Biomes
         SurfaceRules.RuleSource jungle = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(Biomes.JUNGLE),
                 SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), COARSE_DIRT)
@@ -118,7 +128,7 @@ public class NMLSurfaceRules {
                 SurfaceRules.isBiome(Biomes.MUSHROOM_FIELDS),
                 SurfaceRules.ifTrue(BEACH, SILT)
         );
-
+    //River Biomes
         SurfaceRules.RuleSource lush_river = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.LUSH_RIVER),
                 SurfaceRules.sequence(
@@ -141,7 +151,7 @@ public class NMLSurfaceRules {
                 SurfaceRules.isBiome(NMLBiomes.DESERT_RIVER),
                 SANDSTONE_UNDER_SAND
         );
-
+    //Beach Biomes
         SurfaceRules.RuleSource mud_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.MUD_BEACH),
                 SurfaceRules.ifTrue(
@@ -192,7 +202,7 @@ public class NMLSurfaceRules {
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
                  // deeper layer biome modifiers - sand, beaches...
-                SurfaceRules.sequence(mushroom_fields, desert_river, mud_beach, frozen_beach, tropical_beach, gravel_beach),
+                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_beach, tropical_beach, gravel_beach),
 
                 // top layer biome modifiers - grasses, etc.
                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
