@@ -47,8 +47,24 @@ public class IncendiaryArrow extends AbstractArrow {
     }
 
     @Override
+    public boolean displayFireAnimation() {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
+
+        if (level().isClientSide && isOnFire()) {
+            level().addParticle(ParticleTypes.FLAME,
+                    this.getX(),
+                    this.getY() + 0.1,
+                    this.getZ(),
+                    (random.nextFloat() - 0.5) * 0.02,
+                    -0.01,
+                    (random.nextFloat() - 0.5) * 0.02
+            );
+        }
     }
 
     @Override
@@ -62,30 +78,48 @@ public class IncendiaryArrow extends AbstractArrow {
         BlockPos neighbourPos = pos.relative(direction);
 
         if (level instanceof ServerLevel serverLevel) {
+            boolean ignitedFire = false;
+
             if (level.getBlockState(neighbourPos).is(Blocks.FIRE)) {
-                BlockPos.withinManhattan(neighbourPos, 2, 0, 2).forEach(firePos -> {
-                    if ((BaseFireBlock.canBePlacedAt(level, firePos, direction) || level.getBlockState(firePos).isFlammable(level, firePos, direction)) && level.random.nextFloat() < 0.2)
+                BlockPos.withinManhattan(neighbourPos, 1, 0, 1).forEach(firePos -> {
+                    if ((BaseFireBlock.canBePlacedAt(level, firePos, direction)
+                            || level.getBlockState(firePos).isFlammable(level, firePos, direction))
+                            && level.random.nextFloat() < 0.4F) {
                         level.setBlockAndUpdate(firePos, BaseFireBlock.getState(level, firePos));
+                    }
                 });
-
-                level.playSound(null, blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1, 1);
-                for (int i = 0; i < 20; i++) {
-                    double velX = (random.nextDouble() - 0.5) * 0.15;
-                    double velY = 0.05 + random.nextDouble() * 0.1;
-                    double velZ = (random.nextDouble() - 0.5) * 0.15;
-
-                    serverLevel.sendParticles(ParticleTypes.FLAME, position().x, position().y, position().z, 3, velX, velY, velZ, 0.2);
-                }
-            } else if (state.isFlammable(level, pos, direction) && (BaseFireBlock.canBePlacedAt(level, neighbourPos, direction) || level.getBlockState(neighbourPos).isFlammable(level, neighbourPos, direction))) {
-                level.playSound(null, blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1, 1);
+                ignitedFire = true;
+            } else if (BaseFireBlock.canBePlacedAt(level, neighbourPos, direction)
+                    || state.isFlammable(level, pos, direction)
+                    || direction == Direction.UP) {
                 level.setBlockAndUpdate(neighbourPos, BaseFireBlock.getState(level, neighbourPos));
+                ignitedFire = true;
+            }
+
+            if (ignitedFire) {
+                level.playSound(null, blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
+                level.playSound(null, blockPosition(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 0.6F, 0.7F + level.random.nextFloat() * 0.3F);
+
+                for (int i = 0; i < 10; i++) {
+                    double velX = (random.nextDouble() - 0.5) * 0.3;
+                    double velY = 0.05 + random.nextDouble() * 0.15;
+                    double velZ = (random.nextDouble() - 0.5) * 0.3;
+
+                    serverLevel.sendParticles(ParticleTypes.FLAME, position().x, position().y, position().z, 1, velX, velY, velZ, 0.1);
+                    serverLevel.sendParticles(ParticleTypes.SMOKE, position().x, position().y, position().z, 1, velX * 0.5, velY * 0.5, velZ * 0.5, 0.2);
+                    serverLevel.sendParticles(ParticleTypes.LAVA, position().x, position().y, position().z, 1, velX, 0.05, velZ, 0.3);
+                }
             } else {
+                serverLevel.sendParticles(ParticleTypes.SMOKE, position().x, position().y, position().z, 8, 0, 0.05, 0, 0.01);
+                serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, position().x, position().y, position().z, 4, 0, 0, 0, 0.01);
+                level.playSound(null, blockPosition(), SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 0.6F, 1.2F);
+                serverLevel.sendParticles(ParticleTypes.LAVA, position().x, position().y, position().z, 4, 0, -0.05, 0, 0.01);
                 clearFire();
             }
 
             if (isOnFire()) {
                 discard();
-                serverLevel.sendParticles(ParticleTypes.SMOKE, position().x, position().y, position().z, 3, 0, 0, 0, 0.01);
+                serverLevel.sendParticles(ParticleTypes.SMOKE, position().x, position().y, position().z, 5, 0, 0, 0, 0.01);
             }
         }
     }
