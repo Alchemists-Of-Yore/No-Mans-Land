@@ -8,8 +8,16 @@
         "feature": "nomansland:fancy_oak_apple_01"
       },
       {
-        "chance": 0.5,
+        "chance": 0.1,
+        "feature": "minecraft:fancy_oak_checked"
+      },
+      {
+        "chance": 0.4,
         "feature": "minecraft:jungle_bush"
+      },
+      {
+        "chance": 0.3,
+        "feature": "minecraft:mega_jungle_tree_checked"
       }
     ]
   }

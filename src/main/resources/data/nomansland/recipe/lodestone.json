@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "#S#",
-    "SCS",
-    "#S#"
+    "SRS",
+    "AAA",
+    "   "
   ],
   "key": {
-    "#": {
-      "item": "nomansland:polished_stone"
+    "R": {
+      "item": "nomansland:resin_oil_bottle"
     },
     "S": {
-      "item": "minecraft:chiseled_stone_bricks"
+      "item": "minecraft:string"
     },
-    "C": {
-      "item": "minecraft:compass"
+    "A": {
+      "item": "minecraft:arrow"
     }
   },
   "result": {
-    "id": "minecraft:lodestone",
-    "count": 1
+    "id": "nomansland:incendiary_arrow",
+    "count": 3
   }
 }

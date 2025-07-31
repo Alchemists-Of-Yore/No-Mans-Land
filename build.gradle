@@ -125,7 +125,7 @@ dependencies {
     compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
     localRuntime "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
 
-    localRuntime "maven.modrinth:xaeros-world-map:1.38.9_NeoForge_1.21"
+//    localRuntime "maven.modrinth:xaeros-world-map:1.38.9_NeoForge_1.21"
     localRuntime "maven.modrinth:appleskin:3.0.5+mc1.21"
     localRuntime "maven.modrinth:worldedit:7.3.6"
     localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.9-neoforge"

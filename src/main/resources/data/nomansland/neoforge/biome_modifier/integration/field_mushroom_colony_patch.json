@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:mushroom_fields",
+  "features": [
+    "nomansland:patch_field_mushroom_colony"
+  ],
+  "step": "vegetal_decoration"
+}

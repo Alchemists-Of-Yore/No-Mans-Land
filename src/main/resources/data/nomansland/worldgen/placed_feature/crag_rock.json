@@ -5,13 +5,13 @@
       "type": "nomansland:density_function_based_count",
       "noise_function": "nomansland:default",
 
-      "noise_scale": 1.4,
+      "noise_scale": 1.85,
 
-      "noise_minimum": 0.8,                   
+      "noise_minimum": 0.75,                   
       "noise_maximum": 1.0,  
 
       "count_minimum": 0,          
-      "count_maximum": 2
+      "count_maximum": 3
     },
     {
       "type": "minecraft:in_square"

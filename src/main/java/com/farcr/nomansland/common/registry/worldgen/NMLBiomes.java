@@ -26,13 +26,10 @@ public class NMLBiomes {
     public static final ResourceKey<Biome> OLD_GROWTH_FOREST_EDGE = createKey("old_growth_forest_edge");
 
     public static final ResourceKey<Biome> BOREAL_FOREST = createKey("boreal_forest");
-
     public static final ResourceKey<Biome> DARK_TAIGA = createKey("dark_taiga");
 
     public static final ResourceKey<Biome> DARK_SWAMP = createKey("dark_swamp");
-
     public static final ResourceKey<Biome> BAYOU = createKey("bayou");
-
     public static final ResourceKey<Biome> BOG = createKey("bog");
 
     public static final ResourceKey<Biome> PRAIRIE = createKey("prairie");
@@ -41,6 +38,11 @@ public class NMLBiomes {
 
     public static final ResourceKey<Biome> LUSH_RIVER = createKey("lush_river");
     public static final ResourceKey<Biome> BLACKWATER_RIVER = createKey("blackwater_river");
+    public static final ResourceKey<Biome> DESERT_RIVER = createKey("blackwater_river");
+
+    public static final ResourceKey<Biome> MUD_BEACH = createKey("blackwater_river");
+    public static final ResourceKey<Biome> FROZEN_BEACH = createKey("blackwater_river");
+    public static final ResourceKey<Biome> TROPICAL_BEACH = createKey("tropical_beach");
 
     //Underground
     public static final ResourceKey<Biome> CAVES = createKey("caves");
