@@ -2,6 +2,7 @@
   "values": [
     "nomansland:bayou",
     "nomansland:bog",
-    "nomansland:dark_swamp"
+    "nomansland:dark_swamp",
+    "#nomansland:is_shoreline"
   ]
 }

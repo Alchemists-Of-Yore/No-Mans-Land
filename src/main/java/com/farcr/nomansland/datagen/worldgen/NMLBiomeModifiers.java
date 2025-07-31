@@ -1082,6 +1082,7 @@ public class NMLBiomeModifiers {
 
         // Biome category-based terrain modification
         addFeaturesToTag(NMLTags.IS_CRAGLAND, localModifications, feature("crag_rock_craglands"));
+        addFeaturesToTag(NMLTags.IS_OCEANIC_CRAGLAND, localModifications, feature("crag_rock_ocean"));
 
         // Specific foliage patches
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_BEACHGRASS, vegetalDecoration, patch("beachgrass"));

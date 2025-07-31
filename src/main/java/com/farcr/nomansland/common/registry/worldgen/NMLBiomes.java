@@ -38,10 +38,10 @@ public class NMLBiomes {
 
     public static final ResourceKey<Biome> LUSH_RIVER = createKey("lush_river");
     public static final ResourceKey<Biome> BLACKWATER_RIVER = createKey("blackwater_river");
-    public static final ResourceKey<Biome> DESERT_RIVER = createKey("blackwater_river");
+    public static final ResourceKey<Biome> DESERT_RIVER = createKey("desert_river");
 
-    public static final ResourceKey<Biome> MUD_BEACH = createKey("blackwater_river");
-    public static final ResourceKey<Biome> FROZEN_BEACH = createKey("blackwater_river");
+    public static final ResourceKey<Biome> MUD_BEACH = createKey("mud_beach");
+    public static final ResourceKey<Biome> FROZEN_BEACH = createKey("frozen_beach");
     public static final ResourceKey<Biome> TROPICAL_BEACH = createKey("tropical_beach");
 
     //Underground

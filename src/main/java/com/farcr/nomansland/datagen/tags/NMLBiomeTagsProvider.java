@@ -52,6 +52,13 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 Biomes.SPARSE_JUNGLE,
                 Biomes.WINDSWEPT_GRAVELLY_HILLS
         );
+        tag(NMLTags.IS_OCEANIC_CRAGLAND).add(
+                Biomes.COLD_OCEAN,
+                Biomes.DEEP_COLD_OCEAN,
+                Biomes.OCEAN,
+                Biomes.DEEP_OCEAN,
+                Biomes.STONY_SHORE
+        );
 
         tag(BiomeTags.IS_OVERWORLD).addTags(NMLTags.OLD_GROWTH_FOREST, NMLTags.CAVES);
         addToTags(NMLTags.CAVES, Tags.Biomes.IS_UNDERGROUND, Tags.Biomes.IS_CAVE);
@@ -67,10 +74,15 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
         addToTags(NMLTags.OLD_GROWTH_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_TEMPERATE, Tags.Biomes.IS_OLD_GROWTH, Tags.Biomes.IS_RARE);
         addToTags(NMLBiomes.FROZEN_WOODS, Tags.Biomes.IS_RARE, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, BiomeTags.IS_TAIGA, Tags.Biomes.IS_DEAD, BiomeTags.HAS_IGLOO);
         addToTags(NMLBiomes.PRAIRIE, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_HOT, Tags.Biomes.IS_DRY, Tags.Biomes.IS_SPARSE_VEGETATION, BiomeTags.HAS_VILLAGE_PLAINS);
-        addToTags(NMLBiomes.PRAIRIE, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_FLORAL, BiomeTags.IS_HILL, BiomeTags.HAS_VILLAGE_PLAINS);
+        addToTags(NMLBiomes.LAVENDER_FIELD, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_FLORAL, BiomeTags.IS_HILL, BiomeTags.HAS_VILLAGE_PLAINS);
 
         addToTags(NMLBiomes.LUSH_RIVER, BiomeTags.IS_RIVER, BiomeTags.IS_JUNGLE, Tags.Biomes.IS_HOT, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_JUNGLE_TREE);
         addToTags(NMLBiomes.BLACKWATER_RIVER, BiomeTags.IS_RIVER, Tags.Biomes.IS_TEMPERATE, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_DENSE_VEGETATION);
+        addToTags(NMLBiomes.BLACKWATER_RIVER, BiomeTags.IS_RIVER, Tags.Biomes.IS_DESERT, Tags.Biomes.IS_HOT, Tags.Biomes.IS_SANDY);
+
+        addToTags(NMLBiomes.TROPICAL_BEACH, BiomeTags.IS_BEACH, Tags.Biomes.IS_HOT, Tags.Biomes.IS_LUSH, Tags.Biomes.IS_JUNGLE_TREE);
+        addToTags(NMLBiomes.FROZEN_BEACH, Tags.Biomes.IS_STONY_SHORES, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_ICY, Tags.Biomes.IS_AQUATIC_ICY);
+        addToTags(NMLTags.IS_SHORELINE, Tags.Biomes.IS_AQUATIC, Tags.Biomes.IS_RARE, Tags.Biomes.IS_WET);
     }
 
     @SafeVarargs

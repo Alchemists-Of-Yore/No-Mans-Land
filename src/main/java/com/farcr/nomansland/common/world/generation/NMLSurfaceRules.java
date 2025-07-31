@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.world.generation;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
+import com.farcr.nomansland.common.world.surfacerule.BelowOrEqualToYConditionSource;
 import com.terraformersmc.biolith.api.surface.SurfaceGeneration;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +20,7 @@ public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource SILT = makeStateRule(NMLBlocks.SILT.get());
     private static final SurfaceRules.RuleSource WATER = makeStateRule(Blocks.WATER);
     private static final SurfaceRules.RuleSource GRAVEL = makeStateRule(Blocks.GRAVEL);
+    private static final SurfaceRules.RuleSource SAND = makeStateRule(Blocks.SAND);
     private static final SurfaceRules.RuleSource SNOW_BLOCK = makeStateRule(Blocks.SNOW_BLOCK);
     private static final SurfaceRules.RuleSource PACKED_ICE = makeStateRule(Blocks.PACKED_ICE);
     private static final SurfaceRules.RuleSource ICE = makeStateRule(Blocks.ICE);
@@ -140,10 +142,8 @@ public class NMLSurfaceRules {
 
         SurfaceRules.RuleSource tropical_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.TROPICAL_BEACH),
-                SurfaceRules.sequence(
-                        SurfaceRules.state(Blocks.SAND.defaultBlockState())
-                        //TODO: MAKE THIS GO DEEPER
-                        //TODO: ADD GRASS ON HIGH AREAS. POSSIBLY FEATURE?
+                SurfaceRules.ifTrue(
+                        new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(68)), SAND
                 )
         );
 
