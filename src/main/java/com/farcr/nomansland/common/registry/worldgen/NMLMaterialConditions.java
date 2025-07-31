@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry.worldgen;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.surfacerule.BelowOrEqualToYConditionSource;
+import com.farcr.nomansland.common.world.surfacerule.BiomeTagConditionSource;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.SurfaceRules;
@@ -15,4 +16,7 @@ public class NMLMaterialConditions {
 
     public static final Supplier<MapCodec<? extends SurfaceRules.ConditionSource>> BELOW_OR_EQUAL_TO_Y =
             MATERIAL_CONDITIONS.register("below_or_equal_to_y", BelowOrEqualToYConditionSource.CODEC::codec);
+
+    public static final Supplier<MapCodec<? extends SurfaceRules.ConditionSource>> BIOME_TAG =
+            MATERIAL_CONDITIONS.register("biome_tag", BiomeTagConditionSource.CODEC::codec);
 }
