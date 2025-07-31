@@ -37,6 +37,7 @@ public class NMLSurfaceRules {
     );
 
     private static final SurfaceRules.ConditionSource BEACH = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(70), true, true);
+    private static final SurfaceRules.ConditionSource SHORE = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(67), true, true);
 
     public static void register() {
 
@@ -113,6 +114,11 @@ public class NMLSurfaceRules {
                         SurfaceRules.ifTrue(surfaceNoiseAbove(-0.95), SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), GRAVEL)))
         );
 
+        SurfaceRules.RuleSource mushroom_fields = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(Biomes.MUSHROOM_FIELDS),
+                SurfaceRules.ifTrue(BEACH, SILT)
+        );
+
         SurfaceRules.RuleSource lush_river = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.LUSH_RIVER),
                 SurfaceRules.sequence(
@@ -185,12 +191,13 @@ public class NMLSurfaceRules {
                 SurfaceRules.ifTrue(
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
-                            // top layer biome modifiers - grasses, etc.
-                            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
-                                    SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
-                            ),
-                            // deeper layer biome modifiers - sand, beaches...
-                            SurfaceRules.sequence(desert_river, mud_beach, frozen_beach, tropical_beach, gravel_beach)
+                 // deeper layer biome modifiers - sand, beaches...
+                SurfaceRules.sequence(mushroom_fields, desert_river, mud_beach, frozen_beach, tropical_beach, gravel_beach),
+
+                // top layer biome modifiers - grasses, etc.
+                SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+                SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
+                            )
                         )
                 ),
                 // Cave Biomes
