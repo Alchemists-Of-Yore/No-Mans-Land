@@ -1,5 +1,5 @@
 {
-  "feature": "nomansland:cobblestone_boulder",
+  "feature": "nomansland:mossy_boulder",
   "placement": [
     {
       "type": "nomansland:density_function_based_count",
