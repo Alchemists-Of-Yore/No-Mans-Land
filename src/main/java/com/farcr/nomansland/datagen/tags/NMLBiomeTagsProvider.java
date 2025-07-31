@@ -45,7 +45,8 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.DESERT_RIVER,
                 NMLBiomes.MUD_BEACH,
                 NMLBiomes.FROZEN_BEACH,
-                NMLBiomes.TROPICAL_BEACH
+                NMLBiomes.TROPICAL_BEACH,
+                NMLBiomes.GRAVEL_BEACH
         );
 
         tag(NMLTags.IS_CRAGLAND).add(

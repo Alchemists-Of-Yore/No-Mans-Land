@@ -26,10 +26,17 @@ public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource ICE = makeStateRule(Blocks.ICE);
     private static final SurfaceRules.RuleSource SANDSTONE_UNDER_SAND = SurfaceRules.sequence(
             SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SAND),
-            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState()))
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.SAND.defaultBlockState())),
+            SurfaceRules.ifTrue(SurfaceRules.DEEP_UNDER_FLOOR, SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState()))
     );
 
-    private static final SurfaceRules.ConditionSource BEACH = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(68), true, true);
+    private static final SurfaceRules.RuleSource DEEP_GRAVEL = SurfaceRules.sequence(
+            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, GRAVEL),
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState())),
+            SurfaceRules.ifTrue(SurfaceRules.DEEP_UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
+    );
+
+    private static final SurfaceRules.ConditionSource BEACH = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(70), true, true);
 
     public static void register() {
 
@@ -155,13 +162,7 @@ public class NMLSurfaceRules {
         );
         SurfaceRules.RuleSource gravel_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.GRAVEL_BEACH),
-                SurfaceRules.ifTrue(
-                        BEACH,
-                        SurfaceRules.ifTrue(
-                                SurfaceRules.UNDER_FLOOR,
-                                SurfaceRules.state(Blocks.GRAVEL.defaultBlockState())
-                        )
-                )
+                DEEP_GRAVEL
         );
 
         SurfaceRules.RuleSource caves = SurfaceRules.ifTrue(
