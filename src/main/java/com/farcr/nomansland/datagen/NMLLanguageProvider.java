@@ -50,6 +50,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.cave_carp", "Cave Carp");
         add("entity.nomansland.billhook_bass", "Billhook Bass");
         add("entity.nomansland.deer", "Deer");
+        add("entity.nomansland.tortoise", "Tortoise");
         add("fluid_type.nomansland.resin_oil", "Resin Oil");
         add("nomansland.subtitles.block.spike_trap.extend", "Spikes extend");
         add("nomansland.subtitles.block.spike_trap.retract", "Spikes retract");

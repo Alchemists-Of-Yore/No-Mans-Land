@@ -125,6 +125,9 @@ public class NMLItems {
     public static final ItemDefinition<Item> BILLHOOK_BASS_SPAWN_EGG = register("billhook_bass_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.BILLHOOK_BASS, 6443553, 11236417, new Properties()));
 
+    public static final ItemDefinition<Item> TORTOISE_SPAWN_EGG = register("tortoise_spawn_egg", // TODO: color
+            () -> new DeferredSpawnEggItem(NMLEntities.TORTOISE, 4335898, 2497045, new Properties()));
+
     public static final ItemDefinition<Item> DEER_SPAWN_EGG = register("deer_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.DEER, 8412743, 12828347, new Properties()));
 

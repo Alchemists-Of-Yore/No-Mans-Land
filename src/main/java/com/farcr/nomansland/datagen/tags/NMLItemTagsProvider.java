@@ -14,6 +14,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -90,7 +91,7 @@ public class NMLItemTagsProvider extends ItemTagsProvider {
 
         addToTags(NMLTags.BOOKSHELVES.itemTag(), Tags.Items.BOOKSHELVES, BlueprintIntegration.woodenBookshelves().itemTag());
         tag(ItemTags.PLANKS).addTag(NMLTags.TRIMMED_PLANKS.itemTag());
-
+        tag(NMLTags.TORTOISE_FOOD).add(Items.BEETROOT);
         tag(ItemTags.LOGS_THAT_BURN).addTags(NMLTags.MAPLE_LOGS.itemTag(), NMLTags.PINE_LOGS.itemTag(), NMLTags.WALNUT_LOGS.itemTag(), NMLTags.WILLOW_LOGS.itemTag());
     }
 

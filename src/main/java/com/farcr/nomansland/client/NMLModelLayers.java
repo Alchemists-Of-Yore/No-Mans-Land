@@ -22,4 +22,7 @@ public class NMLModelLayers {
 
     public static final ModelLayerLocation GOOSE_LAYER = new ModelLayerLocation(
             NoMansLand.location("goose"), "main");
+
+    public static final ModelLayerLocation TORTOISE_LAYER = new ModelLayerLocation(
+            NoMansLand.location("tortoise"), "main");
 }

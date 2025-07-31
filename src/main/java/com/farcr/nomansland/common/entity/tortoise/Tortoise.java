@@ -1,0 +1,338 @@
+package com.farcr.nomansland.common.entity.tortoise;
+
+import com.farcr.nomansland.common.registry.NMLTags;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.google.common.base.Suppliers;
+import com.mojang.logging.LogUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.TurtleEggBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.UUID;
+import java.util.function.Supplier;
+
+public class Tortoise extends Animal {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<Boolean> HAS_EGG = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> LAYING_EGG = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> GOING_HOME = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IN_SHELL = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> SEARCHING = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Long> HURT_WHEN = SynchedEntityData.defineId(Tortoise.class, EntityDataSerializers.LONG);
+    @Nullable
+    private UUID lastHurtByUUID;
+    private int popUp;
+    private static final float BABY_SCALE = 0.3F;
+    private static final Supplier<EntityDimensions> BABY_DIMENSIONS = Suppliers.memoize(() -> NMLEntities.TORTOISE.get().getDimensions()
+            .withAttachments(EntityAttachments.builder()
+                    .attach(EntityAttachment.PASSENGER, 0.0F, NMLEntities.TORTOISE.get().getHeight(), -0.25F))
+            .scale(BABY_SCALE));
+    private int layEggCounter;
+
+    public Tortoise(EntityType<? extends Tortoise> entityType, Level level) {
+        super(entityType, level);
+        this.lookControl = new LookControl(this) {
+            @Override
+            public void tick() {
+                if (Tortoise.this.inShell() && !Tortoise.this.isSearching())
+                    return;
+                super.tick();
+            }
+        };
+    }
+
+    public static boolean checkTortoiseSpawnRules(EntityType<Tortoise> tortoise, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        return pos.getY() < level.getSeaLevel() + 4 && TurtleEggBlock.onSand(level, pos) && isBrightEnoughToSpawn(level, pos);
+    }
+
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(3, new BreedGoal(this, 0.5F));
+        this.goalSelector.addGoal(4, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
+        this.goalSelector.addGoal(5, new FollowParentGoal(this, 0.25F));
+        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.25F));
+        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(8, new TortoiseSearchForDangerGoal(this));
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 30.0F)
+                .add(Attributes.MOVEMENT_SPEED, 0.25F)
+                .add(Attributes.STEP_HEIGHT, 1.0F)
+                .add(Attributes.ARMOR, 15.0F);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(Tortoise.HOME_POS, BlockPos.ZERO);
+        builder.define(Tortoise.HAS_EGG, false);
+        builder.define(Tortoise.LAYING_EGG, false);
+        builder.define(Tortoise.GOING_HOME, false);
+        builder.define(Tortoise.IN_SHELL, false);
+        builder.define(Tortoise.SEARCHING, false);
+        builder.define(Tortoise.HURT_WHEN, 0L);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        long gameTime = this.level().getGameTime();
+        if ((gameTime - this.getHurtWhen() > 600L) && this.inShell()) {
+            this.setSearching(true);
+        }
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.getHomePos()).resultOrPartial(LOGGER::error)
+                .ifPresent(tag -> compound.put("home_pos", tag));
+        compound.putBoolean("HasEgg", this.hasEgg());
+        compound.putBoolean("Searching", this.isSearching());
+        compound.putBoolean("InShell", this.inShell());
+        compound.putInt("PopUpTime", this.getPopUp());
+        compound.putLong("HurtWhen", this.getHurtWhen());
+        if (this.lastHurtByUUID != null)
+            compound.putUUID("HurtByUUID", this.lastHurtByUUID);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        BlockPos.CODEC.decode(NbtOps.INSTANCE, compound.get("home_pos")).resultOrPartial(LOGGER::error)
+                .ifPresent(pair -> this.setHomePos(pair.getFirst()));
+        this.setSearching(compound.getBoolean("Searching"));
+        this.retreatShell(compound.getBoolean("InShell"));
+        this.setHasEgg(compound.getBoolean("HasEgg"));
+        this.setPopUp(compound.getInt("PopUpTime"));
+        this.setHurtWhen(compound.getInt("HurtWhen"));
+        if (this.lastHurtByUUID != null)
+            this.lastHurtByUUID = compound.getUUID("HurtByUUID");
+    }
+
+    @Nullable
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.TURTLE_AMBIENT_LAND;
+    }
+
+    @Override
+    protected SoundEvent getSwimSound() {
+        return SoundEvents.TURTLE_SWIM;
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return this.isBaby() ? SoundEvents.TURTLE_HURT_BABY : SoundEvents.TURTLE_HURT;
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getDeathSound() {
+        return this.isBaby() ? SoundEvents.TURTLE_DEATH_BABY : SoundEvents.TURTLE_DEATH;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState block) {
+        super.playStepSound(pos, block);
+    }
+
+    @Override
+    public boolean canFallInLove() {
+        return super.canFallInLove() && !this.hasEgg();
+    }
+
+    @Override
+    protected float nextStep() {
+        return this.moveDist + 0.15F;
+    }
+
+    @Override
+    public float getAgeScale() {
+        return this.isBaby() ? BABY_SCALE : 1.0F;
+    }
+
+    @Override
+    @Nullable
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
+        return NMLEntities.TORTOISE.get().create(level);
+    }
+
+    @Override
+    public boolean isFood(ItemStack stack) {
+        return stack.is(NMLTags.TORTOISE_FOOD);
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (source.getEntity() instanceof LivingEntity) {
+            if (!this.inShell()) {
+                this.setLastHurtByMob((LivingEntity) source.getEntity());
+                this.setHurtWhen(this.level().getGameTime());
+                this.retreatShell(true);
+            } else {
+                if (amount > this.getMaxHealth()) {
+                    amount -= this.getMaxHealth();
+                } else {
+                    return false;
+                }
+            }
+        }
+        return super.hurt(source, amount);
+    }
+
+    @Override
+    public void setLastHurtByMob(@Nullable LivingEntity livingEntity) {
+        super.setLastHurtByMob(livingEntity);
+        if (livingEntity != null)
+            this.lastHurtByUUID = livingEntity.getUUID();
+    }
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (this.isAlive() && this.isLayingEgg() && this.layEggCounter >= 1 && this.layEggCounter % 5 == 0) {
+            BlockPos blockpos = this.blockPosition();
+            if (TurtleEggBlock.onSand(this.level(), blockpos)) {
+                this.level().levelEvent(2001, blockpos, Block.getId(this.level().getBlockState(blockpos.below())));
+                this.gameEvent(GameEvent.ENTITY_ACTION);
+            }
+        }
+    }
+
+    @Override
+    protected void ageBoundaryReached() {
+        super.ageBoundaryReached();
+        if (!this.isBaby() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            this.spawnAtLocation(Items.TURTLE_SCUTE, 1); //  TODO: tortoise scute
+        }
+    }
+
+    @Override
+    public void travel(Vec3 travelVector) {
+        if (this.inShell())
+            return;
+        super.travel(travelVector);
+    }
+
+    @Override
+    public EntityDimensions getDefaultDimensions(Pose pose) {
+        return this.isBaby() ? BABY_DIMENSIONS.get() : super.getDefaultDimensions(pose);
+    }
+
+    public void setHomePos(BlockPos homePos) {
+        this.entityData.set(HOME_POS, homePos);
+    }
+
+    public BlockPos getHomePos() {
+        return this.entityData.get(HOME_POS);
+    }
+
+    public boolean hasEgg() {
+        return this.entityData.get(HAS_EGG);
+    }
+
+    public void setHasEgg(boolean hasEgg) {
+        this.entityData.set(HAS_EGG, hasEgg);
+    }
+
+    public boolean isLayingEgg() {
+        return this.entityData.get(LAYING_EGG);
+    }
+
+    public boolean inShell() {
+        return this.entityData.get(IN_SHELL);
+    }
+
+    public void retreatShell(boolean shouldShell) {
+        this.entityData.set(IN_SHELL, shouldShell);
+    }
+
+    public boolean isSearching() {
+        return this.entityData.get(SEARCHING);
+    }
+
+    public void setSearching(boolean searching) {
+        this.entityData.set(SEARCHING, searching);
+    }
+
+    public void setLayingEgg(boolean isLayingEgg) {
+        this.layEggCounter = isLayingEgg ? 1 : 0;
+        this.entityData.set(LAYING_EGG, isLayingEgg);
+    }
+
+    public boolean isGoingHome() {
+        return this.entityData.get(GOING_HOME);
+    }
+
+    public void setGoingHome(boolean isGoingHome) {
+        this.entityData.set(GOING_HOME, isGoingHome);
+    }
+
+    public int getPopUp() {
+        return popUp;
+    }
+
+    public void setPopUp(int popUp) {
+        this.popUp = popUp;
+    }
+
+    public long getHurtWhen() {
+        return this.entityData.get(HURT_WHEN);
+    }
+
+    public void setHurtWhen(long hurtWhen) {
+        this.entityData.set(HURT_WHEN, hurtWhen);
+    }
+
+    @Nullable
+    public UUID getLastHurtByUUID() {
+        return lastHurtByUUID;
+    }
+
+    public void setLastHurtByUUID(@Nullable UUID lastHurtByUUID) {
+        this.lastHurtByUUID = lastHurtByUUID;
+    }
+
+}
