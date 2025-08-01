@@ -4,6 +4,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
+import com.farcr.nomansland.common.world.surfacerule.AndConditionSource;
 import com.farcr.nomansland.common.world.surfacerule.BelowOrEqualToYConditionSource;
 import com.farcr.nomansland.common.world.surfacerule.BiomeTagConditionSource;
 import com.terraformersmc.biolith.api.surface.SurfaceGeneration;
@@ -37,8 +38,16 @@ public class NMLSurfaceRules {
             SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
     );
 
-    private static final SurfaceRules.ConditionSource BEACH = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(70), true, true);
-    private static final SurfaceRules.ConditionSource SHORE = new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(66), true, true);
+    private static final SurfaceRules.ConditionSource BEACH =
+            new AndConditionSource(
+                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(70), true, true, 0),
+                    SurfaceRules.yBlockCheck(VerticalAnchor.absolute(55), 2)
+            );
+    private static final SurfaceRules.ConditionSource SHORE =
+            new AndConditionSource(
+                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(66), true, true, -0.35F),
+                    SurfaceRules.yBlockCheck(VerticalAnchor.absolute(55), 2)
+            );
 
     public static void register() {
         //Multiple-Biome Modifiers
