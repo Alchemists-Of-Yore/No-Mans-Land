@@ -6,6 +6,7 @@ import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.model.BillhookBassModel;
 import com.farcr.nomansland.client.model.BuriedModel;
 import com.farcr.nomansland.client.model.GooseModel;
+import com.farcr.nomansland.client.model.TortoiseModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.client.particle.*;
@@ -60,6 +61,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.LINGERING_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.PACIFIED_CLOUD.get(), NoopRenderer::new);
+        event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
     }
 
     @SubscribeEvent
@@ -72,6 +74,7 @@ public class ClientSetupEvents {
         event.registerLayerDefinition(NMLModelLayers.DEER_LAYER, DeerModel::createBodyLayer);
 
         event.registerLayerDefinition(NMLModelLayers.GOOSE_LAYER, GooseModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.TORTOISE_LAYER, TortoiseModel::createBodyLayer);
     }
 
     @SubscribeEvent

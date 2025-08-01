@@ -14,6 +14,7 @@ public class NMLTags {
     public static final TagKey<Item> FIRESTARTERS = createItemTag("firestarters");
     public static final TagKey<Item> DEER_FOOD = createItemTag("deer_food");
     public static final TagKey<Item> MOOSE_FOOD = createItemTag("moose_food");
+    public static final TagKey<Item> TORTOISE_FOOD = createItemTag("tortoise_food");
     public static final TagKey<Item> MAKES_RESIN_OIL = createItemTag("makes_resin_oil");
     public static final TagKey<Item> INK_IMMUNE = createItemTag("ink_immune");
 
@@ -45,6 +46,7 @@ public class NMLTags {
     public static final TagKey<Biome> IS_OCEANIC_CRAGLAND = createBiomeTag("is_oceanic_cragland");
 
     public static final TagKey<Biome> HAS_GRAVEL_SHORE = createBiomeTag("has_gravel_shore");
+    public static final TagKey<Block> SUITABLE_TORTOISE_HOME = createBlockTag("suitable_tortoise_home");
 
     public static class FeatureAddition {
         // Broad brushes

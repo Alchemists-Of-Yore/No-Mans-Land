@@ -9,9 +9,11 @@ import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -81,4 +83,10 @@ public class NMLEntities {
             ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
                     .sized(1.5f, 2.5f).build("moose"));
 
+    public static final Supplier<EntityType<Tortoise>> TORTOISE =
+            ENTITIES.register("tortoise", () -> EntityType.Builder.of(Tortoise::new, MobCategory.CREATURE)
+                    .sized(1.25F, 1.25F)
+                    .eyeHeight(1.0F)
+                    .passengerAttachments(new Vec3(0.0, 0.55625, -0.25)) // FIXME
+                    .build("tortoise"));
 }
