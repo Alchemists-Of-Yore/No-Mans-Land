@@ -1,5 +1,6 @@
-package com.farcr.nomansland.common.entity.tortoise;
+package com.farcr.nomansland.common.entity.tortoise.ai;
 
+import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 

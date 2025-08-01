@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.entity.tortoise;
 
+import com.farcr.nomansland.common.entity.tortoise.ai.TortoiseSearchForDangerGoal;
+import com.farcr.nomansland.common.entity.tortoise.ai.TortoiseSleepAndWakeUpGoal;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.google.common.base.Suppliers;
@@ -57,7 +59,7 @@ public class Tortoise extends Animal {
             .withAttachments(EntityAttachments.builder()
                     .attach(EntityAttachment.PASSENGER, 0.0F, NMLEntities.TORTOISE.get().getHeight(), -0.25F))
             .scale(BABY_SCALE));
-    private int layEggCounter;
+    public int layEggCounter;
 
     public Tortoise(EntityType<? extends Tortoise> entityType, Level level) {
         super(entityType, level);
@@ -231,7 +233,7 @@ public class Tortoise extends Animal {
     public void setLastHurtByMob(@Nullable LivingEntity livingEntity) {
         super.setLastHurtByMob(livingEntity);
         if (livingEntity != null)
-            this.lastHurtByUUID = livingEntity.getUUID();
+            this.setLastHurtByUUID(livingEntity.getUUID());
     }
 
     @Override
@@ -339,5 +341,14 @@ public class Tortoise extends Animal {
     public void setLastHurtByUUID(@Nullable UUID lastHurtByUUID) {
         this.lastHurtByUUID = lastHurtByUUID;
     }
+
+    public int getLayEggCounter() {
+        return layEggCounter;
+    }
+
+    public void setLayEggCounter(int layEggCounter) {
+        this.layEggCounter = layEggCounter;
+    }
+
 
 }
