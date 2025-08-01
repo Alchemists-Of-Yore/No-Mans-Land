@@ -39,8 +39,8 @@ public class NMLFeatures {
     public static final Supplier<Feature<DitheredPatchFeatureConfiguration>> DITHERED_PATCH = FEATURES.register("dithered_patch",
             () -> new DitheredPatchFeature(DitheredPatchFeatureConfiguration.CODEC));
 
-    public static final Supplier<Feature<NoneFeatureConfiguration>> CRAG_ROCK = FEATURES.register("crag_rock",
-            () -> new CragRockFeature(NoneFeatureConfiguration.CODEC));
+    public static final Supplier<Feature<CragRockFeatureConfiguration>> CRAG_ROCK = FEATURES.register("crag_rock",
+            () -> new CragRockFeature(CragRockFeatureConfiguration.CODEC));
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> HUGE_FIELD_MUSHROOM = register("huge_field_mushroom");
 

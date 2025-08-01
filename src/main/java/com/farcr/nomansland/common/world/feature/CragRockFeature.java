@@ -5,77 +5,145 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
-public class CragRockFeature extends Feature<NoneFeatureConfiguration> {
+/* "crag_rock" feature type.
+
+ places a large rock, with some material on top (ex. grass and dirt)
+
+ EXAMPLE SYNTAX:
+
+ {
+  "type": "nomansland:crag_rock",
+  "config": {
+    // required - no default
+    //   takes in any integer number provider. valid range: 1 - 8
+    //   determines the approximate radius of the rock.
+    "radius": {
+      "type": "uniform",
+      "min_inclusive": 4,
+      "max_inclusive": 7
+    },
+    // required - no default
+    //   takes in any integer number provider. valid range: 1 - infinity
+    //   determines the approximate height of the rock.
+    "height": {
+      "type": "uniform",
+      "min_inclusive": 6,
+      "max_inclusive": 18
+    },
+    // defaults to 1.0
+    //   takes in any floating point number provider.
+    //   determines how circular the shape of the rock is.
+    "radius_strength": 1.0,
+    // defaults to 5.0
+    //   takes in any floating point number provider.
+    //   determines how much the shape of the rock is affected by random noise.
+    "noise_strength": 5.0,
+
+    // required - no default
+    //    takes in any variety of block provider.
+    //    the base block type, making up the rock.
+    "base_block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:stone"
+      }
+    },
+    // required - no default
+    //    takes in any variety of block provider.
+    //    the block type making up the under layer of the surface.
+    "soil_block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:dirt"
+      }
+    },
+    // required - no default
+    //    takes in any variety of block provider.
+    //    the block type making up the top layer of the surface.
+    "surface_block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:grass_block"
+      }
+    }
+  }
+ } */
+public class CragRockFeature extends Feature<CragRockFeatureConfiguration> {
     private static final NormalNoise NOISE = NormalNoise.create(RandomSource.create(0), 0, 1);
 
-    public CragRockFeature(Codec<NoneFeatureConfiguration> codec) {
+    public CragRockFeature(Codec<CragRockFeatureConfiguration> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+    public boolean place(FeaturePlaceContext<CragRockFeatureConfiguration> context) {
         BlockPos origin = context.origin();
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
 
-        double radius = Math.clamp(random.nextGaussian() * 2 + 5, 2, 6);
+        CragRockFeatureConfiguration config = context.config();
+        int radius = config.radius().sample(random);
+        int height = config.height().sample(random);
+        double radiusStrength = config.radiusStrength().sample(random);
+        double noiseStrength = config.noiseStrength().sample(random);
+
         int range = Math.min(Mth.ceil(radius + 3), 8);
-        int height = random.nextIntBetweenInclusive(6, 18);//(int) Math.clamp(random.nextGaussian() * 16 + 32, 3, 24);
-        int depth = 16;
+        int depth = Mth.ceil(radius);
+
+        int noiseSampleOffset = random.nextIntBetweenInclusive(-1000, 1000);
 
         boolean placedBlock = false;
         BlockPos.MutableBlockPos pos = origin.mutable();
         for (int x = -range; x <= range; x++) {
             for (int z = -range; z <= range; z++) {
-                int totalSurfaceDepth = random.nextIntBetweenInclusive(2, 5);
-                boolean wasAboveAir = false;
-                boolean isSurface = false;
+                // height stuffs
+                int baseHeight = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, origin.getX() + x, origin.getZ() + z) - depth - 1;
+                double topHeight = origin.getY() + height + NOISE.getValue(pos.getX() * 0.05, 1000 + noiseSampleOffset, pos.getZ() * 0.05) * 2;
+                double maxYDistance = topHeight - (baseHeight + depth);
 
-                int worldHeight = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, origin.getX() + x, origin.getZ() + z);
+                // skip if we're inside terrain already
+                if (baseHeight > topHeight) continue;
+
+                // surface stuffs
                 int surfaceDepth = 0;
-                for (int y = height - 1; y >= -depth; y--) {
-                    pos.set(origin.getX() + x, worldHeight + y, origin.getZ() + z);
+                double soilDepth = 2 + NOISE.getValue(pos.getX() * 0.05, 2000 + noiseSampleOffset, pos.getZ() * 0.05) * 1.5;
+                boolean placingSurface = false;
 
-                    double noiseFac = NOISE.getValue(pos.getX() * 0.15, pos.getY() * 0.02, pos.getZ() * 0.15);
+                for (int y = Mth.ceil(topHeight); y >= baseHeight; y--) {
+                    pos.set(x + origin.getX(), y, z + origin.getZ());
 
-                    double radFac;
-                    if (pos.getY() > origin.getY() + 1) {
-                        double distanceY = pos.getY() - origin.getY();
-                        double radiusMultiplier = 1;
-                        radiusMultiplier *= Mth.clampedMap(distanceY, 0, height - 1, 1, 0.7);
-                        radiusMultiplier *= Mth.clampedMap(distanceY, height - 2, height - 1, 1, 0.8);
+                    double noiseFac = NOISE.getValue(pos.getX() * 0.15, pos.getY() * 0.02 + noiseSampleOffset, pos.getZ() * 0.15);
+
+                    double radiusFac;
+                    double xzDist = origin.distToCenterSqr(pos.getX() + 0.5, origin.getY() + 0.5, pos.getZ() + 0.5);
+                    double yDist = y - (baseHeight + depth);
+
+                    if (yDist > 1) {
+                        // radius if we're above ground
+                        double radiusMultiplier = Mth.clampedMap(yDist, 0, maxYDistance - 1, 1, 0.7);
+                        radiusMultiplier *= Mth.clampedMap(yDist, maxYDistance - 2, maxYDistance, 1, 0.8);
                         double dist = Math.sqrt(origin.distToCenterSqr(pos.getX() + 0.5, origin.getY() + 0.5, pos.getZ() + 0.5));
-                        radFac = radius * radiusMultiplier - dist;
+                        radiusFac = radius * radiusMultiplier - dist;
                     } else {
-                        double dist = Math.sqrt(origin.distToCenterSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
-                        radFac = (radius + 1) - dist;
+                        // radius if we're underground
+                        double dist = Math.sqrt(xzDist + yDist);
+                        radiusFac = (radius + 1) - dist;
                     }
 
-                    if (radFac + noiseFac * 8 > 0) {
-                        if ((y > height - 3 || pos.getY() < worldHeight + 3) && !wasAboveAir) isSurface = true;
-                        if (isSurface) surfaceDepth++;
-
-                        BlockState state;
-                        if (surfaceDepth == 1) {
-                            state = Blocks.GRASS_BLOCK.defaultBlockState();
-                        } else if (surfaceDepth < totalSurfaceDepth && surfaceDepth > 0) {
-                            state = Blocks.DIRT.defaultBlockState();
-                        } else {
-                            state = Blocks.STONE.defaultBlockState();
-                        }
-                        level.setBlock(pos, state, 2);
+                    if (radiusFac * radiusStrength + noiseFac * noiseStrength > 0) {
+                        // conditions for whether the surface should be placed
+                        if ((yDist > maxYDistance * 0.75 || yDist < 2) && surfaceDepth == 0 && yDist > 0) placingSurface = true;
+                        level.setBlock(pos, getBlockState(config, pos, level, random, surfaceDepth, soilDepth, placingSurface), 2);
                         placedBlock = true;
-                        wasAboveAir = true;
+                        surfaceDepth++;
                     } else {
-                        wasAboveAir = false;
+                        placingSurface = false;
                         surfaceDepth = 0;
                     }
                 }
@@ -83,5 +151,17 @@ public class CragRockFeature extends Feature<NoneFeatureConfiguration> {
         }
 
         return placedBlock;
+    }
+
+    // gets the current surface block based off depth and other things
+    private BlockState getBlockState(CragRockFeatureConfiguration config, BlockPos pos, WorldGenLevel level, RandomSource random, int surfaceDepth, double soilDepth, boolean placingSurface) {
+        if (placingSurface && level.getBlockState(pos).canBeReplaced()) {
+            if (surfaceDepth == 0) {
+                return config.surfaceBlockProvider().getState(random, pos);
+            } else if (surfaceDepth < soilDepth) {
+                return config.soilBlockProvider().getState(random, pos);
+            }
+        }
+        return config.baseBlockProvider().getState(random, pos);
     }
 }
