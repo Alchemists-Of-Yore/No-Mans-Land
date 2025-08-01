@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -63,7 +64,7 @@ public class InkBomb extends ThrowableBombEntity {
                 double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
                 double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
                 double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
-                level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 1), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
+                level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, Color.BLACK.getRGB()), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
             }
         } else if (b == 1) {
             spawnParticles(ParticleTypes.SMOKE, 400);
@@ -91,7 +92,7 @@ public class InkBomb extends ThrowableBombEntity {
             livingEntity.removeEffect(MobEffects.INVISIBILITY);
             livingEntity.removeEffect(MobEffects.NIGHT_VISION);
         });
-        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY() + 1, getZ());
+        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY() - 1, getZ());
         Entity owner = getOwner();
         if (owner instanceof LivingEntity livingentity) {
             lingeringCloud.setOwner(livingentity);
@@ -145,7 +146,7 @@ public class InkBomb extends ThrowableBombEntity {
     }
 
     @Override
-    protected ParticleOptions getParticle() {
+    protected ParticleOptions getParticle(LevelAccessor levelAccessor) {
             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, Color.BLACK.getRGB());
     }
 

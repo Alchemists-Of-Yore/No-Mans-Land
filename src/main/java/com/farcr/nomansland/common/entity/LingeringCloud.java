@@ -22,7 +22,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.AABB;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -109,17 +111,19 @@ public class LingeringCloud extends Entity implements TraceableEntity {
         }
     }
 
+    @Override
     public void tick() {
         super.tick();
 
         Level level = level();
         boolean isWaiting = isWaiting();
         float radius = getRadius();
+        double centerY = getY() + getBbHeight() / 2.0;
 
         if (level.isClientSide) {
             if (isWaiting && random.nextBoolean()) return;
 
-            ParticleOptions particle = getParticle();
+            ParticleOptions particle = getParticle(level);
             int count = isWaiting ? 2 : Mth.ceil(Math.PI * radius * radius);
             float spread = isWaiting ? 0.2F : radius;
 
@@ -130,7 +134,7 @@ public class LingeringCloud extends Entity implements TraceableEntity {
 
                 double sinPhi = Math.sin(phi);
                 double x = getX() + r * sinPhi * Math.cos(theta);
-                double y = getY() + r * Math.cos(phi);
+                double y = centerY + r * Math.cos(phi);
                 double z = getZ() + r * sinPhi * Math.sin(theta);
 
                 if (particle.getType() == ParticleTypes.ENTITY_EFFECT) {
@@ -157,7 +161,7 @@ public class LingeringCloud extends Entity implements TraceableEntity {
 
             if (radiusPerTick != 0.0F) {
                 radius += radiusPerTick;
-                if (radius < 0.5F) {
+                if (radius < 0.2F) {
                     discard();
                     return;
                 }
@@ -178,14 +182,19 @@ public class LingeringCloud extends Entity implements TraceableEntity {
                     }
                     effects.addAll(potionContents.customEffects());
 
-                    List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, getBoundingBox());
+                    AABB area = new AABB(
+                            getX() - radius, centerY - radius, getZ() - radius,
+                            getX() + radius, centerY + radius, getZ() + radius
+                    );
+                    List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, area);
+
                     for (LivingEntity entity : entities) {
                         if (victims.containsKey(entity) || !entity.isAffectedByPotions()) continue;
                         if (effects.stream().noneMatch(entity::canBeAffected)) continue;
 
-                        double dx = entity.getX() - getX();
-                        double dy = entity.getY() - getY();
-                        double dz = entity.getZ() - getZ();
+                        double dx = getX() - entity.getX();
+                        double dy = centerY - entity.getY();
+                        double dz = getZ() - entity.getZ();
                         double distSq = dx * dx + dy * dy + dz * dz;
                         if (distSq > radius * radius) continue;
 
@@ -211,7 +220,6 @@ public class LingeringCloud extends Entity implements TraceableEntity {
                             }
                         }
 
-
                         if (radiusOnUse != 0.0F) {
                             radius += radiusOnUse;
                             if (radius < 0.5F) {
@@ -236,6 +244,10 @@ public class LingeringCloud extends Entity implements TraceableEntity {
 
     public void addEffect(MobEffectInstance effectInstance) {
         setPotionContents(potionContents.withEffectAdded(effectInstance));
+    }
+
+    public ParticleOptions getParticle(LevelAccessor levelAccessor) {
+        return getParticle();
     }
 
     public ParticleOptions getParticle() {

@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.TntBlock;
@@ -149,7 +150,7 @@ public class Explosive extends ThrowableBombEntity {
     }
 
     @Override
-    protected ParticleOptions getParticle() {
+    protected ParticleOptions getParticle(LevelAccessor levelAccessor) {
         return ParticleTypes.SMOKE;
     }
 

@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class ThrowableBombEntity extends ThrowableProjectile {
@@ -88,7 +89,7 @@ public abstract class ThrowableBombEntity extends ThrowableProjectile {
             }
 
             if (!onGround()) {
-                level.addParticle(getParticle(), getX(), getY() + getBbHeight(), getZ(), 0, 0, 0);
+                level.addParticle(getParticle(level), getX(), getY() + getBbHeight(), getZ(), 0, 0, 0);
             }
         } else {
             if (shouldFuse()) {
@@ -119,7 +120,7 @@ public abstract class ThrowableBombEntity extends ThrowableProjectile {
 
     protected abstract void explode();
 
-    protected abstract ParticleOptions getParticle();
+    protected abstract ParticleOptions getParticle(LevelAccessor levelAccessor);
 
     public float getRoll(float partialTicks) {
         return Mth.lerp(partialTicks, oRoll, roll);

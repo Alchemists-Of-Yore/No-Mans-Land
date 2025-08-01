@@ -11,6 +11,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -24,7 +26,6 @@ public class InkCloud extends LingeringCloud {
     public InkCloud(Level level, double x, double y, double z) {
         super(NMLEntities.INK_CLOUD.get(), level);
         setPos(x, y, z);
-        setParticle(new DustParticleOptions(Vec3.fromRGB24(0x0b0a09).toVector3f(), 2));
     }
 
     @Override
@@ -36,14 +37,12 @@ public class InkCloud extends LingeringCloud {
         if (level.isClientSide) {
             boolean isWaiting = isWaiting();
             float radius = getRadius();
+            double centerY = getY() + getBbHeight() / 2.0;
+
             if (isWaiting && random.nextBoolean()) return;
 
-            ParticleOptions particle = switch (random.nextInt(3)) {
-                case 0 -> new DustParticleOptions(Vec3.fromRGB24(0x131110).toVector3f(), 2);
-                case 1 -> new DustParticleOptions(Vec3.fromRGB24(0x111819).toVector3f(), 2);
-                default -> new DustParticleOptions(Vec3.fromRGB24(0x1a1c1b).toVector3f(), 2);
-            };
-            int count = isWaiting ? 2 : Mth.ceil(Math.PI * radius * radius)*2;
+            ParticleOptions particle = getParticle(level);
+            int count = isWaiting ? 2 : Mth.ceil(Math.PI * radius * radius);
             float spread = isWaiting ? 0.2F : radius;
 
             for (int i = 0; i < count; i++) {
@@ -53,7 +52,7 @@ public class InkCloud extends LingeringCloud {
 
                 double sinPhi = Math.sin(phi);
                 double x = getX() + r * sinPhi * Math.cos(theta);
-                double y = getY() + r * Math.cos(phi);
+                double y = centerY + r * Math.cos(phi);
                 double z = getZ() + r * sinPhi * Math.sin(theta);
 
                 if (isWaiting) {
@@ -63,14 +62,26 @@ public class InkCloud extends LingeringCloud {
                 }
             }
         }
-
         if (tickCount % 10 == 0) {
-            List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, getBoundingBox());
+            double centerY = getY() + getBbHeight() / 2.0;
+            Vec3 center = new Vec3(getX(), centerY, getZ());
+            float radius = getRadius();
+
+            AABB area = new AABB(
+                    getX() - radius, centerY - radius, getZ() - radius,
+                    getX() + radius, centerY + radius, getZ() + radius
+            );
+
+            List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, area);
             for (LivingEntity entity : entities) {
-                if (entity.getEyePosition().distanceToSqr(position()) < Mth.square(getRadius()) && entity.isAffectedByPotions()) {
+                if (entity.getEyePosition().distanceToSqr(center) < Mth.square(radius) && entity.isAffectedByPotions()) {
                     boolean immune = false;
-                    for (ItemStack stack : entity.getArmorSlots())
-                        if (stack.is(NMLTags.INK_IMMUNE)) immune = true;
+                    for (ItemStack stack : entity.getArmorSlots()) {
+                        if (stack.is(NMLTags.INK_IMMUNE)) {
+                            immune = true;
+                            break;
+                        }
+                    }
                     if (!immune) {
                         entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30));
                         entity.removeEffect(MobEffects.INVISIBILITY);
@@ -79,5 +90,15 @@ public class InkCloud extends LingeringCloud {
                 }
             }
         }
+    }
+
+    @Override
+    public ParticleOptions getParticle(LevelAccessor levelAccessor) {
+        return switch (random.nextInt(4)) {
+            case 0 -> new DustParticleOptions(Vec3.fromRGB24(0x131110).toVector3f(), 3);
+            case 1 -> new DustParticleOptions(Vec3.fromRGB24(0x111819).toVector3f(), 3);
+            case 2 -> new DustParticleOptions(Vec3.fromRGB24(0x0b0a09).toVector3f(), 3);
+            default -> new DustParticleOptions(Vec3.fromRGB24(0x1a1c1b).toVector3f(), 3);
+        };
     }
 }
