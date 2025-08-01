@@ -40,13 +40,13 @@ public class NMLSurfaceRules {
 
     private static final SurfaceRules.ConditionSource BEACH =
             new AndConditionSource(
-                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(70), true, true, 0),
-                    SurfaceRules.yBlockCheck(VerticalAnchor.absolute(55), 2)
+                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(71), true, true, 0),
+                    SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
     private static final SurfaceRules.ConditionSource SHORE =
             new AndConditionSource(
                     new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(66), true, true, -0.35F),
-                    SurfaceRules.yBlockCheck(VerticalAnchor.absolute(55), 2)
+                    SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
 
     public static void register() {
