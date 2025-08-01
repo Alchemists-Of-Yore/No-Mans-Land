@@ -327,14 +327,14 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onEffectRemoved(MobEffectEvent.Remove event) {
         if (event.getEntity() instanceof Mob mob && event.getEffect().value().equals(NMLEffects.PACIFIED.get())) {
-            mob.targetSelector.removeGoal(new PacifiedAttackGoal(mob));
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof PacifiedAttackGoal);
         }
     }
 
     @SubscribeEvent
     public static void onEffectExpired(MobEffectEvent.Expired event) {
         if (event.getEffectInstance() != null && event.getEntity() instanceof Mob mob && event.getEffectInstance().getEffect().value().equals(NMLEffects.PACIFIED.get())) {
-            mob.targetSelector.removeGoal(new PacifiedAttackGoal(mob));
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof PacifiedAttackGoal);
         }
     }
 

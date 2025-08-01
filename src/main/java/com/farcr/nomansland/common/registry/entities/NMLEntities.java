@@ -1,10 +1,7 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.entity.IncendiaryArrow;
-import com.farcr.nomansland.common.entity.InkCloud;
-import com.farcr.nomansland.common.entity.LingeringCloud;
-import com.farcr.nomansland.common.entity.Moose;
+import com.farcr.nomansland.common.entity.*;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.bombs.Firebomb;
@@ -58,6 +55,11 @@ public class NMLEntities {
     public static final Supplier<EntityType<InkCloud>> INK_CLOUD =
             ENTITIES.register("ink_cloud", () -> EntityType.Builder.<InkCloud>of(InkCloud::new, MobCategory.MISC)
                     .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("ink_cloud"));
+
+    public static final Supplier<EntityType<PacifiedCloud>> PACIFIED_CLOUD =
+            ENTITIES.register("pacified_cloud", () -> EntityType.Builder.<PacifiedCloud>of(PacifiedCloud::new, MobCategory.MISC)
+                    .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("pacified_cloud"));
+
 
     public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS =
             ENTITIES.register("billhook_bass", () -> EntityType.Builder.of(BillhookBass::new, MobCategory.WATER_CREATURE)

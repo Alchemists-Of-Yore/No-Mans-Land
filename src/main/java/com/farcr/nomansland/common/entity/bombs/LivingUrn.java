@@ -1,14 +1,17 @@
 package com.farcr.nomansland.common.entity.bombs;
 
-import com.farcr.nomansland.common.entity.LingeringCloud;
+import com.farcr.nomansland.common.entity.PacifiedCloud;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -20,6 +23,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -83,19 +87,19 @@ public class LivingUrn extends ThrowableBombEntity {
 
     @Override
     protected void explode() {
-        LingeringCloud lingeringCloud = new LingeringCloud(level(), getX(), getY(), getZ());
+        PacifiedCloud pacifiedCloud = new PacifiedCloud(level(), getX(), getY(), getZ());
         Entity owner = getOwner();
         if (owner instanceof LivingEntity livingentity) {
-            lingeringCloud.setOwner(livingentity);
+            pacifiedCloud.setOwner(livingentity);
         }
 
-        lingeringCloud.setRadius(2);
-        lingeringCloud.setWaitTime(5);
-        lingeringCloud.setDuration(60);
-        lingeringCloud.setRadiusPerTick((float) -1/100);
-        lingeringCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0))));
-        level().addFreshEntity(lingeringCloud);
-        level().playSound(null, blockPosition(), SoundEvents.MUD_BRICKS_BREAK, SoundSource.PLAYERS, 1, 1);
+        pacifiedCloud.setRadius(2);
+        pacifiedCloud.setWaitTime(5);
+        pacifiedCloud.setDuration(60);
+        pacifiedCloud.setRadiusPerTick((float) -1/100);
+        pacifiedCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0))));
+        level().addFreshEntity(pacifiedCloud);
+        level().playSound(null, blockPosition(), SoundEvents.DECORATED_POT_SHATTER  , SoundSource.PLAYERS, 1, 0.75F);
         discard();
     }
 
@@ -162,6 +166,7 @@ public class LivingUrn extends ThrowableBombEntity {
         super.tick();
 
         Level level = level();
+
         Monster monster = level.getNearestEntity(
                 Monster.class,
                 TargetingConditions.DEFAULT.range(8),
@@ -170,6 +175,10 @@ public class LivingUrn extends ThrowableBombEntity {
         );
 
         if (level.isClientSide()) {
+            if (!onGround()) {
+                level.addParticle(getParticle(level), getX(), getY() + getBbHeight(), getZ(), 0, 0, 0);
+            }
+
             if (shakeTimer > 0) {
                 if (monster != null && !(monster instanceof NeutralMob)) {
                     if (bounceCooldown > 0) {
@@ -191,8 +200,8 @@ public class LivingUrn extends ThrowableBombEntity {
                         if (bounceCooldown < 15) {
                             shakeTimer++;
 
-                            float amplitude = Math.min(15, shakeTimer * 0.8F);
-                            roll += (float) (Math.sin(shakeTimer * 0.6) * amplitude);
+                            float amplitude = Math.min(12, shakeTimer * 0.8F);
+                            roll += (float) (Math.sin(shakeTimer) * amplitude);
                         }
                     }
                 }
@@ -241,6 +250,8 @@ public class LivingUrn extends ThrowableBombEntity {
                         bounceCooldown = -1;
                     }
                 } else {
+                    level.playSound(null, blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1, 0.75F);
+                    if (!level.isClientSide) ((ServerLevel) level).sendParticles(ParticleTypes.SMOKE, getX(), getY() + 0.5, getZ(), 10, 0, 0, 0, 0.02);
                     level.addFreshEntity(new ItemEntity(level, getX(), getY(), getZ(), NMLItems.LIVING_URN.stack()));
                     discard();
                 }
@@ -249,8 +260,15 @@ public class LivingUrn extends ThrowableBombEntity {
     }
 
     @Override
-    protected ParticleOptions getParticle() {
-        return ParticleTypes.HEART;
+    protected ParticleOptions getParticle(LevelAccessor levelAccessor) {
+        return switch (levelAccessor.getRandom().nextInt(6)) {
+            case 0 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(51, 0xc6ff82));
+            case 1 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(51, 0xffdd82));
+            case 2 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(51, 0xfeb3bc));
+            case 3 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(51, 0xfe82ff));
+            case 4 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(51, 0xd682ff));
+            default -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(51, 0x82ffc0));
+        };
     }
 
     private float normalizeAngle(float angle) {

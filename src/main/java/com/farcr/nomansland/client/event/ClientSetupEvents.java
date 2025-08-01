@@ -59,6 +59,7 @@ public class ClientSetupEvents {
 
         event.registerEntityRenderer(NMLEntities.LINGERING_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_CLOUD.get(), NoopRenderer::new);
+        event.registerEntityRenderer(NMLEntities.PACIFIED_CLOUD.get(), NoopRenderer::new);
     }
 
     @SubscribeEvent
@@ -139,5 +140,8 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.MILK_DROPLET_FLAT.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new FluidLandParticle(clientLevel, d, e, f, sprites));
+        event.registerSpriteSet(NMLParticleTypes.TRANSLUCENT_DUST.get(), sprites
+                -> (translucentDustParticleOptions, clientLevel, d, e, f, g, h, i)
+                -> new TranslucentDustParticle(clientLevel, d, e, f, g, h, i, translucentDustParticleOptions, sprites));
     }
 }
