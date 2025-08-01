@@ -185,10 +185,6 @@ public class NMLSurfaceRules {
                 SurfaceRules.isBiome(NMLBiomes.TROPICAL_BEACH),
                 SurfaceRules.ifTrue(BEACH, SANDSTONE_UNDER_SAND)
         );
-        SurfaceRules.RuleSource gravel_beach = SurfaceRules.ifTrue(
-                SurfaceRules.isBiome(NMLBiomes.GRAVEL_BEACH),
-                DEEP_GRAVEL
-        );
 
         SurfaceRules.RuleSource caves = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVES),
@@ -211,7 +207,7 @@ public class NMLSurfaceRules {
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
                  // deeper layer biome modifiers - sand, beaches...
-                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_beach, tropical_beach, gravel_beach),
+                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_beach, tropical_beach),
 
                 // top layer biome modifiers - grasses, etc.
                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
