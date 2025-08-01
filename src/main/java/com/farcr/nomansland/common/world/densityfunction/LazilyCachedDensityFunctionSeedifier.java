@@ -11,13 +11,14 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // applies seeds to density functions outside the RandomState class
 // using dirty, dirty hacks !
 // trying to do this without making a billion extra new objects
 // and overwhelming the garbage collector.
 public abstract class LazilyCachedDensityFunctionSeedifier implements DensityFunction.Visitor {
-    private static final Map<WorldGeneratorEntry, LazilyCachedDensityFunctionSeedifier> visitorCache = new HashMap<>();
+    private static final Map<WorldGeneratorEntry, LazilyCachedDensityFunctionSeedifier> visitorCache = new ConcurrentHashMap<>();
 
     public static DensityFunction.Visitor getOrCreate(WorldGenLevel worldGenLevel) {
         return visitorCache.computeIfAbsent(new WorldGeneratorEntry(worldGenLevel.getSeed(), worldGenLevel.dimensionType()), (level) -> {
@@ -35,7 +36,7 @@ public abstract class LazilyCachedDensityFunctionSeedifier implements DensityFun
     private final Map<ResourceKey, DensityFunction.NoiseHolder> holderCache;
 
     public LazilyCachedDensityFunctionSeedifier() {
-        this.holderCache = new HashMap<>();
+        this.holderCache = new ConcurrentHashMap<>();
     }
 
     @Override
