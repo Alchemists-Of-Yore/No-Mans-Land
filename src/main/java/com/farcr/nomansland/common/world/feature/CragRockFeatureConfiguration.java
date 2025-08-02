@@ -15,6 +15,7 @@ public record CragRockFeatureConfiguration(
         IntProvider height,
         FloatProvider radiusStrength,
         FloatProvider noiseStrength,
+        boolean generateSurfaceUnderwater,
         BlockStateProvider baseBlockProvider,
         BlockStateProvider soilBlockProvider,
         BlockStateProvider surfaceBlockProvider
@@ -25,6 +26,7 @@ public record CragRockFeatureConfiguration(
                     IntProvider.POSITIVE_CODEC.fieldOf("height").forGetter(CragRockFeatureConfiguration::height),
                     FloatProvider.CODEC.fieldOf("radius_strength").orElse(ConstantFloat.of(1.0F)).forGetter(CragRockFeatureConfiguration::radiusStrength),
                     FloatProvider.CODEC.fieldOf("noise_strength" ).orElse(ConstantFloat.of(5.0F)).forGetter(CragRockFeatureConfiguration::noiseStrength),
+                    Codec.BOOL.fieldOf("generate_surface_under_fluids").orElse(false).forGetter(CragRockFeatureConfiguration::generateSurfaceUnderwater),
                     BlockStateProvider.CODEC.fieldOf("base_block_provider").forGetter(CragRockFeatureConfiguration::baseBlockProvider),
                     BlockStateProvider.CODEC.fieldOf("soil_block_provider").forGetter(CragRockFeatureConfiguration::soilBlockProvider),
                     BlockStateProvider.CODEC.fieldOf("surface_block_provider").forGetter(CragRockFeatureConfiguration::surfaceBlockProvider)

@@ -71,7 +71,11 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
       "state": {
         "Name": "minecraft:grass_block"
       }
-    }
+    },
+    // defaults to false!
+    //    takes in "true" or "false"
+    //    determines whether the top layer should generate underwater
+    "generate_surface_under_fluids": false
   }
  } */
 public class CragRockFeature extends Feature<CragRockFeatureConfiguration> {
@@ -103,7 +107,7 @@ public class CragRockFeature extends Feature<CragRockFeatureConfiguration> {
         for (int x = -range; x <= range; x++) {
             for (int z = -range; z <= range; z++) {
                 // height stuffs
-                int baseHeight = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, origin.getX() + x, origin.getZ() + z) - depth - 1;
+                int baseHeight = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, origin.getX() + x, origin.getZ() + z) - depth - 1;
                 double topHeight = origin.getY() + height + NOISE.getValue(pos.getX() * 0.05, 1000 + noiseSampleOffset, pos.getZ() * 0.05) * 2;
                 double maxYDistance = topHeight - (baseHeight + depth);
 
@@ -155,9 +159,8 @@ public class CragRockFeature extends Feature<CragRockFeatureConfiguration> {
 
     // gets the current surface block based off depth and other things
     private BlockState getBlockState(CragRockFeatureConfiguration config, BlockPos pos, WorldGenLevel level, RandomSource random, int surfaceDepth, double soilDepth, boolean placingSurface) {
-
         if (placingSurface && level.getBlockState(pos).canBeReplaced()) {
-            if (surfaceDepth == 0 && level.getBlockState(pos.above()).getFluidState().isEmpty()) {
+            if (surfaceDepth == 0 && (config.generateSurfaceUnderwater() || level.getBlockState(pos.above()).getFluidState().isEmpty())) {
                 return config.surfaceBlockProvider().getState(random, pos);
             } else if (surfaceDepth < soilDepth) {
                 return config.soilBlockProvider().getState(random, pos);
