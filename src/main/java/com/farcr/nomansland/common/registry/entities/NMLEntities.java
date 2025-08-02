@@ -87,6 +87,6 @@ public class NMLEntities {
             ENTITIES.register("tortoise", () -> EntityType.Builder.of(Tortoise::new, MobCategory.CREATURE)
                     .sized(1.25F, 1.25F)
                     .eyeHeight(1.0F)
-                    .passengerAttachments(new Vec3(0.0, 0.55625, -0.25)) // FIXME
+                    .passengerAttachments(new Vec3(0.0, 1.15, 0.0F))
                     .build("tortoise"));
 }

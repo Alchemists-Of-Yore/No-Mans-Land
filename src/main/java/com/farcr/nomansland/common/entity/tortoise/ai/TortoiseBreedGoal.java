@@ -2,17 +2,19 @@ package com.farcr.nomansland.common.entity.tortoise.ai;
 
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.phys.Vec3;
 
-public class TortoiseBreedAndDecideHomeGoal extends BreedGoal {
+public class TortoiseBreedGoal extends BreedGoal {
     private final Tortoise tortoise;
 
-    public TortoiseBreedAndDecideHomeGoal(Tortoise animal, double speedModifier) {
+    public TortoiseBreedGoal(Tortoise animal, double speedModifier) {
         super(animal, speedModifier);
         this.tortoise = animal;
     }
@@ -47,5 +49,10 @@ public class TortoiseBreedAndDecideHomeGoal extends BreedGoal {
             this.level
                     .addFreshEntity(new ExperienceOrb(this.level, this.animal.getX(), this.animal.getY(), this.animal.getZ(), randomsource.nextInt(7) + 1));
         }
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
     }
 }

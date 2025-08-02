@@ -19,7 +19,7 @@ public class TortoiseSearchForDangerGoal extends Goal {
     @Override
     public boolean canUse() {
         long gameTime = this.tortoise.level().getGameTime();
-        return this.tortoise.inShell() && (gameTime - this.tortoise.getHurtWhen() > 600L);
+        return this.tortoise.inShell() && (gameTime - this.tortoise.getHurtWhen() > 600L) && this.tortoise.getLastHurtByUUID() != null;
     }
 
     @Override
@@ -32,6 +32,7 @@ public class TortoiseSearchForDangerGoal extends Goal {
                     this.tortoise.setHurtWhen(this.tortoise.level().getGameTime());
                     this.tortoise.retreatShell(true);
                     this.tortoise.setSearching(false);
+                    this.tortoise.setLastHurtByUUID(null);
                 } else {
                     this.tortoise.retreatShell(false);
                     this.tortoise.setSearching(false);

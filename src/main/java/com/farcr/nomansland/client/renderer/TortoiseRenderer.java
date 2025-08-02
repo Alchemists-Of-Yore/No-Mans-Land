@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.Turtle;
 
 import static dev.tazer.mixed_litter.VariantUtil.getVariants;
 
@@ -25,9 +26,16 @@ public class TortoiseRenderer extends MobRenderer<Tortoise, TortoiseModel<Tortoi
     @Override
     protected void scale(Tortoise livingEntity, PoseStack poseStack, float partialTickTime) {
         super.scale(livingEntity, poseStack, partialTickTime);
+        float babyScale = 2.5F;
         if (livingEntity.isBaby()) {
-            poseStack.scale(2.5F, 2.5F, 2.5F);
+            poseStack.scale(babyScale, babyScale, babyScale);
         }
+    }
+
+    @Override
+    protected float getShadowRadius(Tortoise entity) {
+        float shadowRadius = super.getShadowRadius(entity);
+        return entity.isBaby() ? shadowRadius * 2F : shadowRadius;
     }
 
     @Override
@@ -43,7 +51,7 @@ public class TortoiseRenderer extends MobRenderer<Tortoise, TortoiseModel<Tortoi
         if (variant == null) {
             variant =
                     (TortoiseVariant) tortoise.registryAccess().registryOrThrow(MLRegistries.ANIMAL_VARIANT_KEY).holders()
-                            .filter(mobVariantReference -> mobVariantReference.value() instanceof GooseVariant)
+                            .filter(mobVariantReference -> mobVariantReference.value() instanceof TortoiseVariant)
                             .findAny().orElseThrow().value();
         }
         ResourceLocation texture = variant.texture;
