@@ -207,13 +207,6 @@ public class NMLSurfaceRules {
 
         SurfaceGeneration.addOverworldSurfaceRules(
                 NoMansLand.location("rules/overworld"),
-                // cliffs
-//                SurfaceRules.ifTrue(new AndConditionSource(SurfaceRules.steep(), SurfaceRules.abovePreliminarySurface()),
-//                        SurfaceRules.sequence(
-//                                SurfaceRules.ifTrue(new BiomeTagConditionSource(Tags.Biomes.IS_SANDY), SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState())),
-//                                SurfaceRules.state(Blocks.STONE.defaultBlockState())
-//                        )
-//                ),
                 // Surface Biomes
                 SurfaceRules.ifTrue(
                         SurfaceRules.abovePreliminarySurface(),
