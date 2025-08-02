@@ -155,8 +155,9 @@ public class CragRockFeature extends Feature<CragRockFeatureConfiguration> {
 
     // gets the current surface block based off depth and other things
     private BlockState getBlockState(CragRockFeatureConfiguration config, BlockPos pos, WorldGenLevel level, RandomSource random, int surfaceDepth, double soilDepth, boolean placingSurface) {
+
         if (placingSurface && level.getBlockState(pos).canBeReplaced()) {
-            if (surfaceDepth == 0) {
+            if (surfaceDepth == 0 && level.getBlockState(pos.above()).getFluidState().isEmpty()) {
                 return config.surfaceBlockProvider().getState(random, pos);
             } else if (surfaceDepth < soilDepth) {
                 return config.soilBlockProvider().getState(random, pos);
