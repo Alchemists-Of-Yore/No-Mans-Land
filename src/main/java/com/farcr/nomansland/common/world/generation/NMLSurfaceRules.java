@@ -171,8 +171,8 @@ public class NMLSurfaceRules {
                         )
                 )
         );
-        SurfaceRules.RuleSource frozen_beach = SurfaceRules.ifTrue(
-                SurfaceRules.isBiome(NMLBiomes.FROZEN_BEACH),
+        SurfaceRules.RuleSource frozen_shore = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.FROZEN_SHORE),
                 SurfaceRules.ifTrue(
                         BEACH,
                         SurfaceRules.ifTrue(
@@ -207,7 +207,7 @@ public class NMLSurfaceRules {
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
                  // deeper layer biome modifiers - sand, beaches...
-                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_beach, tropical_beach),
+                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_shore, tropical_beach),
 
                 // top layer biome modifiers - grasses, etc.
                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,

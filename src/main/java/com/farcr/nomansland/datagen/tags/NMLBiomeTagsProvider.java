@@ -44,7 +44,7 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.BLACKWATER_RIVER,
                 NMLBiomes.DESERT_RIVER,
                 NMLBiomes.MUD_BEACH,
-                NMLBiomes.FROZEN_BEACH,
+                NMLBiomes.FROZEN_SHORE,
                 NMLBiomes.TROPICAL_BEACH
         );
 
@@ -81,7 +81,7 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
         addToTags(NMLBiomes.BLACKWATER_RIVER, BiomeTags.IS_RIVER, Tags.Biomes.IS_DESERT, Tags.Biomes.IS_HOT, Tags.Biomes.IS_SANDY);
 
         addToTags(NMLBiomes.TROPICAL_BEACH, BiomeTags.IS_BEACH, Tags.Biomes.IS_HOT, Tags.Biomes.IS_LUSH, Tags.Biomes.IS_JUNGLE_TREE);
-        addToTags(NMLBiomes.FROZEN_BEACH, Tags.Biomes.IS_STONY_SHORES, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_ICY, Tags.Biomes.IS_AQUATIC_ICY);
+        addToTags(NMLBiomes.FROZEN_SHORE, Tags.Biomes.IS_STONY_SHORES, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_ICY, Tags.Biomes.IS_AQUATIC_ICY);
         addToTags(NMLBiomes.MUD_BEACH, Tags.Biomes.IS_AQUATIC, Tags.Biomes.IS_RARE, Tags.Biomes.IS_WET);
     }
 
