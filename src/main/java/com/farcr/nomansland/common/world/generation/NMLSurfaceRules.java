@@ -45,7 +45,7 @@ public class NMLSurfaceRules {
 
     private static final SurfaceRules.ConditionSource BEACH =
             new AndConditionSource(
-                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(71), true, 1, 0),
+                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(69), true, 1.5F, 0.5F),
                     SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
     private static final SurfaceRules.ConditionSource SHORE =
