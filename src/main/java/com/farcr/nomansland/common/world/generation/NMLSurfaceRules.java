@@ -45,12 +45,12 @@ public class NMLSurfaceRules {
 
     private static final SurfaceRules.ConditionSource BEACH =
             new AndConditionSource(
-                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(71), true, true, 0),
+                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(71), true, 1, 0),
                     SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
     private static final SurfaceRules.ConditionSource SHORE =
             new AndConditionSource(
-                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(66), true, true, -0.35F),
+                    new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(65), true, 1, 0.75F),
                     SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
 
@@ -207,16 +207,22 @@ public class NMLSurfaceRules {
 
         SurfaceGeneration.addOverworldSurfaceRules(
                 NoMansLand.location("rules/overworld"),
+                // cliffs
+//                SurfaceRules.ifTrue(new AndConditionSource(SurfaceRules.steep(), SurfaceRules.abovePreliminarySurface()),
+//                        SurfaceRules.sequence(
+//                                SurfaceRules.ifTrue(new BiomeTagConditionSource(Tags.Biomes.IS_SANDY), SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState())),
+//                                SurfaceRules.state(Blocks.STONE.defaultBlockState())
+//                        )
+//                ),
                 // Surface Biomes
                 SurfaceRules.ifTrue(
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
-                 // deeper layer biome modifiers - sand, beaches...
-                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_shore, tropical_beach),
-
-                // top layer biome modifiers - grasses, etc.
-                SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
-                SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
+                                // deeper layer biome modifiers - sand, beaches...
+                                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, desert_river, mud_beach, frozen_shore, tropical_beach),
+                                // top layer biome modifiers - grasses, etc.
+                                SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+                                SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
                             )
                         )
                 ),

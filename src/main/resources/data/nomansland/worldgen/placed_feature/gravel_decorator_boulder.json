@@ -1,5 +1,5 @@
 {
-  "feature": "nomansland:mossy_boulder",
+  "feature": "nomansland:gravel_boulder",
   "placement": [
     {
       "type": "nomansland:density_function_based_count",
@@ -7,10 +7,10 @@
 
       "noise_scale": 1.0,
 
-      "noise_minimum": 0.45,                   
-      "noise_maximum": 0.94,  
+      "noise_minimum": 0.45,
+      "noise_maximum": 0.94,
 
-      "count_minimum": 1,          
+      "count_minimum": 1,
       "count_maximum": 5
     },
     {
