@@ -6,20 +6,26 @@
       "minecraft:canyon"
     ]
   },
-  "downfall": 0.4,
+  "downfall": 0.0,
   "effects": {
-    "fog_color": 14411213,
-    "sky_color": 8434919,
-    "foliage_color": 11053908,
-    "grass_color": 12628309,
+    "fog_color": 15527891,
+    "sky_color": 12113081,
+    "foliage_color": 9546287,
+    "grass_color": 10730867,
     "mood_sound": {
       "block_search_extent": 8,
       "offset": 2.0,
       "sound": "minecraft:ambient.cave",
       "tick_delay": 6000
     },
-    "water_color": 3902136,
-    "water_fog_color": 2388383
+    "music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "minecraft:music.overworld.desert"
+    },
+    "water_color": 4106959,
+    "water_fog_color": 3048361
   },
   "features": [
     [],
@@ -29,13 +35,17 @@
     ],
     [
       "minecraft:amethyst_geode",
-      "nomansland:cobblestone_boulder"
+      "nomansland:dithered_dirt_patch"
     ],
     [
+      "minecraft:fossil_upper",
+      "minecraft:fossil_lower",
       "minecraft:monster_room",
       "minecraft:monster_room_deep"
     ],
-    [],
+    [
+      "minecraft:desert_well"
+    ],
     [],
     [
       "minecraft:ore_dirt",
@@ -57,7 +67,6 @@
       "minecraft:ore_redstone",
       "minecraft:ore_redstone_lower",
       "minecraft:ore_diamond",
-      "minecraft:ore_diamond_medium",
       "minecraft:ore_diamond_large",
       "minecraft:ore_diamond_buried",
       "minecraft:ore_lapis",
@@ -73,27 +82,23 @@
       "minecraft:spring_water",
       "minecraft:spring_lava"
     ],
-    [],
     [
-      "nomansland:biome_trees/trees_prairie",
-      "nomansland:biome_trees/trees_prairie_noise",
+      "nomansland:biome_trees/trees_desert_river",
       "minecraft:glow_lichen",
-      "nomansland:flower_patches/flowers_prairie",
-      "nomansland:flower_patches/flowerbed_white_and_yellow",
-      "nomansland:biome_trees/bushes_prairie",
-      "minecraft:patch_grass_plain",
-      "minecraft:patch_tall_grass_2",
-      "nomansland:oat_grass_patch_prairie",
+      "nomansland:flower_patches/flowers_all_tulips",
+      "nomansland:patch_succulent_desert",
+      "minecraft:patch_grass_badlands",
+      "minecraft:patch_dead_bush_2",
       "minecraft:brown_mushroom_normal",
       "minecraft:red_mushroom_normal",
-      "minecraft:patch_sugar_cane",
-      "minecraft:patch_pumpkin"
+      "minecraft:patch_cactus_desert",
+      "nomansland:patch_barrel_cactus_desert"
     ],
     [
       "minecraft:freeze_top_layer"
     ]
   ],
-  "has_precipitation": true,
+  "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {
     "ambient": [
@@ -107,40 +112,16 @@
     "axolotls": [],
     "creature": [
       {
-        "type": "minecraft:sheep",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 9
-      },
-      {
-        "type": "minecraft:pig",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 4
-      },
-      {
-        "type": "minecraft:chicken",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 4
-      },
-      {
-        "type": "minecraft:cow",
-        "maxCount": 6,
+        "type": "minecraft:rabbit",
+        "maxCount": 8,
         "minCount": 2,
-        "weight": 14
+        "weight": 20
       },
       {
-        "type": "minecraft:horse",
-        "maxCount": 6,
-        "minCount": 2,
-        "weight": 4
-      },
-      {
-        "type": "minecraft:donkey",
-        "maxCount": 1,
+        "type": "minecraft:camel",
+        "maxCount": 4,
         "minCount": 1,
-        "weight": 3
+        "weight": 7
       }
     ],
     "misc": [],
@@ -152,16 +133,10 @@
         "weight": 100
       },
       {
-        "type": "minecraft:zombie",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 95
-      },
-      {
         "type": "minecraft:zombie_villager",
         "maxCount": 1,
         "minCount": 1,
-        "weight": 5
+        "weight": 1
       },
       {
         "type": "minecraft:skeleton",
@@ -192,6 +167,12 @@
         "maxCount": 1,
         "minCount": 1,
         "weight": 5
+      },
+      {
+        "type": "minecraft:husk",
+        "maxCount": 4,
+        "minCount": 4,
+        "weight": 100
       }
     ],
     "underground_water_creature": [
@@ -205,5 +186,5 @@
     "water_ambient": [],
     "water_creature": []
   },
-  "temperature": 0.8
+  "temperature": 2.0
 }

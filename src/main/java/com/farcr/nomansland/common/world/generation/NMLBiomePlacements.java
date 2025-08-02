@@ -289,6 +289,22 @@ public class NMLBiomePlacements {
                     neighbor(Tags.Biomes.IS_JUNGLE)
             );
         }
+
+        if (NMLConfig.DESERT_RIVER.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.DESERT_RIVER,
+                    neighbor(Tags.Biomes.IS_DESERT)
+            );
+        }
+
+        if (NMLConfig.TROPICAL_BEACH.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.BEACH,
+                    NMLBiomes.TROPICAL_BEACH,
+                    neighbor(Tags.Biomes.IS_JUNGLE)
+            );
+        }
     }
 
     public static void transitionalBiome(ResourceKey<Biome> firstBiome, ResourceKey<Biome> secondBiome, ResourceKey<Biome> transitionalBiome) {

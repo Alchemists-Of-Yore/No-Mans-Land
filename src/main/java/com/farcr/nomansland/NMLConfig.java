@@ -27,6 +27,10 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue LAVENDER_FIELD;
     public static ModConfigSpec.BooleanValue BLACKWATER_RIVER;
     public static ModConfigSpec.BooleanValue LUSH_RIVER;
+    public static ModConfigSpec.BooleanValue DESERT_RIVER;
+    public static ModConfigSpec.BooleanValue FROZEN_SHORE;
+    public static ModConfigSpec.BooleanValue MUD_BEACH;
+    public static ModConfigSpec.BooleanValue TROPICAL_BEACH;
     public static final String CATEGORY_TAP = "tap";
     public static ModConfigSpec.DoubleValue FILLING_SPEED_MULTIPLIER;
     public static ModConfigSpec.IntValue TICKS_TO_FILL_CAULDRON;
@@ -118,11 +122,24 @@ public class NMLConfig {
                 .comment("If the lavender field is enabled")
                 .define("lavenderField", true);
         BLACKWATER_RIVER = COMMON_BUILDER
-                .comment("If the blackwater river is enabled")
+                .comment("If the blackwater river sub-biome is enabled")
                 .define("blackwaterRiver", true);
         LUSH_RIVER = COMMON_BUILDER
-                .comment("If the lush river is enabled")
+                .comment("If the lush river sub-biome is enabled")
                 .define("lushRiver", true);
+        DESERT_RIVER = COMMON_BUILDER
+                .comment("If the desert river sub-biome is enabled")
+                .define("desertRiver", true);
+        FROZEN_SHORE = COMMON_BUILDER
+                .comment("If the frozen shore sub-biome is enabled")
+                .define("frozenShore", true);
+        MUD_BEACH = COMMON_BUILDER
+                .comment("If the mud beach sub-biome is enabled")
+                .define("mudBeach", true);
+        TROPICAL_BEACH = COMMON_BUILDER
+                .comment("If the tropical beach sub-biome is enabled")
+                .define("tropicalBeach", true);
+
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_TAP);

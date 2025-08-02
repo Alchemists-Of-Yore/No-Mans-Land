@@ -1,5 +1,5 @@
 {
-  "feature": "nomansland:crag_rock",
+  "feature": "nomansland:crag_rock_seafloor",
   "placement": [
     {
       "type": "nomansland:density_function_based_count",

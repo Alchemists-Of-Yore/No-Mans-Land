@@ -38,6 +38,11 @@ public class NMLSurfaceRules {
             SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.GRAVEL.defaultBlockState()))
     );
 
+    private static final SurfaceRules.RuleSource CLASSIC_SOIL = SurfaceRules.sequence(
+            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, makeStateRule(Blocks.GRASS_BLOCK)),
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.DIRT.defaultBlockState()))
+    );
+
     private static final SurfaceRules.ConditionSource BEACH =
             new AndConditionSource(
                     new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(71), true, true, 0),
@@ -158,7 +163,7 @@ public class NMLSurfaceRules {
 
         SurfaceRules.RuleSource desert_river = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.DESERT_RIVER),
-                SANDSTONE_UNDER_SAND
+                SurfaceRules.ifTrue(SurfaceRules.not(BEACH), SANDSTONE_UNDER_SAND)
         );
     //Beach Biomes
         SurfaceRules.RuleSource mud_beach = SurfaceRules.ifTrue(
