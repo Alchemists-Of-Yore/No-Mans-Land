@@ -7,10 +7,12 @@ import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.world.surfacerule.AndConditionSource;
 import com.farcr.nomansland.common.world.surfacerule.BelowOrEqualToYConditionSource;
 import com.farcr.nomansland.common.world.surfacerule.BiomeTagConditionSource;
+import com.farcr.nomansland.common.world.surfacerule.StrataRuleSource;
 import com.terraformersmc.biolith.api.surface.SurfaceGeneration;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
@@ -43,13 +45,11 @@ public class NMLSurfaceRules {
             SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.DIRT.defaultBlockState()))
     );
 
-    private static final SurfaceRules.ConditionSource BEACH =
-            new AndConditionSource(
+    private static final SurfaceRules.ConditionSource BEACH = new AndConditionSource(
                     new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(69), true, 1.5F, 0.5F),
                     SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
-    private static final SurfaceRules.ConditionSource SHORE =
-            new AndConditionSource(
+    private static final SurfaceRules.ConditionSource SHORE = new AndConditionSource(
                     new BelowOrEqualToYConditionSource(VerticalAnchor.absolute(65), true, 1, 0.75F),
                     SurfaceRules.yBlockCheck(VerticalAnchor.absolute(56), 2)
             );
@@ -220,10 +220,7 @@ public class NMLSurfaceRules {
                         )
                 ),
                 // Cave Biomes
-                SurfaceRules.ifTrue(
-                        SurfaceRules.not(SurfaceRules.abovePreliminarySurface()),
-                        SurfaceRules.sequence(caves, cave_depths)
-                )
+                SurfaceRules.sequence(caves, cave_depths)
         );
     }
 

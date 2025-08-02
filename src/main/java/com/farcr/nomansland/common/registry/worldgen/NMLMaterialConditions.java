@@ -13,7 +13,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 public class NMLMaterialConditions {
-
     public static final DeferredRegister<MapCodec<? extends SurfaceRules.ConditionSource>> MATERIAL_CONDITIONS = DeferredRegister.create(Registries.MATERIAL_CONDITION, NoMansLand.MODID);
 
     public static final Supplier<MapCodec<? extends SurfaceRules.ConditionSource>> BELOW_OR_EQUAL_TO_Y =
