@@ -424,6 +424,7 @@
   "nomansland.subtitles.entity.goose.ambient": "Goose honks",
   "nomansland.subtitles.entity.goose.death": "Goose dies",
   "nomansland.subtitles.entity.goose.hurt": "Goose hurts",
+  "nomansland.subtitles.entity.living_urn.shatter": "Living Urn shatters",
   "nomansland.subtitles.entity.player.drink_milk": "Player drinks milk",
   "nomansland.subtitles.item.bomb.primed": "Bomb primed",
   "nomansland.subtitles.item.generic.consumed": "Item consumed",

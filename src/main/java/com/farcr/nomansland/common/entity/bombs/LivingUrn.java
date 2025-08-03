@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.bombs;
 
 import com.farcr.nomansland.common.entity.PacifiedCloud;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
@@ -87,19 +88,19 @@ public class LivingUrn extends ThrowableBombEntity {
 
     @Override
     protected void explode() {
-        PacifiedCloud pacifiedCloud = new PacifiedCloud(level(), getX(), getY(), getZ());
+        PacifiedCloud pacifiedCloud = new PacifiedCloud(level(), getX(), getY() - 1, getZ());
         Entity owner = getOwner();
         if (owner instanceof LivingEntity livingentity) {
             pacifiedCloud.setOwner(livingentity);
         }
 
         pacifiedCloud.setRadius(2);
-        pacifiedCloud.setWaitTime(5);
-        pacifiedCloud.setDuration(60);
+        pacifiedCloud.setWaitTime(1);
+        pacifiedCloud.setDuration(120);
         pacifiedCloud.setRadiusPerTick((float) -1/100);
-        pacifiedCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0))));
+        pacifiedCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0, false, false))));
         level().addFreshEntity(pacifiedCloud);
-        level().playSound(null, blockPosition(), SoundEvents.DECORATED_POT_SHATTER  , SoundSource.PLAYERS, 1, 0.75F);
+        level().playSound(null, blockPosition(), NMLSounds.LIVING_URN_SHATTERS.get(), SoundSource.PLAYERS, 1, 0.75F);
         discard();
     }
 

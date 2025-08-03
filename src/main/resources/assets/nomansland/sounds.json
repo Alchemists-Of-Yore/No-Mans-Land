@@ -802,6 +802,16 @@
     ],
     "subtitle": "nomansland.subtitles.item.generic.consumed"
   },
+  "entity.living_urn.shatter": {
+    "sounds": [
+      "block/decorated_pot/shatter1",
+      "block/decorated_pot/shatter2",
+      "block/decorated_pot/shatter3",
+      "block/decorated_pot/shatter4",
+      "block/decorated_pot/shatter5"
+    ],
+    "subtitle": "nomansland.subtitles.entity.living_urn.shatter"
+  },
   "particle.droplet.fall": {
     "sounds": [
       {
