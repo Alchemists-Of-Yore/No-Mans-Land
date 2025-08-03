@@ -1,14 +1,14 @@
 package com.farcr.nomansland.common.entity.tortoise.ai;
 
+import com.farcr.nomansland.common.block.TortoiseEggBlock;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.TurtleEggBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.Path;
@@ -43,6 +43,15 @@ public class TortoiseLayEggGoal extends Goal {
     }
 
     @Override
+    public void start() {
+        super.start();
+        if (this.failedAttempts >= 20)
+            this.failedAttempts = 0;
+        if (this.getHidePos() != null)
+            this.tortoise.setHomePos(this.getHidePos());
+    }
+
+    @Override
     public void tick() {
         BlockPos blockpos = this.tortoise.getHomePos();
         if (blockpos == null)
@@ -65,9 +74,9 @@ public class TortoiseLayEggGoal extends Goal {
                 this.tortoise.setLayingEgg(true);
                 Level level = this.tortoise.level();
                 level.playSound(null, blockpos, SoundEvents.TURTLE_LAY_EGG, SoundSource.BLOCKS, 0.3F, 0.9F + level.random.nextFloat() * 0.2F);
-                BlockState blockstate = Blocks.TURTLE_EGG
+                BlockState blockstate = NMLBlocks.TORTOISE_EGGS.get()
                         .defaultBlockState()
-                        .setValue(TurtleEggBlock.EGGS, Integer.valueOf(this.tortoise.getRandom().nextInt(4) + 1));
+                        .setValue(TortoiseEggBlock.EGGS, Integer.valueOf(this.tortoise.getRandom().nextInt(3) + 1));
                 level.setBlock(blockpos, blockstate, 3);
                 level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this.tortoise, blockstate));
                 this.tortoise.setHasEgg(false);
@@ -75,7 +84,7 @@ public class TortoiseLayEggGoal extends Goal {
                 this.tortoise.setInLoveTime(600);
             }
             if (this.tortoise.isLayingEgg()) {
-                this.tortoise.layEggCounter++;
+                this.tortoise.setLayEggCounter(this.tortoise.getLayEggCounter() + 1);
             }
         }
     }
@@ -98,7 +107,6 @@ public class TortoiseLayEggGoal extends Goal {
             BlockPos newPosition = currentPosition.offset(randomsource.nextInt(20) - 10, randomsource.nextInt(6) - 3, randomsource.nextInt(20) - 10);
             boolean requirements = level.getRawBrightness(currentPosition, 0) < 13 ? tortoise.isValidHome(newPosition) : level.getRawBrightness(newPosition, 0) < 13 && !level.canSeeSky(newPosition);
             if (requirements && level.isEmptyBlock(newPosition.above())) {
-                this.tortoise.setHomePos(newPosition);
                 return newPosition;
             }
         }

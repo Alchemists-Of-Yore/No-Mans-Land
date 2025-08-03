@@ -1,0 +1,157 @@
+{
+  "variants": {
+    "eggs=1,hatch=0": [
+      {
+        "model": "nomansland:block/tortoise_eggs/tortoise_egg"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/tortoise_egg",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/tortoise_egg",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/tortoise_egg",
+        "y": 270
+      }
+    ],
+    "eggs=1,hatch=1": [
+      {
+        "model": "nomansland:block/tortoise_eggs/cracked_tortoise_egg"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/cracked_tortoise_egg",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/cracked_tortoise_egg",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/cracked_tortoise_egg",
+        "y": 270
+      }
+    ],
+    "eggs=1,hatch=2": [
+      {
+        "model": "nomansland:block/tortoise_eggs/very_cracked_tortoise_egg"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/very_cracked_tortoise_egg",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/very_cracked_tortoise_egg",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/very_cracked_tortoise_egg",
+        "y": 270
+      }
+    ],
+    "eggs=2,hatch=0": [
+      {
+        "model": "nomansland:block/tortoise_eggs/two_tortoise_eggs"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_tortoise_eggs",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_tortoise_eggs",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_tortoise_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=2,hatch=1": [
+      {
+        "model": "nomansland:block/tortoise_eggs/two_cracked_tortoise_eggs"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_cracked_tortoise_eggs",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_cracked_tortoise_eggs",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_cracked_tortoise_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=2,hatch=2": [
+      {
+        "model": "nomansland:block/tortoise_eggs/two_very_cracked_tortoise_eggs"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_very_cracked_tortoise_eggs",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_very_cracked_tortoise_eggs",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/two_very_cracked_tortoise_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=3,hatch=0": [
+      {
+        "model": "nomansland:block/tortoise_eggs/three_tortoise_eggs"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_tortoise_eggs",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_tortoise_eggs",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_tortoise_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=3,hatch=1": [
+      {
+        "model": "nomansland:block/tortoise_eggs/three_cracked_tortoise_eggs"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_cracked_tortoise_eggs",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_cracked_tortoise_eggs",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_cracked_tortoise_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=3,hatch=2": [
+      {
+        "model": "nomansland:block/tortoise_eggs/three_very_cracked_tortoise_eggs"
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_very_cracked_tortoise_eggs",
+        "y": 90
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_very_cracked_tortoise_eggs",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/tortoise_eggs/three_very_cracked_tortoise_eggs",
+        "y": 270
+      }
+    ]
+  }
+}

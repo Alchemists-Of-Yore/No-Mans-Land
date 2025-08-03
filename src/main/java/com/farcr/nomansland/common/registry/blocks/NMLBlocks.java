@@ -515,6 +515,10 @@ public class NMLBlocks {
     public static final BlockDefinition<Block> PEAR_FRUIT_LEAVES = register("pear_fruit_leaves",
             () -> new FruitLeavesBlock(ofFullCopy(NMLBlocks.AUTUMNAL_OAK_LEAVES.get()).isViewBlocking((s, g, p) -> false).isSuffocating(((s, g, p) -> false)), FruitType.PEAR_AUTUMNAL_OAK));
 
+    //Eggs
+    public static final BlockDefinition<TortoiseEggBlock> TORTOISE_EGGS = register("tortoise_egg",
+            () -> new TortoiseEggBlock((ofFullCopy(Blocks.TURTLE_EGG).randomTicks())));
+
     public static <T extends Block> BlockDefinition<T> registerNoItem(String name, Supplier<T> block, BlockProperties properties) {
         DeferredBlock<T> deferred = BLOCKS.register(name, block);
         BlockDefinition<T> definition = BlockDefinition.fromHolder(deferred, properties);

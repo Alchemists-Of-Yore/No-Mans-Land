@@ -18,11 +18,6 @@ public class TortoiseBreedGoal extends BreedGoal {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-    }
-
-    @Override
     public boolean canUse() {
         return super.canUse() && !this.tortoise.hasEgg();
     }
@@ -47,6 +42,7 @@ public class TortoiseBreedGoal extends BreedGoal {
             this.level
                     .addFreshEntity(new ExperienceOrb(this.level, this.animal.getX(), this.animal.getY(), this.animal.getZ(), randomsource.nextInt(7) + 1));
         }
+        this.tortoise.setHomePos(null);
     }
 
     @Override

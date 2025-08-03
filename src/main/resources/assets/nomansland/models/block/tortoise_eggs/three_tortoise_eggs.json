@@ -2,7 +2,8 @@
 	"credit": "Made by Frenderman",
 	"texture_size": [32, 32],
 	"textures": {
-		"1": "nomansland:block/tortoise_eggs"
+		"1": "nomansland:block/tortoise_eggs",
+		"particle": "nomansland:block/tortoise_eggs"
 	},
 	"elements": [
 		{
