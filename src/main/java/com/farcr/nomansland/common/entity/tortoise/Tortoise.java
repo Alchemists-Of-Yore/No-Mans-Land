@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.entity.tortoise;
 
+import com.farcr.nomansland.common.entity.tortoise.ai.TortoiseBreedGoal;
+import com.farcr.nomansland.common.entity.tortoise.ai.TortoiseLayEggGoal;
 import com.farcr.nomansland.common.entity.tortoise.ai.TortoiseSearchForDangerGoal;
 import com.farcr.nomansland.common.entity.tortoise.ai.TortoiseSleepAndWakeUpGoal;
 import com.farcr.nomansland.common.registry.NMLTags;
@@ -23,18 +25,18 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.TurtleEggBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
@@ -71,6 +73,12 @@ public class Tortoise extends Animal {
                 super.tick();
             }
         };
+        this.navigation = new GroundPathNavigation(this, level) {
+            @Override
+            public boolean isStableDestination(BlockPos pos) {
+                return super.isStableDestination(pos);
+            }
+        };
     }
 
     public static boolean checkTortoiseSpawnRules(EntityType<Tortoise> tortoise, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
@@ -83,7 +91,8 @@ public class Tortoise extends Animal {
         this.goalSelector.addGoal(1, new TortoiseSearchForDangerGoal(this));
         this.goalSelector.addGoal(1, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(2, new TortoiseSleepAndWakeUpGoal(this));
-        this.goalSelector.addGoal(3, new BreedGoal(this, 0.5F));
+        this.goalSelector.addGoal(3, new TortoiseBreedGoal(this, 0.5F));
+        this.goalSelector.addGoal(4, new TortoiseLayEggGoal(this, 0.85F));
         this.goalSelector.addGoal(4, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
         this.goalSelector.addGoal(5, new FollowParentGoal(this, 0.25F));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.25F));
@@ -122,13 +131,15 @@ public class Tortoise extends Animal {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.getHomePos()).resultOrPartial(LOGGER::error)
-                .ifPresent(tag -> compound.put("home_pos", tag));
+        if (this.getHomePos() != null)
+            BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.getHomePos()).resultOrPartial(LOGGER::error)
+                    .ifPresent(tag -> compound.put("home_pos", tag));
         compound.putBoolean("HasEgg", this.hasEgg());
         compound.putBoolean("Searching", this.isSearching());
         compound.putBoolean("InShell", this.inShell());
         compound.putInt("PopUpTime", this.getPopUp());
         compound.putLong("HurtWhen", this.getHurtWhen());
+        compound.putLong("EggCount", this.getLayEggCounter());
         if (this.lastHurtByUUID != null)
             compound.putUUID("HurtByUUID", this.lastHurtByUUID);
     }
@@ -136,13 +147,15 @@ public class Tortoise extends Animal {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        BlockPos.CODEC.decode(NbtOps.INSTANCE, compound.get("home_pos")).resultOrPartial(LOGGER::error)
-                .ifPresent(pair -> this.setHomePos(pair.getFirst()));
+        if (this.getHomePos() != null)
+            BlockPos.CODEC.decode(NbtOps.INSTANCE, compound.get("home_pos")).resultOrPartial(LOGGER::error)
+                    .ifPresent(pair -> this.setHomePos(pair.getFirst()));
         this.setSearching(compound.getBoolean("Searching"));
         this.retreatShell(compound.getBoolean("InShell"));
         this.setHasEgg(compound.getBoolean("HasEgg"));
         this.setPopUp(compound.getInt("PopUpTime"));
         this.setHurtWhen(compound.getInt("HurtWhen"));
+        this.setLayEggCounter(compound.getInt("EggCount"));
         if (this.lastHurtByUUID != null)
             this.lastHurtByUUID = compound.getUUID("HurtByUUID");
     }
@@ -205,6 +218,11 @@ public class Tortoise extends Animal {
     }
 
     @Override
+    protected float getKnockback(Entity attacker, DamageSource damageSource) {
+        return this.inShell() ? 0.0F : super.getKnockback(attacker, damageSource);
+    }
+
+    @Override
     public boolean isFood(ItemStack stack) {
         return stack.is(NMLTags.TORTOISE_FOOD);
     }
@@ -248,6 +266,7 @@ public class Tortoise extends Animal {
         }
     }
 
+
     @Override
     protected void ageBoundaryReached() {
         super.ageBoundaryReached();
@@ -257,10 +276,8 @@ public class Tortoise extends Animal {
     }
 
     @Override
-    public void travel(Vec3 travelVector) {
-        if (this.inShell())
-            return;
-        super.travel(travelVector);
+    public float getWalkTargetValue(BlockPos pos, LevelReader level) {
+        return 0.0F;
     }
 
     @Override
@@ -269,6 +286,8 @@ public class Tortoise extends Animal {
     }
 
     public void setHomePos(BlockPos homePos) {
+        if (homePos == null)
+            return;
         this.entityData.set(HOME_POS, homePos);
     }
 
@@ -350,5 +369,11 @@ public class Tortoise extends Animal {
         this.layEggCounter = layEggCounter;
     }
 
-
+    /**
+     * a Home, to Tortoises, is a location that has 0 Sky light, No direct sky access,
+     * a light level lower than 7, and above a block within the correct tag (#suitable_turtle_home).
+     */
+    public boolean isValidHome(BlockPos pos) {
+        return level().getBlockState(pos.below()).is(NMLTags.SUITABLE_TORTOISE_HOME) && level().getRawBrightness(pos, 0) < 7 && !level().canSeeSky(pos);
+    }
 }

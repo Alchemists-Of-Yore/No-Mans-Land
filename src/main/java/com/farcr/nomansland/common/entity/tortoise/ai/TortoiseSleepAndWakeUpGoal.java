@@ -19,7 +19,7 @@ public class TortoiseSleepAndWakeUpGoal extends Goal {
     @Override
     public boolean canUse() {
         int lightLevel = this.level.getSkyDarken();
-        return lightLevel >= 3 && !tortoise.inShell() || lightLevel < 2 && tortoise.inShell() && this.tortoise.getLastHurtByUUID() == null;
+        return (lightLevel >= 3 && !tortoise.inShell() || lightLevel < 2 && tortoise.inShell()) && this.tortoise.getLastHurtByUUID() == null;
     }
 
     @Override

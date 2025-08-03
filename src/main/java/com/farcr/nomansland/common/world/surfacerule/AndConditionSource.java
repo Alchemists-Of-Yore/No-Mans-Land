@@ -1,10 +1,8 @@
 package com.farcr.nomansland.common.world.surfacerule;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
 import net.minecraft.world.level.levelgen.SurfaceRules;
-import net.minecraft.world.level.levelgen.VerticalAnchor;
 
 public record AndConditionSource(SurfaceRules.ConditionSource target1, SurfaceRules.ConditionSource target2) implements SurfaceRules.ConditionSource {
     public static final KeyDispatchDataCodec<AndConditionSource> CODEC = KeyDispatchDataCodec.of(
