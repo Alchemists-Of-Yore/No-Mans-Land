@@ -2,14 +2,12 @@ package com.farcr.nomansland.common.entity.tortoise.ai;
 
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.phys.Vec3;
 
 public class TortoiseBreedGoal extends BreedGoal {
     private final Tortoise tortoise;

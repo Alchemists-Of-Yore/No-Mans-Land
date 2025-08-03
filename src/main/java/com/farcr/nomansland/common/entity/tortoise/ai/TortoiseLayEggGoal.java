@@ -21,6 +21,8 @@ public class TortoiseLayEggGoal extends Goal {
     protected final Tortoise tortoise;
     private final double speedModifier;
     private final Level level;
+    private int failedAttempts;
+    protected long tryAgainTime;
 
     public TortoiseLayEggGoal(Tortoise mob, double speedModifier) {
         this.tortoise = mob;
@@ -31,12 +33,13 @@ public class TortoiseLayEggGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return this.getHidePos() != null && this.tortoise.hasEgg();
+        long gameTime = this.tortoise.level().getGameTime();
+        return this.getHidePos() != null && this.tortoise.hasEgg() && (gameTime - this.tryAgainTime > 200L);
     }
 
     @Override
     public boolean canContinueToUse() {
-        return this.tortoise.hasEgg();
+        return this.tortoise.hasEgg() && this.failedAttempts <= 20;
     }
 
     @Override
@@ -49,10 +52,12 @@ public class TortoiseLayEggGoal extends Goal {
             this.tortoise.setHomePos(this.tortoise.blockPosition());
         } else {
             Path path = this.tortoise.getNavigation().createPath(blockpos, 0);
-            if (path != null && path.canReach())
+            if (path != null && path.canReach()) {
                 this.tortoise.getNavigation().moveTo(path, speedModifier);
-            else
+            } else {
+                this.failedAttempts++;
                 this.getHidePos();
+            }
         }
         if (blockpos.closerThan(tortoise.blockPosition(), 1.0D)) {
             this.tortoise.getNavigation().stop();
@@ -75,6 +80,15 @@ public class TortoiseLayEggGoal extends Goal {
         }
     }
 
+    @Override
+    public void stop() {
+        super.stop();
+        if (this.failedAttempts > 20) {
+            this.tryAgainTime = this.tortoise.level().getGameTime();
+            this.failedAttempts = 0;
+        }
+    }
+
     @Nullable
     protected BlockPos getHidePos() {
         RandomSource randomsource = this.tortoise.getRandom();
@@ -89,5 +103,15 @@ public class TortoiseLayEggGoal extends Goal {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
+
+    @Override
+    protected int adjustedTickDelay(int adjustment) {
+        return super.adjustedTickDelay(adjustment);
     }
 }
