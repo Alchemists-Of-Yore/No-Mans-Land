@@ -381,6 +381,6 @@ public class LingeringCloud extends Entity implements TraceableEntity {
     }
 
     public EntityDimensions getDimensions(Pose pose) {
-        return EntityDimensions.scalable(getRadius() * 2.0F, 0.5F);
+        return EntityDimensions.scalable(getRadius() * 2, getRadius() * 2);
     }
 }
