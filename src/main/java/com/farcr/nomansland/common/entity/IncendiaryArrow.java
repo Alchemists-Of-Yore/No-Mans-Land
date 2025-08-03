@@ -79,20 +79,22 @@ public class IncendiaryArrow extends AbstractArrow {
         if (level instanceof ServerLevel serverLevel) {
             boolean ignitedFire = false;
 
-            if (level.getBlockState(neighbourPos).is(Blocks.FIRE)) {
-                BlockPos.withinManhattan(neighbourPos, 1, 0, 1).forEach(firePos -> {
-                    if ((BaseFireBlock.canBePlacedAt(level, firePos, direction)
-                            || level.getBlockState(firePos).isFlammable(level, firePos, direction))
-                            && level.random.nextFloat() < 0.4F) {
-                        level.setBlockAndUpdate(firePos, BaseFireBlock.getState(level, firePos));
-                    }
-                });
-                ignitedFire = true;
-            } else if (BaseFireBlock.canBePlacedAt(level, neighbourPos, direction)
-                    || state.isFlammable(level, pos, direction)
-                    || direction == Direction.UP) {
-                level.setBlockAndUpdate(neighbourPos, BaseFireBlock.getState(level, neighbourPos));
-                ignitedFire = true;
+            if (isOnFire()) {
+                if (level.getBlockState(neighbourPos).is(Blocks.FIRE)) {
+                    BlockPos.withinManhattan(neighbourPos, 1, 0, 1).forEach(firePos -> {
+                        if ((BaseFireBlock.canBePlacedAt(level, firePos, direction)
+                                || level.getBlockState(firePos).isFlammable(level, firePos, direction))
+                                && level.random.nextFloat() < 0.4F) {
+                            level.setBlockAndUpdate(firePos, BaseFireBlock.getState(level, firePos));
+                        }
+                    });
+                    ignitedFire = true;
+                } else if (BaseFireBlock.canBePlacedAt(level, neighbourPos, direction)
+                        || state.isFlammable(level, pos, direction)
+                        || direction == Direction.UP) {
+                    level.setBlockAndUpdate(neighbourPos, BaseFireBlock.getState(level, neighbourPos));
+                    ignitedFire = true;
+                }
             }
 
             if (ignitedFire) {
@@ -108,11 +110,13 @@ public class IncendiaryArrow extends AbstractArrow {
                     serverLevel.sendParticles(ParticleTypes.SMOKE, position().x, position().y, position().z, 1, velX * 0.5, velY * 0.5, velZ * 0.5, 0.2);
                     serverLevel.sendParticles(ParticleTypes.LAVA, position().x, position().y, position().z, 1, velX, 0.05, velZ, 0.3);
                 }
-            } else {
+            } else if (isOnFire()) {
                 serverLevel.sendParticles(ParticleTypes.SMOKE, position().x, position().y, position().z, 8, 0, 0.05, 0, 0.01);
                 serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, position().x, position().y, position().z, 4, 0, 0, 0, 0.01);
                 level.playSound(null, blockPosition(), SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 0.6F, 1.2F);
                 serverLevel.sendParticles(ParticleTypes.LAVA, position().x, position().y, position().z, 4, 0, -0.05, 0, 0.01);
+                Ember ember = new Ember(level, getX(), getY(), getZ());
+                level.addFreshEntity(ember);
                 clearFire();
             }
 

@@ -17,5 +17,5 @@ public class NMLEffects {
             () -> new FlammableEffect(MobEffectCategory.NEUTRAL, 4796183));
 
     public static final DeferredHolder<MobEffect, MobEffect> PACIFIED = MOB_EFFECTS.register("pacified",
-            () -> new PacifiedEffect(MobEffectCategory.NEUTRAL, 4796183));
+            () -> new PacifiedEffect(MobEffectCategory.NEUTRAL));
 }

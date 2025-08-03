@@ -50,6 +50,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.DEER.get(), DeerRenderer::new);
         event.registerEntityRenderer(NMLEntities.GOOSE.get(), GooseRenderer::new);
         event.registerEntityRenderer(NMLEntities.MOOSE.get(), MooseRenderer::new);
+        event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.FIREBOMB.get(), FirebombRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_BOMB.get(), InkBombRenderer::new);
@@ -57,11 +58,11 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.LIVING_URN.get(), LivingUrnRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.INCENDIARY_ARROW.get(), IncendiaryArrowRenderer::new);
+        event.registerEntityRenderer(NMLEntities.EMBER.get(), NoopRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.LINGERING_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.PACIFIED_CLOUD.get(), NoopRenderer::new);
-        event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
     }
 
     @SubscribeEvent
