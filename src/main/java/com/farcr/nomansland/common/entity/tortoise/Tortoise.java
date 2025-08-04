@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.entity.tortoise;
 
 import com.farcr.nomansland.common.entity.tortoise.ai.*;
 import com.farcr.nomansland.common.registry.NMLTags;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.google.common.base.Suppliers;
 import com.mojang.logging.LogUtils;
@@ -182,7 +183,7 @@ public class Tortoise extends Animal {
             if (this.isBaby() && this.getTimesFedWhenBaby() < 3 && !this.level().isClientSide) {
                 for (int particleCount = 0; particleCount < 5; particleCount++) {
                     ((ServerLevel) level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + this.getLookAngle().x / 2.0,
-                            this.getY() + 0.5,
+                            this.getY() + this.getLookAngle().y,
                             this.getZ() + this.getLookAngle().z / 2, 1, 0, 0, 0, 0.15);
                 }
                 this.usePlayerItem(player, hand, itemstack);
@@ -414,7 +415,7 @@ public class Tortoise extends Animal {
      * a light level lower than 7, and above a block within the correct tag (#suitable_turtle_home).
      */
     public boolean isValidHome(BlockPos pos) {
-        return level().getBlockState(pos.below()).is(NMLTags.SUITABLE_TORTOISE_HOME) && level().getRawBrightness(pos, 0) < 7 && !level().canSeeSky(pos);
+        return level().getBlockState(pos.below()).is(NMLTags.SUITABLE_TORTOISE_HOME) && level().getRawBrightness(pos, 0) < 7 && !level().canSeeSky(pos) && !level().getBlockState(pos).is(NMLBlocks.TORTOISE_EGGS);
     }
 
     public int getTimesFedWhenBaby() {
@@ -424,5 +425,4 @@ public class Tortoise extends Animal {
     public void setTimesFedWhenBaby(int timesFedWhenBaby) {
         this.timesFedWhenBaby = timesFedWhenBaby;
     }
-
 }

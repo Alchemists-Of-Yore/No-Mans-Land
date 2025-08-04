@@ -19,15 +19,14 @@ public class TortoiseSleepAndWakeUpGoal extends Goal {
     @Override
     public boolean canUse() {
         int lightLevel = this.level.getSkyDarken();
-        return (lightLevel >= 3 && !tortoise.inShell() || lightLevel < 2 && tortoise.inShell()) && this.tortoise.getLastHurtByUUID() == null && !this.tortoise.isGoingHome();
+        return (lightLevel >= 3 && !this.tortoise.inShell() || lightLevel < 2 && this.tortoise.inShell()) && this.tortoise.getLastHurtByUUID() == null && !this.tortoise.isGoingHome();
     }
 
     @Override
     public void start() {
         int lightLevel = this.level.getSkyDarken();
-        if (lightLevel < 2 && tortoise.inShell() && tortoise.isBaby()) {
+        if (lightLevel < 2 && tortoise.inShell() && tortoise.isBaby()) 
             this.tortoise.setTimesFedWhenBaby(0);
-        }
         this.tortoise.retreatShell(!this.tortoise.inShell());
     }
 }

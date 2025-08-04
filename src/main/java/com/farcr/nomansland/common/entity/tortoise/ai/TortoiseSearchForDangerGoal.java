@@ -2,7 +2,6 @@ package com.farcr.nomansland.common.entity.tortoise.ai;
 
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -25,21 +24,12 @@ public class TortoiseSearchForDangerGoal extends Goal {
     @Override
     public void start() {
         super.start();
-        List<Entity> entityList = this.tortoise.level().getEntities(this.tortoise, this.tortoise.getBoundingBox().inflate(5));
-        for (Entity entity : entityList) {
-            if (entity instanceof LivingEntity mob) {
-                if (this.tortoise.getLastHurtByUUID() != null && this.tortoise.getLastHurtByUUID() == mob.getUUID()) {
-                    this.tortoise.setHurtWhen(this.tortoise.level().getGameTime());
-                    this.tortoise.retreatShell(true);
-                    this.tortoise.setSearching(false);
-                } else {
-                    this.tortoise.retreatShell(false);
-                    this.tortoise.setSearching(false);
-                    this.tortoise.setLastHurtByUUID(null);
-                }
-            }
-        }
-        if (entityList.isEmpty()) {
+        List<Entity> entityList = this.tortoise.level().getEntities(this.tortoise, this.tortoise.getBoundingBox().inflate(10), entity -> this.tortoise.getLastHurtByUUID() != null && this.tortoise.getLastHurtByUUID() == entity.getUUID());
+        if (!entityList.isEmpty()) {
+            this.tortoise.setHurtWhen(this.tortoise.level().getGameTime());
+            this.tortoise.retreatShell(true);
+            this.tortoise.setSearching(false);
+        } else {
             this.tortoise.retreatShell(false);
             this.tortoise.setSearching(false);
             this.tortoise.setLastHurtByUUID(null);

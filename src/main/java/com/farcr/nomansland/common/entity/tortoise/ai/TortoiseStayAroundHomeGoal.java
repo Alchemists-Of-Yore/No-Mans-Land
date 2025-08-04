@@ -32,7 +32,8 @@ public class TortoiseStayAroundHomeGoal extends Goal {
     @Override
     public void tick() {
         BlockPos blockpos = this.tortoise.getHomePos();
-        boolean flag = blockpos.closerToCenterThan(this.tortoise.position(), 10.0);
+        if (blockpos == null)
+            return;
         if (this.tortoise.getNavigation().isDone()) {
             Vec3 vec3 = Vec3.atBottomCenterOf(blockpos);
             if (vec3 == null) {
