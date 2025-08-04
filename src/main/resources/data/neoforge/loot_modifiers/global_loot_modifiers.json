@@ -9,11 +9,13 @@
     "nomansland:fd_integration/straw_from_reeds",
     "nomansland:fd_integration/straw_from_short_beachgrass",
     "nomansland:fd_integration/straw_from_tall_beachgrass",
+    
     "nomansland:mobs/donkey",
     "nomansland:mobs/frog",
     "nomansland:mobs/goat",
     "nomansland:mobs/horse",
     "nomansland:mobs/mule",
+
     "nomansland:chests/warding_effigy_ancient_city",
     "nomansland:chests/warding_effigy_buried_treasure",
     "nomansland:chests/warding_effigy_desert_pyramid",
@@ -32,6 +34,8 @@
     "nomansland:chests/hardtack_igloo",
     "nomansland:chests/hardtack_mansion",
     "nomansland:chests/hardtack_shipwreck",
-    "nomansland:chests/hardtack_stronghold"
+    "nomansland:chests/hardtack_stronghold",
+
+    "nomansland:archaeology/trinket"
   ]
 }
