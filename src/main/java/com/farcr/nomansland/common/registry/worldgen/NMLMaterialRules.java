@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.registry.worldgen;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.world.surfacerule.*;
+import com.farcr.nomansland.common.world.surfacerule.StrataRuleSource;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.SurfaceRules;

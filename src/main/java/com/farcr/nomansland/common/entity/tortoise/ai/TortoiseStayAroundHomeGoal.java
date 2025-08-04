@@ -3,9 +3,6 @@ package com.farcr.nomansland.common.entity.tortoise.ai;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.animal.Turtle;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 public class TortoiseStayAroundHomeGoal extends Goal {
