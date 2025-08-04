@@ -1,23 +1,19 @@
 package com.farcr.nomansland.common.effect;
 
 import com.farcr.nomansland.common.entity.PacifiedAttackGoal;
-import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.FastColor;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.monster.Monster;
-import org.jetbrains.annotations.Nullable;
 
 public class PacifiedEffect extends MobEffect {
     public PacifiedEffect(MobEffectCategory category) {
@@ -56,6 +52,11 @@ public class PacifiedEffect extends MobEffect {
     @Override
     public void onEffectAdded(LivingEntity livingEntity, int amplifier) {
         super.onEffectAdded(livingEntity, amplifier);
+
+        if (livingEntity.getType().getTags().toList().contains(NMLTags.CANNOT_BE_PACIFIED)) {
+            livingEntity.removeEffect(NMLEffects.PACIFIED);
+            return;
+        }
 
         if (livingEntity instanceof Monster monster) {
             for (WrappedGoal goal : monster.targetSelector.getAvailableGoals()) {

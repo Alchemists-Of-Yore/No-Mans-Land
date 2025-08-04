@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.bombs;
 
 import com.farcr.nomansland.common.entity.InkCloud;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
@@ -13,14 +14,13 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-
-import java.awt.*;
 
 public class InkBomb extends ThrowableBombEntity {
 
@@ -39,40 +39,6 @@ public class InkBomb extends ThrowableBombEntity {
         super(NMLEntities.INK_BOMB.get(), x, y, z, level);
     }
 
-
-    private void spawnParticles(ParticleOptions particle, int amount) {
-        for (int i = 0; i < amount; i++) {
-            double theta = random.nextFloat() * 2 * Math.PI;
-            double alpha = random.nextFloat() * 2 * Math.PI;
-            double cos = Math.cos(alpha);
-            double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
-            double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
-            double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
-            level().addParticle(particle, getX(), getY(), getZ(), xVelocity * 0.6, yVelocity * 0.6, zVelocity * 0.6);
-        }
-    }
-
-    @Override
-    public void handleEntityEvent(byte b) {
-        if (b == 0) {
-            spawnParticles(ParticleTypes.SMOKE, 320);
-
-            for (int i = 0; i < 40; i++) {
-                double theta = random.nextFloat() * 2 * Math.PI;
-                double alpha = random.nextFloat() * 2 * Math.PI;
-                double cos = Math.cos(alpha);
-                double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
-                double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
-                double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
-                level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, Color.BLACK.getRGB()), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
-            }
-        } else if (b == 1) {
-            spawnParticles(ParticleTypes.SMOKE, 400);
-        } else {
-            super.handleEntityEvent(b);
-        }
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -85,23 +51,44 @@ public class InkBomb extends ThrowableBombEntity {
         Level level = level();
 
         level.playSound(null, blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4, (1 + (random.nextFloat() - random.nextFloat()) * 0.2F) * 0.7F);
-        level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3.5F)).forEach(livingEntity -> {
-            livingEntity.hurt(Explosion.getDefaultDamageSource(level, this), 4);
-            livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
-            livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 1));
-            livingEntity.removeEffect(MobEffects.INVISIBILITY);
-            livingEntity.removeEffect(MobEffects.NIGHT_VISION);
+        level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3.5F)).forEach(entity -> {
+            entity.hurt(Explosion.getDefaultDamageSource(level, this), 4);
+
+            boolean immune = false;
+            for (ItemStack stack : entity.getArmorSlots()) {
+                if (stack.is(NMLTags.INK_IMMUNE)) {
+                    immune = true;
+                    break;
+                }
+            }
+
+            if (!immune) {
+                entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
+                entity.removeEffect(MobEffects.NIGHT_VISION);
+            }
+
+            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 1));
+            entity.removeEffect(MobEffects.INVISIBILITY);
         });
-        InkCloud lingeringCloud = new InkCloud(level(), getX(), getY() - 1, getZ());
+
+        InkCloud inkCloud = new InkCloud(level(), getX(), getY() - 1, getZ());
         Entity owner = getOwner();
         if (owner instanceof LivingEntity livingentity) {
-            lingeringCloud.setOwner(livingentity);
+            inkCloud.setOwner(livingentity);
         }
 
-        lingeringCloud.setRadius(3);
-        lingeringCloud.setWaitTime(1);
-        level().addFreshEntity(lingeringCloud);
-        level.broadcastEntityEvent(this, (byte) (isInWater() ? 1 : 0));
+        inkCloud.setRadius(3);
+        inkCloud.setWaitTime(1);
+        level.addFreshEntity(inkCloud);
+        for (int i = 0; i < 40; i++) {
+            double theta = random.nextFloat() * 2 * Math.PI;
+            double alpha = random.nextFloat() * 2 * Math.PI;
+            double cos = Math.cos(alpha);
+            double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
+            double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
+            double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
+            level.addParticle(getParticle(level), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
+        }
         discard();
     }
 
@@ -147,7 +134,12 @@ public class InkBomb extends ThrowableBombEntity {
 
     @Override
     protected ParticleOptions getParticle(LevelAccessor levelAccessor) {
-            return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, Color.BLACK.getRGB());
+        return switch (levelAccessor.getRandom().nextInt(4)) {
+            case 0 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0x0b0a09);
+            case 1 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0x131110);
+            case 2 -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0x111819);
+            default -> ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0x1a1c1b);
+        };
     }
 
     @Override

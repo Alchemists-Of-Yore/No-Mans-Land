@@ -33,6 +33,7 @@ public class NMLTags {
     public static final TagKey<Block> HEAT_SOURCES = createBlockTag("heat_sources");
     public static final TagKey<EntityType<?>> ANCHOR_BLACKLIST = createEntityTag("anchor_blacklist");
     public static final TagKey<Biome> OLD_GROWTH_FOREST = createBiomeTag("old_growth_forest");
+    public static final TagKey<EntityType<?>> CANNOT_BE_PACIFIED = createEntityTag("cannot_be_pacified");
 
     public static final TagKey<Biome> CAVES = createBiomeTag("caves");
     public static final TagKey<DamageType> IGNITES_FLAMMABLE = createDamageTypeTag("ignites_flammable");
