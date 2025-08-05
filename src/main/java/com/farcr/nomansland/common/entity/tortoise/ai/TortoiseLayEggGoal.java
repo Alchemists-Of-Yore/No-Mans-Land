@@ -4,14 +4,19 @@ import com.farcr.nomansland.common.block.TortoiseEggBlock;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -21,9 +26,9 @@ public class TortoiseLayEggGoal extends Goal {
     protected final Tortoise tortoise;
     private final double speedModifier;
     private final Level level;
-    private BlockPos blockToGo;
-    private int failedAttempts;
-    protected long tryAgainTime;
+    private boolean failedAttempt = false;
+    protected long tryAgainTime = 0;
+    private Path path;
 
     public TortoiseLayEggGoal(Tortoise mob, double speedModifier) {
         this.tortoise = mob;
@@ -40,33 +45,30 @@ public class TortoiseLayEggGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return this.tortoise.hasEgg() && !this.tortoise.getNavigation().isDone() && !this.tortoise.inShell() && this.failedAttempts <= 20;
+        return this.tortoise.hasEgg() && !this.tortoise.inShell() && !this.failedAttempt;
     }
 
     @Override
     public void tick() {
-        if (this.blockToGo == null)
+        if (this.path == null)
             return;
-        this.tortoise.getLookControl().setLookAt(Vec3.atCenterOf(this.blockToGo));
-        Path path = this.tortoise.getNavigation().createPath(this.blockToGo, 0);
-        if (path != null && path.canReach()) {
-            this.tortoise.getNavigation().moveTo(path, this.speedModifier);
-        } else {
-            this.failedAttempts++;
-            this.getHidePos();
-        }
-        if (this.blockToGo.closerThan(this.tortoise.blockPosition(), 1.0D) && this.tortoise.isValidHome(blockToGo) || this.tortoise.isValidHome(this.tortoise.blockPosition())) {
+        BlockPos blockToGo = this.path.getTarget();
+        this.tortoise.getLookControl().setLookAt(Vec3.atCenterOf(blockToGo));
+        this.tortoise.getNavigation().moveTo(path, this.speedModifier);
+        if (!tortoise.isValidHome(blockToGo))
+            this.failedAttempt = true;
+        if (path.isDone() && this.tortoise.isValidHome(blockToGo) && this.tortoise.isValidHome(this.tortoise.blockPosition())) {
             this.tortoise.getNavigation().stop();
-            this.blockToGo = tortoise.blockPosition();
+            this.tortoise.stopInPlace();
             if (this.tortoise.getLayEggCounter() < 1) {
                 this.tortoise.setLayingEgg(true);
                 Level level = this.tortoise.level();
-                level.playSound(null, this.blockToGo, SoundEvents.TURTLE_LAY_EGG, SoundSource.BLOCKS, 0.3F, 0.9F + level.random.nextFloat() * 0.2F);
+                level.playSound(null, this.tortoise.blockPosition(), SoundEvents.TURTLE_LAY_EGG, SoundSource.BLOCKS, 0.3F, 0.9F + level.random.nextFloat() * 0.2F);
                 BlockState blockstate = NMLBlocks.TORTOISE_EGGS.get()
                         .defaultBlockState()
                         .setValue(TortoiseEggBlock.EGGS, Integer.valueOf(this.tortoise.getRandom().nextInt(3) + 1));
-                level.setBlock(this.blockToGo, blockstate, 3);
-                level.gameEvent(GameEvent.BLOCK_PLACE, this.blockToGo, GameEvent.Context.of(this.tortoise, blockstate));
+                level.setBlock(this.tortoise.blockPosition(), blockstate, 3);
+                level.gameEvent(GameEvent.BLOCK_PLACE, this.tortoise.blockPosition(), GameEvent.Context.of(this.tortoise, blockstate));
                 this.tortoise.setHasEgg(false);
                 this.tortoise.setLayingEgg(false);
                 this.tortoise.setInLoveTime(600);
@@ -81,9 +83,9 @@ public class TortoiseLayEggGoal extends Goal {
     @Override
     public void stop() {
         super.stop();
-        if (this.failedAttempts >= 20) {
+        if (this.failedAttempt) {
             this.tryAgainTime = this.tortoise.level().getGameTime();
-            this.failedAttempts = 0;
+            this.failedAttempt = false;
         }
     }
 
@@ -91,15 +93,23 @@ public class TortoiseLayEggGoal extends Goal {
     protected BlockPos getHidePos() {
         if (!tortoise.hasEgg())
             return null;
-        RandomSource randomsource = this.tortoise.getRandom();
-        BlockPos currentPosition = this.tortoise.blockPosition();
-        for (int i = 0; i < 10; i++) {
-            // If I'm not at a dark spot, my priority is to go there, if I'm already at a dark spot, my priority is to go to the correct spot
-            BlockPos newPosition = currentPosition.offset(randomsource.nextInt(20) - 10, randomsource.nextInt(6) - 3, randomsource.nextInt(20) - 10);
-            boolean requirements = level.getRawBrightness(currentPosition, 0) < 13 ? tortoise.isValidHome(newPosition) : level.getRawBrightness(newPosition, 0) < 13 && !level.canSeeSky(newPosition);
-            if ((level.getBlockState(newPosition).is(NMLBlocks.TORTOISE_EGGS) && tortoise.isValidHome(newPosition.below()) || requirements) && level.isEmptyBlock(newPosition.above())) {
-                this.blockToGo = newPosition;
-                return newPosition;
+        // Borrowed from TryToFindWaterGoal, modified to have a longer range and accomodate the Tortoise's larger hitbox
+        Iterable<BlockPos> iterable = BlockPos.betweenClosed(Mth.floor(tortoise.getX() - 20), Mth.floor(tortoise.getY() - 10), Mth.floor(tortoise.getZ() - 20), Mth.floor(tortoise.getX() + 20), Mth.floor(tortoise.getY() + 10), Mth.floor(tortoise.getZ() + 20));
+        BlockPos blockToGo = null;
+        for (BlockPos newPos : iterable) {
+            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                BlockPos horizontalPos = newPos.relative(direction);
+                if (level.isEmptyBlock(horizontalPos.above()) &&
+                        level.getBlockState(horizontalPos).isPathfindable(PathComputationType.LAND)
+                        && tortoise.isValidHome(horizontalPos) &&
+                        BlockPos.squareOutSouthEast(horizontalPos).allMatch(blockPos -> tortoise.isValidHome(blockPos))) {
+                    blockToGo = horizontalPos;
+                    break;
+                }
+            }
+            if (blockToGo != null) {
+                this.path = tortoise.getNavigation().createPath(blockToGo, 0);
+                return blockToGo;
             }
         }
         return null;

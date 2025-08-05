@@ -414,7 +414,7 @@ public class Tortoise extends Animal {
      * a light level lower than 7, and above a block within the correct tag (#suitable_turtle_home).
      */
     public boolean isValidHome(BlockPos pos) {
-        return level().getBlockState(pos.below()).is(NMLTags.SUITABLE_TORTOISE_HOME) && level().getRawBrightness(pos, 0) < 7 && !level().canSeeSky(pos) && !level().getBlockState(pos).is(NMLBlocks.TORTOISE_EGGS);
+        return level().getBlockState(pos.below()).is(NMLTags.SUITABLE_TORTOISE_HOME) && (level().getBrightness(LightLayer.BLOCK, pos) < 7 && level().getBrightness(LightLayer.SKY, pos) < 7) && !level().canSeeSky(pos) && !level().getBlockState(pos).is(NMLBlocks.TORTOISE_EGGS);
     }
 
     public int getTimesFedWhenBaby() {

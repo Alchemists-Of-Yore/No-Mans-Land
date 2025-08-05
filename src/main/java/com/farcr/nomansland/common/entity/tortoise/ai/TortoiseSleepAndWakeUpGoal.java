@@ -25,7 +25,7 @@ public class TortoiseSleepAndWakeUpGoal extends Goal {
     @Override
     public void start() {
         int lightLevel = this.level.getSkyDarken();
-        if (lightLevel < 2 && tortoise.inShell() && tortoise.isBaby()) 
+        if (lightLevel < 2 && tortoise.inShell() && tortoise.isBaby())
             this.tortoise.setTimesFedWhenBaby(0);
         this.tortoise.retreatShell(!this.tortoise.inShell());
     }
