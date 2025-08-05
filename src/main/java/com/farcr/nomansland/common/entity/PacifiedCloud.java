@@ -1,12 +1,23 @@
 package com.farcr.nomansland.common.entity;
 
 import com.farcr.nomansland.client.particle.TranslucentDustParticleOptions;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 public class PacifiedCloud extends LingeringCloud {
 
@@ -17,6 +28,20 @@ public class PacifiedCloud extends LingeringCloud {
     public PacifiedCloud(Level level, double x, double y, double z) {
         super(NMLEntities.PACIFIED_CLOUD.get(), level);
         setPos(x, y, z);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        Level level = level();
+
+        if (level.getBlockState(blockPosition().above((int) (getBbHeight() * 0.3))).isAir()) {
+            Vec3 motion = getDeltaMovement();
+            double dy = Mth.clamp(motion.y - 0.02, -0.04, 0);
+            setDeltaMovement(motion.x, dy, motion.z);
+            move(MoverType.SELF, getDeltaMovement());
+        }
     }
 
     @Override
