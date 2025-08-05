@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.core.BlockPos;
@@ -22,7 +23,7 @@ public class BiomeMixin {
     private void snowOnShortGrass(LevelReader level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         BlockState blockstate = level.getBlockState(pos);
 
-        if (blockstate.is(Blocks.SHORT_GRASS) || (blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED))) {
+        if (blockstate.is(Blocks.SHORT_GRASS) || (blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED)) && NMLConfig.GRASS_FROSTING.get()) {
             cir.setReturnValue(true);
         }
     }

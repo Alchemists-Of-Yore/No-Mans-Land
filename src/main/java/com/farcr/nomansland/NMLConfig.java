@@ -11,6 +11,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue MALEVOLENT_SPAWNER;
     public static ModConfigSpec.BooleanValue TRAMPLING;
     public static ModConfigSpec.BooleanValue TORCH_EXTINGUISHING;
+    public static ModConfigSpec.BooleanValue GRASS_FROSTING;
     public static final String CATEGORY_BIOMES = "biomes";
     public static ModConfigSpec.BooleanValue BIOMES;
     public static ModConfigSpec.BooleanValue CAVES_BIOMES;
@@ -79,6 +80,9 @@ public class NMLConfig {
         TORCH_EXTINGUISHING = COMMON_BUILDER
                 .comment("If torches can be extinguished through interactions like campfires.")
                 .define("torchExtinguishing", true);
+        GRASS_FROSTING = COMMON_BUILDER
+                .comment("If grass generating/placed on snow converts to Frosted Grass.")
+                .define("allowGrassFrosting", true);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_BIOMES);

@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin.integration;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import net.minecraft.core.BlockPos;
@@ -22,7 +23,7 @@ public class SeasonHooksMixin {
     @Inject(method = "shouldSnowHook", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelReader;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;", shift = At.Shift.AFTER), cancellable = true)
     private static void snowOnShortGrass(Biome biome, LevelReader levelReader, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         BlockState blockstate = levelReader.getBlockState(pos);
-        if (blockstate.is(Blocks.SHORT_GRASS) || (blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED))) {
+        if (blockstate.is(Blocks.SHORT_GRASS) || (blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED)) && NMLConfig.GRASS_FROSTING.get()) {
             cir.setReturnValue(true);
         }
     }
