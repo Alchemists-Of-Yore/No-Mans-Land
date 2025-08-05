@@ -300,8 +300,24 @@ public class NMLBiomeModifiers {
                         7631435
                 )
                 .changeParticle(NMLParticleTypes.CAVE_DUST.get(), 0.01F)
-                //.addFeatures(new FeatureWithStep(ORE_SILT, GenerationStep.Decoration.UNDERGROUND_ORES))
-                // Commented out until NML biomes are converted to modifiers to avoid a feature order cycle
+                .addFeatures(new FeatureWithStep(feature("underground/ore_silt"), GenerationStep.Decoration.UNDERGROUND_ORES))
+                .build(featureToBiomes);
+
+        modifyBiome(Biomes.ERODED_BADLANDS)
+                .changeColors(
+                        15322281,
+                        4106959,
+                        3048361,
+                        11128544,
+                        10387789,
+                        9470285
+                )
+                .changeSpawns(new SpawnerData(EntityType.ARMADILLO, 8, 1, 2))
+                .addSpawns(
+                        new SpawnerData(EntityType.RABBIT, 13, 2, 8),
+                        new SpawnerData(EntityType.HUSK, 100, 4, 4)
+                )
+                .removeSpawns(EntityType.ZOMBIE, EntityType.WOLF)
                 .build(featureToBiomes);
 
         modifyBiome(Biomes.FLOWER_FOREST)
@@ -1071,6 +1087,24 @@ public class NMLBiomeModifiers {
                         new SpawnerData(EntityType.LLAMA, 8, 4, 4)
                 )
                 .removeSpawns(EntityType.SHEEP, EntityType.ARMADILLO)
+                .build(featureToBiomes);
+
+        modifyBiome(Biomes.WOODED_BADLANDS)
+                .changeColors(
+                        15322281,
+                        4106959,
+                        3048361,
+                        11128544,
+                        10387789,
+                        9470285
+                )
+                .addSpawns(
+                        new SpawnerData(EntityType.RABBIT, 15, 2, 8),
+                        new SpawnerData(EntityType.HUSK, 100, 4, 4),
+                        new SpawnerData(EntityType.PIG, 5, 2, 8),
+                        new SpawnerData(EntityType.CHICKEN, 8, 2, 8)
+                )
+                .removeSpawns(EntityType.ZOMBIE)
                 .build(featureToBiomes);
 
         /* Tag-based feature additions */
