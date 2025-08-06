@@ -2,6 +2,7 @@
   "values": [
     "#minecraft:is_savanna",
     "#minecraft:is_badlands",
-    "nomansland:bog"
+    "nomansland:bog",
+    "nomansland:mud_beach"
   ]
 }

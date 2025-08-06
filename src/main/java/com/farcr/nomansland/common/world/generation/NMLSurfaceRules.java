@@ -184,13 +184,14 @@ public class NMLSurfaceRules {
         );
         SurfaceRules.RuleSource frozen_shore = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.FROZEN_SHORE),
-                SurfaceRules.ifTrue(
-                        BEACH,
-                        SurfaceRules.ifTrue(
-                                SurfaceRules.UNDER_FLOOR,
-                                SurfaceRules.state(Blocks.GRAVEL.defaultBlockState())
-                        )
-                )
+                SurfaceRules.sequence(
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.9), SILT),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.7), SurfaceRules.sequence(
+                                SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), SILT),
+                                GRAVEL
+                        )),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(-0.45), GRAVEL),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(-0.95), SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), GRAVEL)))
         );
         SurfaceRules.RuleSource tropical_beach = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.TROPICAL_BEACH),
@@ -218,10 +219,10 @@ public class NMLSurfaceRules {
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
                                 // deeper layer biome modifiers - sand, beaches...
-                                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, downfall_isle, desert_river, mud_beach, frozen_shore, tropical_beach),
+                                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, downfall_isle, desert_river, mud_beach, tropical_beach),
                                 // top layer biome modifiers - grasses, etc.
                                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
-                                SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, lush_river, blackwater_river)
+                                SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, frozen_shore, lush_river, blackwater_river)
                             )
                         )
                 ),

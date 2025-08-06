@@ -6,20 +6,20 @@
       "minecraft:canyon"
     ]
   },
-  "downfall": 0.4,
+  "downfall": 0.3,
   "effects": {
-    "fog_color": 14411213,
-    "sky_color": 8434919,
-    "foliage_color": 11053908,
-    "grass_color": 12628309,
+    "fog_color": 15200511,
+    "sky_color": 10797823,
+    "foliage_color": 5541228,
+    "grass_color": 10205860,
     "mood_sound": {
       "block_search_extent": 8,
       "offset": 2.0,
       "sound": "minecraft:ambient.cave",
       "tick_delay": 6000
     },
-    "water_color": 3902136,
-    "water_fog_color": 2388383
+    "water_color": 4220592,
+    "water_fog_color": 2771621
   },
   "features": [
     [],
@@ -29,7 +29,9 @@
     ],
     [
       "minecraft:amethyst_geode",
-      "nomansland:cobblestone_boulder"
+      "nomansland:pond_stony_shore",
+      "nomansland:cobblestone_boulder",
+      "nomansland:crag_rock_stony_shores"
     ],
     [
       "minecraft:monster_room",
@@ -38,11 +40,8 @@
     [],
     [],
     [
-      "minecraft:ore_dirt",
       "minecraft:ore_gravel",
-      "minecraft:ore_granite_upper",
       "minecraft:ore_granite_lower",
-      "minecraft:ore_diorite_upper",
       "minecraft:ore_diorite_lower",
       "minecraft:ore_andesite_upper",
       "minecraft:ore_andesite_lower",
@@ -68,22 +67,18 @@
       "minecraft:disk_clay",
       "minecraft:disk_gravel"
     ],
-    [],
+    [
+      "nomansland:tuff_boulder"
+    ],
     [
       "minecraft:spring_water",
       "minecraft:spring_lava"
     ],
-    [],
     [
-      "nomansland:biome_trees/trees_prairie",
-      "nomansland:biome_trees/trees_prairie_noise",
       "minecraft:glow_lichen",
-      "nomansland:flower_patches/flowers_prairie",
-      "nomansland:flower_patches/flowerbed_white_and_yellow",
-      "nomansland:biome_trees/bushes_prairie",
-      "minecraft:patch_grass_plain",
-      "minecraft:patch_tall_grass_2",
-      "nomansland:oat_grass_patch_prairie",
+      "nomansland:flower_patches/flowers_white",
+      "nomansland:flower_patches/flowerbed_white",
+      "minecraft:patch_grass_badlands",
       "minecraft:brown_mushroom_normal",
       "minecraft:red_mushroom_normal",
       "minecraft:patch_sugar_cane",
@@ -107,42 +102,13 @@
     "axolotls": [],
     "creature": [
       {
-        "type": "minecraft:sheep",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 9
-      },
-      {
-        "type": "minecraft:pig",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 4
-      },
-      {
-        "type": "minecraft:chicken",
-        "maxCount": 4,
-        "minCount": 4,
-        "weight": 4
-      },
-      {
-        "type": "minecraft:cow",
-        "maxCount": 6,
-        "minCount": 2,
-        "weight": 14
-      },
-      {
-        "type": "minecraft:horse",
-        "maxCount": 6,
-        "minCount": 2,
-        "weight": 4
-      },
-      {
-        "type": "minecraft:donkey",
-        "maxCount": 1,
-        "minCount": 1,
-        "weight": 3
-      }
-    ],
+      "type": "minecraft:sea_turtle",
+      "maxCount": 3,
+      "minCount": 1,
+      "weight": 5
+    }
+  ]
+    ,
     "misc": [],
     "monster": [
       {
@@ -192,6 +158,12 @@
         "maxCount": 1,
         "minCount": 1,
         "weight": 5
+      },
+      {
+        "type": "minecraft:stray",
+        "maxCount": 4,
+        "minCount": 4,
+        "weight": 80
       }
     ],
     "underground_water_creature": [
@@ -205,5 +177,5 @@
     "water_ambient": [],
     "water_creature": []
   },
-  "temperature": 0.8
+  "temperature": 0.0
 }

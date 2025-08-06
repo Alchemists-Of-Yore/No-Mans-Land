@@ -261,6 +261,29 @@ public class NMLBiomePlacements {
                     neighbor(Tags.Biomes.IS_JUNGLE)
             );
         }
+
+        if (NMLConfig.MUD_BEACH.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.BEACH,
+                    NMLBiomes.MUD_BEACH,
+                    neighbor(Tags.Biomes.IS_SWAMP)
+            );
+
+            BiomePlacement.addSubOverworld(
+                    Biomes.STONY_SHORE,
+                    NMLBiomes.MUD_BEACH,
+                    neighbor(Tags.Biomes.IS_SWAMP)
+            );
+        }
+
+        if (NMLConfig.FROZEN_SHORE.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.STONY_SHORE,
+                    NMLBiomes.FROZEN_SHORE,
+                    neighbor(Tags.Biomes.IS_SNOWY)
+            );
+        }
+
     }
 
     public static void transitionalBiome(ResourceKey<Biome> firstBiome, ResourceKey<Biome> secondBiome, ResourceKey<Biome> transitionalBiome) {
