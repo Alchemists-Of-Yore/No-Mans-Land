@@ -351,14 +351,25 @@ public class MiscellaneousEvents {
         if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLItems.NMLArmorMaterials.TORTOISE)) {
             Vec3 vec32 = source.getSourcePosition();
             if (vec32 != null) {
-                Vec3 vec3 = entity.calculateViewVector(0.0F, -entity.getYHeadRot());
+                Vec3 vec3 = entity.calculateViewVector(0.0F, entity.getYHeadRot());
                 Vec3 vec31 = vec32.vectorTo(entity.position());
                 vec31 = new Vec3(vec31.x, 0.0, vec31.z).normalize();
-                if (vec31.dot(vec3) < 0.0) {
+                if (vec31.dot(vec3) > 0.0) {
                     if (!entity.level().isClientSide)
                         entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 1.0F, 0.2F);
                     event.setCanceled(true);
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onKnockback(LivingKnockBackEvent event) {
+        LivingEntity entity = event.getEntity();
+        ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLItems.NMLArmorMaterials.TORTOISE)) {
+            if (entity.isCrouching()) {
+                event.setStrength(0.0F);
             }
         }
     }

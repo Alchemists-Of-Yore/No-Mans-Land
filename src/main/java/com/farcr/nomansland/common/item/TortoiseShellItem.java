@@ -2,7 +2,6 @@ package com.farcr.nomansland.common.item;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
-import com.google.common.base.Suppliers;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
