@@ -51,8 +51,7 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
 
         tag(NMLTags.IS_CRAGLAND).add(
                 Biomes.SPARSE_JUNGLE,
-                Biomes.WINDSWEPT_GRAVELLY_HILLS,
-                NMLBiomes.DOWNFALL_ISLE
+                Biomes.WINDSWEPT_GRAVELLY_HILLS
         );
         tag(NMLTags.IS_OCEANIC_CRAGLAND).add(
                 Biomes.COLD_OCEAN,

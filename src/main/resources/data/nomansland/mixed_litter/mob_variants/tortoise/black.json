@@ -1,0 +1,5 @@
+{
+  "type": "nomansland:tortoise",
+  "texture": "nomansland:entity/tortoise/gray",
+  "biomes": "nomansland:downfall_isle"
+}

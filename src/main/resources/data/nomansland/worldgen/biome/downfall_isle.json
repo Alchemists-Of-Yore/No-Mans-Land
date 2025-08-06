@@ -25,10 +25,13 @@
     [],
     [
       "minecraft:lake_lava_underground",
-      "minecraft:lake_lava_surface"
+      "minecraft:lake_lava_surface",
+      "nomansland:crag_rock_downfall_isle"
     ],
     [
-      "minecraft:amethyst_geode"
+      "minecraft:amethyst_geode",
+      "nomansland:pond_stony_shore",
+      "minecraft:forest_rock"
     ],
     [
       "minecraft:monster_room",
