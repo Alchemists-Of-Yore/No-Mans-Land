@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.google.common.base.Suppliers;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -34,9 +35,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.TurtleEggBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -82,7 +84,7 @@ public class Tortoise extends Animal {
     }
 
     public static boolean checkTortoiseSpawnRules(EntityType<Tortoise> tortoise, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
-        return pos.getY() < level.getSeaLevel() + 4 && TurtleEggBlock.onSand(level, pos) && isBrightEnoughToSpawn(level, pos);
+        return isBrightEnoughToSpawn(level, pos);
     }
 
     @Override
@@ -93,7 +95,8 @@ public class Tortoise extends Animal {
         this.goalSelector.addGoal(1, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(2, new TortoiseSleepAndWakeUpGoal(this));
         this.goalSelector.addGoal(3, new TortoiseBreedGoal(this, 0.5F));
-        this.goalSelector.addGoal(4, new TortoiseLayEggGoal(this, 0.85F));
+        this.goalSelector.addGoal(4, new TortoiseLayEggGoal(this));
+        this.goalSelector.addGoal(4, new TortoiseFindSpotToLayEgg(this, 0.85F));
         this.goalSelector.addGoal(4, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
         this.goalSelector.addGoal(5, new FollowParentGoal(this, 0.5));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.5F));
@@ -308,10 +311,25 @@ public class Tortoise extends Animal {
         super.aiStep();
         if (this.isAlive() && this.isLayingEgg() && this.layEggCounter >= 1 && this.layEggCounter % 5 == 0) {
             BlockPos blockpos = this.blockPosition();
-            if (TurtleEggBlock.onSand(this.level(), blockpos)) {
-                this.level().levelEvent(2001, blockpos, Block.getId(this.level().getBlockState(blockpos.below())));
-                this.gameEvent(GameEvent.ENTITY_ACTION);
+            BlockState blockstate = this.level().getBlockState(blockpos.below());
+            if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
+                for (int i = 0; i < 5; i++) {
+                    ((ServerLevel) this.level())
+                            .sendParticles(
+                                    new BlockParticleOption(ParticleTypes.BLOCK, blockstate),
+                                    (double) blockpos.getX() + 0.5,
+                                    (double) blockpos.getY() + 0.7,
+                                    (double) blockpos.getZ() + 0.5,
+                                    3,
+                                    ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
+                                    ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
+                                            ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
+                                    0.15F
+                            );
+                }
+                this.playSound(blockstate.getSoundType(level(), blockpos.below(), this).getPlaceSound());
             }
+            this.gameEvent(GameEvent.ENTITY_ACTION);
         }
     }
 

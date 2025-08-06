@@ -86,9 +86,6 @@ public class TortoiseEggBlock extends Block {
         }
     }
 
-    /**
-     * Performs a random tick on a block.
-     */
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         int i = state.getValue(HATCH);
