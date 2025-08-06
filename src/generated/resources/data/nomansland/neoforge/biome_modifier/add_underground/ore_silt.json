@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:dripstone_caves",
+  "features": "nomansland:underground/ore_silt",
+  "step": "underground_ores"
+}

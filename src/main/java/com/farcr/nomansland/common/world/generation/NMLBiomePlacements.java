@@ -261,6 +261,13 @@ public class NMLBiomePlacements {
                     neighbor(Tags.Biomes.IS_JUNGLE)
             );
         }
+
+        if (NMLConfig.TROPICAL_BEACH.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.MUSHROOM_FIELDS,
+                    NMLBiomes.DOWNFALL_ISLE, 0.5
+            );
+        }
     }
 
     public static void transitionalBiome(ResourceKey<Biome> firstBiome, ResourceKey<Biome> secondBiome, ResourceKey<Biome> transitionalBiome) {

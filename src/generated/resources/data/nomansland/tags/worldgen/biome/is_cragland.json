@@ -1,6 +1,7 @@
 {
   "values": [
     "minecraft:sparse_jungle",
-    "minecraft:windswept_gravelly_hills"
+    "minecraft:windswept_gravelly_hills",
+    "nomansland:downfall_isle"
   ]
 }

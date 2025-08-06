@@ -1,4 +1,9 @@
 {
   "type": "nomansland:tortoise",
-  "texture": "nomansland:entity/tortoise/gray"
+  "texture": "nomansland:entity/tortoise/gray",
+  "biomes": [
+  "nomansland:caves",
+  "nomansland:cave_depths",
+  "minecraft:dripstone_caves"
+]
 }

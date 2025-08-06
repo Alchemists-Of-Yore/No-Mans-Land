@@ -44,6 +44,9 @@ public class NMLBiomes {
     public static final ResourceKey<Biome> FROZEN_SHORE = createKey("frozen_shore");
     public static final ResourceKey<Biome> TROPICAL_BEACH = createKey("tropical_beach");
 
+
+    public static final ResourceKey<Biome> DOWNFALL_ISLE = createKey("downfall_isle");
+
     //Underground
     public static final ResourceKey<Biome> CAVES = createKey("caves");
     public static final ResourceKey<Biome> CAVE_DEPTHS = createKey("cave_depths");

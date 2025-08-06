@@ -1,4 +1,5 @@
 {
   "type": "nomansland:tortoise",
-  "texture": "nomansland:entity/tortoise/green"
+  "texture": "nomansland:entity/tortoise/green",
+  "biomes": "minecraft:lush_caves"
 }
