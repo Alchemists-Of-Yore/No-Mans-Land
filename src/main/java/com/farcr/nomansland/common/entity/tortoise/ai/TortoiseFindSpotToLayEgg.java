@@ -20,7 +20,6 @@ public class TortoiseFindSpotToLayEgg extends Goal {
     private final Level level;
     private boolean failedAttempt = false;
     private int ticksGoalRan;
-    protected long tryAgainTime = 0;
     private Path path;
 
     public TortoiseFindSpotToLayEgg(Tortoise mob, double speedModifier) {
@@ -32,8 +31,7 @@ public class TortoiseFindSpotToLayEgg extends Goal {
 
     @Override
     public boolean canUse() {
-        long gameTime = this.tortoise.level().getGameTime();
-        return this.tortoise.hasEgg() && !this.tortoise.inShell() && this.getHomePos() != null && (gameTime - this.tryAgainTime > 3600L) && !this.tortoise.isLayingEgg();
+        return this.tortoise.hasEgg() && !this.tortoise.inShell() && this.getHomePos() != null && !this.tortoise.isLayingEgg();
     }
 
     @Override
@@ -62,10 +60,8 @@ public class TortoiseFindSpotToLayEgg extends Goal {
     @Override
     public void stop() {
         super.stop();
-        if (this.failedAttempt) {
-            this.tryAgainTime = this.tortoise.level().getGameTime();
-            this.tortoise.setNoActionTime(100);
-        }
+        if (this.failedAttempt)
+            this.tortoise.setHasEgg(false);
         if (ticksGoalRan >= 600)
             this.ticksGoalRan = 0;
     }
