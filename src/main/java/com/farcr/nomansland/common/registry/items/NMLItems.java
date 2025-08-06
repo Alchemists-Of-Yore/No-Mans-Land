@@ -231,6 +231,6 @@ public class NMLItems {
                         new ArmorMaterial.Layer(
                                 NoMansLand.location("tortoise"), "_overlay", false
                         )
-                ), NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(), 0.0F));
+                ), NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(), 0.2F));
     }
 }

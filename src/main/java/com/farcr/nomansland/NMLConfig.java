@@ -236,9 +236,9 @@ public class NMLConfig {
 
         ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
         STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
-        ARMOR_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor value", 5, -100, 100);
-        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor toughness value", 2.0F, -100, 100);
-        SPEED_REDUCTION_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor speed value", -0.20, -100, 100);
+        ARMOR_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor value", 4, -100, 100);
+        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor toughness value", 3.0F, -100, 100);
+        SPEED_REDUCTION_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor speed value", -0.30, -100, 100);
         STARTUP_BUILDER.pop();
         STARTUP_CONFIG = STARTUP_BUILDER.build();
     }
