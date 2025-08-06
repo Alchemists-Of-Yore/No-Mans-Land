@@ -59,6 +59,12 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue DEEP_DARK_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue FOGGY_BIOME_FOG_MODIFIER;
 
+    public static ModConfigSpec STARTUP_CONFIG;
+    public static final String CATEGORY_TORTOISE_SHELL_ATTRIBUTES = "tortoise_shell_attributes";
+    public static ModConfigSpec.IntValue ARMOR_VALUE;
+    public static ModConfigSpec.DoubleValue ARMOR_TOUGHNESS_VALUE;
+    public static ModConfigSpec.DoubleValue SPEED_REDUCTION_VALUE;
+
     static {
 
         ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
@@ -227,6 +233,14 @@ public class NMLConfig {
         CLIENT_BUILDER.pop();
 
         CLIENT_CONFIG = CLIENT_BUILDER.build();
+
+        ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
+        STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
+        ARMOR_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor value", 5, -100, 100);
+        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor toughness value", 2.0F, -100, 100);
+        SPEED_REDUCTION_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor speed value", -0.20, -100, 100);
+        STARTUP_BUILDER.pop();
+        STARTUP_CONFIG = STARTUP_BUILDER.build();
     }
 
 }

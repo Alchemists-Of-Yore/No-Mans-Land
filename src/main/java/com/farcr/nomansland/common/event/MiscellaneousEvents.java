@@ -11,6 +11,7 @@ import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
@@ -28,10 +29,14 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -44,11 +49,11 @@ import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
@@ -335,6 +340,26 @@ public class MiscellaneousEvents {
     public static void onEffectExpired(MobEffectEvent.Expired event) {
         if (event.getEffectInstance() != null && event.getEntity() instanceof Mob mob && event.getEffectInstance().getEffect().value().equals(NMLEffects.PACIFIED.get())) {
             mob.targetSelector.removeAllGoals(goal -> goal instanceof PacifiedAttackGoal);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHurt(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        DamageSource source = event.getSource();
+        ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLItems.NMLArmorMaterials.TORTOISE)) {
+            Vec3 vec32 = source.getSourcePosition();
+            if (vec32 != null) {
+                Vec3 vec3 = entity.calculateViewVector(0.0F, -entity.getYHeadRot());
+                Vec3 vec31 = vec32.vectorTo(entity.position());
+                vec31 = new Vec3(vec31.x, 0.0, vec31.z).normalize();
+                if (vec31.dot(vec3) < 0.0) {
+                    if (!entity.level().isClientSide)
+                        entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 1.0F, 0.2F);
+                    event.setCanceled(true);
+                }
+            }
         }
     }
 

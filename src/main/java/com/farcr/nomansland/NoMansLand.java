@@ -65,6 +65,7 @@ public class NoMansLand {
         NMLDensityFunctions.DENSITY_FUNCTIONS.register(modEventBus);
         NMLMaterialConditions.MATERIAL_CONDITIONS.register(modEventBus);
         NMLMaterialRules.MATERIAL_RULES.register(modEventBus);
+        NMLItems.NMLArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
@@ -80,6 +81,7 @@ public class NoMansLand {
 
         modContainer.registerConfig(ModConfig.Type.COMMON, NMLConfig.COMMON_CONFIG);
         modContainer.registerConfig(ModConfig.Type.CLIENT, NMLConfig.CLIENT_CONFIG);
+        modContainer.registerConfig(ModConfig.Type.STARTUP, NMLConfig.STARTUP_CONFIG);
     }
     
     public static ResourceLocation location(String path) {

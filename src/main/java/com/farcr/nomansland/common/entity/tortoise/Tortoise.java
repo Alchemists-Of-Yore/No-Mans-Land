@@ -4,6 +4,7 @@ import com.farcr.nomansland.common.entity.tortoise.ai.*;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.google.common.base.Suppliers;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -338,7 +339,7 @@ public class Tortoise extends Animal {
     protected void ageBoundaryReached() {
         super.ageBoundaryReached();
         if (!this.isBaby() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-            this.spawnAtLocation(Items.TURTLE_SCUTE, 1); //  TODO: tortoise scute
+            this.spawnAtLocation(new ItemStack(NMLItems.STURDY_SCUTE.get(), this.random.nextIntBetweenInclusive(1, 2)), 1);
         }
     }
 

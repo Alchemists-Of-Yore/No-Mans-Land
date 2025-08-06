@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.registry.items;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NMLEnumParams;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
@@ -8,24 +9,29 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.google.common.collect.Sets;
+import net.minecraft.Util;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -92,6 +98,8 @@ public class NMLItems {
     //Materials
     public static final ItemDefinition<Item> RESIN = register("resin",
             () -> new Item(new Properties()));
+    public static final ItemDefinition<Item> STURDY_SCUTE = register("sturdy_scute",
+            () -> new Item(new Properties()));
 
     public static final ItemDefinition<Item> RESIN_OIL_BOTTLE = register("resin_oil_bottle",
             () -> new ResinOilBottleItem(new Properties()
@@ -114,6 +122,8 @@ public class NMLItems {
             () -> new LivingUrnItem(new Properties().stacksTo(8).rarity(Rarity.UNCOMMON)));
     public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
             () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
+    public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
+            () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(25))));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
@@ -206,5 +216,21 @@ public class NMLItems {
 
     public static <T extends Item> ItemDefinition<T> register(String name, Supplier<T> item) {
         return register(name, item, false);
+    }
+
+    public static class NMLArmorMaterials {
+        public static final DeferredRegister ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, NoMansLand.MODID);
+        public static final Holder<ArmorMaterial> TORTOISE = ARMOR_MATERIALS.register("tortoise", () -> new ArmorMaterial(
+                Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                    map.put(ArmorItem.Type.CHESTPLATE, NMLConfig.ARMOR_VALUE.get());
+                }), 9, SoundEvents.ARMOR_EQUIP_TURTLE, () -> Ingredient.of(NMLItems.STURDY_SCUTE),
+                List.of(
+                        new ArmorMaterial.Layer(
+                                NoMansLand.location("tortoise")
+                        ),
+                        new ArmorMaterial.Layer(
+                                NoMansLand.location("tortoise"), "_overlay", false
+                        )
+                ), NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(), 0.0F));
     }
 }
