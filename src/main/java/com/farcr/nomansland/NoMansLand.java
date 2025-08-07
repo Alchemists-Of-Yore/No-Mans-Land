@@ -9,7 +9,9 @@ import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
 import com.farcr.nomansland.common.registry.entities.*;
+import com.farcr.nomansland.common.registry.items.NMLArmorMaterials;
 import com.farcr.nomansland.common.registry.items.NMLCreativeTabs;
+import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.*;
 import net.minecraft.resources.ResourceLocation;
@@ -65,7 +67,8 @@ public class NoMansLand {
         NMLDensityFunctions.DENSITY_FUNCTIONS.register(modEventBus);
         NMLMaterialConditions.MATERIAL_CONDITIONS.register(modEventBus);
         NMLMaterialRules.MATERIAL_RULES.register(modEventBus);
-        NMLItems.NMLArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
+        NMLArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
+        NMLDataComponents.DATA_COMPONENTS.register(modEventBus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();

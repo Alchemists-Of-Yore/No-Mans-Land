@@ -11,13 +11,16 @@ import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.farcr.nomansland.common.registry.items.NMLArmorMaterials;
+import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
 import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.resources.ResourceKey;
@@ -25,15 +28,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
@@ -53,7 +57,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
@@ -347,17 +354,34 @@ public class MiscellaneousEvents {
     public static void onHurt(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
+        float damage = event.getAmount();
         ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLItems.NMLArmorMaterials.TORTOISE)) {
+        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
             Vec3 vec32 = source.getSourcePosition();
             if (vec32 != null) {
                 Vec3 vec3 = entity.calculateViewVector(0.0F, entity.getYHeadRot());
                 Vec3 vec31 = vec32.vectorTo(entity.position());
                 vec31 = new Vec3(vec31.x, 0.0, vec31.z).normalize();
-                if (vec31.dot(vec3) > 0.0) {
-                    if (!entity.level().isClientSide)
+                if (!source.is(DamageTypeTags.BYPASSES_SHIELD) && vec31.dot(vec3) > 0.0) {
+                    if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
+                        return;
+                    MiscellaneousEvents.disableTortoiseShell(source, entity, stack);
+                    if (entity instanceof Player playerReal)
+                        playerReal.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                    if (damage >= 3.0F) {
+                        int damageToItem = 1 + Mth.floor(damage);
+                        InteractionHand interactionhand = entity.getUsedItemHand();
+                        if (MiscellaneousEvents.isTortoiseShellDisabled(stack, entity))
+                            stack.hurtAndBreak(damageToItem, entity, EquipmentSlot.CHEST);
+                        if (stack.isEmpty()) {
+                            entity.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+                            entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BREAK, SoundSource.NEUTRAL, 1.0F, 0.2F);
+                        }
+                    }
+                    event.setCanceled(MiscellaneousEvents.isTortoiseShellDisabled(stack, entity));
+                    if (event.isCanceled()) {
                         entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 1.0F, 0.2F);
-                    event.setCanceled(true);
+                    }
                 }
             }
         }
@@ -367,7 +391,7 @@ public class MiscellaneousEvents {
     public static void onKnockback(LivingKnockBackEvent event) {
         LivingEntity entity = event.getEntity();
         ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLItems.NMLArmorMaterials.TORTOISE)) {
+        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
             if (entity.isCrouching()) {
                 event.setStrength(0.0F);
             }
@@ -487,5 +511,39 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onServerStop(ServerStoppingEvent event) {
         LazilyCachedDensityFunctionSeedifier.clearCache();
+    }
+
+    public static void spawnItemParticles(int amount, RandomSource randomSource, Level level, ItemStack itemstack, LivingEntity entity) {
+        for (int i = 0; i < amount; i++) {
+            Vec3 vec3 = new Vec3(((double) randomSource.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
+            vec3 = vec3.xRot(-entity.getXRot() * (float) (Math.PI / 180.0));
+            vec3 = vec3.yRot(-entity.getYRot() * (float) (Math.PI / 180.0));
+            double d0 = (double) (-randomSource.nextFloat()) * 0.6 - 0.3;
+            Vec3 vec31 = new Vec3(((double) randomSource.nextFloat() - 0.5) * 0.3, d0, 0.6);
+            vec31 = vec31.xRot(-entity.getXRot() * (float) (Math.PI / 180.0));
+            vec31 = vec31.yRot(-entity.getYRot() * (float) (Math.PI / 180.0));
+            vec31 = vec31.add(entity.getX(), entity.getEyeY(), entity.getZ());
+            ((ServerLevel) level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, itemstack), vec31.x, vec31.y, vec31.z, amount, vec3.x, vec3.y + 0.05, vec3.z, 0.5);
+        }
+    }
+
+    public static void disableTortoiseShell(DamageSource source, LivingEntity entity, ItemStack stack) {
+        if (stack == null || stack != null && stack.get(NMLDataComponents.TIME_WHEN_DISABLED) != null && (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) < 100L)
+            return;
+        if (source.getEntity() instanceof LivingEntity living) {
+            if (living.getItemBySlot(EquipmentSlot.MAINHAND).canDisableShield(living.getItemBySlot(EquipmentSlot.MAINHAND), entity, living)) {
+                if (entity instanceof Player player)
+                    player.getCooldowns().addCooldown(stack.getItem(), 100);
+                stack.set(NMLDataComponents.TIME_WHEN_DISABLED.get(), entity.level().getGameTime());
+                MiscellaneousEvents.spawnItemParticles(5, living.getRandom(), living.level(), stack, living);
+                entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BREAK, SoundSource.NEUTRAL, 1.0F, 0.2F);
+            }
+        }
+    }
+
+    public static boolean isTortoiseShellDisabled(ItemStack stack, Entity entity) {
+        if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
+            return false;
+        return (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) > 100L;
     }
 }

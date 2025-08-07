@@ -123,7 +123,7 @@ public class NMLItems {
     public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
             () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
     public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
-            () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(25))));
+            () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(25)).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
@@ -216,21 +216,5 @@ public class NMLItems {
 
     public static <T extends Item> ItemDefinition<T> register(String name, Supplier<T> item) {
         return register(name, item, false);
-    }
-
-    public static class NMLArmorMaterials {
-        public static final DeferredRegister ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, NoMansLand.MODID);
-        public static final Holder<ArmorMaterial> TORTOISE = ARMOR_MATERIALS.register("tortoise", () -> new ArmorMaterial(
-                Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
-                    map.put(ArmorItem.Type.CHESTPLATE, NMLConfig.ARMOR_VALUE.get());
-                }), 9, SoundEvents.ARMOR_EQUIP_TURTLE, () -> Ingredient.of(NMLItems.STURDY_SCUTE),
-                List.of(
-                        new ArmorMaterial.Layer(
-                                NoMansLand.location("tortoise")
-                        ),
-                        new ArmorMaterial.Layer(
-                                NoMansLand.location("tortoise"), "_overlay", false
-                        )
-                ), NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(), 0.2F));
     }
 }
