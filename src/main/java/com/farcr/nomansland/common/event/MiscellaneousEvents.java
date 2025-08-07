@@ -356,7 +356,7 @@ public class MiscellaneousEvents {
         DamageSource source = event.getSource();
         float damage = event.getAmount();
         ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
+        if (!stack.isEmpty() && stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
             Vec3 vec32 = source.getSourcePosition();
             if (vec32 != null) {
                 Vec3 vec3 = entity.calculateViewVector(0.0F, entity.getYHeadRot());
@@ -365,7 +365,6 @@ public class MiscellaneousEvents {
                 if (!source.is(DamageTypeTags.BYPASSES_SHIELD) && vec31.dot(vec3) > 0.0) {
                     if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
                         return;
-                    MiscellaneousEvents.disableTortoiseShell(source, entity, stack);
                     if (entity instanceof Player playerReal)
                         playerReal.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                     if (damage >= 3.0F) {
@@ -379,6 +378,7 @@ public class MiscellaneousEvents {
                         }
                     }
                     event.setCanceled(MiscellaneousEvents.isTortoiseShellDisabled(stack, entity));
+                    MiscellaneousEvents.disableTortoiseShell(source, entity, stack);
                     if (event.isCanceled()) {
                         entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 1.0F, 0.2F);
                     }
@@ -523,12 +523,13 @@ public class MiscellaneousEvents {
             vec31 = vec31.xRot(-entity.getXRot() * (float) (Math.PI / 180.0));
             vec31 = vec31.yRot(-entity.getYRot() * (float) (Math.PI / 180.0));
             vec31 = vec31.add(entity.getX(), entity.getEyeY(), entity.getZ());
-            ((ServerLevel) level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, itemstack), vec31.x, vec31.y, vec31.z, amount, vec3.x, vec3.y + 0.05, vec3.z, 0.5);
+            if (!itemstack.isEmpty())
+                ((ServerLevel) level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, itemstack), vec31.x, vec31.y, vec31.z, amount, vec3.x, vec3.y + 0.05, vec3.z, 0.5);
         }
     }
 
     public static void disableTortoiseShell(DamageSource source, LivingEntity entity, ItemStack stack) {
-        if (stack == null || stack != null && stack.get(NMLDataComponents.TIME_WHEN_DISABLED) != null && (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) < 100L)
+        if (stack.isEmpty() || !stack.isEmpty() && stack.get(NMLDataComponents.TIME_WHEN_DISABLED) != null && (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) < 100L)
             return;
         if (source.getEntity() instanceof LivingEntity living) {
             if (living.getItemBySlot(EquipmentSlot.MAINHAND).canDisableShield(living.getItemBySlot(EquipmentSlot.MAINHAND), entity, living)) {
