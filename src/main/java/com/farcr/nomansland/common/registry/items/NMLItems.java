@@ -123,7 +123,7 @@ public class NMLItems {
     public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
             () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
     public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
-            () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(25)).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
+            () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(NMLConfig.DURABILITY_VALUE.get()).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
     public static final ItemDefinition<Item> ANCIENT_BRONZE_MASK = register("ancient_bronze_mask",
             () -> new ArmorItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).rarity(Rarity.EPIC)));
 

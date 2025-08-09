@@ -62,6 +62,7 @@ public class NMLConfig {
     public static ModConfigSpec STARTUP_CONFIG;
     public static final String CATEGORY_TORTOISE_SHELL_ATTRIBUTES = "tortoise_shell_attributes";
     public static ModConfigSpec.IntValue ARMOR_VALUE;
+    public static ModConfigSpec.IntValue DURABILITY_VALUE;
     public static ModConfigSpec.DoubleValue ARMOR_TOUGHNESS_VALUE;
     public static ModConfigSpec.DoubleValue SPEED_REDUCTION_VALUE;
     public static ModConfigSpec.DoubleValue KNOCKBACK_RESISTANCE_VALUE;
@@ -237,10 +238,11 @@ public class NMLConfig {
 
         ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
         STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
-        ARMOR_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor value", 4, -100, 100);
-        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor toughness value", 3.0F, -100, 100);
-        SPEED_REDUCTION_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor speed value", -0.30F, -100, 100);
-        KNOCKBACK_RESISTANCE_VALUE = STARTUP_BUILDER.defineInRange("Tortoise knockback resistance value", 0.2F, -100, 100);
+        DURABILITY_VALUE= STARTUP_BUILDER.defineInRange("Tortoise durability value", 275, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ARMOR_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor value", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor toughness value", 3.0F, -999, 999);
+        SPEED_REDUCTION_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor speed value", -0.30F, -999, 999);
+        KNOCKBACK_RESISTANCE_VALUE = STARTUP_BUILDER.defineInRange("Tortoise knockback resistance value", 0.2F, -999, 999);
         STARTUP_BUILDER.pop();
         STARTUP_CONFIG = STARTUP_BUILDER.build();
     }

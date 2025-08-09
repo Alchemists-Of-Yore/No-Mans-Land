@@ -22,20 +22,4 @@ public class TortoiseShellItem extends ArmorItem {
     public ItemAttributeModifiers getDefaultAttributeModifiers() {
         return super.getDefaultAttributeModifiers().withModifierAdded(Attributes.MOVEMENT_SPEED, new AttributeModifier(NoMansLand.location("tortoise_movement_reduction"), NMLConfig.SPEED_REDUCTION_VALUE.get(), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL), EquipmentSlotGroup.CHEST);
     }
-
-    /**
-     * Called each tick as long the item is in a player's inventory. Used by maps to check if it's in a player's hand and update its contents.
-     *
-     * @param stack
-     * @param level
-     * @param entity
-     * @param slotId
-     * @param isSelected
-     */
-    @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
-    }
-
-
 }
