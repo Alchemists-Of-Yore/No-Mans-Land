@@ -58,7 +58,7 @@ public record RangeSelectDensityFunction(DensityFunction input, double min, doub
 
     @Override
     public DensityFunction mapAll(Visitor visitor) {
-        return new RangeSelectDensityFunction(this.input.mapAll(visitor), min, max, gradient);
+        return visitor.apply(new RangeSelectDensityFunction(this.input.mapAll(visitor), min, max, gradient));
     }
 
     @Override

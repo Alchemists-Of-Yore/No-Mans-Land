@@ -16,6 +16,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
+import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -44,6 +45,7 @@ public class CommonSetupEvents {
     public static void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             if (NMLConfig.BIOMES.get()) NMLBiomePlacements.register();
+            NMLDensityModifications.register();
             NMLSurfaceRules.register();
             NMLFlammables.register();
 
