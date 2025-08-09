@@ -36,10 +36,10 @@ public class NMLArmorMaterials {
             }), 20, SoundEvents.ARMOR_EQUIP_GOLD, () -> Ingredient.EMPTY,
             List.of(
                     new ArmorMaterial.Layer(
-                            NoMansLand.location("armor/ancient_bronze_mask")
+                            NoMansLand.location("ancient_bronze_mask")
                     ),
                     new ArmorMaterial.Layer(
-                            NoMansLand.location("armor/ancient_bronze_mask"), "_overlay", false
+                            NoMansLand.location("ancient_bronze_mask"), "_overlay", false
                     )
             ), 0.0F, 0.0F));
 }
