@@ -50,7 +50,7 @@ public class DeerAntlersVariant extends MobVariant {
         });
 
         List<DeerAntlersVariant> defaultVariants = variants.stream().filter(v -> v.biomes.size() == 0).toList();
-        List<DeerAntlersVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && !v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
+        List<DeerAntlersVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
 
         int cumulativeWeight = 0;
         if (!biomeVariants.isEmpty()) {

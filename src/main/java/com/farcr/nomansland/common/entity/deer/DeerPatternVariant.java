@@ -53,7 +53,7 @@ public class DeerPatternVariant extends MobVariant {
         });
 
         List<DeerPatternVariant> defaultVariants = variants.stream().filter(v -> v.biomes.size() == 0).toList();
-        List<DeerPatternVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && !v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
+        List<DeerPatternVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
 
         int cumulativeWeight = 0;
         if (!biomeVariants.isEmpty()) {
