@@ -28,4 +28,17 @@ public class NMLArmorMaterials {
                             NoMansLand.location("tortoise"), "_overlay", false
                     )
             ), NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(), NMLConfig.KNOCKBACK_RESISTANCE_VALUE.get().floatValue()));
+
+    public static final Holder<ArmorMaterial> ANCIENT_BRONZE_MASK = ARMOR_MATERIALS.register("ancient_bronze_mask", () -> new ArmorMaterial(
+            Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                map.put(ArmorItem.Type.HELMET, 2);
+            }), 20, SoundEvents.ARMOR_EQUIP_GOLD, () -> Ingredient.EMPTY,
+            List.of(
+                    new ArmorMaterial.Layer(
+                            NoMansLand.location("nomansland:textures/armor/ancient_bronze_mask")
+                    ),
+                    new ArmorMaterial.Layer(
+                            NoMansLand.location("nomansland:textures/armor/ancient_bronze_mask"), "_overlay", false
+                    )
+            ), 0.0F, 0.0F));
 }

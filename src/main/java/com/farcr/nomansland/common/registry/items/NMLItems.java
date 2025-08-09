@@ -124,6 +124,8 @@ public class NMLItems {
             () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
     public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
             () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(25)).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
+    public static final ItemDefinition<Item> ANCIENT_BRONZE_MASK = register("ancient_bronze_mask",
+            () -> new TortoiseShellItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10))));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
