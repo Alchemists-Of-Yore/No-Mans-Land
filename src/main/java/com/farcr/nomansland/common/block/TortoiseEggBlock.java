@@ -120,7 +120,7 @@ public class TortoiseEggBlock extends Block {
     }
 
     private boolean shouldUpdateHatchLevel(Level level) {
-        return level.getRandom().nextInt(300) == 0;
+        return level.getRandom().nextInt(25) == 0;
     }
 
 
