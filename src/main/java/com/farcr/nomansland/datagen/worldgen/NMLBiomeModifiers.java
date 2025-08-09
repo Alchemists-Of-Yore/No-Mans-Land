@@ -83,8 +83,7 @@ public class NMLBiomeModifiers {
                         new SpawnerData(EntityType.COW, 6, 4, 4)
                 )
                 .addSpawns(
-                        new SpawnerData(EntityType.RABBIT, 15, 2, 8),
-                        new SpawnerData(EntityType.HUSK, 100, 4, 4)
+                        new SpawnerData(EntityType.RABBIT, 15, 2, 8)
                 )
                 .removeSpawns(EntityType.SHEEP)
                 .build(featureToBiomes);
