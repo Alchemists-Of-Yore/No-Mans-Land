@@ -16,6 +16,7 @@ import java.util.List;
 
 public class NMLArmorMaterials {
     public static final DeferredRegister ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, NoMansLand.MODID);
+
     public static final Holder<ArmorMaterial> TORTOISE = ARMOR_MATERIALS.register("tortoise", () -> new ArmorMaterial(
             Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
                 map.put(ArmorItem.Type.CHESTPLATE, NMLConfig.ARMOR_VALUE.get());
@@ -35,10 +36,10 @@ public class NMLArmorMaterials {
             }), 20, SoundEvents.ARMOR_EQUIP_GOLD, () -> Ingredient.EMPTY,
             List.of(
                     new ArmorMaterial.Layer(
-                            NoMansLand.location("nomansland:textures/armor/ancient_bronze_mask")
+                            NoMansLand.location("armor/ancient_bronze_mask")
                     ),
                     new ArmorMaterial.Layer(
-                            NoMansLand.location("nomansland:textures/armor/ancient_bronze_mask"), "_overlay", false
+                            NoMansLand.location("armor/ancient_bronze_mask"), "_overlay", false
                     )
             ), 0.0F, 0.0F));
 }
