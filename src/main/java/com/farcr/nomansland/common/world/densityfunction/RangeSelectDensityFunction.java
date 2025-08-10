@@ -30,7 +30,7 @@ import net.minecraft.world.level.levelgen.DensityFunctions;
 public record RangeSelectDensityFunction(DensityFunction input, double min, double max, double gradient) implements DensityFunctions.PureTransformer {
     private static final MapCodec<RangeSelectDensityFunction> DATA_CODEC = RecordCodecBuilder.mapCodec(
             record -> record.group(
-                            DensityFunction.DIRECT_CODEC.fieldOf("input").forGetter(RangeSelectDensityFunction::input),
+                            DensityFunction.HOLDER_HELPER_CODEC.fieldOf("input").forGetter(RangeSelectDensityFunction::input),
                             Codec.doubleRange(-1000000.0, 1000000.0).fieldOf("min").forGetter(RangeSelectDensityFunction::min),
                             Codec.doubleRange(-1000000.0, 1000000.0).fieldOf("max").forGetter(RangeSelectDensityFunction::max),
                             Codec.doubleRange(-1000000.0, 1000000.0).fieldOf("gradient").forGetter(RangeSelectDensityFunction::gradient)

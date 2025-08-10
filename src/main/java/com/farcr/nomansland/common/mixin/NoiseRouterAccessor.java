@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(NoiseRouter.class)
-public interface NoiseRouterAccessModifier {
+public interface NoiseRouterAccessor {
     @Final @Mutable @Accessor("barrierNoise")
     void nml$setBarrierNoise(DensityFunction densityFunction);
     @Final @Mutable @Accessor("fluidLevelFloodednessNoise")
