@@ -13,6 +13,8 @@ import net.minecraft.world.level.levelgen.PositionalRandomFactory;
 import net.minecraft.world.level.levelgen.RandomState;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WatershedMap {
     private final RandomState randomState;
@@ -24,8 +26,8 @@ public class WatershedMap {
     public WatershedMap(RandomState randomState, int capacity) {
         this.randomState = randomState;
         this.capacity = capacity;
-        this.map = new Long2ObjectArrayMap<>(capacity);
-        this.queue = new ArrayDeque<>(capacity);
+        this.map = new ConcurrentHashMap<>(capacity);
+        this.queue = new ConcurrentLinkedQueue<>();
         this.randomFactory = this.randomState.getOrCreateRandomFactory(NoMansLand.location("watershed"));
     }
 
@@ -35,6 +37,7 @@ public class WatershedMap {
 
     public Watershed getOrCreateWatershed(int watershedX, int watershedZ) {
         long key = ChunkPos.asLong(watershedX, watershedZ);
+
         if (map.containsKey(key)) {
             return map.get(key);
         } else {
@@ -52,23 +55,24 @@ public class WatershedMap {
 
     private Watershed createWatershed(int watershedX, int watershedZ) {
         RandomSource random = this.randomFactory.at(watershedX, 0, watershedZ);
-        NoiseRouterExtension noiseRouter = ((NoiseRouterExtension) (Object) randomState.router());
+        NoiseRouterExtension noiseRouter = (NoiseRouterExtension)(Object)(randomState.router());
         // positioned at the center of the watershed cell
         WatershedNoiseContext noiseContext = new WatershedNoiseContext(
                 watershedX * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2),
                 watershedZ * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2)
         );
 
-        boolean hasRiver = random.nextDouble() > noiseRouter.nml$watershedProbabilityNoise().compute(noiseContext);
+        boolean hasRiver = true;//random.nextDouble() > noiseRouter.nml$watershedProbabilityNoise().compute(noiseContext);
         if (!hasRiver) // don't bother computing the other variables if the watershed has no river
             return new Watershed(watershedX, watershedZ, hasRiver, 0, 0, 0, 0, 0, 0);
 
-        int sourceX = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
-            sourceZ = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
+        int sourceX = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedX * Watershed.WATERSHED_SIZE,
+            sourceZ = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedZ * Watershed.WATERSHED_SIZE,
             sourceHeight = (int) noiseRouter.nml$watershedSourceHeightNoise().compute(noiseContext);
-        int drainX = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
-            drainZ = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
+        int drainX = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedX * Watershed.WATERSHED_SIZE,
+            drainZ = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedZ * Watershed.WATERSHED_SIZE,
             drainHeight = (int) noiseRouter.nml$watershedDrainHeightNoise().compute(noiseContext);
+        NoMansLand.LOGGER.info("new watershed generated w/ source at {} {} {} and drain at {} {} {}", sourceX, sourceHeight, sourceZ, drainX, drainHeight, drainZ);
         return new Watershed(
                 watershedX, watershedZ,
                 hasRiver,

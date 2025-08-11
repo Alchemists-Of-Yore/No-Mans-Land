@@ -131,7 +131,7 @@ public class CaveRiverTestDensityFunction implements DensityFunction.SimpleFunct
 //        double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 //        return Mth.clamp(Mth.map(distance - 5, -10, 10, -1, 1), -100, 100);
         double distance = riverDistance(context.blockX(), context.blockY(), context.blockZ());
-        return Mth.clamp(Mth.map(distance - 5, -10, 10, -1, 1), -100, 100);
+        return Mth.clamp(Mth.map(distance - 30, -10, 10, -1, 1), -100, 100);
     }
 
     @Override

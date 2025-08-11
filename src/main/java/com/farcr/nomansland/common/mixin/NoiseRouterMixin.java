@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NoiseRouter.class)
-public class NoiseRouterMixin implements NoiseRouterExtension {
+public abstract class NoiseRouterMixin implements NoiseRouterExtension {
     @Unique
     public DensityFunction nml$watershedProbabilityNoise;
     @Unique
@@ -50,17 +50,17 @@ public class NoiseRouterMixin implements NoiseRouterExtension {
         this.nml$watershedDrainHeightNoise.mapAll(visitor);
     }
 
-    @Override @Unique
+    @Override
     public DensityFunction nml$watershedProbabilityNoise() {
         return nml$watershedProbabilityNoise;
     }
 
-    @Override @Unique
+    @Override
     public DensityFunction nml$watershedSourceHeightNoise() {
         return nml$watershedSourceHeightNoise;
     }
 
-    @Override @Unique
+    @Override
     public DensityFunction nml$watershedDrainHeightNoise() {
         return nml$watershedDrainHeightNoise;
     }

@@ -1,21 +1,21 @@
 package com.farcr.nomansland.common.world.densityfunction.modification;
 
+import net.minecraft.core.HolderGetter;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.DensityFunctions;
+import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
-import java.util.function.Function;
+public interface DensityFunctionModifier {
+    DensityFunction apply(DensityFunction densityFunction, HolderGetter<NormalNoise.NoiseParameters> noiseParameters);
 
-public interface DensityFunctionModifier extends Function<DensityFunction, DensityFunction> {
     default DensityFunctionModifier combine(DensityFunctionModifier other) {
-        return (t) -> this.apply(other.apply(t));
+        return (function, params) -> this.apply(other.apply(function, params), params);
     }
 
-    default DensityFunction visit(DensityFunction densityFunction) {
-//        DensityFunctionModifierVisitor visitor = new DensityFunctionModifierVisitor(this);
-//        return visitor.apply(densityFunction);
+    default DensityFunction visit(DensityFunction densityFunction, HolderGetter<NormalNoise.NoiseParameters> noiseParameters) {
         if (densityFunction instanceof DensityFunctions.Marker marker) {
-            return new DensityFunctions.Marker(marker.type(), this.visit(marker.wrapped()));
+            return new DensityFunctions.Marker(marker.type(), this.visit(marker.wrapped(), noiseParameters));
         }
-        return this.apply(densityFunction);
+        return this.apply(densityFunction, noiseParameters);
     }
 }

@@ -1,10 +1,14 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifications;
 import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifier;
 import com.farcr.nomansland.common.world.densityfunction.modification.NoiseRouterParameter;
+import com.farcr.nomansland.common.world.watershed.WatershedDensityFunctionVisitor;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -15,9 +19,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.NoiseRouter;
+import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.jetbrains.annotations.Nullable;
@@ -55,15 +61,33 @@ public class MinecraftServerMixin {
 
         if (dimensionKey.isPresent() && DensityFunctionModifications.NOISE_ROUTER_MODIFICATIONS.containsKey(dimensionKey.get())) {
             DensityFunctionModifications.NoiseRouterModifications noiseRouterModifications = DensityFunctionModifications.NOISE_ROUTER_MODIFICATIONS.get(dimensionKey.get());
-
             ChunkGenerator chunkGenerator = dimensionOptions.generator();
             if (chunkGenerator instanceof NoiseBasedChunkGenerator noiseBasedChunkGenerator) {
                 NoiseGeneratorSettings noiseGeneratorSettings = noiseBasedChunkGenerator.generatorSettings().value();
                 NoiseRouter noiseRouter = noiseGeneratorSettings.noiseRouter();
+                HolderGetter<NormalNoise.NoiseParameters> noiseRegistry = server.registryAccess().lookupOrThrow(Registries.NOISE);
+                // i hate this
+                ((NoiseGeneratorSettingsAccessor)(Object)noiseGeneratorSettings).nml$setNoiseRouter(
+                        new NoiseRouter(
+                            NoiseRouterParameter.BARRIER_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.LAVA_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.TEMPERATURE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.VEGETATION.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.CONTINENTS.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.EROSION.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.DEPTH.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.RIDGES.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.INITIAL_DENSITY_WITHOUT_JAGGEDNESS.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.FINAL_DENSITY.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.VEIN_TOGGLE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
+                            NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry)
+                        )
+                );
 
-                for (Map.Entry<NoiseRouterParameter, DensityFunctionModifier> entry : noiseRouterModifications.modifiers.entrySet()) {
-                    entry.getKey().modify(noiseRouter, entry.getValue());
-                }
+                NoMansLand.LOGGER.info(noiseGeneratorSettings.noiseRouter());
             }
         }
 
