@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.entity.Moose;
+import com.farcr.nomansland.common.entity.moose.Moose;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;

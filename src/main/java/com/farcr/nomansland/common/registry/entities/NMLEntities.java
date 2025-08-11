@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.moose.Moose;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
