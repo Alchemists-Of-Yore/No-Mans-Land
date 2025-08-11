@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.world.watershed.Watershed;
 import com.farcr.nomansland.common.world.watershed.WatershedDensityFunctionVisitor;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
 import net.minecraft.core.HolderGetter;
@@ -16,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RandomState.class)
-public abstract class RandomStateMixin implements RandomStateExtension {
+public abstract class RandomStateMixin {
     @Shadow @Final private NoiseRouter router;
     @Unique WatershedMap nml$watershedMap;
 

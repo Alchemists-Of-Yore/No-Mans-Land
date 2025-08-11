@@ -1,6 +1,5 @@
-package com.farcr.nomansland.common.mixinduck;
+package com.farcr.nomansland.common.mixinextensions;
 
 public interface LivingEntityDuck {
-
     void nml$skipDroppingDeathLoot();
 }

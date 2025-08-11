@@ -23,4 +23,12 @@ public class NMLDensityUtils {
     public static DensityFunction smoothMax(DensityFunction arg1, DensityFunction arg2, DensityFunction smoothness) {
         return SmoothMixDensityFunction.create(SmoothMixDensityFunction.Type.MAX, arg1, arg2, smoothness);
     }
+
+    public static DensityFunction mapRange(DensityFunction input, double inMin, double inMax, double outMin, double outMax) {
+        return new RemapDensityFunction(input, inMin, inMax, outMin, outMax, false);
+    }
+
+    public static DensityFunction mapRangeClamped(DensityFunction input, double inMin, double inMax, double outMin, double outMax) {
+        return new RemapDensityFunction(input, inMin, inMax, outMin, outMax, true);
+    }
 }

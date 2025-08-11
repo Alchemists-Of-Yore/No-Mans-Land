@@ -17,11 +17,11 @@ public record Watershed(
     // size of a watershed cell
     public static final int WATERSHED_SIZE = 512;
 
-    // probability that a given watershed cell contains a river. sampled at the center of the cell.
+    // probability that a given watershed cell contains a river.
     public static final Supplier<DensityFunction> WATERSHED_PROBABILITY = () -> {
         return DensityFunctions.noise(Holder.direct(new NormalNoise.NoiseParameters(1, 0)));
     };
-    // height of watershed sources
+    // height of watershed source basin
     public static final Supplier<DensityFunction> WATERSHED_SOURCE_HEIGHT = () -> {
         return DensityFunctions.add(
                 DensityFunctions.constant(10),
@@ -31,7 +31,7 @@ public record Watershed(
                 )
         );
     };
-    // height of watershed drains
+    // height of watershed drain basin
     public static final Supplier<DensityFunction> WATERSHED_DRAIN_HEIGHT = () -> {
         return DensityFunctions.add(
                 DensityFunctions.constant(-35),

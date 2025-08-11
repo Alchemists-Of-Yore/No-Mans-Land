@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.world.watershed;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.mixin.NoiseRouterExtension;
 import com.farcr.nomansland.common.mixin.NoiseRouterMixin;
+import com.farcr.nomansland.common.mixinextensions.NoiseRouterExtension;
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.util.Mth;
@@ -60,7 +60,7 @@ public class WatershedMap {
         );
 
         boolean hasRiver = random.nextDouble() > noiseRouter.nml$watershedProbabilityNoise().compute(noiseContext);
-        if (!hasRiver) // dont bother computing the other variables if the watershed has no river
+        if (!hasRiver) // don't bother computing the other variables if the watershed has no river
             return new Watershed(watershedX, watershedZ, hasRiver, 0, 0, 0, 0, 0, 0);
 
         int sourceX = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
@@ -68,7 +68,7 @@ public class WatershedMap {
             sourceHeight = (int) noiseRouter.nml$watershedSourceHeightNoise().compute(noiseContext);
         int drainX = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
             drainZ = random.nextInt(watershedX * Watershed.WATERSHED_SIZE, (watershedX + 1) * Watershed.WATERSHED_SIZE),
-            drainHeight = (int) noiseRouter.nml$watershedSourceHeightNoise().compute(noiseContext);
+            drainHeight = (int) noiseRouter.nml$watershedDrainHeightNoise().compute(noiseContext);
         return new Watershed(
                 watershedX, watershedZ,
                 hasRiver,

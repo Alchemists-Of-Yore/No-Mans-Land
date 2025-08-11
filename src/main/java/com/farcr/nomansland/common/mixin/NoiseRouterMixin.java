@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.mixinextensions.NoiseRouterExtension;
 import com.farcr.nomansland.common.world.watershed.Watershed;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseRouter;

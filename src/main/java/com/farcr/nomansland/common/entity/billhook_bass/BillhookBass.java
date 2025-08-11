@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.entity.billhook_bass;
 
-import com.farcr.nomansland.common.mixinduck.LivingEntityDuck;
+import com.farcr.nomansland.common.mixinextensions.LivingEntityDuck;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
