@@ -20,12 +20,12 @@ public class DimensionBiomePlacementMixin {
     @Inject(method = "getReplacement", at = @At("RETURN"), cancellable = true)
     private void addCaveReplacement(int x, int y, int z, Climate.TargetPoint noisePoint, BiolithFittestNodes<Holder<Biome>> fittestNodes, CallbackInfoReturnable<Holder<Biome>> cir, @Local Holder<Biome> biomeEntry)
     {
-        if (NMLConfig.CAVES_BIOMES.get()) {
-            if ((DimensionBiomePlacement)(Object)this instanceof OverworldBiomePlacement) {
+        if ((DimensionBiomePlacement)(Object)this instanceof OverworldBiomePlacement) {
+            if (NMLConfig.CAVES_BIOMES.get()) {
                 if (!biomeEntry.is(Tags.Biomes.IS_CAVE)) {
-                    if (noisePoint.depth() > 0.5f * 10000.0f) {
+                    if (noisePoint.depth() > 0.5F * 10000) {
                         cir.setReturnValue(NMLBiomes.CAVE_DEPTHS_HOLDER);
-                    } else if (noisePoint.depth() > 0.1f * 10000.0f) {
+                    } else if (noisePoint.depth() > 0.1F * 10000) {
                         cir.setReturnValue(NMLBiomes.CAVES_HOLDER);
                     }
                 }

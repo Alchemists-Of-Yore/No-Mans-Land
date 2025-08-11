@@ -62,7 +62,7 @@ public class WardedSpacesData extends SavedData {
         if (positions.contains(pos)) return true;
 
         for (BlockPos wardedPos : positions) {
-            if (wardedPos.distToCenterSqr(pos.getX(), pos.getY(), pos.getZ()) <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
+            if (wardedPos.distSqr(pos) <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
                 return true;
             }
         }

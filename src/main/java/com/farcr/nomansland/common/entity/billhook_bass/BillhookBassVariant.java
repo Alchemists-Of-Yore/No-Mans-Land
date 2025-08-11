@@ -50,7 +50,7 @@ public class BillhookBassVariant extends MobVariant {
         });
 
         List<BillhookBassVariant> defaultVariants = variants.stream().filter(v -> v.biomes.size() == 0).toList();
-        List<BillhookBassVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && !v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
+        List<BillhookBassVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
 
         int cumulativeWeight = 0;
         if (!biomeVariants.isEmpty()) {

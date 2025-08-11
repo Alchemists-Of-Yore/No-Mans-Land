@@ -1,7 +1,7 @@
 package com.farcr.nomansland.client.model.moose;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.entity.Moose;
+import com.farcr.nomansland.common.entity.moose.Moose;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;

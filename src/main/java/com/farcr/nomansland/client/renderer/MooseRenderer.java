@@ -4,7 +4,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.model.moose.MooseAntlersLayer;
 import com.farcr.nomansland.client.model.moose.MooseModel;
-import com.farcr.nomansland.common.entity.Moose;
+import com.farcr.nomansland.common.entity.moose.Moose;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;

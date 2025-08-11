@@ -50,7 +50,7 @@ public class GooseVariant extends MobVariant {
         });
 
         List<GooseVariant> defaultVariants = variants.stream().filter(v -> v.biomes.size() == 0).toList();
-        List<GooseVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && !v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
+        List<GooseVariant> biomeVariants = variants.stream().filter(v -> v.biomes.size() > 0 && v.biomes.contains(level.getBiome(entity.blockPosition()))).toList();
 
         int cumulativeWeight = 0;
         if (!biomeVariants.isEmpty()) {
