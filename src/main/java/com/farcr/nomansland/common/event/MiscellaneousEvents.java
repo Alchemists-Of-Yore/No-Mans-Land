@@ -3,7 +3,7 @@ package com.farcr.nomansland.common.event;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
-import com.farcr.nomansland.common.entity.PacifiedAttackGoal;
+import com.farcr.nomansland.common.entity.ai.EnemyAttackGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -339,14 +339,14 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onEffectRemoved(MobEffectEvent.Remove event) {
         if (event.getEntity() instanceof Mob mob && event.getEffect().value().equals(NMLEffects.PACIFIED.get())) {
-            mob.targetSelector.removeAllGoals(goal -> goal instanceof PacifiedAttackGoal);
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof EnemyAttackGoal);
         }
     }
 
     @SubscribeEvent
     public static void onEffectExpired(MobEffectEvent.Expired event) {
         if (event.getEffectInstance() != null && event.getEntity() instanceof Mob mob && event.getEffectInstance().getEffect().value().equals(NMLEffects.PACIFIED.get())) {
-            mob.targetSelector.removeAllGoals(goal -> goal instanceof PacifiedAttackGoal);
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof EnemyAttackGoal);
         }
     }
 

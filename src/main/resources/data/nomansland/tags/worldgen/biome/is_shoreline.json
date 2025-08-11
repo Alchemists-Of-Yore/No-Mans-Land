@@ -2,7 +2,6 @@
   "values": [
     "#c:is_beach",
     "#c:is_stony_shores",
-    "nomansland:mud_beach",
-    "nomansland:gravel_beach"
+    "nomansland:mud_beach"
   ]
 }

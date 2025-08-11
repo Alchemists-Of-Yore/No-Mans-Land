@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.effect;
 
-import com.farcr.nomansland.common.entity.PacifiedAttackGoal;
+import com.farcr.nomansland.common.entity.ai.EnemyAttackGoal;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.particles.ColorParticleOption;
@@ -60,12 +60,12 @@ public class PacifiedEffect extends MobEffect {
 
         if (livingEntity instanceof Monster monster) {
             for (WrappedGoal goal : monster.targetSelector.getAvailableGoals()) {
-                if (goal.getGoal() instanceof PacifiedAttackGoal) {
+                if (goal.getGoal() instanceof EnemyAttackGoal) {
                     return;
                 }
             }
 
-            monster.targetSelector.addGoal(0, new PacifiedAttackGoal(monster));
+            monster.targetSelector.addGoal(0, new EnemyAttackGoal(monster));
         } else {
             if (livingEntity instanceof NeutralMob neutralMob) neutralMob.stopBeingAngry();
             livingEntity.removeEffect(NMLEffects.PACIFIED);

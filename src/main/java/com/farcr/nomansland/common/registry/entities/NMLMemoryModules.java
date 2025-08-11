@@ -12,9 +12,13 @@ import java.util.function.Supplier;
 public class NMLMemoryModules {
     public static final DeferredRegister<MemoryModuleType<?>> MEMORY_MODULES = DeferredRegister.create(Registries.MEMORY_MODULE_TYPE, NoMansLand.MODID);
 
-    public static final Supplier<MemoryModuleType<Integer>> FIGHT_COOLDOWN_TICKS = register("fight_cooldown_ticks", Codec.INT);
+    public static final Supplier<MemoryModuleType<Integer>> ANTLER_SHED_TICKS = register("antler_shed_ticks", Codec.INT);
 
     private static <U> Supplier<MemoryModuleType<U>> register(String key, Codec<U> codec) {
-        return MEMORY_MODULES.register(key, () -> new MemoryModuleType<>(Optional.of(codec)));
+        return register(key, Optional.of(codec));
+    }
+
+    private static <U> Supplier<MemoryModuleType<U>> register(String key, Optional<Codec<U>> codec) {
+        return MEMORY_MODULES.register(key, () -> new MemoryModuleType<>(codec));
     }
 }
