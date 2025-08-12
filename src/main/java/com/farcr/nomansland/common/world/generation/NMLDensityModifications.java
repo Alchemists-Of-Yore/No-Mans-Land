@@ -6,10 +6,10 @@ import com.farcr.nomansland.common.world.densityfunction.NMLDensityUtils;
 import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifications;
 import com.farcr.nomansland.common.world.densityfunction.modification.NoiseRouterParameter;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import net.minecraft.world.level.levelgen.DensityFunction;
-import net.minecraft.world.level.levelgen.DensityFunctions;
-import net.minecraft.world.level.levelgen.Noises;
+import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 public class NMLDensityModifications {
@@ -27,7 +27,7 @@ public class NMLDensityModifications {
 //                NMLDensityUtils.smoothMin(originalDensityFunction, new CaveRiverTestDensityFunction(), 0.01)
 //        );
 
-        DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FINAL_DENSITY, (originalDensityFunction, noiseParameters) -> {
+        DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FINAL_DENSITY, (originalDensityFunction, noiseParameters, densityFunctions) -> {
             DensityFunction caveRiverDensity = new CaveRiverDistanceDensityFunction(
                     DensityFunctions.interpolated(
                             DensityFunctions.cache2d(
@@ -37,10 +37,7 @@ public class NMLDensityModifications {
                             )
                     ), null
             );
-//            DensityFunction caveRiverDensity = NMLDensityUtils.mapRangeClamped(
-//                    DensityFunctions.add(caveRiverDistance, DensityFunctions.constant(-15.0)),
-//                    -10, 10, -1, 1
-//            );
+            // add noise
             caveRiverDensity = DensityFunctions.add(
                     caveRiverDensity,
                     DensityFunctions.interpolated(
@@ -49,15 +46,24 @@ public class NMLDensityModifications {
                             )
                     )
             );
+            // add speleothems
+            caveRiverDensity = DensityFunctions.add(
+                    caveRiverDensity,
+                    DensityFunctions.interpolated(
+                            NMLDensityUtils.smoothMax(0.1,
+                                    DensityFunctions.constant(0),
+                                    DensityFunctions.add(
+                                            DensityFunctions.constant(-0.04),
+                                            getFunction(densityFunctions, NoiseRouterData.PILLARS)
+                                    )
+                            )
+                    )
+            );
             return NMLDensityUtils.smoothMin(0.03, originalDensityFunction, caveRiverDensity);
         });
+    }
 
-
-        DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE, (originalDensityFunction, noiseParameters) -> {
-            return DensityFunctions.constant(0);
-        });
-        DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE, (originalDensityFunction, noiseParameters) -> {
-            return DensityFunctions.constant(0);
-        });
+    private static DensityFunction getFunction(HolderGetter<DensityFunction> densityFunctions, ResourceKey<DensityFunction> key) {
+        return new DensityFunctions.HolderHolder(densityFunctions.getOrThrow(key));
     }
 }

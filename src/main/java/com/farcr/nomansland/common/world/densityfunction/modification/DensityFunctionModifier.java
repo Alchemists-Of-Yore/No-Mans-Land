@@ -6,16 +6,20 @@ import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 public interface DensityFunctionModifier {
-    DensityFunction apply(DensityFunction densityFunction, HolderGetter<NormalNoise.NoiseParameters> noiseParameters);
+    DensityFunction apply(DensityFunction densityFunction, HolderGetter<NormalNoise.NoiseParameters> noiseParameterRegistry, HolderGetter<DensityFunction> densityFunctionRegistry);
 
     default DensityFunctionModifier combine(DensityFunctionModifier other) {
-        return (function, params) -> this.apply(other.apply(function, params), params);
+        return (function, noiseParameterRegistry, densityFunctionRegistry) ->
+                this.apply(
+                        other.apply(function, noiseParameterRegistry, densityFunctionRegistry),
+                        noiseParameterRegistry, densityFunctionRegistry
+                );
     }
 
-    default DensityFunction visit(DensityFunction densityFunction, HolderGetter<NormalNoise.NoiseParameters> noiseParameters) {
+    default DensityFunction visit(DensityFunction densityFunction, HolderGetter<NormalNoise.NoiseParameters> noiseParameterRegistry, HolderGetter<DensityFunction> densityFunctionRegistry) {
         if (densityFunction instanceof DensityFunctions.Marker marker) {
-            return new DensityFunctions.Marker(marker.type(), this.visit(marker.wrapped(), noiseParameters));
+            return new DensityFunctions.Marker(marker.type(), this.visit(marker.wrapped(), noiseParameterRegistry, densityFunctionRegistry));
         }
-        return this.apply(densityFunction, noiseParameters);
+        return this.apply(densityFunction, noiseParameterRegistry, densityFunctionRegistry);
     }
 }

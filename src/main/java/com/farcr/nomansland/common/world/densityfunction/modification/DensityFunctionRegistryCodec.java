@@ -1,13 +1,11 @@
 package com.farcr.nomansland.common.world.densityfunction.modification;
 
-import com.farcr.nomansland.NoMansLand;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderOwner;
@@ -20,7 +18,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -52,7 +49,7 @@ public class DensityFunctionRegistryCodec extends RegistryFileCodec<DensityFunct
                         .map(holder ->
                                 Pair.of(
                                         // if the function is modified, swap it out for the modified reference holder.
-                                        hasModifier ? new ModifiedHolderWrapper(holder, DensityFunctionModifications.MODIFIERS.get(resourcekey), noiseRegistry) : holder,
+                                        hasModifier ? new ModifiedHolderWrapper(holder, DensityFunctionModifications.MODIFIERS.get(resourcekey), noiseRegistry, densityFuncRegistry) : holder,
                                         pair.getSecond()
                                 )
                         )
@@ -71,19 +68,21 @@ public class DensityFunctionRegistryCodec extends RegistryFileCodec<DensityFunct
     private static final class ModifiedHolderWrapper implements Holder<DensityFunction> {
         private final Holder<DensityFunction> wrapped;
         private final DensityFunctionModifier modifier;
-        private final HolderGetter<NormalNoise.NoiseParameters> noiseRegistry;
+        private final HolderGetter<NormalNoise.NoiseParameters> noiseParamsRegistry;
+        private final HolderGetter<DensityFunction> densityFuncRegistry;
         private DensityFunction modifiedValue;
 
-        private ModifiedHolderWrapper(Holder<DensityFunction> wrapped, DensityFunctionModifier modifier, HolderGetter<NormalNoise.NoiseParameters> noiseRegistry) {
+        private ModifiedHolderWrapper(Holder<DensityFunction> wrapped, DensityFunctionModifier modifier, HolderGetter<NormalNoise.NoiseParameters> noiseParamsRegistry, HolderGetter<DensityFunction> densityFuncRegistry) {
             this.wrapped = wrapped;
             this.modifier = modifier;
-            this.noiseRegistry = noiseRegistry;
+            this.noiseParamsRegistry = noiseParamsRegistry;
+            this.densityFuncRegistry = densityFuncRegistry;
         }
 
         @Override
         public DensityFunction value() {
             if (modifiedValue == null) {
-                modifiedValue = modifier.visit(wrapped.value(), noiseRegistry);
+                modifiedValue = modifier.visit(wrapped.value(), noiseParamsRegistry, densityFuncRegistry);
             }
             return modifiedValue;
         }

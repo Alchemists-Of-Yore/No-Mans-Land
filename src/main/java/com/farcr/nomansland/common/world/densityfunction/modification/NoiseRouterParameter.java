@@ -30,9 +30,11 @@ public enum NoiseRouterParameter {
         this.getter = getter;
     }
 
-    public DensityFunction maybeModify(NoiseRouter noiseRouter, DensityFunctionModifications.NoiseRouterModifications modifications, HolderGetter<NormalNoise.NoiseParameters> noiseRegistry) {
+    public DensityFunction maybeModify(NoiseRouter noiseRouter, DensityFunctionModifications.NoiseRouterModifications modifications,
+                                       HolderGetter<NormalNoise.NoiseParameters> noiseParamsRegistry,
+                                       HolderGetter<DensityFunction> densityFuncRegistry) {
         DensityFunction originalFunction = this.getter.apply(noiseRouter);
         if (!modifications.modifiers.containsKey(this)) return originalFunction;
-        return modifications.modifiers.get(this).visit(originalFunction, noiseRegistry);
+        return modifications.modifiers.get(this).visit(originalFunction, noiseParamsRegistry, densityFuncRegistry);
     }
 }

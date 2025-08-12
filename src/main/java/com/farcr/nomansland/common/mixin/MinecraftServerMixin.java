@@ -65,25 +65,26 @@ public class MinecraftServerMixin {
             if (chunkGenerator instanceof NoiseBasedChunkGenerator noiseBasedChunkGenerator) {
                 NoiseGeneratorSettings noiseGeneratorSettings = noiseBasedChunkGenerator.generatorSettings().value();
                 NoiseRouter noiseRouter = noiseGeneratorSettings.noiseRouter();
-                HolderGetter<NormalNoise.NoiseParameters> noiseRegistry = server.registryAccess().lookupOrThrow(Registries.NOISE);
+                HolderGetter<NormalNoise.NoiseParameters> noiseParamsRegistry = server.registryAccess().lookupOrThrow(Registries.NOISE);
+                HolderGetter<DensityFunction> densityFuncRegistry = server.registryAccess().lookupOrThrow(Registries.DENSITY_FUNCTION);
                 // i hate this
                 ((NoiseGeneratorSettingsAccessor)(Object)noiseGeneratorSettings).nml$setNoiseRouter(
                         new NoiseRouter(
-                            NoiseRouterParameter.BARRIER_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.LAVA_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.TEMPERATURE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.VEGETATION.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.CONTINENTS.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.EROSION.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.DEPTH.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.RIDGES.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.INITIAL_DENSITY_WITHOUT_JAGGEDNESS.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.FINAL_DENSITY.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.VEIN_TOGGLE.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry),
-                            NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseRegistry)
+                            NoiseRouterParameter.BARRIER_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.LAVA_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.TEMPERATURE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.VEGETATION.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.CONTINENTS.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.EROSION.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.DEPTH.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.RIDGES.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.INITIAL_DENSITY_WITHOUT_JAGGEDNESS.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.FINAL_DENSITY.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.VEIN_TOGGLE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                            NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry)
                         )
                 );
 
