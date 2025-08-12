@@ -11,7 +11,7 @@ public record Watershed(
         int sourceX, int sourceZ, int sourceHeight,
         int drainX, int drainZ, int drainHeight) {
     // size of a watershed cell
-    public static final int WATERSHED_SIZE = 800;
+    public static final int WATERSHED_SIZE = 512;
 
     // probability that a given watershed cell contains a river.
     public static final Supplier<DensityFunction> WATERSHED_PROBABILITY = () -> {
