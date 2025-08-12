@@ -74,7 +74,7 @@ public class River {
     }
 
     private void sampleDistanceFromRiverRecursive(RiverBoundingBox box, int x, int y, int z, MutableRiverSpaceCoords best) {
-        if (!box.contains(x, y, z)) return;
+        if (!box.containsHorizontal(x, z)) return; // don't take y into consideration
         if (box.riverSegmentIndex >= 0) {
             RiverSegment segment = this.segments[box.riverSegmentIndex];
 
@@ -152,6 +152,11 @@ public class River {
         boolean contains(int x, int y, int z) {
             return x >= x1 && x <= x2 &&
                     y >= y1 && y <= y2 &&
+                    z >= z1 && z <= z2;
+        }
+
+        boolean containsHorizontal(int x, int z) {
+            return x >= x1 && x <= x2 &&
                     z >= z1 && z <= z2;
         }
 
