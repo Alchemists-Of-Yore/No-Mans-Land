@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.mixinextensions.HasWatershedMap;
 import com.farcr.nomansland.common.world.watershed.WatershedDensityFunctionVisitor;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
 import net.minecraft.core.HolderGetter;
@@ -13,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RandomState.class)
-public abstract class RandomStateMixin {
+public class RandomStateMixin implements HasWatershedMap {
     @Mutable @Shadow @Final private NoiseRouter router;
     @Unique WatershedMap nml$watershedMap;
 
@@ -21,6 +22,11 @@ public abstract class RandomStateMixin {
     private void nml$init(NoiseGeneratorSettings settings, HolderGetter noiseParametersGetter, long levelSeed, CallbackInfo ci) {
         this.nml$watershedMap = new WatershedMap((RandomState) (Object) this, 256);
         this.router = this.router.mapAll(new WatershedDensityFunctionVisitor(this.nml$watershedMap));
-        NoMansLand.LOGGER.info(this.router);
+    }
+
+
+    @Override
+    public WatershedMap nml$getWatershedMap() {
+        return nml$watershedMap;
     }
 }

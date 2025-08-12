@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.world.densityfunction;
 
+import com.farcr.nomansland.utility.MathUtilities;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -47,8 +48,8 @@ public final class SmoothMixDensityFunction implements DensityFunction {
         double value2 = this.argument2.compute(context);
         double smoothness = this.smoothness.compute(context);
         return switch (this.type) {
-            case MIN -> sMin(value1, value2, smoothness);
-            case MAX -> -sMin(-value1, -value2, smoothness);
+            case MIN -> MathUtilities.smoothMin(value1, value2, smoothness);
+            case MAX -> -MathUtilities.smoothMin(-value1, -value2, smoothness);
         };
     }
 
@@ -58,11 +59,11 @@ public final class SmoothMixDensityFunction implements DensityFunction {
         switch (this.type) {
             case MIN:
                 for (int i = 0; i < array.length; i++)
-                    array[i] = sMin(array[i], this.argument2.compute(contextProvider.forIndex(i)), this.smoothness.compute(contextProvider.forIndex(i)));
+                    array[i] = MathUtilities.smoothMin(array[i], this.argument2.compute(contextProvider.forIndex(i)), this.smoothness.compute(contextProvider.forIndex(i)));
                 break;
             case MAX:
                 for (int i = 0; i < array.length; i++)
-                    array[i] = -sMin(-array[i], -this.argument2.compute(contextProvider.forIndex(i)), this.smoothness.compute(contextProvider.forIndex(i)));
+                    array[i] = -MathUtilities.smoothMin(-array[i], -this.argument2.compute(contextProvider.forIndex(i)), this.smoothness.compute(contextProvider.forIndex(i)));
                 break;
         }
     }
@@ -90,13 +91,6 @@ public final class SmoothMixDensityFunction implements DensityFunction {
     @Override
     public KeyDispatchDataCodec<? extends DensityFunction> codec() {
         return CODEC;
-    }
-
-    private static final double NORMALIZATION_FACTOR = 1.0 / (1.0 - Math.sqrt(0.5));
-    private static double sMin(double a, double b, double k) {
-        k *= NORMALIZATION_FACTOR;
-        double h = Math.max(k - Math.abs(a - b), 0.0) / k;
-        return Math.min(a, b) - k * 0.5 * (1.0 + h - Math.sqrt(1.0 - h * (h - 2.0)));
     }
 
     public enum Type implements StringRepresentable {

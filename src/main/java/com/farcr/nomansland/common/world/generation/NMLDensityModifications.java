@@ -29,16 +29,35 @@ public class NMLDensityModifications {
 
         DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FINAL_DENSITY, (originalDensityFunction, noiseParameters) -> {
             DensityFunction caveRiverDensity = new CaveRiverDistanceDensityFunction(
-                    DensityFunctions.interpolated(DensityFunctions.cache2d(DensityFunctions.noise(noiseParameters.getOrThrow(NMLNoises.CAVE_RIVER_WIGGLE_X)))),
-                    DensityFunctions.interpolated(DensityFunctions.cache2d(DensityFunctions.noise(noiseParameters.getOrThrow(NMLNoises.CAVE_RIVER_WIGGLE_Z)))),
-                    null
+                    DensityFunctions.interpolated(
+                            DensityFunctions.cache2d(
+                                    NMLDensityUtils.mapRange(-1, 1, 8, 28,
+                                            DensityFunctions.noise(noiseParameters.getOrThrow(NMLNoises.CAVE_RIVER_RADIUS))
+                                    )
+                            )
+                    ), null
             );
 //            DensityFunction caveRiverDensity = NMLDensityUtils.mapRangeClamped(
 //                    DensityFunctions.add(caveRiverDistance, DensityFunctions.constant(-15.0)),
 //                    -10, 10, -1, 1
 //            );
-//
-            return DensityFunctions.min(originalDensityFunction, caveRiverDensity);
+            caveRiverDensity = DensityFunctions.add(
+                    caveRiverDensity,
+                    DensityFunctions.interpolated(
+                            NMLDensityUtils.mapRange(-1, 1, -0.1, 0.1,
+                                DensityFunctions.noise(noiseParameters.getOrThrow(Noises.ICE), 0.5)
+                            )
+                    )
+            );
+            return NMLDensityUtils.smoothMin(0.03, originalDensityFunction, caveRiverDensity);
+        });
+
+
+        DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE, (originalDensityFunction, noiseParameters) -> {
+            return DensityFunctions.constant(0);
+        });
+        DensityFunctionModifications.addNoiseRouterParameterModifier(BuiltinDimensionTypes.OVERWORLD, NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE, (originalDensityFunction, noiseParameters) -> {
+            return DensityFunctions.constant(0);
         });
     }
 }

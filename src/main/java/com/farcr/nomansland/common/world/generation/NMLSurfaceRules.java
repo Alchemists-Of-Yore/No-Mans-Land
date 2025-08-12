@@ -200,15 +200,19 @@ public class NMLSurfaceRules {
 
         SurfaceRules.RuleSource caves = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVES),
-                SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
-                        SurfaceRules.state(Blocks.STONE.defaultBlockState())
+                SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
+                        SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
+                                SurfaceRules.state(Blocks.STONE.defaultBlockState())
+                        )
                 )
         );
 
         SurfaceRules.RuleSource cave_depths = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVE_DEPTHS),
-                SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
-                        SurfaceRules.state(Blocks.DEEPSLATE.defaultBlockState())
+                SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
+                        SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
+                                SurfaceRules.state(Blocks.DEEPSLATE.defaultBlockState())
+                        )
                 )
         );
 

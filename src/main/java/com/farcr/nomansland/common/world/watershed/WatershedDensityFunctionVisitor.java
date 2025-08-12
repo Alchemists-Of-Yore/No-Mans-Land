@@ -13,7 +13,7 @@ public class WatershedDensityFunctionVisitor implements DensityFunction.Visitor 
     @Override
     public DensityFunction apply(DensityFunction densityFunction) {
         if (densityFunction instanceof CaveRiverDistanceDensityFunction caveRiverDensityFunction) {
-            return new CaveRiverDistanceDensityFunction(caveRiverDensityFunction.riverXOffset(), caveRiverDensityFunction.riverZOffset(), this.watershedMap);
+            return new CaveRiverDistanceDensityFunction(caveRiverDensityFunction.riverRadius(), this.watershedMap);
         }
         return densityFunction;
     }

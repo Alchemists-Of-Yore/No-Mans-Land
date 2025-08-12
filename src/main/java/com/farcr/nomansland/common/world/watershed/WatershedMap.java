@@ -1,11 +1,7 @@
 package com.farcr.nomansland.common.world.watershed;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.mixin.NoiseRouterMixin;
 import com.farcr.nomansland.common.mixinextensions.NoiseRouterExtension;
-import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.DensityFunction;
@@ -62,20 +58,28 @@ public class WatershedMap {
                 watershedZ * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2)
         );
 
-        boolean hasRiver = true;//random.nextDouble() > noiseRouter.nml$watershedProbabilityNoise().compute(noiseContext);
+        boolean hasRiver = random.nextDouble() < noiseRouter.nml$watershedProbabilityNoise().compute(noiseContext);
         if (!hasRiver) // don't bother computing the other variables if the watershed has no river
-            return new Watershed(watershedX, watershedZ, hasRiver, 0, 0, 0, 0, 0, 0);
+            return new Watershed(watershedX, watershedZ, hasRiver, River.NONE, 0, 0, 0, 0, 0, 0);
 
-        int sourceX = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedX * Watershed.WATERSHED_SIZE,
-            sourceZ = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedZ * Watershed.WATERSHED_SIZE,
-            sourceHeight = (int) noiseRouter.nml$watershedSourceHeightNoise().compute(noiseContext);
-        int drainX = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedX * Watershed.WATERSHED_SIZE,
-            drainZ = random.nextInt(0, Watershed.WATERSHED_SIZE) + watershedZ * Watershed.WATERSHED_SIZE,
-            drainHeight = (int) noiseRouter.nml$watershedDrainHeightNoise().compute(noiseContext);
+        int sourceMargin = 40;
+        int sourceX = random.nextInt(sourceMargin, Watershed.WATERSHED_SIZE - sourceMargin) + watershedX * Watershed.WATERSHED_SIZE,
+            sourceZ = random.nextInt(sourceMargin, Watershed.WATERSHED_SIZE - sourceMargin) + watershedZ * Watershed.WATERSHED_SIZE;
+        int drainMargin = 80;
+        int drainX = random.nextInt(drainMargin, Watershed.WATERSHED_SIZE - drainMargin) + watershedX * Watershed.WATERSHED_SIZE,
+            drainZ = random.nextInt(drainMargin, Watershed.WATERSHED_SIZE - drainMargin) + watershedZ * Watershed.WATERSHED_SIZE;
+
+        int sourceHeight = (int) noiseRouter.nml$watershedSourceHeightNoise().compute(noiseContext);
+        int maximumFall = (int) (Math.sqrt((sourceX - drainX) * (sourceX - drainX) + (sourceZ - drainZ) * (sourceZ - drainZ)) / 8);
+
+        int drainHeight = (int) Math.max(noiseRouter.nml$watershedDrainHeightNoise().compute(noiseContext), sourceHeight - maximumFall);
+
+        River river = River.generate(random, watershedX, watershedZ, sourceX, sourceZ, sourceHeight, drainX, drainZ, drainHeight, 4);
+
         NoMansLand.LOGGER.info("new watershed generated w/ source at {} {} {} and drain at {} {} {}", sourceX, sourceHeight, sourceZ, drainX, drainHeight, drainZ);
         return new Watershed(
                 watershedX, watershedZ,
-                hasRiver,
+                hasRiver, river,
                 sourceX, sourceZ, sourceHeight,
                 drainX, drainZ, drainHeight
         );
