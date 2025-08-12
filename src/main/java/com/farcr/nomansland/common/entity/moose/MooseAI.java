@@ -27,14 +27,6 @@ import java.util.UUID;
 
 public class MooseAI {
 
-    public static final double STOMP_RADIUS = 10.0D;
-    public static final double CHARGE_RADIUS = 6.0D;
-    public static final double DISENGAGE_RANGE = 20.0D; // blocks
-    public static final float CHARGE_DAMAGE = 10.0F;
-
-    public static final UniformInt TIME_BETWEEN_ATTACKS = UniformInt.of(150, 200);
-    public static final UniformInt TIME_BETWEEN_SHEDS = UniformInt.of(12000, 24000);
-
     private static final ImmutableList<SensorType<? extends Sensor<? super Moose>>> SENSOR_TYPES = ImmutableList.of(
             SensorType.NEAREST_LIVING_ENTITIES,
             SensorType.HURT_BY,
@@ -100,6 +92,7 @@ public class MooseAI {
                         Pair.of(2, new RunOne<>(
                                 ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                 ImmutableList.of(
+                                        Pair.of(new ShakeOffSaddle(), 1),
                                         Pair.of(RandomStroll.stroll(1.0F), 1),
                                         Pair.of(SetWalkTargetFromLookTarget.create(1.0F, 3), 1),
                                         Pair.of(new DoNothing(30, 60), 1)
@@ -118,9 +111,9 @@ public class MooseAI {
         brain.addActivityWithConditions(
                 Activity.AVOID,
                 ImmutableList.of(
-//                        Pair.of(0, Stomp),
-                        Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_ATTACKABLE, 1.2F, 10, false)),
-                        Pair.of(1, new Charge(MemoryModuleType.NEAREST_ATTACKABLE))
+                        Pair.of(0, new Stomp()),
+                        Pair.of(1, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_ATTACKABLE, 1.2F, 10, false)),
+                        Pair.of(2, WarningAttack.create(80))
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_PRESENT),
@@ -134,9 +127,8 @@ public class MooseAI {
                 Activity.FIGHT,
                 ImmutableList.of(
                         Pair.of(0, new MaintainChaseWithinRange(20)),
-                        Pair.of(1, new Charge(MemoryModuleType.ATTACK_TARGET)),
-                        Pair.of(2, MeleeAttack.create(40)),
-                        Pair.of(3, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.5F))
+                        Pair.of(1, MeleeAttack.create(40)),
+                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.5F))
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT),

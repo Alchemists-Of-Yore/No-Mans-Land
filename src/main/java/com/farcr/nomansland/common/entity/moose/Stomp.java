@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.entity.moose;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -15,19 +14,16 @@ public class Stomp extends Behavior<Moose> {
     private static final double KNOCKBACK_HORIZONTAL = (double)2.5F;
     public static final int COOLDOWN = 60;
     private static final int DURATION = 60;
-    private final MemoryModuleType<LivingEntity> targetMemory;
 
-    public Stomp(MemoryModuleType<LivingEntity> targetMemory) {
+    public Stomp() {
         super(ImmutableMap.of(
-                targetMemory, MemoryStatus.VALUE_PRESENT,
+                MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_PRESENT,
                 MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT
         ), DURATION);
-
-        this.targetMemory = targetMemory;
     }
 
     protected boolean checkExtraStartConditions(ServerLevel level, Moose moose) {
-        return moose.closerThan(moose.getBrain().getMemory(targetMemory).get(), 5, 2);
+        return moose.closerThan(moose.getBrain().getMemory(MemoryModuleType.NEAREST_ATTACKABLE).get(), 5, 2);
     }
 
     protected boolean canStillUse(ServerLevel level, Moose moose, long gameTime) {
@@ -36,11 +32,11 @@ public class Stomp extends Behavior<Moose> {
 
     protected void start(ServerLevel level, Moose moose, long gameTime) {
         moose.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, DURATION);
-        moose.sendSystemMessage(Component.literal("started stomp"));
+        System.out.println("stomp started");
     }
 
     protected void tick(ServerLevel level, Moose moose, long gameTime) {
-        moose.getBrain().getMemory(targetMemory).ifPresent(
+        moose.getBrain().getMemory(MemoryModuleType.NEAREST_ATTACKABLE).ifPresent(
                 target -> moose.getLookControl().setLookAt(target.position())
         );
     }
@@ -48,6 +44,6 @@ public class Stomp extends Behavior<Moose> {
     @Override
     protected void stop(ServerLevel level, Moose moose, long gameTime) {
         moose.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, COOLDOWN);
-        moose.sendSystemMessage(Component.literal("stopped stomp"));
+        System.out.println("stomp stopped");
     }
 }

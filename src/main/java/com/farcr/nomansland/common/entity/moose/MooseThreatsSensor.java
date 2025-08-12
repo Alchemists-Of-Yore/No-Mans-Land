@@ -11,6 +11,7 @@ public class MooseThreatsSensor extends NearestVisibleLivingEntitySensor {
 
     @Override
     protected boolean isMatchingEntity(LivingEntity attacker, LivingEntity target) {
+        if (attacker instanceof Moose moose && moose.isPacified()) return false;
         return this.isClose(attacker, target) && isThreat(target) && Sensor.isEntityAttackable(attacker, target);
     }
 
