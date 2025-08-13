@@ -12,7 +12,7 @@ public class Stomp extends Behavior<Moose> {
     private static final int DISTANCE_Y = 20;
     private static final double KNOCKBACK_VERTICAL = (double)0.5F;
     private static final double KNOCKBACK_HORIZONTAL = (double)2.5F;
-    public static final int COOLDOWN = 60;
+    public static final int COOLDOWN = 160;
     private static final int DURATION = 60;
 
     public Stomp() {

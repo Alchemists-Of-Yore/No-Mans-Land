@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.entity.moose;
 
 import com.farcr.nomansland.common.entity.ai.MaintainChaseWithinRange;
 import com.farcr.nomansland.common.entity.ai.StartChasingWhenHurt;
+import com.farcr.nomansland.common.entity.ai.WarningAttack;
 import com.farcr.nomansland.common.registry.entities.NMLSensors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -47,7 +48,9 @@ public class MooseAI {
             MemoryModuleType.IS_PANICKING
             );
 
-    public static Brain.Provider<Moose> brainProvider() { return Brain.provider(MEMORY_TYPES, SENSOR_TYPES); }
+    public static Brain.Provider<Moose> brainProvider() {
+        return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
+    }
 
     public static Brain<?> makeBrain(Brain<Moose> brain) {
         initCoreActivity(brain);
@@ -69,13 +72,9 @@ public class MooseAI {
         ));
     }
 
-    public static void initMemories(Moose moose, RandomSource random) {
-    }
-
     private static void initCoreActivity(Brain<Moose> brain) {
         brain.addActivity(Activity.CORE, 0, ImmutableList.of(
                 new Swim(0.8F),
-                new AnimalPanic<>(2.0F),
                 new LookAtTargetSink(45, 90),
                 new MoveToTargetSink(),
                 new StartChasingWhenHurt<>(),
@@ -101,7 +100,6 @@ public class MooseAI {
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT),
-                        Pair.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                         Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_ABSENT)
                 )
         );
@@ -112,8 +110,9 @@ public class MooseAI {
                 Activity.AVOID,
                 ImmutableList.of(
                         Pair.of(0, new Stomp()),
-                        Pair.of(1, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_ATTACKABLE, 1.2F, 10, false)),
-                        Pair.of(2, WarningAttack.create(80))
+                        Pair.of(1, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_ATTACKABLE, 1.3F, 10, false)),
+                        Pair.of(2, WarningAttack.create(80)),
+                        Pair.of(3, new Charge())
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_PRESENT),
@@ -126,13 +125,12 @@ public class MooseAI {
         brain.addActivityWithConditions(
                 Activity.FIGHT,
                 ImmutableList.of(
-                        Pair.of(0, new MaintainChaseWithinRange(20)),
+                        Pair.of(0, new MaintainChaseWithinRange(MemoryModuleType.ATTACK_TARGET, 10)),
                         Pair.of(1, MeleeAttack.create(40)),
-                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.5F))
+                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.7F))
                 ),
                 ImmutableSet.of(
-                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT),
-                        Pair.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT)
+                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT)
                 )
         );
     }

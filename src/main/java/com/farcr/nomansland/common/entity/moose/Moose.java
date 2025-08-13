@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.DifficultyInstance;
@@ -79,12 +80,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable {
         setPacificationStage(compound.getInt("PacificationStage"));
         setHasAntlers(compound.getBoolean("HasAntlers"));
         setIsSaddled(compound.getBoolean("IsSaddled"));
-    }
-
-    @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        MooseAI.initMemories(this, level.getRandom());
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     @Override
