@@ -22,13 +22,17 @@ public class AquiferMixin {
     private void nml$computeRiverAquiferFluid(int x, int y, int z, CallbackInfoReturnable<Aquifer.FluidStatus> cir) {
         WatershedMap watershedMap = ((WatershepMapHolder) this.noiseChunk).nml$getWatershedMap();
         Watershed watershed = watershedMap.watershedAtBlock(x, z);
-        if (watershed.hasRiver()) {
-            River river = watershed.river();
-            River.RiverSpaceCoordinates coordinates = river.getRiverSpaceCoordinates(x, y, z);
-            double distanceToWaterSurface = y - coordinates.riverHeight();
-            if (coordinates.horizontalDistance() < 30 && distanceToWaterSurface < 25 && distanceToWaterSurface > -30) {
-                cir.setReturnValue(new Aquifer.FluidStatus(River.getWaterSurfaceHeight(coordinates.riverHeight(), 0), Blocks.WATER.defaultBlockState()));
-            }
-        }
+
+        Aquifer.FluidStatus fluidOverride = watershed.getFluidOverride(x, y, z);
+        if (fluidOverride != null)
+            cir.setReturnValue(fluidOverride);
+//        if (watershed.hasRiver()) {
+//            River river = watershed.river();
+//            River.RiverSpaceCoordinates coordinates = river.getRiverSpaceCoordinates(x, y, z);
+//            double distanceToWaterSurface = y - coordinates.riverHeight();
+//            if (coordinates.horizontalDistance() < 30 && distanceToWaterSurface < 25 && distanceToWaterSurface > -30) {
+//                cir.setReturnValue(new Aquifer.FluidStatus(River.getWaterSurfaceHeight(coordinates.riverHeight(), 0), Blocks.WATER.defaultBlockState()));
+//            }
+//        }
     }
 }

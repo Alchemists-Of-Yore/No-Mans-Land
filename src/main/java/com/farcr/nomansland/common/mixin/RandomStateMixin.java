@@ -21,7 +21,7 @@ public class RandomStateMixin implements WatershepMapHolder {
 
     @Inject(method = "<init>", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void nml$init(NoiseGeneratorSettings settings, HolderGetter noiseParametersGetter, long levelSeed, CallbackInfo ci, boolean flag, DensityFunction.Visitor densityfunction$visitor) {
-        this.nml$watershedMap = new WatershedMap((RandomState) (Object) this, 256);
+        this.nml$watershedMap = new WatershedMap((RandomState) (Object) this, 64);
         this.router = this.router.mapAll(new WatershedDensityFunctionVisitor(this.nml$watershedMap));
     }
 

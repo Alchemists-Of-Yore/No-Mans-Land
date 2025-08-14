@@ -82,7 +82,7 @@ public class MinecraftServerMixin {
                         NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
                         NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry)
                 );
-                ((WatershedNoiseRouterHolder) (Object) newNoiseRouter).nml$watershedNoiseRouter().createDensityFunctions(noiseParamsRegistry, densityFuncRegistry);
+                ((WatershedNoiseRouterHolder) (Object) newNoiseRouter).nml$watershedNoiseRouter().createDensityFunctions(newNoiseRouter, noiseParamsRegistry, densityFuncRegistry);
                 ((NoiseGeneratorSettingsAccessor) (Object) noiseGeneratorSettings).nml$setNoiseRouter(newNoiseRouter);
             }
         }

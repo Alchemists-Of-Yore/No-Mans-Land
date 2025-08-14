@@ -58,28 +58,30 @@ public class WatershedMap {
                 watershedZ * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2)
         );
 
-        boolean hasRiver = random.nextDouble() < noiseRouter.probability.compute(watershedNoiseContext);
-        if (!hasRiver) // don't bother computing the other variables if the watershed has no river
-            return new Watershed(watershedX, watershedZ, hasRiver, River.NONE, 0, 0, 0, 0, 0, 0);
-
-        int sourceMargin = 40;
-        int sourceX = random.nextInt(sourceMargin, Watershed.WATERSHED_SIZE - sourceMargin) + watershedX * Watershed.WATERSHED_SIZE,
-            sourceZ = random.nextInt(sourceMargin, Watershed.WATERSHED_SIZE - sourceMargin) + watershedZ * Watershed.WATERSHED_SIZE;
         int drainMargin = 80;
         int drainX = random.nextInt(drainMargin, Watershed.WATERSHED_SIZE - drainMargin) + watershedX * Watershed.WATERSHED_SIZE,
             drainZ = random.nextInt(drainMargin, Watershed.WATERSHED_SIZE - drainMargin) + watershedZ * Watershed.WATERSHED_SIZE;
+        int drainHeight = (int) noiseRouter.drainHeight.compute(new DensityFunction.SinglePointContext(drainX, 0, drainZ));
 
-        int sourceHeight = (int) noiseRouter.sourceHeight.compute(new DensityFunction.SinglePointContext(sourceX, 0, sourceZ));
-        int maximumFall = (int) (Math.sqrt((sourceX - drainX) * (sourceX - drainX) + (sourceZ - drainZ) * (sourceZ - drainZ)) / 8);
-        int drainHeight = (int) Math.max(noiseRouter.drainHeight.compute(new DensityFunction.SinglePointContext(drainX, 0, drainZ)), sourceHeight - maximumFall);
+        int riverCount = (int) Math.round(noiseRouter.riverCount.compute(watershedNoiseContext));
+        List<River> riverList = new ArrayList<>(riverCount);
+        for (int i = 0; i < riverCount; i++) {
 
-        River river = River.generate(random, watershedX, watershedZ, sourceX, sourceZ, sourceHeight, drainX, drainZ, drainHeight, 4);
+            int sourceMargin = 40;
+            int sourceX = random.nextInt(sourceMargin, Watershed.WATERSHED_SIZE - sourceMargin) + watershedX * Watershed.WATERSHED_SIZE,
+                sourceZ = random.nextInt(sourceMargin, Watershed.WATERSHED_SIZE - sourceMargin) + watershedZ * Watershed.WATERSHED_SIZE;
 
-        NoMansLand.LOGGER.info("new watershed generated w/ source at {} {} {} and drain at {} {} {}", sourceX, sourceHeight, sourceZ, drainX, drainHeight, drainZ);
+            int maximumHeightDifference = (int) (Math.sqrt((sourceX - drainX) * (sourceX - drainX) + (sourceZ - drainZ) * (sourceZ - drainZ)) / 8);
+            int sourceHeight = (int) Math.min(noiseRouter.sourceHeight.compute(new DensityFunction.SinglePointContext(sourceX, 0, sourceZ)), drainHeight + maximumHeightDifference);
+
+            River river = River.generate(random, watershedX, watershedZ, sourceX, sourceZ, sourceHeight, drainX, drainZ, drainHeight, 4);
+            riverList.add(river);
+        }
+
+        NoMansLand.LOGGER.info("new watershed generated w/ drain at {} {} {}", drainX, drainHeight, drainZ);
         return new Watershed(
                 watershedX, watershedZ,
-                hasRiver, river,
-                sourceX, sourceZ, sourceHeight,
+                riverList,
                 drainX, drainZ, drainHeight
         );
     }

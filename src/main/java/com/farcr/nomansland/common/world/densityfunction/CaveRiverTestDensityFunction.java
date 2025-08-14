@@ -54,7 +54,7 @@ public record CaveRiverTestDensityFunction(DensityFunction riverRadius, Watershe
 
     private double computeWithInfo(int x, int y, int z, double riverRadius) {
         Watershed watershed = this.watershedMap.watershedAtBlock(x, z);
-        River.RiverSpaceCoordinates river = watershed.river().getRiverSpaceCoordinates(x,y,z);
+        River.RiverSpaceCoordinates river = watershed.nearestRiverCoordinates(x,y,z);
         if (river.horizontalDistance() >= 1000) return 1;
 
         double shorelineDensity = shorelineDensity(river, x,y,z, riverRadius);

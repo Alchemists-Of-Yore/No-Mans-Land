@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.densityfunction;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.watershed.River;
 import com.farcr.nomansland.common.world.watershed.Watershed;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
@@ -51,7 +50,7 @@ public record CaveRiverDensityFunction(DensityFunction horizontalDistance, Densi
 
     private double computeWithInfo(int x, int y, int z, double horizontalDistance, double riverHeight, double riverRadius) {
         Watershed watershed = this.watershedMap.watershedAtBlock(x, z);
-        River.RiverSpaceCoordinates river = watershed.river().getRiverSpaceCoordinates(x,y,z);
+        River.RiverSpaceCoordinates river = watershed.nearestRiverCoordinates(x,y,z);
         if (river.horizontalDistance() >= 1000) return 1;
 
         double shorelineDensity = shorelineDensity(river, x,y,z, horizontalDistance, riverHeight, riverRadius);

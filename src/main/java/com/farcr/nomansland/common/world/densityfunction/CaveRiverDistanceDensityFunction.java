@@ -15,7 +15,7 @@ public record CaveRiverDistanceDensityFunction(boolean horizontal, WatershedMap 
     @Override
     public double compute(FunctionContext context) {
         Watershed watershed = this.watershedMap.watershedAtBlock(context.blockX(), context.blockZ());
-        River.RiverSpaceCoordinates river = watershed.river().getRiverSpaceCoordinates(context.blockX(), context.blockY(), context.blockZ());
+        River.RiverSpaceCoordinates river = watershed.nearestRiverCoordinates(context.blockX(), context.blockY(), context.blockZ());
         return horizontal ? Math.clamp(river.horizontalDistance(), 0, 100) : river.riverHeight();
     }
 

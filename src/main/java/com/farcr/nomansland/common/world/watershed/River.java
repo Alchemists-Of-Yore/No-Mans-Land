@@ -8,11 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class River {
-    public static final River NONE = new River(null, new RiverBoundingBox(0, 0,0,0,0,0,0));
-    private final RiverSegment[] segments;
-    private final RiverBoundingBox bvhRoot;
+    public static final River NONE = new River(0, 0, 0, null, new RiverBoundingBox(0, 0,0,0,0,0,0));
+    protected final int sourceX, sourceZ, sourceHeight;
+    protected final RiverSegment[] segments;
+    protected final RiverBoundingBox bvhRoot;
 
-    private River(RiverSegment[] segments, RiverBoundingBox bvhRoot) {
+    private River(int sourceX, int sourceZ, int sourceHeight, RiverSegment[] segments, RiverBoundingBox bvhRoot) {
+        this.sourceX = sourceX;
+        this.sourceZ = sourceZ;
+        this.sourceHeight = sourceHeight;
+
         this.segments = segments;
         this.bvhRoot = bvhRoot;
     }
@@ -34,7 +39,7 @@ public class River {
         // generate river bvh
         RiverBoundingBox bvhRoot = RiverBoundingBox.fromSegments(riverSegments, 0, riverSegments.length);
         bvhRoot.expand(30, 50, 30); // expand by a little bit so that rivers can have a radius
-        return new River(riverSegments, bvhRoot);
+        return new River(sourceX, sourceZ, sourceHeight, riverSegments, bvhRoot);
     }
 
     private static List<RiverPoint> subdivideRecursive(RandomSource random, int watershedX, int watershedZ, RiverPoint start, RiverPoint end, int iterations) {
@@ -73,7 +78,7 @@ public class River {
         return best.toImmutable();
     }
 
-    private void sampleDistanceFromRiverRecursive(RiverBoundingBox box, int x, int y, int z, MutableRiverSpaceCoords best) {
+    protected void sampleDistanceFromRiverRecursive(RiverBoundingBox box, int x, int y, int z, MutableRiverSpaceCoords best) {
         if (!box.containsHorizontal(x, z)) return; // don't take y into consideration
         if (box.riverSegmentIndex >= 0) {
             RiverSegment segment = this.segments[box.riverSegmentIndex];
@@ -112,23 +117,12 @@ public class River {
 
     public record RiverSpaceCoordinates(int horizontalDistance, double riverHeight) {}
     private record RiverSegment(int startX, int startZ, double startHeight, int endX, int endZ, double endHeight) {}
-    private record RiverPoint(int x, int z, double gradient) {
-//        private static RiverPoint subdivide(RandomSource random, RiverPoint start, RiverPoint end) {
-//            double maxOffset = Math.sqrt((start.x - end.x)*(start.x - end.x) + (start.z - end.z)*(start.z - end.z));
-//            double offsetAngle = random.nextDouble() * Math.PI * 2;
-//            double offsetDistance = Math.sqrt(random.nextDouble()) * maxOffset * 0.5;
-//            return new RiverPoint(
-//                    (int) (Mth.lerp(0.5, start.x, end.x)),
-//                    (int) (Mth.lerp(0.5, start.z, end.z)),
-//                    Mth.lerp(0.5, start.gradient, end.gradient)
-//            );
-//        }
-    }
-    private static class MutableRiverSpaceCoords {
+    private record RiverPoint(int x, int z, double gradient) {}
+    protected static class MutableRiverSpaceCoords {
         int horizontalDistance;
         double surfaceHeight;
         MutableRiverSpaceCoords(int horiz, double surfaceHeight) { this.horizontalDistance = horiz; this.surfaceHeight = surfaceHeight; }
-        private RiverSpaceCoordinates toImmutable() { return new RiverSpaceCoordinates(horizontalDistance, (int) surfaceHeight); }
+        RiverSpaceCoordinates toImmutable() { return new RiverSpaceCoordinates(horizontalDistance, (int) surfaceHeight); }
     }
     private static class RiverBoundingBox {
         int riverSegmentIndex; // -1 for non-leaf nodes
