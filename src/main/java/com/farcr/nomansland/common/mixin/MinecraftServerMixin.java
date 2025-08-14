@@ -1,11 +1,8 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.mixinextensions.WatershedNoiseRouterHolder;
 import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifications;
-import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifier;
 import com.farcr.nomansland.common.world.densityfunction.modification.NoiseRouterParameter;
-import com.farcr.nomansland.common.world.watershed.WatershedDensityFunctionVisitor;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.HolderGetter;
@@ -32,7 +29,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
@@ -86,7 +82,7 @@ public class MinecraftServerMixin {
                         NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
                         NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry)
                 );
-                ((WatershedNoiseRouterHolder) (Object) newNoiseRouter).nml$watershedNoiseRouter().setDensityFunctions(noiseParamsRegistry, densityFuncRegistry);
+                ((WatershedNoiseRouterHolder) (Object) newNoiseRouter).nml$watershedNoiseRouter().createDensityFunctions(noiseParamsRegistry, densityFuncRegistry);
                 ((NoiseGeneratorSettingsAccessor) (Object) noiseGeneratorSettings).nml$setNoiseRouter(newNoiseRouter);
             }
         }

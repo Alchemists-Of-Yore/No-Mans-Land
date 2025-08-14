@@ -1,17 +1,13 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.mixinextensions.WatershedNoiseRouterHolder;
 import com.farcr.nomansland.common.mixinextensions.WatershepMapHolder;
 import com.farcr.nomansland.common.world.watershed.WatershedDensityFunctionVisitor;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
-import com.farcr.nomansland.common.world.watershed.WatershedNoiseRouter;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.NoiseRouter;
 import net.minecraft.world.level.levelgen.RandomState;
-import net.minecraft.world.level.levelgen.synth.NormalNoise;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
