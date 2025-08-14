@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.world.densityfunction;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.watershed.River;
 import com.farcr.nomansland.common.world.watershed.Watershed;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
@@ -15,30 +16,34 @@ public record CaveRiverShoreDensityFunction(DensityFunction horizontalDistance, 
     );
 
     private double shorelineDensity(River.RiverSpaceCoordinates river, int blockX, int blockY, int blockZ, double horizontalDistance, double riverHeight, double riverRadius) {
-        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0.25) - 2;
+        double squishFactor = 1.0 / 3.0;
+        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0.25) - 30 * squishFactor;
         double verticalDistance = blockY - surfaceHeight;
 
-        double shorelineMultiplierVertical = Mth.clampedMap(verticalDistance, 0, 3, 0, 1);
-        shorelineMultiplierVertical = Mth.smoothstep(shorelineMultiplierVertical);
-        shorelineMultiplierVertical = Mth.lerp(shorelineMultiplierVertical, 2, 0.25);
-        double shorelineMultiplierHorizontal = Mth.clampedMap(verticalDistance, 0, 3, 0, 1);
-        shorelineMultiplierHorizontal = Mth.smoothstep(shorelineMultiplierHorizontal);
-        shorelineMultiplierHorizontal = Mth.lerp(shorelineMultiplierHorizontal, 1, 0.5);
-
-        double finalHorizontalDistance = horizontalDistance / shorelineMultiplierHorizontal;
-        double finalVerticalDistance = verticalDistance / shorelineMultiplierVertical;
-
-        return Math.sqrt(finalHorizontalDistance * finalHorizontalDistance + finalVerticalDistance * finalVerticalDistance) - 60;
+//        double shorelineMultiplierVertical = Mth.clampedMap(verticalDistance, -2, 2, 0, 1);
+//        shorelineMultiplierVertical = Mth.smoothstep(shorelineMultiplierVertical);
+//        shorelineMultiplierVertical = Mth.lerp(shorelineMultiplierVertical, 2, 0.25);
+//        double shorelineMultiplierHorizontal = Mth.clampedMap(verticalDistance, -20, 2, 0, 1);
+//        shorelineMultiplierHorizontal = Mth.smoothstep(shorelineMultiplierHorizontal);
+//        shorelineMultiplierHorizontal = Mth.lerp(shorelineMultiplierHorizontal, 1, 0.5);
+//
+//        double finalHorizontalDistance = horizontalDistance / shorelineMultiplierHorizontal;
+//        double finalVerticalDistance = verticalDistance / shorelineMultiplierVertical;
+        if (verticalDistance > 0) {
+            verticalDistance *= squishFactor;
+        } else {
+            verticalDistance /= squishFactor;
+        }
+        return Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance) - 30;
     }
 
     private double computeWithInfo(int x, int y, int z, double horizontalDistance, double riverHeight, double riverRadius) {
         Watershed watershed = this.watershedMap.watershedAtBlock(x, z);
         River.RiverSpaceCoordinates river = watershed.river().getRiverSpaceCoordinates(x,y,z);
         if (river.horizontalDistance() >= 1000) return -0.5;
-
         double density = -shorelineDensity(river, x,y,z, horizontalDistance, riverHeight, riverRadius);
 
-        return Mth.clampedMap(density, -30, 30, -0.5, 0.5);
+        return Mth.clampedMap(density, -30, 30, -0.8, 0.8);
     }
 
     @Override
