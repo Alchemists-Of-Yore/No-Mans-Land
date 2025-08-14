@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.world.watershed;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.mixinextensions.NoiseRouterExtension;
+import com.farcr.nomansland.common.mixinextensions.WatershedNoiseRouterHolder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.DensityFunction;
@@ -51,14 +51,14 @@ public class WatershedMap {
 
     private Watershed createWatershed(int watershedX, int watershedZ) {
         RandomSource random = this.randomFactory.at(watershedX, 0, watershedZ);
-        NoiseRouterExtension noiseRouter = (NoiseRouterExtension)(Object)(randomState.router());
+        WatershedNoiseRouter noiseRouter = ((WatershedNoiseRouterHolder)(Object) randomState.router()).nml$watershedNoiseRouter();
         // positioned at the center of the watershed cell
-        WatershedNoiseContext noiseContext = new WatershedNoiseContext(
-                watershedX * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2),
+        DensityFunction.FunctionContext watershedNoiseContext = new DensityFunction.SinglePointContext(
+                watershedX * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2), 0,
                 watershedZ * Watershed.WATERSHED_SIZE + (Watershed.WATERSHED_SIZE / 2)
         );
 
-        boolean hasRiver = random.nextDouble() < noiseRouter.nml$watershedProbabilityNoise().compute(noiseContext);
+        boolean hasRiver = random.nextDouble() < noiseRouter.probability.compute(watershedNoiseContext);
         if (!hasRiver) // don't bother computing the other variables if the watershed has no river
             return new Watershed(watershedX, watershedZ, hasRiver, River.NONE, 0, 0, 0, 0, 0, 0);
 
@@ -69,10 +69,9 @@ public class WatershedMap {
         int drainX = random.nextInt(drainMargin, Watershed.WATERSHED_SIZE - drainMargin) + watershedX * Watershed.WATERSHED_SIZE,
             drainZ = random.nextInt(drainMargin, Watershed.WATERSHED_SIZE - drainMargin) + watershedZ * Watershed.WATERSHED_SIZE;
 
-        int sourceHeight = (int) noiseRouter.nml$watershedSourceHeightNoise().compute(noiseContext);
+        int sourceHeight = (int) noiseRouter.sourceHeight.compute(new DensityFunction.SinglePointContext(sourceX, 0, sourceZ));
         int maximumFall = (int) (Math.sqrt((sourceX - drainX) * (sourceX - drainX) + (sourceZ - drainZ) * (sourceZ - drainZ)) / 8);
-
-        int drainHeight = (int) Math.max(noiseRouter.nml$watershedDrainHeightNoise().compute(noiseContext), sourceHeight - maximumFall);
+        int drainHeight = (int) Math.max(noiseRouter.drainHeight.compute(new DensityFunction.SinglePointContext(drainX, 0, drainZ)), sourceHeight - maximumFall);
 
         River river = River.generate(random, watershedX, watershedZ, sourceX, sourceZ, sourceHeight, drainX, drainZ, drainHeight, 4);
 
@@ -85,10 +84,4 @@ public class WatershedMap {
         );
     }
 
-    private record WatershedNoiseContext(int blockX, int blockZ) implements DensityFunction.FunctionContext {
-        @Override
-        public int blockY() {
-            return 0;
-        }
-    }
 }

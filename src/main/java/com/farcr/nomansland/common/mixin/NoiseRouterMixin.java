@@ -1,9 +1,15 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.mixinextensions.NoiseRouterExtension;
-import com.farcr.nomansland.common.world.watershed.Watershed;
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.mixinextensions.WatershedNoiseRouterHolder;
+import com.farcr.nomansland.common.world.watershed.WatershedNoiseRouter;
+import net.minecraft.core.LayeredRegistryAccess;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.RegistryLayer;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseRouter;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,13 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NoiseRouter.class)
-public abstract class NoiseRouterMixin implements NoiseRouterExtension {
+public class NoiseRouterMixin implements WatershedNoiseRouterHolder {
     @Unique
-    public DensityFunction nml$watershedProbabilityNoise;
-    @Unique
-    public DensityFunction nml$watershedSourceHeightNoise;
-    @Unique
-    public DensityFunction nml$watershedDrainHeightNoise;
+    public WatershedNoiseRouter nml$watershedNoiseRouter;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void nml$init(
@@ -38,30 +40,22 @@ public abstract class NoiseRouterMixin implements NoiseRouterExtension {
             DensityFunction veinRidged,
             DensityFunction veinGap,
             CallbackInfo ci) {
-        this.nml$watershedProbabilityNoise = Watershed.WATERSHED_PROBABILITY.get();
-        this.nml$watershedSourceHeightNoise = Watershed.WATERSHED_SOURCE_HEIGHT.get();
-        this.nml$watershedDrainHeightNoise = Watershed.WATERSHED_DRAIN_HEIGHT.get();
+        this.nml$watershedNoiseRouter = new WatershedNoiseRouter();
+        try {
+            RegistryAccess.Frozen registries = ServerLifecycleHooks.getCurrentServer().registryAccess();
+            this.nml$watershedNoiseRouter.setDensityFunctions(registries.lookupOrThrow(Registries.NOISE), registries.lookupOrThrow(Registries.DENSITY_FUNCTION));
+        } catch (Exception e) {
+            NoMansLand.LOGGER.warn(e.getMessage());
+        }
     }
 
     @Inject(method = "mapAll", at = @At("TAIL"))
     private void nml$mapAll(DensityFunction.Visitor visitor, CallbackInfoReturnable<NoiseRouter> cir) {
-        this.nml$watershedProbabilityNoise.mapAll(visitor);
-        this.nml$watershedSourceHeightNoise.mapAll(visitor);
-        this.nml$watershedDrainHeightNoise.mapAll(visitor);
+        this.nml$watershedNoiseRouter.mapAll(visitor);
     }
 
     @Override
-    public DensityFunction nml$watershedProbabilityNoise() {
-        return nml$watershedProbabilityNoise;
-    }
-
-    @Override
-    public DensityFunction nml$watershedSourceHeightNoise() {
-        return nml$watershedSourceHeightNoise;
-    }
-
-    @Override
-    public DensityFunction nml$watershedDrainHeightNoise() {
-        return nml$watershedDrainHeightNoise;
+    public WatershedNoiseRouter nml$watershedNoiseRouter() {
+        return this.nml$watershedNoiseRouter;
     }
 }

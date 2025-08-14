@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.mixinextensions.HasWatershedMap;
+import com.farcr.nomansland.common.mixinextensions.WatershepMapHolder;
 import com.farcr.nomansland.common.world.watershed.River;
 import com.farcr.nomansland.common.world.watershed.Watershed;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
@@ -20,12 +20,13 @@ public class AquiferMixin {
 
     @Inject(method =  "computeFluid", at = @At("HEAD"), cancellable = true)
     private void nml$computeRiverAquiferFluid(int x, int y, int z, CallbackInfoReturnable<Aquifer.FluidStatus> cir) {
-        WatershedMap watershedMap = ((HasWatershedMap) this.noiseChunk).nml$getWatershedMap();
+        WatershedMap watershedMap = ((WatershepMapHolder) this.noiseChunk).nml$getWatershedMap();
         Watershed watershed = watershedMap.watershedAtBlock(x, z);
         if (watershed.hasRiver()) {
             River river = watershed.river();
             River.RiverSpaceCoordinates coordinates = river.getRiverSpaceCoordinates(x, y, z);
-            if (coordinates.horizontalDistance() < 30 && Math.abs(y - coordinates.riverHeight()) < 30) {
+            double distanceToWaterSurface = y - coordinates.riverHeight();
+            if (coordinates.horizontalDistance() < 30 && distanceToWaterSurface < 20 && distanceToWaterSurface > -50) {
                 cir.setReturnValue(new Aquifer.FluidStatus(River.getWaterSurfaceHeight(coordinates.riverHeight(), 0), Blocks.WATER.defaultBlockState()));
             }
         }

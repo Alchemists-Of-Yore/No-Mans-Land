@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.mixinextensions.WatershedNoiseRouterHolder;
 import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifications;
 import com.farcr.nomansland.common.world.densityfunction.modification.DensityFunctionModifier;
 import com.farcr.nomansland.common.world.densityfunction.modification.NoiseRouterParameter;
@@ -68,27 +69,25 @@ public class MinecraftServerMixin {
                 HolderGetter<NormalNoise.NoiseParameters> noiseParamsRegistry = server.registryAccess().lookupOrThrow(Registries.NOISE);
                 HolderGetter<DensityFunction> densityFuncRegistry = server.registryAccess().lookupOrThrow(Registries.DENSITY_FUNCTION);
                 // i hate this
-                ((NoiseGeneratorSettingsAccessor)(Object)noiseGeneratorSettings).nml$setNoiseRouter(
-                        new NoiseRouter(
-                            NoiseRouterParameter.BARRIER_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.LAVA_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.TEMPERATURE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.VEGETATION.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.CONTINENTS.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.EROSION.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.DEPTH.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.RIDGES.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.INITIAL_DENSITY_WITHOUT_JAGGEDNESS.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.FINAL_DENSITY.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.VEIN_TOGGLE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
-                            NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry)
-                        )
+                NoiseRouter newNoiseRouter = new NoiseRouter(
+                        NoiseRouterParameter.BARRIER_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.FLUID_LEVEL_FLOODEDNESS_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.FLUID_LEVEL_SPREAD_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.LAVA_NOISE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.TEMPERATURE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.VEGETATION.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.CONTINENTS.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.EROSION.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.DEPTH.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.RIDGES.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.INITIAL_DENSITY_WITHOUT_JAGGEDNESS.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.FINAL_DENSITY.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.VEIN_TOGGLE.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.VEIN_RIDGED.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry),
+                        NoiseRouterParameter.VEIN_GAP.maybeModify(noiseRouter, noiseRouterModifications, noiseParamsRegistry, densityFuncRegistry)
                 );
-
-                NoMansLand.LOGGER.info(noiseGeneratorSettings.noiseRouter());
+                ((WatershedNoiseRouterHolder) (Object) newNoiseRouter).nml$watershedNoiseRouter().setDensityFunctions(noiseParamsRegistry, densityFuncRegistry);
+                ((NoiseGeneratorSettingsAccessor) (Object) noiseGeneratorSettings).nml$setNoiseRouter(newNoiseRouter);
             }
         }
 
