@@ -4,7 +4,6 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.terraformersmc.biolith.api.biome.BiomePlacement;
 import com.terraformersmc.biolith.api.biome.sub.BiomeParameterTargets;
-import com.terraformersmc.biolith.api.biome.sub.CriterionBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
@@ -262,18 +261,30 @@ public class NMLBiomePlacements {
             );
         }
 
-        if (NMLConfig.MUD_BEACH.get()) {
-            BiomePlacement.addSubOverworld(
-                    Biomes.BEACH,
-                    NMLBiomes.MUD_BEACH,
-                    neighbor(Tags.Biomes.IS_SWAMP)
-            );
+        BiomePlacement.addSubOverworld(
+                Biomes.BEACH,
+                NMLBiomes.MUD_BEACH,
+                allOf(
+                        value(BiomeParameterTargets.TEMPERATURE, -0.9F, 2),
+                        value(BiomeParameterTargets.WEIRDNESS,-2, -1.86F),
+                        value(BiomeParameterTargets.EROSION, 1.1F, 2)
+                )
+        );
 
-            BiomePlacement.addSubOverworld(
-                    Biomes.STONY_SHORE,
-                    NMLBiomes.MUD_BEACH,
-                    neighbor(Tags.Biomes.IS_SWAMP)
-            );
+        if (NMLConfig.MUD_BEACH.get()) {
+//            BiomePlacement.addSubOverworld(
+//                    Biomes.BEACH,
+//                    NMLBiomes.MUD_BEACH,
+//                    neighbor(Tags.Biomes.IS_SWAMP)
+//            );
+//
+//            BiomePlacement.addSubOverworld(
+//                    Biomes.STONY_SHORE,
+//                    NMLBiomes.MUD_BEACH,
+//                    neighbor(Tags.Biomes.IS_SWAMP)
+//            );
+
+
         }
 
         if (NMLConfig.FROZEN_SHORE.get()) {
@@ -317,14 +328,11 @@ public class NMLBiomePlacements {
                 interiorBiome,
                 edgeBiome,
                 allOf(
-                        CriterionBuilder.deviationMin(biomeParameterTarget, .02F),
+                        deviationMin(biomeParameterTarget, .05F),
                         anyOf(
-                                allOf(
-                                        NEAR_BORDER,
-                                        not(NEAR_INTERIOR)
-                                ),
-                                CriterionBuilder.BEACHSIDE,
-                                CriterionBuilder.OCEANSIDE,
+                                allOf(NEAR_BORDER, not(NEAR_INTERIOR)),
+                                BEACHSIDE,
+                                OCEANSIDE,
                                 allOf(NEAR_BORDER, neighbor(BiomeTags.IS_RIVER))
                         )
                 )
@@ -335,7 +343,7 @@ public class NMLBiomePlacements {
         BiomePlacement.addSubOverworld(
                 interiorBiome,
                 clearingBiome,
-                allOf(CriterionBuilder.deviationMin(BiomeParameterTargets.WEIRDNESS, .02F), NEAR_INTERIOR, not(NEAR_BORDER))
+                allOf(deviationMin(BiomeParameterTargets.PEAKS_VALLEYS, .05F), NEAR_INTERIOR, not(NEAR_BORDER))
         );
     }
 }

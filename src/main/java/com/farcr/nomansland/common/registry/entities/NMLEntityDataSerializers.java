@@ -10,6 +10,4 @@ import java.util.function.Supplier;
 
 public class NMLEntityDataSerializers {
     public static final DeferredRegister<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS, NoMansLand.MODID);
-
-    public static final Supplier<EntityDataSerializer<Goose.GooseState>> GOOSE_STATE = ENTITY_DATA_SERIALIZERS.register("goose_state", () -> EntityDataSerializer.forValueType(Goose.GooseState.STREAM_CODEC));
 }

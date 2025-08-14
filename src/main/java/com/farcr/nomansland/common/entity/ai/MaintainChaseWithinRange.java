@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.entity.ai;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -13,9 +14,11 @@ import java.util.Map;
 public class MaintainChaseWithinRange extends Behavior<Mob> {
 
     private final double maxRange;
+    private final MemoryModuleType<LivingEntity> memory;
 
-    public MaintainChaseWithinRange(double maxRange) {
-        super(Map.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT));
+    public MaintainChaseWithinRange(MemoryModuleType<LivingEntity> memory, double maxRange) {
+        super(Map.of(memory, MemoryStatus.VALUE_PRESENT));
+        this.memory = memory;
         this.maxRange = maxRange;
     }
 
@@ -32,7 +35,7 @@ public class MaintainChaseWithinRange extends Behavior<Mob> {
     @Override
     protected void tick(ServerLevel level, Mob mob, long gameTime) {
         Brain<?> brain = mob.getBrain();
-        brain.getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> {
+        brain.getMemory(memory).ifPresent(target -> {
             if (mob.distanceToSqr(target) > Mth.square(maxRange)) {
                 brain.eraseMemory(MemoryModuleType.ATTACK_TARGET);
                 brain.eraseMemory(MemoryModuleType.WALK_TARGET);

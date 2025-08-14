@@ -1,23 +1,16 @@
 package com.farcr.nomansland.common.entity.goose;
 
 import com.farcr.nomansland.common.registry.NMLSounds;
-import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
 import com.mojang.serialization.Dynamic;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.ByIdMap;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -30,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -38,17 +30,7 @@ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.IntFunction;
-
-import static com.farcr.nomansland.common.entity.goose.Goose.GooseState.DRINKING;
-import static com.farcr.nomansland.common.entity.goose.Goose.GooseState.IDLE;
-
 public class Goose extends PathfinderMob {
-
-    private static final EntityDataAccessor<GooseState> GOOSE_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
-    private long inStateTicks = 0L;
-    public final AnimationState drinkAnimationState = new AnimationState();
-
 
     public Goose(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -61,45 +43,23 @@ public class Goose extends PathfinderMob {
                 .add(Attributes.MOVEMENT_SPEED, 0.2);
     }
 
-//    @Override
-//    protected void registerGoals() {
-//        super.registerGoals();
-//        goalSelector.addGoal(1, new PanicGoal(this, 1.65));
-//        goalSelector.addGoal(2, new RandomStrollGoal(this, 1.0, 60));
-//        goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 8.0F));
-//        goalSelector.addGoal(4, new GooseGoToWaterGoal(this, 1.0));
-//        goalSelector.addGoal(5, new RandomLookAroundGoal(this));
-//        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Goose.class, 8.0F));
-//    }
-
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-
-        builder.define(GOOSE_STATE, GooseState.IDLE);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-
-        compound.putString("State", this.getState().getSerializedName());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-
-        this.switchToState(GooseState.fromName(compound.getString("State")));
     }
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (key.equals(GOOSE_STATE)) {
-            this.inStateTicks = 0L;
-        }
-
         super.onSyncedDataUpdated(key);
     }
 
@@ -163,11 +123,7 @@ public class Goose extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide()) {
-            this.setupAnimationStates();
-        }
 
-        this.inStateTicks++;
         floatGoose();
     }
 
@@ -185,7 +141,6 @@ public class Goose extends PathfinderMob {
                 this.setDeltaMovement(getDeltaMovement().scale(0.5).add(0.0, 0.05, 0.0));
             }
         }
-
     }
 
     @Override
@@ -196,45 +151,6 @@ public class Goose extends PathfinderMob {
     @Override
     public PathNavigation getNavigation() {
         return super.getNavigation();
-    }
-
-    public void beginDrinking() {
-        if (this.getState() == IDLE) {
-            this.stopInPlace();
-            this.gameEvent(GameEvent.ENTITY_ACTION);
-            this.switchToState(DRINKING);
-        }
-    }
-
-    public void endDrink() {
-        if (this.getState() == DRINKING) {
-            this.gameEvent(GameEvent.ENTITY_ACTION);
-            this.switchToState(IDLE);
-        }
-    }
-
-    public boolean shouldEndDrinking() {
-        return this.getState() == DRINKING && this.inStateTicks >= 1.5 * 20;
-    }
-
-    public GooseState getState() {
-        return this.entityData.get(GOOSE_STATE);
-    }
-
-    public void switchToState(GooseState state) {
-        this.entityData.set(GOOSE_STATE, state);
-    }
-
-
-    private void setupAnimationStates() {
-        switch (this.getState()) {
-            case IDLE:
-                drinkAnimationState.stop();
-                break;
-            case DRINKING:
-                drinkAnimationState.startIfStopped(tickCount);
-                break;
-        }
     }
 
 //    public static class GooseGoToWaterGoal extends MoveToBlockGoal {
@@ -283,37 +199,6 @@ public class Goose extends PathfinderMob {
 
         public boolean isStableDestination(BlockPos pos) {
             return this.level.getBlockState(pos).is(Blocks.WATER) || super.isStableDestination(pos);
-        }
-    }
-
-    public enum GooseState implements StringRepresentable {
-        IDLE("idle", 0),
-        DRINKING("drinking", 1);
-        
-        private static final StringRepresentable.EnumCodec<GooseState> CODEC = StringRepresentable.fromEnum(GooseState::values);
-        private static final IntFunction<GooseState> BY_ID = ByIdMap.continuous(
-                GooseState::id, values(), ByIdMap.OutOfBoundsStrategy.ZERO
-        );
-        public static final StreamCodec<ByteBuf, GooseState> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, GooseState::id);
-        private final String name;
-        private final int id;
-
-        GooseState(String name, int id) {
-            this.name = name;
-            this.id = id;
-        }
-
-        public static GooseState fromName(String name) {
-            return CODEC.byName(name, IDLE);
-        }
-
-        @Override
-        public String getSerializedName() {
-            return this.name;
-        }
-
-        private int id() {
-            return this.id;
         }
     }
 }

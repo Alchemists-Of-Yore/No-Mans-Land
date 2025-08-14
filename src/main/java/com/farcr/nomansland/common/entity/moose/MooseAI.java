@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.entity.moose;
 
 import com.farcr.nomansland.common.entity.ai.MaintainChaseWithinRange;
 import com.farcr.nomansland.common.entity.ai.StartChasingWhenHurt;
+import com.farcr.nomansland.common.entity.ai.WarningAttack;
 import com.farcr.nomansland.common.registry.entities.NMLSensors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -27,14 +28,6 @@ import java.util.UUID;
 
 public class MooseAI {
 
-    public static final double STOMP_RADIUS = 10.0D;
-    public static final double CHARGE_RADIUS = 6.0D;
-    public static final double DISENGAGE_RANGE = 20.0D; // blocks
-    public static final float CHARGE_DAMAGE = 10.0F;
-
-    public static final UniformInt TIME_BETWEEN_ATTACKS = UniformInt.of(150, 200);
-    public static final UniformInt TIME_BETWEEN_SHEDS = UniformInt.of(12000, 24000);
-
     private static final ImmutableList<SensorType<? extends Sensor<? super Moose>>> SENSOR_TYPES = ImmutableList.of(
             SensorType.NEAREST_LIVING_ENTITIES,
             SensorType.HURT_BY,
@@ -55,7 +48,9 @@ public class MooseAI {
             MemoryModuleType.IS_PANICKING
             );
 
-    public static Brain.Provider<Moose> brainProvider() { return Brain.provider(MEMORY_TYPES, SENSOR_TYPES); }
+    public static Brain.Provider<Moose> brainProvider() {
+        return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
+    }
 
     public static Brain<?> makeBrain(Brain<Moose> brain) {
         initCoreActivity(brain);
@@ -77,13 +72,9 @@ public class MooseAI {
         ));
     }
 
-    public static void initMemories(Moose moose, RandomSource random) {
-    }
-
     private static void initCoreActivity(Brain<Moose> brain) {
         brain.addActivity(Activity.CORE, 0, ImmutableList.of(
                 new Swim(0.8F),
-                new AnimalPanic<>(2.0F),
                 new LookAtTargetSink(45, 90),
                 new MoveToTargetSink(),
                 new StartChasingWhenHurt<>(),
@@ -100,6 +91,7 @@ public class MooseAI {
                         Pair.of(2, new RunOne<>(
                                 ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                 ImmutableList.of(
+                                        Pair.of(new ShakeOffSaddle(), 1),
                                         Pair.of(RandomStroll.stroll(1.0F), 1),
                                         Pair.of(SetWalkTargetFromLookTarget.create(1.0F, 3), 1),
                                         Pair.of(new DoNothing(30, 60), 1)
@@ -108,7 +100,6 @@ public class MooseAI {
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT),
-                        Pair.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                         Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_ABSENT)
                 )
         );
@@ -118,9 +109,10 @@ public class MooseAI {
         brain.addActivityWithConditions(
                 Activity.AVOID,
                 ImmutableList.of(
-//                        Pair.of(0, Stomp),
-                        Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_ATTACKABLE, 1.2F, 10, false)),
-                        Pair.of(1, new Charge(MemoryModuleType.NEAREST_ATTACKABLE))
+                        Pair.of(0, new Stomp()),
+                        Pair.of(1, SetWalkTargetAwayFrom.entity(MemoryModuleType.NEAREST_ATTACKABLE, 1.3F, 10, false)),
+                        Pair.of(2, WarningAttack.create(80)),
+                        Pair.of(3, new Charge())
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_PRESENT),
@@ -133,14 +125,12 @@ public class MooseAI {
         brain.addActivityWithConditions(
                 Activity.FIGHT,
                 ImmutableList.of(
-                        Pair.of(0, new MaintainChaseWithinRange(20)),
-                        Pair.of(1, new Charge(MemoryModuleType.ATTACK_TARGET)),
-                        Pair.of(2, MeleeAttack.create(40)),
-                        Pair.of(3, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.5F))
+                        Pair.of(0, new MaintainChaseWithinRange(MemoryModuleType.ATTACK_TARGET, 10)),
+                        Pair.of(1, MeleeAttack.create(40)),
+                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.7F))
                 ),
                 ImmutableSet.of(
-                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT),
-                        Pair.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT)
+                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT)
                 )
         );
     }

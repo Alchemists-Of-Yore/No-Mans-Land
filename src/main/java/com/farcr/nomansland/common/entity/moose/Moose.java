@@ -10,18 +10,25 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
@@ -76,12 +83,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable {
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        MooseAI.initMemories(this, level.getRandom());
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
-    }
-
-    @Override
     protected Brain.Provider<Moose> brainProvider() {
         return MooseAI.brainProvider();
     }
@@ -117,33 +118,38 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable {
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (isPacified()) {
-            if (stack.is(Items.SADDLE) && !isBaby() && !isSaddled()) {
-                if (!level().isClientSide) {
-                    equipSaddle(stack, SoundSource.NEUTRAL);
-                    stack.shrink(1);
-                }
-
-                return InteractionResult.sidedSuccess(level().isClientSide);
+        if (stack.is(Items.SADDLE) && !isBaby() && !isSaddled()) {
+            if (!level().isClientSide) {
+                equipSaddle(stack, SoundSource.NEUTRAL);
+                stack.shrink(1);
             }
 
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
+
+        if (isPacified()) {
             if (isSaddled() && !isVehicle()) {
                 doPlayerRide(player);
 
                 return InteractionResult.sidedSuccess(level().isClientSide);
             }
         } else {
-            if (stack.is(Items.GOLDEN_CARROT)) {
+            if (getTarget() == null && stack.is(Items.GOLDEN_CARROT)) {
                 if (!level().isClientSide) {
                     int stage = getPacificationStage();
                     stack.shrink(1);
                     if (stage < 4) {
                         setPacificationStage(stage + 1);
+                        level().broadcastEntityEvent(this, (byte) 6);
                     } else {
                         if (random.nextInt(3) == 0) {
                             setPacificationStage(5);
                             navigation.stop();
                             setTarget(null);
+                            brain.getMemory(MemoryModuleType.ANGRY_AT).ifPresent(target -> {
+                                if (player.getUUID().equals(target))
+                                    brain.eraseMemory(MemoryModuleType.ANGRY_AT);
+                            });
                             level().broadcastEntityEvent(this, (byte) 7);
                         } else {
                             level().broadcastEntityEvent(this, (byte) 6);
@@ -190,10 +196,10 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable {
         return new Vec3(x, 0, z);
     }
 
-//    @Override
-//    protected float getRiddenSpeed(Player player) {
-//        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
-//    }
+    @Override
+    protected float getRiddenSpeed(Player player) {
+        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
+    }
 
 
     @Nullable
@@ -283,6 +289,28 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable {
         return super.getControllingPassenger();
     }
 
+    @Override
+    public boolean doHurtTarget(Entity entity) {
+        double power = getAttributeValue(Attributes.ATTACK_DAMAGE);
+        double damage = power > 0 ? power / 2 + random.nextInt((int) power) : power;
+        DamageSource damagesource = damageSources().mobAttack(this);
+        boolean hurt = entity.hurt(damagesource, (float) damage);
+        if (hurt) {
+            double knockbackResistance;
+            if (entity instanceof LivingEntity livingentity)
+                knockbackResistance = livingentity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
+            else knockbackResistance = 0;
+
+            entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.4F * Math.max(0, 1 - knockbackResistance), 0));
+
+            if (level() instanceof ServerLevel serverLevel) {
+                EnchantmentHelper.doPostAttackEffects(serverLevel, entity, damagesource);
+            }
+        }
+
+        return hurt;
+    }
+
     public int getPacificationStage() {
         return pacificationStage;
     }
@@ -311,6 +339,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable {
     @Override
     public void equipSaddle(ItemStack itemStack, @Nullable SoundSource soundSource) {
         setIsSaddled(true);
+    }
+
+    public void shakeOffSaddle() {
+        setIsSaddled(false);
+        ItemEntity itementity = spawnAtLocation(Items.SADDLE, 1);
+        if (itementity != null) {
+            itementity.setDeltaMovement(itementity.getDeltaMovement().add((this.random.nextFloat() - this.random.nextFloat()) * 0.1F, this.random.nextFloat() * 0.05F, (this.random.nextFloat() - this.random.nextFloat()) * 0.1F));
+        }
     }
 
     @Override
