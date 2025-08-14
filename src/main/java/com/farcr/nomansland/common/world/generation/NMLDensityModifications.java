@@ -24,16 +24,23 @@ public class NMLDensityModifications {
                     )
             ));
             DensityFunction caveRiverDensity = new CaveRiverDensityFunction(horizontalRiverDistance, verticalRiverDistance, caveRiverRadius, null);
-            DensityFunction caveRiverShoreDensity = DensityFunctions.interpolated(new CaveRiverShoreDensityFunction(horizontalRiverDistance, verticalRiverDistance, caveRiverRadius, null));
+            DensityFunction caveRiverShoreDensity = DensityFunctions.interpolated(
+                    new CaveRiverShoreDensityFunction(horizontalRiverDistance, verticalRiverDistance, caveRiverRadius, null)
+            );
 
             // add noise
+            DensityFunction caveRiverNoise = DensityFunctions.interpolated(
+                    NMLDensityUtils.mapRange(-1, 1, -0.1, 0.02,
+                            DensityFunctions.noise(noiseParameters.getOrThrow(Noises.ICE), 0.5)
+                    )
+            );
             caveRiverDensity = DensityFunctions.add(
                     caveRiverDensity,
-                    DensityFunctions.interpolated(
-                            NMLDensityUtils.mapRange(-1, 1, -0.1, 0.02,
-                                DensityFunctions.noise(noiseParameters.getOrThrow(Noises.ICE), 0.5)
-                            )
-                    )
+                    caveRiverNoise
+            );
+            caveRiverShoreDensity = DensityFunctions.add(
+                    caveRiverShoreDensity,
+                    caveRiverNoise
             );
             // add speleothems
             caveRiverDensity = DensityFunctions.add(
@@ -48,11 +55,12 @@ public class NMLDensityModifications {
                             )
                     )
             );
-            return NMLDensityUtils.smoothMin(0.03,
+            return NMLDensityUtils.smoothMin(0.04,
                     caveRiverDensity,
-                    DensityFunctions.add(originalDensityFunction,
-                            NMLDensityUtils.smoothMax(0.03, caveRiverShoreDensity, DensityFunctions.constant(0)))
-                    );
+                    NMLDensityUtils.smoothMax(0.04, originalDensityFunction,
+                            caveRiverShoreDensity
+                    )
+            );
         });
     }
 

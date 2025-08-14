@@ -16,8 +16,8 @@ public record CaveRiverShoreDensityFunction(DensityFunction horizontalDistance, 
     );
 
     private double shorelineDensity(River.RiverSpaceCoordinates river, int blockX, int blockY, int blockZ, double horizontalDistance, double riverHeight, double riverRadius) {
-        double squishFactor = 1.0 / 3.0;
-        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0.25) - 30 * squishFactor;
+        double squishFactor = 12.0;
+        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0.2) - 30 / squishFactor + 4;
         double verticalDistance = blockY - surfaceHeight;
 
 //        double shorelineMultiplierVertical = Mth.clampedMap(verticalDistance, -2, 2, 0, 1);
@@ -32,7 +32,7 @@ public record CaveRiverShoreDensityFunction(DensityFunction horizontalDistance, 
         if (verticalDistance > 0) {
             verticalDistance *= squishFactor;
         } else {
-            verticalDistance /= squishFactor;
+            verticalDistance /= 1.5;
         }
         return Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance) - 30;
     }
