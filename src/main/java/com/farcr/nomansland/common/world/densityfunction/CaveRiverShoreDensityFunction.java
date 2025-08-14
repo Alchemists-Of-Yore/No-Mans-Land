@@ -43,7 +43,7 @@ public record CaveRiverShoreDensityFunction(DensityFunction horizontalDistance, 
         if (river.horizontalDistance() >= 1000) return -0.5;
         double density = -shorelineDensity(river, x,y,z, horizontalDistance, riverHeight, riverRadius);
 
-        return Mth.clampedMap(density, -30, 30, -0.8, 0.8);
+        return Mth.clampedMap(density, -30, 30, -0.5, 0.5);
     }
 
     @Override

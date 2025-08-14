@@ -56,7 +56,7 @@ public class River {
 
         RiverPoint mid = new RiverPoint(
                 midpointPosX, midpointPosZ,
-                Mth.lerp(0.5, start.gradient, end.gradient)
+                Mth.lerp(random.nextDouble(), start.gradient, end.gradient)
         );
 
         List<RiverPoint> left = subdivideRecursive(random, watershedX, watershedZ, start, mid, iterations - 1);
@@ -97,7 +97,7 @@ public class River {
     }
 
     public static int getWaterSurfaceHeight(double riverHeight, double terraceGradientSize) {
-        return (int) MathUtilities.terrace(riverHeight, 12, terraceGradientSize);
+        return (int) MathUtilities.terrace(riverHeight, 8, terraceGradientSize);
     }
 
     private static double lineSegmentDistance(double px, double py, double ax, double ay, double bx, double by) {

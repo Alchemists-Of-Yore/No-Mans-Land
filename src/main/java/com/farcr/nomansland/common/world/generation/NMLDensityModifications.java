@@ -40,7 +40,7 @@ public class NMLDensityModifications {
             );
             caveRiverShoreDensity = DensityFunctions.add(
                     caveRiverShoreDensity,
-                    caveRiverNoise
+                    DensityFunctions.mul(caveRiverNoise, DensityFunctions.constant(2.5))
             );
             // add speleothems
             caveRiverDensity = DensityFunctions.add(
@@ -57,7 +57,7 @@ public class NMLDensityModifications {
             );
             return NMLDensityUtils.smoothMin(0.04,
                     caveRiverDensity,
-                    NMLDensityUtils.smoothMax(0.04, originalDensityFunction,
+                    NMLDensityUtils.smoothMax(0.08, originalDensityFunction,
                             caveRiverShoreDensity
                     )
             );
