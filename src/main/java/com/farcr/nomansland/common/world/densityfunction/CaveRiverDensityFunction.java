@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.world.densityfunction;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.watershed.River;
 import com.farcr.nomansland.common.world.watershed.Watershed;
 import com.farcr.nomansland.common.world.watershed.WatershedMap;
@@ -30,7 +31,7 @@ public record CaveRiverDensityFunction(DensityFunction horizontalDistance, Densi
     }
 
     private double shorelineDensity(River.RiverSpaceCoordinates river, int blockX, int blockY, int blockZ, double horizontalDistance, double riverHeight, double riverRadius) {
-        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0);
+        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0.1);
         double verticalDistance = blockY - surfaceHeight;
 
         double shorelineMultiplier = Mth.clampedMap(verticalDistance, -1, 3, 0, 1);

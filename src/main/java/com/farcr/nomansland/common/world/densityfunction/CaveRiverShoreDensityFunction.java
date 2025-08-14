@@ -15,7 +15,7 @@ public record CaveRiverShoreDensityFunction(DensityFunction horizontalDistance, 
     );
 
     private double shorelineDensity(River.RiverSpaceCoordinates river, int blockX, int blockY, int blockZ, double horizontalDistance, double riverHeight, double riverRadius) {
-        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0) - 2;
+        double surfaceHeight = River.getWaterSurfaceHeight((int) riverHeight, 0.25) - 2;
         double verticalDistance = blockY - surfaceHeight;
 
         double shorelineMultiplierVertical = Mth.clampedMap(verticalDistance, 0, 3, 0, 1);

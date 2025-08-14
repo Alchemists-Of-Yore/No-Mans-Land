@@ -26,7 +26,7 @@ public class AquiferMixin {
             River river = watershed.river();
             River.RiverSpaceCoordinates coordinates = river.getRiverSpaceCoordinates(x, y, z);
             double distanceToWaterSurface = y - coordinates.riverHeight();
-            if (coordinates.horizontalDistance() < 30 && distanceToWaterSurface < 20 && distanceToWaterSurface > -50) {
+            if (coordinates.horizontalDistance() < 30 && distanceToWaterSurface < 25 && distanceToWaterSurface > -30) {
                 cir.setReturnValue(new Aquifer.FluidStatus(River.getWaterSurfaceHeight(coordinates.riverHeight(), 0), Blocks.WATER.defaultBlockState()));
             }
         }
