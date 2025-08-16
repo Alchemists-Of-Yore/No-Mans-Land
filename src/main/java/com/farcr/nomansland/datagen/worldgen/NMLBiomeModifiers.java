@@ -42,6 +42,7 @@ public class NMLBiomeModifiers {
     private void setup() {
         GenerationStep.Decoration vegetalDecoration = GenerationStep.Decoration.VEGETAL_DECORATION;
         GenerationStep.Decoration localModifications = GenerationStep.Decoration.LOCAL_MODIFICATIONS;
+        GenerationStep.Decoration undergroundDecoration = GenerationStep.Decoration.UNDERGROUND_DECORATION;
 
         modifyBiome(Biomes.BADLANDS)
                 .changeColors(15322281,
@@ -1157,6 +1158,8 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_SHELF_MUSHROOM_OLD_GROWTH, vegetalDecoration, feature("shelf_mushroom_old_growth"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_SHELF_MUSHROOM_TAIGA, vegetalDecoration, feature("shelf_mushroom_taiga"));
 
+
+        addFeaturesToTag(NMLTags.FeatureAddition.REGULAR_TORTOISE_BURROWS, undergroundDecoration, feature("underground/tortoise_burrows/tortoise_burrow"));
         /* Tag-based feature removals */
         
         processFeatures();

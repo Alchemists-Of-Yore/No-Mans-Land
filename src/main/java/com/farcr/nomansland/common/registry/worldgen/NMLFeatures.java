@@ -42,6 +42,9 @@ public class NMLFeatures {
     public static final Supplier<Feature<CragRockFeatureConfiguration>> CRAG_ROCK = FEATURES.register("crag_rock",
             () -> new CragRockFeature(CragRockFeatureConfiguration.CODEC));
 
+    public static final Supplier<Feature<TortoiseBurrowFeature.Configuration>> TORTOISE_BURROW = FEATURES.register("tortoise_burrow",
+            () -> new TortoiseBurrowFeature(TortoiseBurrowFeature.Configuration.CODEC));
+
     public static final ResourceKey<ConfiguredFeature<?, ?>> HUGE_FIELD_MUSHROOM = register("huge_field_mushroom");
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> OAK_APPLE_01 = register("oak_apple_01");

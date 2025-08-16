@@ -92,6 +92,10 @@ public class NMLTags {
         public static final TagKey<Biome> HAS_SHELF_MUSHROOM_FOREST = createBiomeTag("feature_addition/has_shelf_mushroom_forest");
         public static final TagKey<Biome> HAS_SHELF_MUSHROOM_OLD_GROWTH = createBiomeTag("feature_addition/has_shelf_mushroom_old_growth");
         public static final TagKey<Biome> HAS_SHELF_MUSHROOM_TAIGA = createBiomeTag("feature_addition/has_shelf_mushroom_taiga");
+
+        // Tortoise Burrows
+        public static final TagKey<Biome> REGULAR_TORTOISE_BURROWS = createBiomeTag("feature_addition/has_regular_tortoise_burrows");
+        public static final TagKey<Biome> DEEPSLATE_TORTOISE_BURROWS = createBiomeTag("feature_addition/has_deepslate_tortoise_burrows");
     }
 
     public static class FeatureRemoval {
