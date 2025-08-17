@@ -1,8 +1,5 @@
 {
   "values": [
-    "nomansland:caves",
-    "nomansland:cave_depths",
-    "minecraft:lush_caves",
-    "minecraft:dripstone_caves"
+    "#c:is_cave"
   ]
 }
