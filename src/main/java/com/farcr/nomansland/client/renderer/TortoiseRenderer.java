@@ -1,5 +1,6 @@
 package com.farcr.nomansland.client.renderer;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.model.TortoiseModel;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
@@ -37,21 +38,7 @@ public class TortoiseRenderer extends MobRenderer<Tortoise, TortoiseModel<Tortoi
 
     @Override
     public ResourceLocation getTextureLocation(Tortoise tortoise) {
-        TortoiseVariant variant = null;
-        for (Holder<MobVariant> animalVariantHolder : getVariants(tortoise, tortoise.level())) {
-            if (animalVariantHolder.value() instanceof TortoiseVariant tortoiseVariant) {
-                variant = tortoiseVariant;
-                break;
-            }
-        }
+        return NoMansLand.location("textures/entity/tortoise/green.png");
 
-        if (variant == null) {
-            variant =
-                    (TortoiseVariant) tortoise.registryAccess().registryOrThrow(MLRegistries.ANIMAL_VARIANT_KEY).holders()
-                            .filter(mobVariantReference -> mobVariantReference.value() instanceof TortoiseVariant)
-                            .findAny().orElseThrow().value();
-        }
-        ResourceLocation texture = variant.texture;
-        return texture.withPath(path -> "textures/" + path + ".png");
     }
 }

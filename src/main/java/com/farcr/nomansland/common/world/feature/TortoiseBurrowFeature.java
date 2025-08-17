@@ -1,10 +1,13 @@
 package com.farcr.nomansland.common.world.feature;
 
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
+import com.farcr.nomansland.common.entity.tortoise.TortoiseVariant;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.tazer.mixed_litter.MLDataAttachmentTypes;
+import dev.tazer.mixed_litter.VariantUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -71,7 +74,6 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                                         Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
                                         tortoiseSpawned = true;
                                         tortoise.moveTo(blockpos.getX(), blockpos.getY(), blockpos.getZ(), 0, 0);
-                                        tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
                                         tortoise.setHomePos(blockpos);
                                         worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                                     }
@@ -81,7 +83,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                     }
                 }
             }
-            Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(blockpos.toString()), false);
+        //    Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(blockpos.toString()), false);
             return true;
         }
     }
