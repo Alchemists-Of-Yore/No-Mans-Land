@@ -17,6 +17,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -120,7 +121,7 @@ public class NMLItems {
     public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
             () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(NMLConfig.DURABILITY_VALUE.get()).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
     public static final ItemDefinition<Item> ANCIENT_BRONZE_MASK = register("ancient_bronze_mask",
-            () -> new ArmorItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).rarity(Rarity.RARE).component(NMLDataComponents.PUNCH_COOLDOWN, 0).component(NMLDataComponents.PUNCH_COUNT, 0)));
+            () -> new AncientBronzeMaskItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).rarity(Rarity.RARE).component(DataComponents.UNBREAKABLE, new Unbreakable(false)).component(NMLDataComponents.PUNCH_COOLDOWN, 0).component(NMLDataComponents.PUNCH_COUNT, 0)));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));

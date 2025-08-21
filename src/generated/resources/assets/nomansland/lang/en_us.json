@@ -433,5 +433,6 @@
   "nomansland.subtitles.entity.player.drink_milk": "Player drinks milk",
   "nomansland.subtitles.item.bomb.primed": "Bomb primed",
   "nomansland.subtitles.item.generic.consumed": "Item consumed",
-  "nomansland.subtitles.particle.droplet.fall": "Droplet falls"
+  "nomansland.subtitles.particle.droplet.fall": "Droplet falls",
+  "nomansland.tooltip.mask.regeneration": "Slowly regenerates health"
 }
