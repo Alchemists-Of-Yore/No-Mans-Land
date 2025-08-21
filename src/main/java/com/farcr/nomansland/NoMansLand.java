@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 public class NoMansLand {
 
     public static final String MODID = "nomansland";
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger("No Man's Land");
 
     public NoMansLand(IEventBus modEventBus, ModContainer modContainer) {
 
@@ -88,6 +88,6 @@ public class NoMansLand {
     }
     
     public static ResourceLocation location(String path) {
-        return ResourceLocation.fromNamespaceAndPath(NoMansLand.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 }

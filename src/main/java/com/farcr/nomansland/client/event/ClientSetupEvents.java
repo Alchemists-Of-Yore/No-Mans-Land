@@ -28,7 +28,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(modid = NoMansLand.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = NoMansLand.MODID, value = Dist.CLIENT)
 public class ClientSetupEvents {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {

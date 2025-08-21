@@ -72,6 +72,7 @@ public class InkCloud extends LingeringCloud {
                 }
             }
         }
+
         if (tickCount % 10 == 0) {
             double centerY = getY() + getBbHeight() / 2.0;
             Vec3 center = new Vec3(getX(), centerY, getZ());

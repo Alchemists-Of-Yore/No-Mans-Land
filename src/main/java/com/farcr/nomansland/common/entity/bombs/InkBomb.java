@@ -79,17 +79,26 @@ public class InkBomb extends ThrowableBombEntity {
 
         inkCloud.setRadius(3);
         inkCloud.setWaitTime(1);
-        level.addFreshEntity(inkCloud);
-        for (int i = 0; i < 40; i++) {
-            double theta = random.nextFloat() * 2 * Math.PI;
-            double alpha = random.nextFloat() * 2 * Math.PI;
-            double cos = Math.cos(alpha);
-            double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
-            double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
-            double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
-            level.addParticle(getParticle(level), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
-        }
+        level().addFreshEntity(inkCloud);
+        level.broadcastEntityEvent(this, (byte) 0);
         discard();
+    }
+
+    @Override
+    public void handleEntityEvent(byte b) {
+        if (b == 0) {
+            for (int i = 0; i < 40; i++) {
+                double theta = random.nextFloat() * 2 * Math.PI;
+                double alpha = random.nextFloat() * 2 * Math.PI;
+                double cos = Math.cos(alpha);
+                double xVelocity = Math.sin(theta) * cos * (random.nextFloat() * 0.3 + 0.7);
+                double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
+                double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
+                level().addParticle(getParticle(level()), false, getX(), getY(), getZ(), xVelocity * 0.1, yVelocity * 0.1, zVelocity * 0.1);
+            }
+        } else {
+            super.handleEntityEvent(b);
+        }
     }
 
     @Override

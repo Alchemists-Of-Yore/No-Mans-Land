@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.densityfunction.modification;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.mixin.NoiseRouterAccessModifier;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseRouter;

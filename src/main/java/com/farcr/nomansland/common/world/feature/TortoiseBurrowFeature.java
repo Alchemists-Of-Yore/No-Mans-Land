@@ -1,19 +1,13 @@
 package com.farcr.nomansland.common.world.feature;
 
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
-import com.farcr.nomansland.common.entity.tortoise.TortoiseVariant;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.tazer.mixed_litter.MLDataAttachmentTypes;
-import dev.tazer.mixed_litter.VariantUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;

@@ -3,8 +3,6 @@ package com.farcr.nomansland.common.world.densityfunction.modification;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 
-import java.util.function.Function;
-
 // unused for now
 class DensityFunctionModifierVisitor implements DensityFunction.Visitor {
     private final DensityFunctionModifier modifier;

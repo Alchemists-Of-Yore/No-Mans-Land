@@ -207,7 +207,7 @@ public class LingeringCloud extends Entity implements TraceableEntity {
                             if (effect.getEffect().value().isInstantenous()) {
                                 effect.getEffect().value().applyInstantenousEffect(this, getOwner(), entity, effect.getAmplifier(), 0.5);
                             } else {
-                                int scaledDuration = (int) Math.max(effect.getDuration() * 0.25F, effect.getDuration() * proximity);
+                                int scaledDuration = (int) Math.max(effect.getDuration() * 0.5, effect.getDuration() * proximity);
                                 MobEffectInstance scaled = new MobEffectInstance(
                                         effect.getEffect(),
                                         scaledDuration,

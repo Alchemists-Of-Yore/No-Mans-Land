@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.densityfunction;
 
-import com.farcr.nomansland.NoMansLand;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;

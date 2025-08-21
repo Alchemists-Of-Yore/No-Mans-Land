@@ -2,14 +2,10 @@ package com.farcr.nomansland.common.entity.goose;
 
 import com.farcr.nomansland.common.entity.ai.MaintainChaseWithinRange;
 import com.farcr.nomansland.common.entity.ai.StartChasingWhenHurt;
-import com.farcr.nomansland.common.entity.moose.Moose;
-import com.farcr.nomansland.common.entity.moose.MooseAI;
-import com.farcr.nomansland.common.entity.moose.ShakeOffSaddle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
@@ -21,11 +17,8 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.animal.armadillo.Armadillo;
-import net.minecraft.world.entity.animal.armadillo.ArmadilloAi;
 import net.minecraft.world.entity.schedule.Activity;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;

@@ -6,7 +6,6 @@ import com.farcr.nomansland.common.entity.deer.DeerAntlersVariant;
 import com.farcr.nomansland.common.entity.deer.DeerPatternVariant;
 import com.farcr.nomansland.common.entity.deer.DeerVariant;
 import com.farcr.nomansland.common.entity.goose.GooseVariant;
-import com.farcr.nomansland.common.entity.tortoise.TortoiseVariant;
 import com.mojang.serialization.MapCodec;
 import dev.tazer.mixed_litter.MLRegistries;
 import dev.tazer.mixed_litter.variants.MobVariant;

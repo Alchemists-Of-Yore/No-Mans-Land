@@ -38,7 +38,7 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import static com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock.LEVEL;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(modid = NoMansLand.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = NoMansLand.MODID)
 public class CommonSetupEvents {
 
     @SubscribeEvent

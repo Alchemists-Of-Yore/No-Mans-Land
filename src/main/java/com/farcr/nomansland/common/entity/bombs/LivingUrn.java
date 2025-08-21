@@ -94,8 +94,8 @@ public class LivingUrn extends ThrowableBombEntity {
             pacifiedCloud.setOwner(livingentity);
         }
 
-        pacifiedCloud.setRadius(2);
-        pacifiedCloud.setWaitTime(1);
+        pacifiedCloud.setRadius(2.5F);
+        pacifiedCloud.setWaitTime(0);
         pacifiedCloud.setDuration(120);
         pacifiedCloud.setRadiusPerTick((float) -1/100);
         pacifiedCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0, false, false))));
@@ -181,7 +181,7 @@ public class LivingUrn extends ThrowableBombEntity {
             }
 
             if (shakeTimer > 0) {
-                if (monster != null && !(monster instanceof NeutralMob)) {
+                if (monster != null && !(monster instanceof NeutralMob) && !monster.hasEffect(NMLEffects.PACIFIED)) {
                     if (bounceCooldown > 0) {
                         if (bounceCooldown < 45) {
                             Vec3 toTarget = monster.position().subtract(position());
@@ -221,7 +221,7 @@ public class LivingUrn extends ThrowableBombEntity {
             bounceCooldown--;
 
             if (bounceCooldown == 0) {
-                if (monster != null && !(monster instanceof NeutralMob)) {
+                if (monster != null && !(monster instanceof NeutralMob) && !monster.hasEffect(NMLEffects.PACIFIED)) {
                     Vec3 toTarget = monster.position().subtract(position());
                     double distance = toTarget.length();
 

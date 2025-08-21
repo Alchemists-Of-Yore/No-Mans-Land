@@ -4,16 +4,10 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.model.TortoiseModel;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
-import com.farcr.nomansland.common.entity.tortoise.TortoiseVariant;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.tazer.mixed_litter.MLRegistries;
-import dev.tazer.mixed_litter.variants.MobVariant;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-
-import static dev.tazer.mixed_litter.VariantUtil.getVariants;
 
 public class TortoiseRenderer extends MobRenderer<Tortoise, TortoiseModel<Tortoise>> {
 
