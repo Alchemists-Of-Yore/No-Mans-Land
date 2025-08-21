@@ -58,7 +58,10 @@ public class PacifiedEffect extends MobEffect {
             return;
         }
 
-        if (livingEntity instanceof Monster monster) {
+        if (livingEntity instanceof NeutralMob neutralMob) {
+            neutralMob.stopBeingAngry();
+            livingEntity.removeEffect(NMLEffects.PACIFIED);
+        } else if (livingEntity instanceof Monster monster) {
             for (WrappedGoal goal : monster.targetSelector.getAvailableGoals()) {
                 if (goal.getGoal() instanceof EnemyAttackGoal) {
                     return;
@@ -67,7 +70,6 @@ public class PacifiedEffect extends MobEffect {
 
             monster.targetSelector.addGoal(0, new EnemyAttackGoal(monster));
         } else {
-            if (livingEntity instanceof NeutralMob neutralMob) neutralMob.stopBeingAngry();
             livingEntity.removeEffect(NMLEffects.PACIFIED);
         }
     }

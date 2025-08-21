@@ -5,6 +5,7 @@ import com.farcr.nomansland.NoMansLand;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -13,33 +14,46 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.EnumMap;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class NMLArmorMaterials {
-    public static final DeferredRegister ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, NoMansLand.MODID);
+    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, NoMansLand.MODID);
 
-    public static final Holder<ArmorMaterial> TORTOISE = ARMOR_MATERIALS.register("tortoise", () -> new ArmorMaterial(
-            Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
-                map.put(ArmorItem.Type.CHESTPLATE, NMLConfig.ARMOR_VALUE.get());
-            }), 9, SoundEvents.ARMOR_EQUIP_TURTLE, () -> Ingredient.of(NMLItems.STURDY_SCUTE),
-            List.of(
-                    new ArmorMaterial.Layer(
-                            NoMansLand.location("tortoise")
-                    ),
-                    new ArmorMaterial.Layer(
-                            NoMansLand.location("tortoise"), "_overlay", false
-                    )
-            ), NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(), NMLConfig.KNOCKBACK_RESISTANCE_VALUE.get().floatValue()));
+    public static final Holder<ArmorMaterial> TORTOISE = register(
+            "tortoise",
+            ArmorItem.Type.CHESTPLATE,
+            () -> NMLConfig.ARMOR_VALUE.get(),
+            9,
+            SoundEvents.ARMOR_EQUIP_TURTLE,
+            () -> Ingredient.of(NMLItems.STURDY_SCUTE),
+            "tortoise",
+            () -> NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(),
+            () -> NMLConfig.KNOCKBACK_RESISTANCE_VALUE.get().floatValue()
+    );
 
-    public static final Holder<ArmorMaterial> ANCIENT_BRONZE_MASK = ARMOR_MATERIALS.register("ancient_bronze_mask", () -> new ArmorMaterial(
-            Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
-                map.put(ArmorItem.Type.HELMET, 2);
-            }), 20, SoundEvents.ARMOR_EQUIP_GOLD, () -> Ingredient.EMPTY,
-            List.of(
-                    new ArmorMaterial.Layer(
-                            NoMansLand.location("ancient_bronze_mask")
-                    ),
-                    new ArmorMaterial.Layer(
-                            NoMansLand.location("ancient_bronze_mask"), "_overlay", false
-                    )
-            ), 0.0F, 0.0F));
+    public static final Holder<ArmorMaterial> ANCIENT_BRONZE_MASK = register(
+            "ancient_bronze_mask",
+            ArmorItem.Type.HELMET,
+            () -> 2,
+            20,
+            SoundEvents.ARMOR_EQUIP_GOLD,
+            () -> Ingredient.EMPTY,
+            "ancient_bronze_mask",
+            () -> 0F,
+            () -> 0F
+    );
+
+    public static Holder<ArmorMaterial> register(String name, ArmorItem.Type armorType, Supplier<Integer> armorValue, int enchantmnetValue, Holder<SoundEvent> soundEvent, Supplier<Ingredient> repairIngredient, String armorLayer, Supplier<Float> toughness, Supplier<Float> knockbackResistance) {
+        return register(name, () -> new ArmorMaterial(
+                Util.make(new EnumMap<>(ArmorItem.Type.class), map -> map.put(armorType, armorValue.get())), enchantmnetValue, soundEvent, repairIngredient,
+                List.of(
+                        new ArmorMaterial.Layer(NoMansLand.location(armorLayer)),
+                        new ArmorMaterial.Layer(NoMansLand.location(armorLayer), "_overlay", false)
+                ), toughness.get(), knockbackResistance.get()
+        ));
+    }
+
+    public static Holder<ArmorMaterial> register(String name, Supplier<ArmorMaterial> armorMaterial) {
+        return ARMOR_MATERIALS.register(name, armorMaterial);
+    }
 }

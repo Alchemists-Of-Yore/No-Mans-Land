@@ -120,7 +120,7 @@ public class NMLItems {
     public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
             () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(NMLConfig.DURABILITY_VALUE.get()).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
     public static final ItemDefinition<Item> ANCIENT_BRONZE_MASK = register("ancient_bronze_mask",
-            () -> new ArmorItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).rarity(Rarity.RARE)));
+            () -> new ArmorItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).rarity(Rarity.RARE).component(NMLDataComponents.PUNCH_COOLDOWN, 0).component(NMLDataComponents.PUNCH_COUNT, 0)));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));

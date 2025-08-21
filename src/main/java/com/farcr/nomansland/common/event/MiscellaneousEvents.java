@@ -13,6 +13,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.items.NMLArmorMaterials;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
@@ -37,7 +38,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
@@ -67,6 +70,7 @@ import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -355,33 +359,48 @@ public class MiscellaneousEvents {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
         float damage = event.getAmount();
-        ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (!stack.isEmpty() && stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
+
+        ItemStack chestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (chestplate.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
             Vec3 vec32 = source.getSourcePosition();
             if (vec32 != null) {
                 Vec3 vec3 = entity.calculateViewVector(0.0F, entity.getYHeadRot());
                 Vec3 vec31 = vec32.vectorTo(entity.position());
                 vec31 = new Vec3(vec31.x, 0.0, vec31.z).normalize();
                 if (!source.is(DamageTypeTags.BYPASSES_SHIELD) && vec31.dot(vec3) > 0.0) {
-                    if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
+                    if (chestplate.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
                         return;
                     if (entity instanceof Player playerReal)
-                        playerReal.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                        playerReal.awardStat(Stats.ITEM_USED.get(chestplate.getItem()));
                     if (damage >= 3.0F) {
                         int damageToItem = 1 + Mth.floor(damage);
                         InteractionHand interactionhand = entity.getUsedItemHand();
-                        if (MiscellaneousEvents.isTortoiseShellDisabled(stack, entity))
-                            stack.hurtAndBreak(damageToItem, entity, EquipmentSlot.CHEST);
-                        if (stack.isEmpty()) {
+                        if (MiscellaneousEvents.isTortoiseShellDisabled(chestplate, entity))
+                            chestplate.hurtAndBreak(damageToItem, entity, EquipmentSlot.CHEST);
+                        if (chestplate.isEmpty()) {
                             entity.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
                             entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BREAK, SoundSource.NEUTRAL, 1.0F, 0.2F);
                         }
                     }
-                    event.setCanceled(MiscellaneousEvents.isTortoiseShellDisabled(stack, entity));
-                    MiscellaneousEvents.disableTortoiseShell(source, entity, stack);
+                    event.setCanceled(MiscellaneousEvents.isTortoiseShellDisabled(chestplate, entity));
+                    MiscellaneousEvents.disableTortoiseShell(source, entity, chestplate);
                     if (event.isCanceled()) {
                         entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 1.0F, 0.2F);
                     }
+                }
+            }
+        }
+
+        ItemStack helmet = entity.getItemBySlot(EquipmentSlot.HEAD);
+        if (helmet.is(NMLItems.ANCIENT_BRONZE_MASK)) {
+            if (source.getEntity() instanceof Player) {
+                int punchCount = helmet.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0);
+                if (punchCount >= 4) {
+                    entity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                    entity.spawnAtLocation(helmet.copy());
+                } else {
+                    helmet.set(NMLDataComponents.PUNCH_COUNT, punchCount + 1);
+                    helmet.set(NMLDataComponents.PUNCH_COOLDOWN, 100);
                 }
             }
         }
@@ -394,6 +413,22 @@ public class MiscellaneousEvents {
         if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
             if (entity.isCrouching()) {
                 event.setStrength(0.0F);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityTick(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof LivingEntity entity) {
+            ItemStack stack = entity.getItemBySlot(EquipmentSlot.HEAD);
+            if (stack.is(NMLItems.ANCIENT_BRONZE_MASK)) {
+                int punchCooldown = stack.getOrDefault(NMLDataComponents.PUNCH_COOLDOWN, 0);
+                if (punchCooldown > 0)
+                    stack.set(NMLDataComponents.PUNCH_COOLDOWN, punchCooldown - 1);
+                else if (stack.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0) > 0)
+                    stack.set(NMLDataComponents.PUNCH_COUNT, 0);
+
+                if (entity instanceof Enemy) entity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 200, 0, false, true, true));
             }
         }
     }

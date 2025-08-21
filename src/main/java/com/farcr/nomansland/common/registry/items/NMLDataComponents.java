@@ -13,4 +13,13 @@ public class NMLDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> TIME_WHEN_DISABLED = DATA_COMPONENTS.registerComponentType(
             "time_when_disabled", builder -> builder
                     .persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PUNCH_COOLDOWN = DATA_COMPONENTS.registerComponentType(
+            "punch_cooldown", builder -> builder
+                    .persistent(Codec.INT));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PUNCH_COUNT= DATA_COMPONENTS.registerComponentType(
+            "punch_count", builder -> builder
+                    .persistent(Codec.INT));
+
 }
