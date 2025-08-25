@@ -25,4 +25,7 @@ public class NMLModelLayers {
 
     public static final ModelLayerLocation TORTOISE_LAYER = new ModelLayerLocation(
             NoMansLand.location("tortoise"), "main");
+
+    public static final ModelLayerLocation TORTOISE_SHELL_LAYER = new ModelLayerLocation(NoMansLand.location("tortoise_shell"),
+            "main");
 }

@@ -3,10 +3,7 @@ package com.farcr.nomansland.client.event;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
-import com.farcr.nomansland.client.model.BillhookBassModel;
-import com.farcr.nomansland.client.model.BuriedModel;
-import com.farcr.nomansland.client.model.GooseModel;
-import com.farcr.nomansland.client.model.TortoiseModel;
+import com.farcr.nomansland.client.model.*;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.client.particle.*;
@@ -14,9 +11,17 @@ import com.farcr.nomansland.client.renderer.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.farcr.nomansland.common.registry.items.NMLItems;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,6 +30,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 @SuppressWarnings("unused")
@@ -76,6 +82,7 @@ public class ClientSetupEvents {
 
         event.registerLayerDefinition(NMLModelLayers.GOOSE_LAYER, GooseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.TORTOISE_LAYER, TortoiseModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.TORTOISE_SHELL_LAYER, TortoiseShellModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -92,6 +99,21 @@ public class ClientSetupEvents {
                 return FLOWING_RESIN_OIL;
             }
         }, NMLFluids.RESIN_OIL_TYPE.get());
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public TortoiseShellModel getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+                return new TortoiseShellModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(NMLModelLayers.TORTOISE_SHELL_LAYER));
+            }
+
+            @Override
+            public void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+                TortoiseShellModel<?> tortoiseShellModel = (TortoiseShellModel) model;
+                if (livingEntity.isCrouching()) {
+                    tortoiseShellModel.tortoiseShell.xRot = 0.5F;
+                    tortoiseShellModel.tortoiseShell.z = 10.5F;
+                }
+            }
+        }, NMLItems.TORTOISE_SHELL.get());
     }
 
     @SubscribeEvent

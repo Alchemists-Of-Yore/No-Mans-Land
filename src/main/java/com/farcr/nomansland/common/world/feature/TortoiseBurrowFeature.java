@@ -3,9 +3,13 @@ package com.farcr.nomansland.common.world.feature;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
@@ -16,7 +20,9 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configuration> {
     private static final BlockState AIR = Blocks.CAVE_AIR.defaultBlockState();
@@ -37,59 +43,100 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
         BlockPos.MutableBlockPos blockpos = context.origin().mutable();
         WorldGenLevel worldgenlevel = context.level();
         RandomSource randomsource = context.random();
-        boolean tortoiseSpawned = false;
         TortoiseBurrowFeature.Configuration configuration = context.config();
         BlockState blockToPlace = configuration.validBlocks().get(randomsource.nextInt(configuration.validBlocks().size())).getState(randomsource, blockpos);
         if (!canPlace(worldgenlevel, blockpos)) {
             return false;
         } else {
-            final double radiusX = 5.0D;
-            final double radiusY = 5.0D;
-            final double radiusZ = 5.0D;
-            for (int x = -8; x < 8; x++) {
-                for (int y = -4; y < 4; y++) {
-                    for (int z = -8; z < 8; z++) {
-                        double dX = (x) / (radiusX / 2.0);
-                        double dY = (y) / (radiusY / 2.0);
-                        double dZ = (z) / (radiusZ / 2.0);
-                        double distance = (dX * dX) + (dY * dY) + (dZ * dZ);
-                        BlockPos.MutableBlockPos selectedPos = blockpos.offset(x, y, z).mutable();
-                        BlockState currentState = worldgenlevel.getBlockState(selectedPos);
-                        if (distance < 1.0D) {
-                            if (this.canReplaceBlock(currentState)) {
-                                boolean isTopLayer = y >= 0.0D;
-                                if (!isTopLayer) {
-                                    worldgenlevel.setBlock(selectedPos, blockToPlace, 2);
-                                } else {
-                                    worldgenlevel.setBlock(selectedPos, AIR, 2);
-                                    if (worldgenlevel.getBlockState(selectedPos.below()) == blockToPlace && randomsource.nextInt(5) == 0)
-                                        worldgenlevel.setBlock(selectedPos, NMLBlocks.CAVE_WEEDS.get().defaultBlockState(), 2);
-                                    if (!tortoiseSpawned) {
-                                        Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
-                                        tortoiseSpawned = true;
-                                        tortoise.moveTo(blockpos.getX(), blockpos.getY(), blockpos.getZ(), 0, 0);
-                                        tortoise.setHomePos(blockpos);
-                                        worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
-                                    }
-                                }
+            boolean tortoiseSpawned = false;
+            List<BlockPos> filledPos = new ArrayList<>();
+            Direction direction = findEntranceDirection(worldgenlevel, blockpos);
+            if (direction == null)
+                return false;
+            else
+                direction = direction.getOpposite();
+            for (int offsetPos = 0; offsetPos < randomsource.nextIntBetweenInclusive(3, 5); offsetPos++) {
+                BlockPos offsetBlockPos = blockpos.relative(direction, offsetPos);
+                if (!isAdjacentToAir(worldgenlevel::getBlockState, offsetBlockPos)) {
+                    filledPos.add(offsetBlockPos);
+                }
+            }
+            if (!filledPos.isEmpty() && filledPos.size() > 2) {
+                for (int listEntry = 0; listEntry < filledPos.size(); listEntry++) {
+                    BlockPos listedPos = filledPos.get(listEntry);
+                    if (listedPos != filledPos.getFirst())
+                        listedPos = listedPos.relative(direction, 4);
+
+                    if (listedPos != filledPos.getLast()) {
+                        this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, Blocks.STONE.defaultBlockState(), randomsource);
+                    }
+                    BlockPos turtleSpawnPos = filledPos.getLast().relative(direction, 4).below();
+                    if (!tortoiseSpawned) {
+                        Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
+                        tortoiseSpawned = true;
+                        tortoise.moveTo(turtleSpawnPos.getX(), turtleSpawnPos.getY(), turtleSpawnPos.getZ(), 0, 0);
+                        tortoise.setHomePos(turtleSpawnPos);
+                        worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
+                    }
+                    this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource);
+                    Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private Direction findEntranceDirection(WorldGenLevel level, BlockPos pos) {
+        for (Direction direction : Direction.values()) {
+            if (direction.getAxis().isHorizontal()) {
+                for (int offsetPos = 0; offsetPos < 4; offsetPos++) {
+                    BlockPos airPos = pos.relative(direction, 4);
+                    if (level.isEmptyBlock(airPos)) {
+                        return direction;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource) {
+        for (int x = -8; x < 8; x++) {
+            for (int y = -4; y < 4; y++) {
+                for (int z = -8; z < 8; z++) {
+                    double dX = (x) / (radiusX / 2.0);
+                    double dY = (y) / (radiusY / 2.0);
+                    double dZ = (z) / (radiusZ / 2.0);
+                    double distance = (dX * dX) + (dY * dY) + (dZ * dZ);
+                    BlockPos.MutableBlockPos selectedPos = origin.offset(x, y, z).mutable();
+                    BlockState currentState = level.getBlockState(selectedPos);
+                    if (distance < 1.0D) {
+                        if (this.canReplaceBlock(currentState)) {
+                            boolean isTopLayer = y >= 0.0D;
+                            if (!isTopLayer) {
+                                level.setBlock(selectedPos, blockToPlace, 2);
+                            } else {
+                                level.setBlock(selectedPos, AIR, 2);
+                                if (level.getBlockState(selectedPos.below()) == blockToPlace && randomSource.nextInt(5) == 0)
+                                    level.setBlock(selectedPos, NMLBlocks.CAVE_WEEDS.get().defaultBlockState(), 2);
                             }
                         }
                     }
                 }
             }
-        //    Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(blockpos.toString()), false);
-            return true;
         }
     }
 
     private boolean canPlace(WorldGenLevel level, BlockPos origin) {
         int openingCount = 0;
         for (int x = -2; x <= 2; x++) {
-            for (int y = -1; y < 4; y++) {
+            for (int y = -4; y < 4; y++) {
                 for (int z = -2; z <= 2; z++) {
                     BlockPos currentPos = origin.offset(x, y, z);
                     boolean isSolid = level.getBlockState(currentPos).isSolid() && level.getBlockState(currentPos).getFluidState().isEmpty();
-                    if (((y == -1 || y == 4) && !isSolid) || !level.getBlockState(currentPos).getFluidState().isEmpty()) {
+                    if (((y == -4 || y == 4) && !isSolid) || !level.getBlockState(currentPos).getFluidState().isEmpty()) {
                         return false;
                     }
                     if ((x == -2 || x == 2 || z == -2 || z == 2)
