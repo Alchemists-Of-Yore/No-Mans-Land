@@ -192,6 +192,7 @@ public class CreativeModeTabHandler {
             insertAfter(Items.LILY_PAD, NMLItems.DUCKWEED);
             insertAfter(Items.LILY_PAD, NMLItems.WATER_MOSAIC);
             insertAfter(Items.HANGING_ROOTS, BEARD_MOSS);
+            insertAfter(Items.PINK_PETALS, GROUND_IVY);
             insertAfter(Items.PINK_PETALS, CLOVER_PATCH);
             insertAfter(Items.PINK_PETALS, RED_FLOWERBED);
             insertAfter(Items.PINK_PETALS, YELLOW_FLOWERBED);
@@ -272,6 +273,8 @@ public class CreativeModeTabHandler {
             insertBefore(Items.MANGROVE_LEAVES, WILLOW_LEAVES);
             insertBefore(Items.MANGROVE_PROPAGULE, WILLOW_SAPLING);
 
+            insertAfter(Items.BLUE_ICE, ICICLES);
+
         }
 
         if (tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
@@ -345,19 +348,25 @@ public class CreativeModeTabHandler {
             insertAfter(Items.DARK_OAK_CHEST_BOAT, WALNUT_BOAT);
             insertAfter(Items.SALMON_BUCKET, BILLHOOK_BASS_BUCKET);
             insertAfter(Items.ELYTRA, WARDING_EFFIGY);
+            insertAfter(Items.ELYTRA, LIVING_URN);
 //            insertAfter(Items.TROPICAL_FISH_BUCKET, CAVE_CARP_BUCKET);
             if (!event.getFlags().contains(FeatureFlags.BUNDLE)) event.insertBefore(Items.FLINT_AND_STEEL.getDefaultInstance(), Items.BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
 
         if (tab == CreativeModeTabs.COMBAT) {
+            insertAfter(Items.WIND_CHARGE, INK_BOMB);
             insertAfter(Items.WIND_CHARGE, FIREBOMB);
+            insertAfter(Items.SNOWBALL, LIVING_URN);
             insertBefore(Items.TNT, EXPLOSIVE);
             insertAfter(Items.EGG, RESIN_OIL_BOTTLE);
+            insertAfter(Items.TURTLE_HELMET, TORTOISE_SHELL);
+            insertAfter(Items.SPECTRAL_ARROW, INCENDIARY_ARROW);
         }
 
         if (tab == CreativeModeTabs.INGREDIENTS) {
             insertAfter(Items.HONEYCOMB, RESIN);
             insertAfter(RESIN.asItem(), RESIN_OIL_BOTTLE);
+            insertAfter(Items.TURTLE_SCUTE, STURDY_SCUTE);
         }
 
         if (tab == CreativeModeTabs.REDSTONE_BLOCKS) {
