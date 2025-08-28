@@ -79,7 +79,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                     }
                     this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource);
-                    Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                    System.out.println(Component.literal(turtleSpawnPos.toString()).getString());
                 }
                 return true;
             } else {
