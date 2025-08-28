@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": ["minecraft:jungle", "minecraft:bamboo_jungle", "#minecraft:is_badlands"],
+  "spawners": [
+    {
+      "type": "nomansland:tortoise",
+      "weight": 6, 
+      "minCount": 1, 
+      "maxCount": 2 
+    }
+  ]
+}
