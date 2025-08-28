@@ -253,6 +253,8 @@ public class CreativeModeTabHandler {
             insertAfter(Items.HAY_BLOCK, PEAR_CRATE);
             insertAfter(Items.HAY_BLOCK, APPLE_CRATE);
 
+            insertAfter(Items.TURTLE_EGG, TORTOISE_EGGS);
+
 //            event.accept(REMAINS);
 
             insertAfter(Items.SPRUCE_LOG, PINE.log());
