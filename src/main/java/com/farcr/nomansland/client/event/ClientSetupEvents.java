@@ -103,13 +103,13 @@ public class ClientSetupEvents {
         }, NMLFluids.RESIN_OIL_TYPE.get());
         event.registerItem(new IClientItemExtensions() {
             @Override
-            public TortoiseShellModel<LivingEntity> getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+            public TortoiseShellModel getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                 return new TortoiseShellModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(NMLModelLayers.TORTOISE_SHELL_LAYER));
             }
 
             @Override
             public void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-                TortoiseShellModel<LivingEntity> tortoiseShellModel = (TortoiseShellModel<LivingEntity>) model;
+                TortoiseShellModel<?> tortoiseShellModel = (TortoiseShellModel) model;
                 if (livingEntity.isCrouching()) {
                     tortoiseShellModel.tortoiseShell.xRot = 0.5F;
                     tortoiseShellModel.tortoiseShell.z = 10.5F;
