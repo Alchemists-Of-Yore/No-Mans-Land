@@ -134,13 +134,13 @@ public class NMLItems {
             () -> new DeferredSpawnEggItem(NMLEntities.BILLHOOK_BASS, 6443553, 11236417, new Properties()));
 
     public static final ItemDefinition<Item> TORTOISE_SPAWN_EGG = register("tortoise_spawn_egg", // TODO: color
-            () -> new DeferredSpawnEggItem(NMLEntities.TORTOISE, 4335898, 2497045, new Properties()));
+            () -> new DeferredSpawnEggItem(NMLEntities.TORTOISE, 3681313, 7098676, new Properties()));
 
     public static final ItemDefinition<Item> DEER_SPAWN_EGG = register("deer_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.DEER, 8412743, 12828347, new Properties()));
 
-//    public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
-//            () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
+    public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
 
     public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 5323048, 2694937, new Properties()));
