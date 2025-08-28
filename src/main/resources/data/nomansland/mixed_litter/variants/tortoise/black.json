@@ -1,0 +1,12 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:tortoise",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "nomansland:downfall_isle"
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/tortoise/black"
+  }
+}

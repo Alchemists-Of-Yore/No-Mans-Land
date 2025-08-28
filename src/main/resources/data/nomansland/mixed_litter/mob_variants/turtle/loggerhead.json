@@ -1,6 +1,0 @@
-{
-  "type": "mixed_litter:turtle",
-  "texture": "nomansland:entity/mob_variants/turtle/loggerhead_sea_turtle",
-  "biomes": "#nomansland:entity/spawns_loggerhead_turtles"
-
-}

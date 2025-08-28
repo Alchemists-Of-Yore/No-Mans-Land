@@ -1,0 +1,11 @@
+{
+  "type": "mixed_litter:sheep",
+  "group": "mixed_litter:remodeled_sheep",
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/sheep/sheep_pale",
+    "baby_texture": "nomansland:entity/mob_variants/sheep/sheep_pale_baby",
+    "fur_texture": "nomansland:entity/mob_variants/sheep/sheep_fur",
+    "baby_fur_texture": "nomansland:entity/mob_variants/sheep/sheep_baby_fur",
+    "sheared_fur_texture": "nomansland:entity/mob_variants/sheep/sheep_sheared_fur"
+  }
+}

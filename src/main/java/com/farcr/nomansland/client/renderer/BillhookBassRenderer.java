@@ -1,23 +1,18 @@
 package com.farcr.nomansland.client.renderer;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.model.BillhookBassModel;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
-import com.farcr.nomansland.common.entity.billhook_bass.BillhookBassVariant;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import dev.tazer.mixed_litter.MLRegistries;
-import dev.tazer.mixed_litter.variants.MobVariant;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-
-import static dev.tazer.mixed_litter.VariantUtil.getVariants;
 
 @OnlyIn(Dist.CLIENT)
 public class BillhookBassRenderer extends MobRenderer<BillhookBass, BillhookBassModel<BillhookBass>> {
@@ -46,18 +41,6 @@ public class BillhookBassRenderer extends MobRenderer<BillhookBass, BillhookBass
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(BillhookBass billhookBass) {
-        BillhookBassVariant variant = null;
-
-        for (Holder<MobVariant> animalVariantHolder : getVariants(billhookBass, billhookBass.level())) {
-            if (animalVariantHolder.value() instanceof BillhookBassVariant billhookBassVariant) {
-                variant = billhookBassVariant;
-                break;
-            }
-        }
-
-        if (variant == null) variant = (BillhookBassVariant) billhookBass.registryAccess().registryOrThrow(MLRegistries.ANIMAL_VARIANT_KEY).holders()
-                .filter(mobVariantReference -> mobVariantReference.value() instanceof BillhookBassVariant).findAny().orElseThrow().value();
-        ResourceLocation texture = variant.texture;
-        return texture.withPath(path -> "textures/" + path + ".png");
+        return NoMansLand.location("textures/entity/billhook_bass/billhook_bass_amberscale.png");
     }
 }

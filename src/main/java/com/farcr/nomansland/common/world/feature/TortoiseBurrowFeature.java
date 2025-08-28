@@ -3,15 +3,14 @@ package com.farcr.nomansland.common.world.feature;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
-import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +21,6 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvi
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configuration> {
     private static final BlockState AIR = Blocks.CAVE_AIR.defaultBlockState();
@@ -75,6 +73,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
                         tortoiseSpawned = true;
                         tortoise.moveTo(turtleSpawnPos.getX(), turtleSpawnPos.getY(), turtleSpawnPos.getZ(), 0, 0);
+                        tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
                         tortoise.setHomePos(turtleSpawnPos);
                         worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                     }

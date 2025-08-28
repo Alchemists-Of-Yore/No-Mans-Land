@@ -1,6 +1,0 @@
-{
-  "type": "mixed_litter:fox",
-  "texture": "nomansland:entity/mob_variants/fox/cream_fox",
-  "sleeping_texture": "nomansland:entity/mob_variants/fox/cream_fox_sleep",
-  "biomes": "#nomansland:entity/spawns_cream_foxes"
-}

@@ -1,0 +1,10 @@
+{
+  "conditions": {
+    "entity_predicate": {
+      "type": "dolphin"
+    }
+  },
+  "exclusive": true,
+  "selection": "weighted",
+  "conflicts": "mixed_litter:default"
+}

@@ -1,0 +1,8 @@
+{
+  "type": "mixed_litter:ageable_texture",
+  "group": "mixed_litter:remodeled_pigs",
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/pig/pig_brown",
+    "baby_texture": "nomansland:entity/mob_variants/pig/pig_brown_baby"
+  }
+}

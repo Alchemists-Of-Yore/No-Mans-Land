@@ -1,0 +1,13 @@
+{
+  "type": "mixed_litter:ageable_texture",
+  "group": "mixed_litter:remodeled_cows",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "#nomansland:entity/spawns_fluffy_cows"
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/cow/cow_highland",
+    "baby_texture": "nomansland:entity/mob_variants/cow/cow_highland_baby"
+  }
+}

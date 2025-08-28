@@ -1,0 +1,8 @@
+{
+  "type": "mixed_litter:ageable_texture",
+  "group": "mixed_litter:remodeled_cows",
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/cow/cow_belted",
+    "baby_texture": "nomansland:entity/mob_variants/cow/cow_belted_baby"
+  }
+}

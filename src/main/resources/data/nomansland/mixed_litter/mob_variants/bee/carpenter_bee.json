@@ -1,9 +1,0 @@
-{
-  "type": "mixed_litter:bee",
-  "texture": "nomansland:entity/mob_variants/bee/carpenter_bee",
-  "angry_texture": "nomansland:entity/mob_variants/bee/carpenter_bee_angry",
-  "nectar_texture": "nomansland:entity/mob_variants/bee/carpenter_bee_nectar",
-  "angry_nectar_texture": "nomansland:entity/mob_variants/bee/carpenter_bee_angry_nectar",
-  "stinger_texture": "nomansland:entity/mob_variants/bee/carpenter_bee_stinger",
-  "biomes": "#minecraft:is_jungle"
-}

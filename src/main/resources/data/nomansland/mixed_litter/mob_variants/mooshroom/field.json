@@ -1,6 +1,0 @@
-{
-  "type": "mixed_litter:mooshroom",
-  "texture": "nomansland:entity/mob_variants/mooshroom/mooshroom_field",
-  "baby_texture": "nomansland:entity/mob_variants/mooshroom/mooshroom_field_baby",
-  "mushroom": "nomansland:field_mushroom"
-}

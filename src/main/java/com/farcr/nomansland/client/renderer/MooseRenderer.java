@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 
 // todo: texture variants
 public class MooseRenderer extends MobRenderer<Moose, MooseModel<Moose>> {
-    private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/moose/moose_brown.png");
 
     public MooseRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new MooseModel<>(pContext.bakeLayer(NMLModelLayers.MOOSE_LAYER)), 1f);
@@ -20,6 +19,6 @@ public class MooseRenderer extends MobRenderer<Moose, MooseModel<Moose>> {
 
     @Override
     public ResourceLocation getTextureLocation(Moose pEntity) {
-        return TEXTURE;
+        return NoMansLand.location("textures/entity/moose/moose_brown.png");
     }
 }

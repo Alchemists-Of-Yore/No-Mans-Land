@@ -161,7 +161,6 @@ public class Tortoise extends Animal {
         this.setTimesFedWhenBaby(compound.getInt("TimesFed"));
     }
 
-    @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         if (spawnType == MobSpawnType.STRUCTURE)

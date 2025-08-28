@@ -55,9 +55,9 @@
     "integration.VanillaFluidTargetsMixin"
   ],
   "client": [
+    "client.CapeRenderLayerMixin",
     "client.LevelRendererMixin",
-    "client.SkinManagerMixin",
-    "client.CapeRenderLayerMixin"
+    "client.SkinManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

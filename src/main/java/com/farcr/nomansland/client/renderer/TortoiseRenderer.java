@@ -32,7 +32,6 @@ public class TortoiseRenderer extends MobRenderer<Tortoise, TortoiseModel<Tortoi
 
     @Override
     public ResourceLocation getTextureLocation(Tortoise tortoise) {
-        return NoMansLand.location("textures/entity/tortoise/green.png");
-
+        return NoMansLand.location("textures/entity/tortoise/brown.png");
     }
 }

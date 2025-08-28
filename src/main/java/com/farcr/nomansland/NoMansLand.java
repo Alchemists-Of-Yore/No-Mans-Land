@@ -54,7 +54,6 @@ public class NoMansLand {
         NMLFallenTreeDecoratorTypes.FALLEN_TREE_DECORATOR_TYPES.register(modEventBus);
         NMLFogModifiers.FOG_MODIFIERS.register(modEventBus);
         NMLMobVariants.FROG_VARIANTS.register(modEventBus);
-        NMLMobVariants.MOB_VARIANT_TYPES.register(modEventBus);
         NMLEffects.MOB_EFFECTS.register(modEventBus);
         NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(modEventBus);
         NMLCriteriaTriggers.TRIGGERS.register(modEventBus);

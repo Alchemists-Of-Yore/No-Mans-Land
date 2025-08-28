@@ -13,11 +13,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 public class TortoiseShellItem extends ArmorItem {
     public TortoiseShellItem(Holder<ArmorMaterial> material, Type type, Properties properties) {
