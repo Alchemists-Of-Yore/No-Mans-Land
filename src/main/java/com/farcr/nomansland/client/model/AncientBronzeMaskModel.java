@@ -13,14 +13,14 @@ public class AncientBronzeMaskModel<T extends LivingEntity> extends HumanoidMode
     }
 
     public static LayerDefinition createBodyLayer() {
-        MeshDefinition mesh = HumanoidModel.createMesh(CubeDeformation.NONE, 0.0f);
+        MeshDefinition mesh = HumanoidModel.createMesh(CubeDeformation.NONE, 0);
         PartDefinition root = mesh.getRoot();
         PartDefinition head = root.getChild("head");
 
         head.addOrReplaceChild("mask",
                 CubeListBuilder.create()
-                        .texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, new CubeDeformation(0.50F))
-                        .texOffs(32, 0).addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, new CubeDeformation(0.80F)),
+                        .texOffs(0, 0).addBox(-4, -8, -4, 8, 8, 8, new CubeDeformation(0.5F))
+                        .texOffs(32, 0).addBox(-4, -8, -4, 8, 8, 8, new CubeDeformation(0.8F)),
                 PartPose.ZERO
         );
         return LayerDefinition.create(mesh, 64, 64);

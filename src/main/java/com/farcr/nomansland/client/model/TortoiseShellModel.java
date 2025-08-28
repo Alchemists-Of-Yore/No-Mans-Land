@@ -12,7 +12,7 @@ public class TortoiseShellModel<T extends Entity> extends EntityModel<T> {
     public final ModelPart tortoiseShell;
 
     public TortoiseShellModel(ModelPart root) {
-        this.tortoiseShell = root.getChild("tortoise_shell");
+        tortoiseShell = root.getChild("tortoise_shell");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -32,6 +32,6 @@ public class TortoiseShellModel<T extends Entity> extends EntityModel<T> {
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        this.tortoiseShell.render(poseStack, buffer, packedLight, packedOverlay);
+        tortoiseShell.render(poseStack, buffer, packedLight, packedOverlay);
     }
 }

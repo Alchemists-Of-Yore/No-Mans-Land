@@ -3,7 +3,8 @@ package com.farcr.nomansland.common.item;
 import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
 import com.farcr.nomansland.common.registry.NMLSounds;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -15,13 +16,8 @@ public class InkBombItem extends ThrowableBombItem {
     }
 
     @Override
-    public ThrowableBombEntity createBomb(LivingEntity entity, Level level) {
-        return new InkBomb(entity, level);
-    }
-
-    @Override
-    public ThrowableBombEntity createBomb(Level level, BlockPos pos) {
-        return new InkBomb(level, pos.getX(), pos.getY(), pos.getZ());
+    public ThrowableBombEntity asProjectile(Level level, Position position, ItemStack itemStack, Direction direction) {
+        return new InkBomb(level, position.x(), position.y(), position.z());
     }
 
     @Override

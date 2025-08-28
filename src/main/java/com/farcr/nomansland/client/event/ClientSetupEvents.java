@@ -15,6 +15,7 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +26,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -100,15 +102,14 @@ public class ClientSetupEvents {
                 return FLOWING_RESIN_OIL;
             }
         }, NMLFluids.RESIN_OIL_TYPE.get());
+
         event.registerItem(new IClientItemExtensions() {
-            @Override
-            public TortoiseShellModel getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+            public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                 return new TortoiseShellModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(NMLModelLayers.TORTOISE_SHELL_LAYER));
             }
 
-            @Override
             public void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-                TortoiseShellModel<?> tortoiseShellModel = (TortoiseShellModel) model;
+                TortoiseShellModel<?> tortoiseShellModel = (TortoiseShellModel<?>) model;
                 if (livingEntity.isCrouching()) {
                     tortoiseShellModel.tortoiseShell.xRot = 0.5F;
                     tortoiseShellModel.tortoiseShell.z = 10.5F;
@@ -117,15 +118,13 @@ public class ClientSetupEvents {
         }, NMLItems.TORTOISE_SHELL.get());
 
         event.registerItem(new IClientItemExtensions() {
-            @Override
             public @NotNull HumanoidModel<?> getHumanoidArmorModel(@NotNull LivingEntity entity, @NotNull ItemStack stack, @NotNull EquipmentSlot slot, @NotNull HumanoidModel<?> original) {
                 if (slot != EquipmentSlot.HEAD) return original;
 
-                var baked = Minecraft.getInstance().getEntityModels()
-                        .bakeLayer(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER);
-                var model = new AncientBronzeMaskModel<LivingEntity>(baked);
+                ModelPart baked = Minecraft.getInstance().getEntityModels().bakeLayer(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER);
+                HumanoidModel<?> model = new AncientBronzeMaskModel<>(baked);
 
-                net.neoforged.neoforge.client.ClientHooks.copyModelProperties(original, model);
+                ClientHooks.copyModelProperties(original, model);
                 return model;
             }
         }, NMLItems.ANCIENT_BRONZE_MASK.get());

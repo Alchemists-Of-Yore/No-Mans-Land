@@ -3,7 +3,8 @@ package com.farcr.nomansland.common.item;
 import com.farcr.nomansland.common.entity.bombs.Firebomb;
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
 import com.farcr.nomansland.common.registry.NMLSounds;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -15,13 +16,8 @@ public class FirebombItem extends ThrowableBombItem {
     }
 
     @Override
-    public ThrowableBombEntity createBomb(LivingEntity entity, Level level) {
-        return new Firebomb(entity, level);
-    }
-
-    @Override
-    public ThrowableBombEntity createBomb(Level level, BlockPos pos) {
-        return new Firebomb(level, pos.getX(), pos.getY(), pos.getZ());
+    public ThrowableBombEntity asProjectile(Level level, Position position, ItemStack itemStack, Direction direction) {
+        return new Firebomb(level, position.x(), position.y(), position.z());
     }
 
     @Override
