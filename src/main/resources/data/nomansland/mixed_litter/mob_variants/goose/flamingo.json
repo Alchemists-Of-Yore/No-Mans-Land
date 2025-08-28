@@ -1,0 +1,5 @@
+{
+  "type": "nomansland:goose",
+  "texture": "nomansland:entity/goose/goose_flamingo",
+  "biomes": "#nomansland:entity/spawns_wild_chickens"
+}

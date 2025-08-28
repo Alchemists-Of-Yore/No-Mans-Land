@@ -1,10 +1,10 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": ["minecraft:sparse_jungle", "minecraft:savanna", "minecraft:savanna_plateau", "minecraft:windswept_savanna", "minecraft:plains", "minecraft:sunflower_plains", "minecraft:desert"],
+  "biomes": ["minecraft:sparse_jungle", "minecraft:savanna", "minecraft:savanna_plateau", "minecraft:windswept_savanna", "minecraft:plains", "nomansland:prairie", "minecraft:desert", "minecraft:wooded_badlands"],
   "spawners": [
     {
       "type": "nomansland:tortoise",
-      "weight": 2, 
+      "weight": 1, 
       "minCount": 1, 
       "maxCount": 1 
     }
