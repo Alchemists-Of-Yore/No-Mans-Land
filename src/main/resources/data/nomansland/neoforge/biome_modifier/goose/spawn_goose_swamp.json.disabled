@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#c:is_swamp",
+  "spawners": [
+    {
+      "type": "nomansland:goose",
+      "weight": 8, 
+      "minCount": 1, 
+      "maxCount": 4 
+    }
+  ]
+}
