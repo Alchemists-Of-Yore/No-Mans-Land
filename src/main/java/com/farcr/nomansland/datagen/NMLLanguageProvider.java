@@ -107,5 +107,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("block.nomansland.maple_syrup_cauldron", "Cauldron Filled with Maple Syrup");
         add("block.nomansland.resin_oil_cauldron", "Cauldron Filled with Resin Oil");
         add("block.nomansland.milk_cauldron", "Cauldron Filled with Milk");
+        add("design.nomansland.tortoise.sandy", "Sandy");
+        add("design.nomansland.tortoise.green", "Green");
+        add("design.nomansland.tortoise.gray", "Gray");
     }
 }
