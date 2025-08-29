@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "nomansland:deer",
   "arguments": {
-    "texture": "nomansland:entity/deer/deer_light",
+    "texture": "nomansland:entity/deer/deer_dark_brown",
     "baby_texture": "nomansland:entity/deer/deer_baby"
   }
 }

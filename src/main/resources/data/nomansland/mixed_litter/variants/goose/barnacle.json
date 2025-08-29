@@ -1,0 +1,7 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:goose",
+  "arguments": {
+    "texture": "nomansland:entity/goose/goose_barnacle"
+  }
+}
