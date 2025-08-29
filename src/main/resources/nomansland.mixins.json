@@ -21,7 +21,6 @@
     "FlowerBlockMixin",
     "FrogMixin",
     "LadderBlockMixin",
-    "LeavesBlockMixin",
     "LeaveVineDecoratorMixin",
     "LivingEntityMixin",
     "MinecraftServerMixin",

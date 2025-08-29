@@ -498,7 +498,7 @@ public class NMLBlocks {
                     .dynamicShape()
                     ,FruitType.APPLE_OAK), BlockProperties.custom(false));
 
-    public static final BlockDefinition<Block> APPLE_FRUIT_LEAVES = register("apple_fruit_leaves",
+    public static final BlockDefinition<Block> APPLE_FRUIT_LEAVES = registerNoItem("apple_fruit_leaves",
             () -> new FruitLeavesBlock(ofFullCopy(Blocks.OAK_LEAVES).isViewBlocking((s, g, p) -> false).isSuffocating(((s, g, p) -> false)), FruitType.APPLE_OAK));
 
     public static final BlockDefinition<Block> PEAR_FRUIT = registerNoItem("pear",
@@ -512,7 +512,7 @@ public class NMLBlocks {
                     .dynamicShape()
                     ,FruitType.PEAR_AUTUMNAL_OAK), BlockProperties.custom(false));
 
-    public static final BlockDefinition<Block> PEAR_FRUIT_LEAVES = register("pear_fruit_leaves",
+    public static final BlockDefinition<Block> PEAR_FRUIT_LEAVES = registerNoItem("pear_fruit_leaves",
             () -> new FruitLeavesBlock(ofFullCopy(NMLBlocks.AUTUMNAL_OAK_LEAVES.get()).isViewBlocking((s, g, p) -> false).isSuffocating(((s, g, p) -> false)), FruitType.PEAR_AUTUMNAL_OAK));
 
     //Eggs

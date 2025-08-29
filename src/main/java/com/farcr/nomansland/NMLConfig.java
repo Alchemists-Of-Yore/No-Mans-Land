@@ -214,9 +214,9 @@ public class NMLConfig {
                 .comment("The chance a buried is spawned upon brushing a remains block.")
                 .comment("This chance is multiplied by 4 when the block is broken and by 10 when the block falls.")
                 .defineInRange("buriedSpawningChance", 0.05, 0, 1);
-        WALK_THROUGH_LEAVES = COMMON_BUILDER
-                .comment("If leaves can be walked through slowly")
-                .define("walkThroughLeaves", true);
+//        WALK_THROUGH_LEAVES = COMMON_BUILDER
+//                .comment("If leaves can be walked through slowly")
+//                .define("walkThroughLeaves", true);
         COMMON_BUILDER.pop();
 
         COMMON_CONFIG = COMMON_BUILDER.build();
