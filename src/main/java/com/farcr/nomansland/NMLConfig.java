@@ -51,6 +51,7 @@ public class NMLConfig {
     public static ModConfigSpec.IntValue MAX_FLOATING_RAILS;
     public static final String CATEGORY_MISC = "miscellaneous";
     public static ModConfigSpec.DoubleValue BURIED_SPAWNING_CHANCE;
+    public static ModConfigSpec.BooleanValue WALK_THROUGH_LEAVES;
 
     public static ModConfigSpec CLIENT_CONFIG;
     public static final String CATEGORY_FOG_MODIFIERS = "fog_modifiers";
@@ -213,6 +214,9 @@ public class NMLConfig {
                 .comment("The chance a buried is spawned upon brushing a remains block.")
                 .comment("This chance is multiplied by 4 when the block is broken and by 10 when the block falls.")
                 .defineInRange("buriedSpawningChance", 0.05, 0, 1);
+        WALK_THROUGH_LEAVES = COMMON_BUILDER
+                .comment("If leaves can be walked through slowly")
+                .define("walkThroughLeaves", true);
         COMMON_BUILDER.pop();
 
         COMMON_CONFIG = COMMON_BUILDER.build();
@@ -237,13 +241,21 @@ public class NMLConfig {
         CLIENT_CONFIG = CLIENT_BUILDER.build();
 
         ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
+
         STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
-        DURABILITY_VALUE= STARTUP_BUILDER.defineInRange("Tortoise durability value", 275, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        ARMOR_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor value", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor toughness value", 3.0F, -999, 999);
-        SPEED_REDUCTION_VALUE = STARTUP_BUILDER.defineInRange("Tortoise armor speed value", -0.30F, -999, 999);
-        KNOCKBACK_RESISTANCE_VALUE = STARTUP_BUILDER.defineInRange("Tortoise knockback resistance value", 0.2F, -999, 999);
+        STARTUP_BUILDER.comment("The attributes of the tortoise shell armor item");
+        DURABILITY_VALUE= STARTUP_BUILDER
+                .defineInRange("durability", 275, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ARMOR_VALUE = STARTUP_BUILDER
+                .defineInRange("armor", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER
+                .defineInRange("toughness", 3F, -999, 999);
+        SPEED_REDUCTION_VALUE = STARTUP_BUILDER
+                .defineInRange("speedReduction", -0.3F, -999, 999);
+        KNOCKBACK_RESISTANCE_VALUE = STARTUP_BUILDER
+                .defineInRange("knockbackResistance", 0.2F, -999, 999);
         STARTUP_BUILDER.pop();
+
         STARTUP_CONFIG = STARTUP_BUILDER.build();
     }
 
