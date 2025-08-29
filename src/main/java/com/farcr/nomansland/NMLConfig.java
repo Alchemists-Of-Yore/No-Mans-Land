@@ -245,7 +245,7 @@ public class NMLConfig {
         STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
         STARTUP_BUILDER.comment("The attributes of the tortoise shell armor item");
         DURABILITY_VALUE= STARTUP_BUILDER
-                .defineInRange("durability", 275, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                .defineInRange("durability", 670, Integer.MIN_VALUE, Integer.MAX_VALUE);
         ARMOR_VALUE = STARTUP_BUILDER
                 .defineInRange("armor", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
         ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER
