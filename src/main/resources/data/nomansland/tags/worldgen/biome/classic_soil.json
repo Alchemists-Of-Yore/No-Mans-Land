@@ -8,8 +8,7 @@
     "#c:is_desert",
     "#c:is_cave",
     "minecraft:frozen_peaks",
-    "minecraft:eroded_badlands",
-    "minecraft:badlands",
+    "#c:is_badlands",
     "#minecraft:is_nether",
     "#minecraft:is_end"
   ]

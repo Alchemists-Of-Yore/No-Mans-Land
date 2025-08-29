@@ -6,7 +6,7 @@
             {
                 "item": "nomansland:tortoise_shell",
                 "assets": {
-                    "default": "nomansland:item/tortoise_shell_sandy",
+                    "default": "nomansland:tortoise_shell_sandy",
                     "armor": "nomansland:textures/armor/tortoise_shell_sandy.png"
                 }
             }
@@ -16,7 +16,7 @@
             {
                 "item": "nomansland:tortoise_shell",
                 "assets": {
-                    "default": "nomansland:item/tortoise_shell_green",
+                    "default": "nomansland:tortoise_shell_green",
                     "armor": "nomansland:textures/armor/tortoise_shell_green.png"
                 }
             }
@@ -26,7 +26,7 @@
             {
                 "item": "nomansland:tortoise_shell",
                 "assets": {
-                    "default": "nomansland:item/tortoise_shell_gray",
+                    "default": "nomansland:tortoise_shell_gray",
                     "armor": "nomansland:textures/armor/tortoise_shell_gray.png"
                 }
             }
