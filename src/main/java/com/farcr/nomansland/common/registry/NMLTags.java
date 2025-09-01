@@ -95,7 +95,6 @@ public class NMLTags {
 
         // Tortoise Burrows
         public static final TagKey<Biome> REGULAR_TORTOISE_BURROWS = createBiomeTag("feature_addition/has_regular_tortoise_burrows");
-        public static final TagKey<Biome> DEEPSLATE_TORTOISE_BURROWS = createBiomeTag("feature_addition/has_deepslate_tortoise_burrows");
     }
 
     public static class FeatureRemoval {

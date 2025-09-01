@@ -5,6 +5,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -18,9 +19,11 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configuration> {
     private static final BlockState AIR = Blocks.CAVE_AIR.defaultBlockState();
@@ -51,24 +54,23 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
             Direction direction = findEntranceDirection(worldgenlevel, blockpos);
             if (direction == null)
                 return false;
-            else
-                direction = direction.getOpposite();
-            for (int offsetPos = 0; offsetPos < randomsource.nextIntBetweenInclusive(3, 5); offsetPos++) {
+            int maxOffset = randomsource.nextIntBetweenInclusive(3, 5);
+            for (int offsetPos = 0; offsetPos <= maxOffset; offsetPos++) {
                 BlockPos offsetBlockPos = blockpos.relative(direction, offsetPos);
-                if (!isAdjacentToAir(worldgenlevel::getBlockState, offsetBlockPos)) {
-                    filledPos.add(offsetBlockPos);
-                }
+                if (offsetPos != 0)
+                    offsetBlockPos = offsetBlockPos.relative(direction, 4);
+                if (offsetPos == maxOffset)
+                    offsetBlockPos = offsetBlockPos.relative(direction, 3).below();
+                filledPos.add(offsetBlockPos);
             }
+            filledPos.removeIf(blockPos -> blockPos != filledPos.getFirst() && !checkIfAllSolid(worldgenlevel, blockPos, 5, 5, 5));
             if (!filledPos.isEmpty() && filledPos.size() > 2) {
                 for (int listEntry = 0; listEntry < filledPos.size(); listEntry++) {
                     BlockPos listedPos = filledPos.get(listEntry);
-                    if (listedPos != filledPos.getFirst())
-                        listedPos = listedPos.relative(direction, 4);
-
-                    if (listedPos != filledPos.getLast()) {
-                        this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, Blocks.STONE.defaultBlockState(), randomsource);
+                    BlockPos turtleSpawnPos = filledPos.getLast();
+                    if (listedPos != turtleSpawnPos) {
+                        this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, Blocks.STONE.defaultBlockState(), randomsource, false, AIR);
                     }
-                    BlockPos turtleSpawnPos = filledPos.getLast().relative(direction, 4).below();
                     if (!tortoiseSpawned) {
                         Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
                         tortoiseSpawned = true;
@@ -77,8 +79,8 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         tortoise.setHomePos(turtleSpawnPos);
                         worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                     }
-                    this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource);
-                    System.out.println(Component.literal(turtleSpawnPos.toString()).getString());
+                    this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, Blocks.TNT.defaultBlockState());
+                    Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
                 }
                 return true;
             } else {
@@ -87,13 +89,35 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
         }
     }
 
+    private boolean checkIfAllSolid(WorldGenLevel level, BlockPos origin, double radiusX, double radiusY, double radiusZ) {
+        List<BlockPos> filledPos = new ArrayList<>();
+        for (int x = -8; x < 8; x++) {
+            for (int y = -4; y < 5; y++) {
+                for (int z = -8; z < 8; z++) {
+                    double dX = (x) / (radiusX / 2.0);
+                    double dY = (y) / (radiusY / 2.0);
+                    double dZ = (z) / (radiusZ / 2.0);
+                    double distance = (dX * dX) + (dY * dY) + (dZ * dZ);
+                    BlockPos.MutableBlockPos selectedPos = origin.offset(x, y, z).mutable();
+                    if (distance < 1.0D) {
+                        filledPos.add(selectedPos);
+                    }
+                }
+            }
+        }
+        return filledPos.stream().allMatch(blockPos -> !level.isEmptyBlock(blockPos));
+    }
+
+
     private Direction findEntranceDirection(WorldGenLevel level, BlockPos pos) {
         for (Direction direction : Direction.values()) {
             if (direction.getAxis().isHorizontal()) {
                 for (int offsetPos = 0; offsetPos < 4; offsetPos++) {
-                    BlockPos airPos = pos.relative(direction, 4);
-                    if (level.isEmptyBlock(airPos)) {
-                        return direction;
+                    List<BlockPos> checkedPositions = new ArrayList<>();
+                    BlockPos airPos = pos.relative(direction, offsetPos);
+                    checkedPositions.add(airPos);
+                    if (checkedPositions.stream().allMatch(blockPos -> level.isEmptyBlock(blockPos))) {
+                        return direction.getOpposite();
                     }
                 }
             }
@@ -101,9 +125,9 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
         return null;
     }
 
-    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource) {
+    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource, boolean barrier, BlockState barrierToPlace) {
         for (int x = -8; x < 8; x++) {
-            for (int y = -4; y < 4; y++) {
+            for (int y = -4; y < 5; y++) {
                 for (int z = -8; z < 8; z++) {
                     double dX = (x) / (radiusX / 2.0);
                     double dY = (y) / (radiusY / 2.0);

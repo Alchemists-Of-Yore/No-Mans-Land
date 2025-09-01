@@ -69,7 +69,7 @@ public class TortoiseFindSpotToLayEgg extends Goal {
     protected BlockPos getHomePos() {
         if (!tortoise.hasEgg())
             return null;
-        // Borrowed from TryToFindWaterGoal, modified to have a longer range and accomodate the Tortoise's larger hitbox
+        // Borrowed from TryToFindWaterGoal, modified to have a longer range and accommodate the Tortoise's larger hitbox
         Iterable<BlockPos> iterable = BlockPos.betweenClosed(Mth.floor(tortoise.getX() - 20), Mth.floor(tortoise.getY() - 10), Mth.floor(tortoise.getZ() - 20), Mth.floor(tortoise.getX() + 20), Mth.floor(tortoise.getY() + 10), Mth.floor(tortoise.getZ() + 20));
         BlockPos blockToGo = null;
         for (BlockPos newPos : iterable) {
