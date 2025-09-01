@@ -60,7 +60,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                 if (offsetPos != 0)
                     offsetBlockPos = offsetBlockPos.relative(direction, 4);
                 if (offsetPos == maxOffset)
-                    offsetBlockPos = offsetBlockPos.relative(direction, 3).below();
+                    offsetBlockPos = offsetBlockPos.relative(direction, 3).below(2);
                 filledPos.add(offsetBlockPos);
             }
             filledPos.removeIf(blockPos -> blockPos != filledPos.getFirst() && !checkIfAllSolid(worldgenlevel, blockPos, 5, 5, 5));
@@ -69,7 +69,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                     BlockPos listedPos = filledPos.get(listEntry);
                     BlockPos turtleSpawnPos = filledPos.getLast();
                     if (listedPos != turtleSpawnPos) {
-                        this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, Blocks.STONE.defaultBlockState(), randomsource, false, AIR);
+                        this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, Blocks.STONE.defaultBlockState(), randomsource);
                     }
                     if (!tortoiseSpawned) {
                         Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
@@ -79,7 +79,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         tortoise.setHomePos(turtleSpawnPos);
                         worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                     }
-                    this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, Blocks.TNT.defaultBlockState());
+                    this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource);
                     Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
                 }
                 return true;
@@ -125,7 +125,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
         return null;
     }
 
-    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource, boolean barrier, BlockState barrierToPlace) {
+    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource) {
         for (int x = -8; x < 8; x++) {
             for (int y = -4; y < 5; y++) {
                 for (int z = -8; z < 8; z++) {
