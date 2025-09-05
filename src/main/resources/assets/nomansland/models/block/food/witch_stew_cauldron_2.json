@@ -1,20 +1,20 @@
 {
+	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"parent": "block/block",
 	"ambientocclusion": false,
 	"render_type": "cutout",
 	"textures": {
 		"4": "block/cauldron_bottom",
-		"5": "nomansland:block/food/witch_stew_fluid_2",
-		"6": "nomansland:block/food/witch_stew_side_0",
-		"7": "nomansland:block/food/witch_stew_side_1",
-		"8": "nomansland:block/food/witch_stew_skull",
-		"9": "nomansland:block/food/witch_stew_side_inner",
-		"10": "nomansland:block/food/witch_stew_bones",
-		"top": "nomansland:block/food/witch_stew_top",
+		"5": "nomansland/block/food:witch_stew_fluid_2",
+		"6": "nomansland/block/food:witch_stew_side_0",
+		"7": "nomansland/block/food:witch_stew_side_1",
+		"8": "nomansland/block/food:witch_stew_skull",
+		"9": "nomansland/block/food:witch_stew_side_inner",
+		"10": "nomansland/block/food:witch_stew_bones",
+		"11": "nomansland/block/food:nomansland:witch_stew_top",
 		"particle": "block/cauldron_side",
-		"side": "block/cauldron_side",
-		"inside": "nomansland:block/food/witch_stew_side_inner"
+		"side": "block/cauldron_side"
 	},
 	"elements": [
 		{
@@ -26,15 +26,15 @@
 				"south": {"uv": [0, 0, 2, 13], "texture": "#side", "cullface": "south"},
 				"west": {"uv": [0, 0, 16, 13], "texture": "#6", "cullface": "west"},
 				"up": {"uv": [0, 0, 2, 16], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [0, 0, 2, 16], "texture": "#inside"}
+				"down": {"uv": [0, 0, 2, 16], "texture": "#11"}
 			}
 		},
 		{
 			"from": [2, 3, 2],
 			"to": [14, 4, 14],
 			"faces": {
-				"up": {"uv": [2, 2, 14, 14], "texture": "#inside", "cullface": "up"},
-				"down": {"uv": [2, 2, 14, 14], "texture": "#inside"}
+				"up": {"uv": [2, 2, 14, 14], "texture": "#9", "cullface": "up"},
+				"down": {"uv": [2, 2, 14, 14], "texture": "#11"}
 			}
 		},
 		{
@@ -46,7 +46,7 @@
 				"south": {"uv": [14, 0, 16, 13], "texture": "#side", "cullface": "south"},
 				"west": {"uv": [0, 0, 16, 13], "texture": "#9", "cullface": "up"},
 				"up": {"uv": [14, 0, 16, 16], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [14, 0, 16, 16], "texture": "#inside"}
+				"down": {"uv": [14, 0, 16, 16], "texture": "#11"}
 			}
 		},
 		{
@@ -56,7 +56,7 @@
 				"north": {"uv": [2, 0, 14, 13], "texture": "#7", "cullface": "north"},
 				"south": {"uv": [2, 0, 14, 13], "texture": "#9", "cullface": "up"},
 				"up": {"uv": [2, 0, 14, 2], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [2, 14, 14, 16], "texture": "#inside"}
+				"down": {"uv": [2, 14, 14, 16], "texture": "#11"}
 			}
 		},
 		{
@@ -66,7 +66,7 @@
 				"north": {"uv": [2, 0, 14, 13], "texture": "#9", "cullface": "up"},
 				"south": {"uv": [2, 0, 14, 13], "texture": "#7", "cullface": "south"},
 				"up": {"uv": [2, 14, 14, 16], "texture": "#top", "cullface": "up"},
-				"down": {"uv": [2, 0, 14, 2], "texture": "#inside"}
+				"down": {"uv": [2, 0, 14, 2], "texture": "#11"}
 			}
 		},
 		{
