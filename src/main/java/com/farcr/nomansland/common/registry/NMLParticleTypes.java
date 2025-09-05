@@ -1,11 +1,17 @@
 package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.particle.TranslucentDustParticleOptions;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class NMLParticleTypes {
@@ -41,7 +47,24 @@ public class NMLParticleTypes {
     public static final Supplier<SimpleParticleType> MILK_DROPLET = register("milk_droplet");
     public static final Supplier<SimpleParticleType> MILK_DROPLET_FLAT = register("milk_droplet_flat");
 
-    public static Supplier<SimpleParticleType> register(String name) {
+    public static final Supplier<ParticleType<TranslucentDustParticleOptions>> TRANSLUCENT_DUST = register(
+            "translucent_dust", false,
+            TranslucentDustParticleOptions::codec, TranslucentDustParticleOptions::streamCodec
+    );
+
+    private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
+        return PARTICLE_TYPES.register(name, () -> new ParticleType<T>(overrideLimitter) {
+            public MapCodec<T> codec() {
+                return codecGetter.apply(this);
+            }
+
+            public StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec() {
+                return streamCodecGetter.apply(this);
+            }
+        });
+    }
+
+    private static Supplier<SimpleParticleType> register(String name) {
         return PARTICLE_TYPES.register(name, () -> new SimpleParticleType(false));
     }
 }

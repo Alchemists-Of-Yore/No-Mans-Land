@@ -1,13 +1,11 @@
 package com.farcr.nomansland.common.block.cauldrons;
 
 import com.farcr.nomansland.common.integration.FDIntegration;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
@@ -21,7 +19,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import vectorwing.farmersdelight.common.registry.ModSounds;
 
 public class WitchStewCauldron extends FourLayeredCauldronBlock {
 

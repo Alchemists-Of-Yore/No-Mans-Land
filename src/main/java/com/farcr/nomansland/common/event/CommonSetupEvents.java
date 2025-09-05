@@ -4,10 +4,11 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
-import com.farcr.nomansland.common.entity.Moose;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.moose.Moose;
+import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -15,6 +16,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
+import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -36,13 +38,14 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import static com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock.LEVEL;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(modid = NoMansLand.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = NoMansLand.MODID)
 public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             if (NMLConfig.BIOMES.get()) NMLBiomePlacements.register();
+            NMLDensityModifications.register();
             NMLSurfaceRules.register();
             NMLFlammables.register();
 
@@ -60,6 +63,8 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.BOULDER_DECORATOR_TYPE);
         event.register(NMLRegistries.FALLEN_TREE_DECORATOR_TYPE);
         event.register(NMLRegistries.FOG_MODIFIERS);
+
+        event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
     }
 
     @SubscribeEvent
@@ -73,6 +78,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.BILLHOOK_BASS.get(), BillhookBass.createAttributes().build());
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
+        event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -81,6 +87,7 @@ public class CommonSetupEvents {
         event.register(NMLEntities.DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Deer::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(EntityType.CAMEL, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Camel::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(EntityType.HUSK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.TORTOISE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Tortoise::checkTortoiseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent

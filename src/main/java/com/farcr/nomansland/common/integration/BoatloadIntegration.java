@@ -4,6 +4,10 @@ import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.teamabnormals.boatload.common.item.FurnaceBoatItem;
 import com.teamabnormals.boatload.common.item.LargeBoatItem;
+import com.teamabnormals.boatload.core.registry.BoatloadItems;
+import net.minecraft.world.item.Item;
+
+import java.util.function.Supplier;
 
 public class BoatloadIntegration {
 

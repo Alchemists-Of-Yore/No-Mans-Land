@@ -14,7 +14,9 @@ public class NMLTags {
     public static final TagKey<Item> FIRESTARTERS = createItemTag("firestarters");
     public static final TagKey<Item> DEER_FOOD = createItemTag("deer_food");
     public static final TagKey<Item> MOOSE_FOOD = createItemTag("moose_food");
+    public static final TagKey<Item> TORTOISE_FOOD = createItemTag("tortoise_food");
     public static final TagKey<Item> MAKES_RESIN_OIL = createItemTag("makes_resin_oil");
+    public static final TagKey<Item> INK_IMMUNE = createItemTag("ink_immune");
 
     public static final SharedTag MAPLE_LOGS = createSharedTag("maple_logs");
     public static final SharedTag PINE_LOGS = createSharedTag("pine_logs");
@@ -31,14 +33,21 @@ public class NMLTags {
     public static final TagKey<Block> HEAT_SOURCES = createBlockTag("heat_sources");
     public static final TagKey<EntityType<?>> ANCHOR_BLACKLIST = createEntityTag("anchor_blacklist");
     public static final TagKey<Biome> OLD_GROWTH_FOREST = createBiomeTag("old_growth_forest");
+    public static final TagKey<EntityType<?>> CANNOT_BE_PACIFIED = createEntityTag("cannot_be_pacified");
 
     public static final TagKey<Biome> CAVES = createBiomeTag("caves");
     public static final TagKey<DamageType> IGNITES_FLAMMABLE = createDamageTypeTag("ignites_flammable");
+    public static final TagKey<Biome> SPAWNS_MUD_FROGS = createBiomeTag("entity/spawns_mud_frogs");
 
     public static final TagKey<Block> SUPPORTS_ICICLE = createBlockTag("supports_icicle");
 
     public static final TagKey<Biome> CLASSIC_SOIL = createBiomeTag("classic_soil");
     public static final TagKey<Biome> IS_SHORELINE = createBiomeTag("is_shoreline");
+    public static final TagKey<Biome> IS_CRAGLAND = createBiomeTag("is_cragland");
+    public static final TagKey<Biome> IS_OCEANIC_CRAGLAND = createBiomeTag("is_oceanic_cragland");
+
+    public static final TagKey<Biome> HAS_GRAVEL_SHORE = createBiomeTag("has_gravel_shore");
+    public static final TagKey<Block> SUITABLE_TORTOISE_HOME = createBlockTag("tortoise_valid_home");
 
     public static class FeatureAddition {
         // Broad brushes
@@ -58,6 +67,7 @@ public class NMLTags {
         public static final TagKey<Biome> HAS_ICICLES = createBiomeTag("feature_addition/has_icicles");
         public static final TagKey<Biome> HAS_OAT_GRASS = createBiomeTag("feature_addition/has_oat_grass");
         public static final TagKey<Biome> HAS_RAFFLESIA = createBiomeTag("feature_addition/has_rafflesia");
+        public static final TagKey<Biome> HAS_GROUND_IVY = createBiomeTag("feature_addition/has_ground_ivy");
 
         // Fallen trees
         public static final TagKey<Biome> HAS_FALLEN_TREES_DRY = createBiomeTag("feature_addition/has_fallen_trees_dry");
@@ -82,6 +92,9 @@ public class NMLTags {
         public static final TagKey<Biome> HAS_SHELF_MUSHROOM_FOREST = createBiomeTag("feature_addition/has_shelf_mushroom_forest");
         public static final TagKey<Biome> HAS_SHELF_MUSHROOM_OLD_GROWTH = createBiomeTag("feature_addition/has_shelf_mushroom_old_growth");
         public static final TagKey<Biome> HAS_SHELF_MUSHROOM_TAIGA = createBiomeTag("feature_addition/has_shelf_mushroom_taiga");
+
+        // Tortoise Burrows
+        public static final TagKey<Biome> REGULAR_TORTOISE_BURROWS = createBiomeTag("feature_addition/has_regular_tortoise_burrows");
     }
 
     public static class FeatureRemoval {

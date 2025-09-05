@@ -1,0 +1,35 @@
+{
+  "type": "nomansland:spread_patch",
+  "config": {
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:simple_state_provider",
+            "state": {
+              "Name": "nomansland:ground_ivy"
+            }
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:matching_blocks",
+            "blocks": "minecraft:air"
+          }
+        }
+      ]
+    },
+    "try_density": 6.5,
+    "xz_spread": {
+			"type": "minecraft:uniform",
+			"min_inclusive": 6,
+			"max_inclusive": 12
+		  },
+    "y_spread": 3,
+    "sparseness": 3
+  }
+}

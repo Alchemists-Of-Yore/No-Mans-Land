@@ -1,6 +1,0 @@
-{
-  "type": "mixed_litter:pig",
-  "texture": "nomansland:entity/mob_variants/pig/pig_wild_brown",
-  "baby_texture": "nomansland:entity/mob_variants/pig/pig_wild_brown_baby",
-  "biomes": "#nomansland:entity/spawns_wild_pigs"
-}

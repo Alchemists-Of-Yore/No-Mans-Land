@@ -1,0 +1,16 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:tortoise",
+  "conditions": {
+    "spawning_location": {
+      "biomes": [
+        "nomansland:caves",
+        "nomansland:cave_depths",
+        "minecraft:dripstone_caves"
+      ]
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/tortoise/gray"
+  }
+}

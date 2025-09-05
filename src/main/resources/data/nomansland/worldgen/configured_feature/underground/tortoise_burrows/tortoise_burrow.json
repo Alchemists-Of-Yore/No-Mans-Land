@@ -1,0 +1,31 @@
+{
+  "type": "nomansland:tortoise_burrow",
+  "config": {
+    "blocks": [
+      {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "minecraft:dirt"
+        }
+      },
+      {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "minecraft:coarse_dirt"
+        }
+      },
+      {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "nomansland:silt"
+        }
+      },
+      {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "nomansland:coarse_silt"
+        }
+      }
+    ]
+  }
+}

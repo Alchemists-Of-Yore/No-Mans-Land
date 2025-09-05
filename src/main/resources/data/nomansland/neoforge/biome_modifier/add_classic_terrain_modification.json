@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:classic_soil",
+  "features": "nomansland:crag_rock",
+  "step": "raw_generation"
+}

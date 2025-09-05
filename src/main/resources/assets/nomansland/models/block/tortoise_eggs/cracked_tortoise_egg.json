@@ -1,0 +1,23 @@
+{
+	"credit": "Made by Frenderman",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "nomansland:block/cracked_tortoise_eggs",
+		"particle": "nomansland:block/cracked_tortoise_eggs"
+	},
+	"elements": [
+		{
+			"from": [8, 0, 8],
+			"to": [13, 6, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [2.5, 2.5, 5, 5.5], "texture": "#0"},
+				"east": {"uv": [0, 2.5, 2.5, 5.5], "texture": "#0"},
+				"south": {"uv": [7.5, 2.5, 10, 5.5], "texture": "#0"},
+				"west": {"uv": [5, 2.5, 7.5, 5.5], "texture": "#0"},
+				"up": {"uv": [5, 2.5, 2.5, 0], "texture": "#0"},
+				"down": {"uv": [7.5, 0, 5, 2.5], "texture": "#0"}
+			}
+		}
+	]
+}

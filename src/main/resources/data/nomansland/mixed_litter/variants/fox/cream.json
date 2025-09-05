@@ -1,0 +1,15 @@
+{
+  "type": "mixed_litter:replace_textures_with_default",
+  "group": "nomansland:fox",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "#nomansland:entity/spawns_cream_foxes"
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/fox/cream_fox",
+    "replacements": {
+      "entity/fox/fox_sleep": "nomansland:entity/mob_variants/fox/cream_fox_sleep"
+    }
+  }
+}

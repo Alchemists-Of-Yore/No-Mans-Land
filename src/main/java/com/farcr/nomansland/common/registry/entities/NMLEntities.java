@@ -1,15 +1,20 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.entity.Moose;
+import com.farcr.nomansland.common.entity.*;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
-import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
-import com.farcr.nomansland.common.entity.bombs.FirebombEntity;
+import com.farcr.nomansland.common.entity.bombs.Explosive;
+import com.farcr.nomansland.common.entity.bombs.Firebomb;
+import com.farcr.nomansland.common.entity.bombs.InkBomb;
+import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.moose.Moose;
+import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -25,13 +30,42 @@ public class NMLEntities {
 //            ENTITIES.register("maple_chest_boat", () -> EntityType.Builder.<ChestBoat>of(ChestBoat::new, MobCategory.MISC)
 //                    .sized(1.375f, 0.5625f).build("maple_chest_boat"));
 
-    public static final Supplier<EntityType<FirebombEntity>> FIREBOMB =
-            ENTITIES.register("firebomb", () -> EntityType.Builder.<FirebombEntity>of(FirebombEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<Firebomb>> FIREBOMB =
+            ENTITIES.register("firebomb", () -> EntityType.Builder.<Firebomb>of(Firebomb::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("firebomb"));
 
-    public static final Supplier<EntityType<ExplosiveEntity>> EXPLOSIVE =
-            ENTITIES.register("explosive", () -> EntityType.Builder.<ExplosiveEntity>of(ExplosiveEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<InkBomb>> INK_BOMB =
+            ENTITIES.register("ink_bomb", () -> EntityType.Builder.<InkBomb>of(InkBomb::new, MobCategory.MISC)
+                    .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("ink_bomb"));
+
+    public static final Supplier<EntityType<Explosive>> EXPLOSIVE =
+            ENTITIES.register("explosive", () -> EntityType.Builder.<Explosive>of(Explosive::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(4).updateInterval(20).build("explosive"));
+
+    public static final Supplier<EntityType<LivingUrn>> LIVING_URN =
+            ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrn>of(LivingUrn::new, MobCategory.MISC)
+                    .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
+
+    public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =
+            ENTITIES.register("incendiary_arrow", () -> EntityType.Builder.<IncendiaryArrow>of(IncendiaryArrow::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
+
+    public static final Supplier<EntityType<Ember>> EMBER =
+            ENTITIES.register("ember", () -> EntityType.Builder.<Ember>of(Ember::new, MobCategory.MISC)
+                    .fireImmune().sized(1, 1).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("ember"));
+
+    public static final Supplier<EntityType<LingeringCloud>> LINGERING_CLOUD =
+            ENTITIES.register("lingering_cloud", () -> EntityType.Builder.<LingeringCloud>of(LingeringCloud::new, MobCategory.MISC)
+                    .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("lingering_cloud"));
+
+    public static final Supplier<EntityType<InkCloud>> INK_CLOUD =
+            ENTITIES.register("ink_cloud", () -> EntityType.Builder.<InkCloud>of(InkCloud::new, MobCategory.MISC)
+                    .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("ink_cloud"));
+
+    public static final Supplier<EntityType<PacifiedCloud>> PACIFIED_CLOUD =
+            ENTITIES.register("pacified_cloud", () -> EntityType.Builder.<PacifiedCloud>of(PacifiedCloud::new, MobCategory.MISC)
+                    .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("pacified_cloud"));
+
 
     public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS =
             ENTITIES.register("billhook_bass", () -> EntityType.Builder.of(BillhookBass::new, MobCategory.WATER_CREATURE)
@@ -43,7 +77,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<Goose>> GOOSE =
             ENTITIES.register("goose", () -> EntityType.Builder.of(Goose::new, MobCategory.CREATURE)
-                    .sized(0.8F, 1F).build("goose"));
+                    .sized(0.8F, 1).build("goose"));
 
 //    public static final Supplier<EntityType<BuriedEntity>> BURIED =
 //            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)
@@ -53,4 +87,10 @@ public class NMLEntities {
             ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
                     .sized(1.5f, 2.5f).build("moose"));
 
+    public static final Supplier<EntityType<Tortoise>> TORTOISE =
+            ENTITIES.register("tortoise", () -> EntityType.Builder.of(Tortoise::new, MobCategory.CREATURE)
+                    .sized(1.25F, 1.25F)
+                    .eyeHeight(1.0F)
+                    .passengerAttachments(new Vec3(0.0, 1.15, 0.0F))
+                    .build("tortoise"));
 }

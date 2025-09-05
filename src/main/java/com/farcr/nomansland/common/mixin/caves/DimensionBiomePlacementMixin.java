@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin.caves;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.terraformersmc.biolith.api.biome.BiolithFittestNodes;
@@ -20,11 +21,13 @@ public class DimensionBiomePlacementMixin {
     private void addCaveReplacement(int x, int y, int z, Climate.TargetPoint noisePoint, BiolithFittestNodes<Holder<Biome>> fittestNodes, CallbackInfoReturnable<Holder<Biome>> cir, @Local Holder<Biome> biomeEntry)
     {
         if ((DimensionBiomePlacement)(Object)this instanceof OverworldBiomePlacement) {
-            if (!biomeEntry.is(Tags.Biomes.IS_CAVE)) {
-                if (noisePoint.depth() > 0.5f * 10000.0f) {
-                    cir.setReturnValue(NMLBiomes.CAVE_DEPTHS_HOLDER);
-                } else if (noisePoint.depth() > 0.1f * 10000.0f) {
-                    cir.setReturnValue(NMLBiomes.CAVES_HOLDER);
+            if (NMLConfig.CAVES_BIOMES.get()) {
+                if (!biomeEntry.is(Tags.Biomes.IS_CAVE)) {
+                    if (noisePoint.depth() > 0.5F * 10000) {
+                        cir.setReturnValue(NMLBiomes.CAVE_DEPTHS_HOLDER);
+                    } else if (noisePoint.depth() > 0.1F * 10000) {
+                        cir.setReturnValue(NMLBiomes.CAVES_HOLDER);
+                    }
                 }
             }
         }

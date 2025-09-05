@@ -1,0 +1,12 @@
+{
+  "type": "nomansland:change_spawn",
+  "biomes": "minecraft:eroded_badlands",
+  "spawners": [
+    {
+      "type": "minecraft:armadillo",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 8
+    }
+  ]
+}

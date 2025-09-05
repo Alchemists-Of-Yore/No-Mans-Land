@@ -1,0 +1,35 @@
+{
+  "type": "nomansland:boulder",
+  "config": {
+    "decorators": [],
+    "block_provider": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "minecraft:cobblestone"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "minecraft:mossy_cobblestone"
+          },
+          "weight": 1
+        }
+      ]
+    },
+    "num_cubes": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 2,
+      "max_inclusive": 4
+    },
+    "cube_height": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 1,
+      "max_inclusive": 2
+    },
+    "cube_height_decrease": 1,
+    "num_eroded_blocks": 1
+  }
+}

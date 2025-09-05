@@ -31,7 +31,8 @@
     [],
     [
       "minecraft:lake_lava_underground",
-      "minecraft:lake_lava_surface"
+      "minecraft:lake_lava_surface",
+      "nomansland:pond_stony_shore"
     ],
     [
       "minecraft:amethyst_geode"

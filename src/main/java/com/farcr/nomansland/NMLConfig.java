@@ -11,17 +11,27 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue MALEVOLENT_SPAWNER;
     public static ModConfigSpec.BooleanValue TRAMPLING;
     public static ModConfigSpec.BooleanValue TORCH_EXTINGUISHING;
+    public static ModConfigSpec.BooleanValue GRASS_FROSTING;
     public static final String CATEGORY_BIOMES = "biomes";
     public static ModConfigSpec.BooleanValue BIOMES;
     public static ModConfigSpec.BooleanValue CAVES_BIOMES;
     public static ModConfigSpec.BooleanValue MAPLE_BIOMES;
-    public static ModConfigSpec.BooleanValue OLD_GROWTH_BIOMES;
+    public static ModConfigSpec.BooleanValue OLD_GROWTH_FOREST;
     public static ModConfigSpec.BooleanValue AUTUMNAL_FOREST;
     public static ModConfigSpec.BooleanValue DARK_TAIGA;
+    public static ModConfigSpec.BooleanValue BOREAL_FOREST;
     public static ModConfigSpec.BooleanValue DARK_SWAMP;
     public static ModConfigSpec.BooleanValue FROZEN_WOODS;
     public static ModConfigSpec.BooleanValue BAYOU;
     public static ModConfigSpec.BooleanValue BOG;
+    public static ModConfigSpec.BooleanValue PRAIRIE;
+    public static ModConfigSpec.BooleanValue LAVENDER_FIELD;
+    public static ModConfigSpec.BooleanValue BLACKWATER_RIVER;
+    public static ModConfigSpec.BooleanValue LUSH_RIVER;
+    public static ModConfigSpec.BooleanValue DESERT_RIVER;
+    public static ModConfigSpec.BooleanValue FROZEN_SHORE;
+    public static ModConfigSpec.BooleanValue MUD_BEACH;
+    public static ModConfigSpec.BooleanValue TROPICAL_BEACH;
     public static final String CATEGORY_TAP = "tap";
     public static ModConfigSpec.DoubleValue FILLING_SPEED_MULTIPLIER;
     public static ModConfigSpec.IntValue TICKS_TO_FILL_CAULDRON;
@@ -41,6 +51,7 @@ public class NMLConfig {
     public static ModConfigSpec.IntValue MAX_FLOATING_RAILS;
     public static final String CATEGORY_MISC = "miscellaneous";
     public static ModConfigSpec.DoubleValue BURIED_SPAWNING_CHANCE;
+    public static ModConfigSpec.BooleanValue WALK_THROUGH_LEAVES;
 
     public static ModConfigSpec CLIENT_CONFIG;
     public static final String CATEGORY_FOG_MODIFIERS = "fog_modifiers";
@@ -48,6 +59,14 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue CAVE_BIOME_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue DEEP_DARK_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue FOGGY_BIOME_FOG_MODIFIER;
+
+    public static ModConfigSpec STARTUP_CONFIG;
+    public static final String CATEGORY_TORTOISE_SHELL_ATTRIBUTES = "tortoise_shell_attributes";
+    public static ModConfigSpec.IntValue ARMOR_VALUE;
+    public static ModConfigSpec.IntValue DURABILITY_VALUE;
+    public static ModConfigSpec.DoubleValue ARMOR_TOUGHNESS_VALUE;
+    public static ModConfigSpec.DoubleValue SPEED_REDUCTION_VALUE;
+    public static ModConfigSpec.DoubleValue KNOCKBACK_RESISTANCE_VALUE;
 
     static {
 
@@ -70,6 +89,9 @@ public class NMLConfig {
         TORCH_EXTINGUISHING = COMMON_BUILDER
                 .comment("If torches can be extinguished through interactions like campfires.")
                 .define("torchExtinguishing", true);
+        GRASS_FROSTING = COMMON_BUILDER
+                .comment("If grass generating/placed on snow converts to Frosted Grass.")
+                .define("allowGrassFrosting", true);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_BIOMES);
@@ -82,12 +104,15 @@ public class NMLConfig {
         MAPLE_BIOMES = COMMON_BUILDER
                 .comment("If the maple biomes are enabled")
                 .define("mapleBiomes", true);
-        OLD_GROWTH_BIOMES = COMMON_BUILDER
-                .comment("If the old growth biomes are enabled")
-                .define("oldGrowthBiomes", true);
+        OLD_GROWTH_FOREST = COMMON_BUILDER
+                .comment("If the old growth forest is enabled")
+                .define("oldGrowthForest", true);
         AUTUMNAL_FOREST = COMMON_BUILDER
                 .comment("If the autumnal forest is enabled")
                 .define("autumnal", true);
+        BOREAL_FOREST = COMMON_BUILDER
+                .comment("If the boreal forest is enabled")
+                .define("borealForest", true);
         DARK_TAIGA = COMMON_BUILDER
                 .comment("If the dark taiga is enabled")
                 .define("darkTaiga", true);
@@ -103,6 +128,31 @@ public class NMLConfig {
         BOG = COMMON_BUILDER
                 .comment("If the bog is enabled")
                 .define("bog", true);
+        PRAIRIE = COMMON_BUILDER
+                .comment("If the prairie is enabled")
+                .define("prairie", true);
+        LAVENDER_FIELD = COMMON_BUILDER
+                .comment("If the lavender field is enabled")
+                .define("lavenderField", true);
+        BLACKWATER_RIVER = COMMON_BUILDER
+                .comment("If the blackwater river sub-biome is enabled")
+                .define("blackwaterRiver", true);
+        LUSH_RIVER = COMMON_BUILDER
+                .comment("If the lush river sub-biome is enabled")
+                .define("lushRiver", true);
+        DESERT_RIVER = COMMON_BUILDER
+                .comment("If the desert river sub-biome is enabled")
+                .define("desertRiver", true);
+        FROZEN_SHORE = COMMON_BUILDER
+                .comment("If the frozen shore sub-biome is enabled")
+                .define("frozenShore", true);
+        MUD_BEACH = COMMON_BUILDER
+                .comment("If the mud beach sub-biome is enabled")
+                .define("mudBeach", true);
+        TROPICAL_BEACH = COMMON_BUILDER
+                .comment("If the tropical beach sub-biome is enabled")
+                .define("tropicalBeach", true);
+
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_TAP);
@@ -164,6 +214,9 @@ public class NMLConfig {
                 .comment("The chance a buried is spawned upon brushing a remains block.")
                 .comment("This chance is multiplied by 4 when the block is broken and by 10 when the block falls.")
                 .defineInRange("buriedSpawningChance", 0.05, 0, 1);
+//        WALK_THROUGH_LEAVES = COMMON_BUILDER
+//                .comment("If leaves can be walked through slowly")
+//                .define("walkThroughLeaves", true);
         COMMON_BUILDER.pop();
 
         COMMON_CONFIG = COMMON_BUILDER.build();
@@ -186,6 +239,24 @@ public class NMLConfig {
         CLIENT_BUILDER.pop();
 
         CLIENT_CONFIG = CLIENT_BUILDER.build();
+
+        ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
+
+        STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
+        STARTUP_BUILDER.comment("The attributes of the tortoise shell armor item");
+        DURABILITY_VALUE= STARTUP_BUILDER
+                .defineInRange("durability", 670, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ARMOR_VALUE = STARTUP_BUILDER
+                .defineInRange("armor", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER
+                .defineInRange("toughness", 3F, -999, 999);
+        SPEED_REDUCTION_VALUE = STARTUP_BUILDER
+                .defineInRange("speedReduction", -0.3F, -999, 999);
+        KNOCKBACK_RESISTANCE_VALUE = STARTUP_BUILDER
+                .defineInRange("knockbackResistance", 0.2F, -999, 999);
+        STARTUP_BUILDER.pop();
+
+        STARTUP_CONFIG = STARTUP_BUILDER.build();
     }
 
 }

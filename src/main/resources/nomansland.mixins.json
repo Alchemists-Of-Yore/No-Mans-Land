@@ -7,6 +7,7 @@
   "mixins": [
     "AbstractFishMixin",
     "AbstractSkeletonMixin",
+    "AlterGroundDecoratorMixin",
     "BaseRailBlockMixin",
     "BaseSpawnerMixin",
     "BiomeMixin",
@@ -18,13 +19,17 @@
     "FallLocationMixin",
     "FeatureSorterMixin",
     "FlowerBlockMixin",
+    "FrogMixin",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LivingEntityMixin",
+    "MinecraftServerMixin",
+    "NoiseRouterAccessModifier",
     "PatrolSpawnerMixin",
     "PlayerMixin",
     "RailStateMixin",
     "RandomStrollGoalMixin",
+    "RegistryFileCodecMixin",
     "ServerLevelMixin",
     "SnowAndFreezeFeatureMixin",
     "SnowyDirtBlockMixin",
@@ -50,6 +55,7 @@
     "integration.VanillaFluidTargetsMixin"
   ],
   "client": [
+    "client.CapeRenderLayerMixin",
     "client.LevelRendererMixin",
     "client.SkinManagerMixin"
   ],

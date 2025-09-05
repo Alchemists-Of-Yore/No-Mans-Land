@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/template_cake_with_candle",
+  "textures": {
+    "candle": "minecraft:block/purple_candle_lit",
+    "particle": "nomansland:block/food/fruit_cake_side",
+    "bottom": "nomansland:block/food/fruit_cake_bottom",
+    "top": "nomansland:block/food/fruit_cake_top",
+    "side": "nomansland:block/food/fruit_cake_side"
+  }
+}

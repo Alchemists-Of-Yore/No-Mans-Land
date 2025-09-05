@@ -2,8 +2,8 @@
   "values": [
     "nomansland:bog",
     "nomansland:dark_taiga",
-    "nomansland:maple_forest",
     "nomansland:maple_grove",
-    "nomansland:frozen_woods"
+    "nomansland:frozen_woods",
+    "nomansland:frozen_shore"
   ]
 }

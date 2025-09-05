@@ -1,5 +1,0 @@
-{
-  "type": "mixed_litter:squid",
-  "texture": "nomansland:entity/mob_variants/squid/squid_deep",
-  "biomes": "#nomansland:entity/spawns_deep_squid"
-}

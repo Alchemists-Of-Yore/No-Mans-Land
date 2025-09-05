@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:noise",
+  "noise": "minecraft:temperature",
+  "xz_scale": 1,
+  "y_scale": 1
+}

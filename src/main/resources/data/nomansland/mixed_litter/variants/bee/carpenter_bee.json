@@ -1,0 +1,18 @@
+{
+  "type": "mixed_litter:replace_textures_with_default",
+  "group": "nomansland:bee",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "#nomansland:entity/spawns_carpenter_bees"
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/bee/carpenter_bee",
+    "replacements": {
+      "entity/bee/bee_angry": "nomansland:entity/mob_variants/bee/carpenter_bee_angry",
+      "entity/bee/bee_nectar": "nomansland:entity/mob_variants/bee/carpenter_bee_nectar",
+      "entity/bee/bee_angry_nectar": "nomansland:entity/mob_variants/bee/carpenter_bee_angry_nectar",
+      "entity/bee/bee_stinger": "nomansland:entity/mob_variants/bee/carpenter_bee_stinger"
+    }
+  }
+}

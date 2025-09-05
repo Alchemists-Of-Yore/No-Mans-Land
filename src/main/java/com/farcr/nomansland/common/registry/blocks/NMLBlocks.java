@@ -207,6 +207,8 @@ public class NMLBlocks {
     public static final BlockDefinition<FlowerPotBlock> POTTED_BARREL_CACTUS = registerNoItem("potted_barrel_cactus",
             () -> new FlowerPotBlock(() -> ((FlowerPotBlock) Blocks.FLOWER_POT), NMLBlocks.BARREL_CACTUS,
                     ofFullCopy(Blocks.POTTED_POPPY).noOcclusion()), BlockProperties.flowerPot(BARREL_CACTUS));
+    public static final BlockDefinition<SimpleFoliageBlock> LAVENDER_BUSH = register("lavender_bush",
+            () -> new SimpleFoliageBlock(ofFullCopy(Blocks.SHORT_GRASS).offsetType(OffsetType.XYZ)), BlockProperties.flowerbed());
     public static final BlockDefinition<DesertFoliageBlock> SUCCULENT = register("succulent",
             () -> new DesertFoliageBlock(of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.FLOWERING_AZALEA).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<FlowerPotBlock> POTTED_SUCCULENT = registerNoItem("potted_succulent",
@@ -214,6 +216,8 @@ public class NMLBlocks {
                     ofFullCopy(Blocks.POTTED_POPPY).noOcclusion()), BlockProperties.flowerPot(SUCCULENT));
     public static final BlockDefinition<FlowerbedBlock> CLOVER_PATCH = register("clover_patch",
             () -> new FlowerbedBlock(MobEffects.LUCK, 5, Block.Properties.of().mapColor(MapColor.PLANT).replaceable().noCollission().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)), BlockProperties.flowerbed());
+    public static final BlockDefinition<FlowerbedBlock> GROUND_IVY = register("ground_ivy",
+            () -> new FlowerbedBlock(MobEffects.POISON, 10, Block.Properties.of().mapColor(MapColor.PLANT).replaceable().noCollission().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)), BlockProperties.flowerbed());
     public static final BlockDefinition<FlowerbedBlock> WHITE_FLOWERBED = register("white_flowerbed",
             () -> new FlowerbedBlock(MobEffects.MOVEMENT_SLOWDOWN, 10, Block.Properties.of().mapColor(MapColor.PLANT).replaceable().noCollission().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)), BlockProperties.flowerbed());
     public static final BlockDefinition<FlowerbedBlock> YELLOW_FLOWERBED = register("yellow_flowerbed",
@@ -494,7 +498,7 @@ public class NMLBlocks {
                     .dynamicShape()
                     ,FruitType.APPLE_OAK), BlockProperties.custom(false));
 
-    public static final BlockDefinition<Block> APPLE_FRUIT_LEAVES = register("apple_fruit_leaves",
+    public static final BlockDefinition<Block> APPLE_FRUIT_LEAVES = registerNoItem("apple_fruit_leaves",
             () -> new FruitLeavesBlock(ofFullCopy(Blocks.OAK_LEAVES).isViewBlocking((s, g, p) -> false).isSuffocating(((s, g, p) -> false)), FruitType.APPLE_OAK));
 
     public static final BlockDefinition<Block> PEAR_FRUIT = registerNoItem("pear",
@@ -508,8 +512,12 @@ public class NMLBlocks {
                     .dynamicShape()
                     ,FruitType.PEAR_AUTUMNAL_OAK), BlockProperties.custom(false));
 
-    public static final BlockDefinition<Block> PEAR_FRUIT_LEAVES = register("pear_fruit_leaves",
+    public static final BlockDefinition<Block> PEAR_FRUIT_LEAVES = registerNoItem("pear_fruit_leaves",
             () -> new FruitLeavesBlock(ofFullCopy(NMLBlocks.AUTUMNAL_OAK_LEAVES.get()).isViewBlocking((s, g, p) -> false).isSuffocating(((s, g, p) -> false)), FruitType.PEAR_AUTUMNAL_OAK));
+
+    //Eggs
+    public static final BlockDefinition<TortoiseEggBlock> TORTOISE_EGGS = register("tortoise_egg",
+            () -> new TortoiseEggBlock((ofFullCopy(Blocks.TURTLE_EGG).randomTicks())));
 
     public static <T extends Block> BlockDefinition<T> registerNoItem(String name, Supplier<T> block, BlockProperties properties) {
         DeferredBlock<T> deferred = BLOCKS.register(name, block);

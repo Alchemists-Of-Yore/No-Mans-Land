@@ -1,0 +1,10 @@
+{
+  "conditions": {
+    "entity_predicate": {
+      "type": "salmon"
+    }
+  },
+  "exclusive": true,
+  "selection": "weighted",
+  "conflicts": "mixed_litter:default"
+}

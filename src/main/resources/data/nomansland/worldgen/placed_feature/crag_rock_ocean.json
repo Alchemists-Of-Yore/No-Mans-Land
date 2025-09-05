@@ -1,0 +1,32 @@
+{
+  "feature": "nomansland:crag_rock_seafloor",
+  "placement": [
+    {
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.5,
+
+      "noise_minimum": 0.4,                   
+      "noise_maximum": 0.8,  
+
+      "count_minimum": 0,          
+      "count_maximum": 2
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR_WG"
+    },
+    {
+          "type": "nomansland:height_filter",
+          "height_min": 10,
+          "height_max": 45
+       },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

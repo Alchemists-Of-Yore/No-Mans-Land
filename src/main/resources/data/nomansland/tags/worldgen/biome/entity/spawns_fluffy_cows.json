@@ -2,6 +2,7 @@
   "values": [
     "#c:is_windswept",
     "minecraft:meadow",
+    "nomansland:lavender_field",
     "minecraft:stony_peaks",
     "#c:is_mountain",
     "#c:is_snowy"

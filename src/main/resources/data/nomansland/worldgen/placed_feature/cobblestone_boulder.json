@@ -1,0 +1,31 @@
+{
+  "feature": "nomansland:cobblestone_boulder",
+  "placement": [
+    {
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.0,
+
+      "noise_minimum": 0.45,                   
+      "noise_maximum": 0.94,  
+
+      "count_minimum": 0,          
+      "count_maximum": 5
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:surface_water_depth_filter",
+      "max_water_depth": 0
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

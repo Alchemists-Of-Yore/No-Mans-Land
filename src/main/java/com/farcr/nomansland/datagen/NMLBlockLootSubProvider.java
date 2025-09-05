@@ -50,6 +50,8 @@ public class NMLBlockLootSubProvider extends BlockLootSubProvider {
                 add(block, createSlabItemTable(block));
             else if (lootType instanceof DoorBlockLootType)
                 add(block, createDoorTable(block));
+            else if (lootType instanceof CandleCakeBlockLootType candleCakeBlockLootType)
+                add(block, createCandleCakeDrops(candleCakeBlockLootType.getCandle()));
             else if (lootType instanceof FlowerPotBlockLootType flowerPotBlockLootType)
                 add(block, createPotFlowerItemTable(flowerPotBlockLootType.getPlant()));
             else if (lootType instanceof BookshelfBlockLootType)

@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -33,11 +34,31 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.BOG,
                 NMLBiomes.DARK_SWAMP,
                 NMLBiomes.DARK_TAIGA,
+                NMLBiomes.BOREAL_FOREST,
                 NMLBiomes.MAPLE_FOREST,
                 NMLBiomes.MAPLE_GROVE,
                 NMLBiomes.FROZEN_WOODS,
+                NMLBiomes.PRAIRIE,
+                NMLBiomes.LAVENDER_FIELD,
                 NMLBiomes.LUSH_RIVER,
-                NMLBiomes.BLACKWATER_RIVER
+                NMLBiomes.BLACKWATER_RIVER,
+                NMLBiomes.DESERT_RIVER,
+                NMLBiomes.MUD_BEACH,
+                NMLBiomes.FROZEN_SHORE,
+                NMLBiomes.TROPICAL_BEACH,
+                NMLBiomes.DOWNFALL_ISLE
+        );
+
+        tag(NMLTags.IS_CRAGLAND).add(
+                Biomes.SPARSE_JUNGLE,
+                Biomes.WINDSWEPT_GRAVELLY_HILLS
+        );
+        tag(NMLTags.IS_OCEANIC_CRAGLAND).add(
+                Biomes.COLD_OCEAN,
+                Biomes.DEEP_COLD_OCEAN,
+                Biomes.OCEAN,
+                Biomes.DEEP_OCEAN,
+                Biomes.STONY_SHORE
         );
 
         tag(BiomeTags.IS_OVERWORLD).addTags(NMLTags.OLD_GROWTH_FOREST, NMLTags.CAVES);
@@ -45,16 +66,26 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
 
         addToTags(NMLBiomes.AUTUMNAL_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_TEMPERATE);
         addToTags(NMLBiomes.BAYOU, BiomeTags.HAS_SWAMP_HUT, BiomeTags.IS_JUNGLE, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_HOT, Tags.Biomes.IS_JUNGLE_TREE, Tags.Biomes.IS_WET);
-        addToTags(NMLBiomes.BOG, BiomeTags.HAS_SWAMP_HUT, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_WET, Tags.Biomes.IS_WET_OVERWORLD);
+        addToTags(NMLBiomes.BOG, BiomeTags.HAS_SWAMP_HUT, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_WET, Tags.Biomes.IS_WET_OVERWORLD);
         addToTags(NMLBiomes.DARK_SWAMP, BiomeTags.HAS_SWAMP_HUT, BiomeTags.IS_FOREST, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_SPOOKY, Tags.Biomes.IS_TEMPERATE, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_WET, BiomeTags.HAS_WOODLAND_MANSION);
-        addToTags(NMLBiomes.DARK_TAIGA, BiomeTags.IS_TAIGA, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SPOOKY);
-        addToTags(NMLBiomes.MAPLE_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_COLD);
+        addToTags(NMLBiomes.DARK_TAIGA, BiomeTags.IS_TAIGA, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SPOOKY, BiomeTags.HAS_VILLAGE_TAIGA);
+        addToTags(NMLBiomes.BOREAL_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_TEMPERATE, BiomeTags.HAS_VILLAGE_TAIGA);
+        addToTags(NMLBiomes.MAPLE_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_TEMPERATE);
         addToTags(NMLBiomes.MAPLE_GROVE, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_PLATEAU);
         addToTags(NMLTags.OLD_GROWTH_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_TEMPERATE, Tags.Biomes.IS_OLD_GROWTH, Tags.Biomes.IS_RARE);
         addToTags(NMLBiomes.FROZEN_WOODS, Tags.Biomes.IS_RARE, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, BiomeTags.IS_TAIGA, Tags.Biomes.IS_DEAD, BiomeTags.HAS_IGLOO);
+        addToTags(NMLBiomes.PRAIRIE, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_HOT, Tags.Biomes.IS_DRY, Tags.Biomes.IS_SPARSE_VEGETATION, BiomeTags.HAS_VILLAGE_PLAINS);
+        addToTags(NMLBiomes.LAVENDER_FIELD, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_FLORAL, BiomeTags.IS_HILL, BiomeTags.HAS_VILLAGE_PLAINS);
+
+        addToTags(NMLBiomes.DOWNFALL_ISLE, Tags.Biomes.IS_RARE, Tags.Biomes.IS_TEMPERATE);
 
         addToTags(NMLBiomes.LUSH_RIVER, BiomeTags.IS_RIVER, BiomeTags.IS_JUNGLE, Tags.Biomes.IS_HOT, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_JUNGLE_TREE);
         addToTags(NMLBiomes.BLACKWATER_RIVER, BiomeTags.IS_RIVER, Tags.Biomes.IS_TEMPERATE, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_DENSE_VEGETATION);
+        addToTags(NMLBiomes.DESERT_RIVER, BiomeTags.IS_RIVER, Tags.Biomes.IS_DESERT, Tags.Biomes.IS_HOT, Tags.Biomes.IS_SANDY);
+
+        addToTags(NMLBiomes.TROPICAL_BEACH, BiomeTags.IS_BEACH, Tags.Biomes.IS_HOT, Tags.Biomes.IS_LUSH, Tags.Biomes.IS_JUNGLE_TREE);
+        addToTags(NMLBiomes.FROZEN_SHORE, Tags.Biomes.IS_STONY_SHORES, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_ICY, Tags.Biomes.IS_AQUATIC_ICY);
+        addToTags(NMLBiomes.MUD_BEACH, Tags.Biomes.IS_AQUATIC, Tags.Biomes.IS_RARE, Tags.Biomes.IS_WET);
     }
 
     @SafeVarargs

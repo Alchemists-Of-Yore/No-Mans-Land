@@ -50,7 +50,9 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.cave_carp", "Cave Carp");
         add("entity.nomansland.billhook_bass", "Billhook Bass");
         add("entity.nomansland.deer", "Deer");
+        add("entity.nomansland.tortoise", "Tortoise");
         add("fluid_type.nomansland.resin_oil", "Resin Oil");
+        add("nomansland.tooltip.mask.regeneration", "Slowly regenerates health");
         add("nomansland.subtitles.block.spike_trap.extend", "Spikes extend");
         add("nomansland.subtitles.block.spike_trap.retract", "Spikes retract");
         add("nomansland.subtitles.block.monster_anchor.monster_resurrection", "Monster begins resurrection");
@@ -70,6 +72,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitles.entity.goose.hurt", "Goose hurts");
         add("nomansland.subtitles.entity.goose.ambient", "Goose honks");
         add("nomansland.subtitles.particle.droplet.fall", "Droplet falls");
+        add("nomansland.subtitles.entity.living_urn.shatter", "Living Urn shatters");
         add("death.attack.nomansland.icicle_pierce", "%1$s was pierced by an icicle");
         add("death.attack.nomansland.icicle_pierce.player", "%1$s was pierced by an icicle while fighting %2$s");
         add("death.attack.nomansland.spike_fall", "%1$s fell for a spike trap");
@@ -104,5 +107,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("block.nomansland.maple_syrup_cauldron", "Cauldron Filled with Maple Syrup");
         add("block.nomansland.resin_oil_cauldron", "Cauldron Filled with Resin Oil");
         add("block.nomansland.milk_cauldron", "Cauldron Filled with Milk");
+        add("design.nomansland.tortoise.sandy", "Sandy");
+        add("design.nomansland.tortoise.green", "Green");
+        add("design.nomansland.tortoise.gray", "Gray");
     }
 }

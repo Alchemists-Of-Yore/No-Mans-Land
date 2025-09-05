@@ -5,7 +5,9 @@
     "nomansland:honey_cauldron",
     "nomansland:milk_cauldron",
     "nomansland:maple_syrup_cauldron",
-    "nomansland:pot_of_witch_stew",
-    "nomansland:empty_pot_of_witch_stew"
+    {
+      "id": "nomansland:pot_of_witch_stew",
+      "required": false
+    }
   ]
 }

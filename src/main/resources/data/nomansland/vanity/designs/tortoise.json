@@ -1,0 +1,35 @@
+{
+    "type": "default",
+    "styles": {
+        "sandy": 
+        [
+            {
+                "item": "nomansland:tortoise_shell",
+                "assets": {
+                    "default": "nomansland:tortoise_shell_sandy",
+                    "armor": "nomansland:textures/armor/tortoise_shell_sandy.png"
+                }
+            }
+        ],
+        "green": 
+        [
+            {
+                "item": "nomansland:tortoise_shell",
+                "assets": {
+                    "default": "nomansland:tortoise_shell_green",
+                    "armor": "nomansland:textures/armor/tortoise_shell_green.png"
+                }
+            }
+        ],
+        "gray": 
+        [
+            {
+                "item": "nomansland:tortoise_shell",
+                "assets": {
+                    "default": "nomansland:tortoise_shell_gray",
+                    "armor": "nomansland:textures/armor/tortoise_shell_gray.png"
+                }
+            }
+        ]
+    }
+}

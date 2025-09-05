@@ -7,6 +7,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -88,6 +89,7 @@ public class BoulderFeature extends Feature<BoulderFeatureConfiguration> {
             while (i < 10 && level.getBlockState(pos.below(i)).is(BlockTags.REPLACEABLE) && !gravityStonePos.contains(pos.below(i))) {
                 i++;
             }
+            if (level.getBlockState(pos.below(i)).is(Blocks.POWDER_SNOW)) return false;
             if (i == 10) return false;
             i--;
             gravityStonePos.add(pos.below(i));

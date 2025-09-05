@@ -28,7 +28,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NoMansLand.MODID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = NoMansLand.MODID)
 public class FogModifierHandler {
     private final List<FogModifierInstance> fogModifiers;
     private final FogContext context = new FogContext();

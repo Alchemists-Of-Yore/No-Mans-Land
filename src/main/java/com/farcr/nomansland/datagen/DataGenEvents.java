@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = NoMansLand.MODID)
+@EventBusSubscriber(modid = NoMansLand.MODID)
 public class DataGenEvents {
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.registry.items;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NMLEnumParams;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -92,6 +94,8 @@ public class NMLItems {
     //Materials
     public static final ItemDefinition<Item> RESIN = register("resin",
             () -> new Item(new Properties()));
+    public static final ItemDefinition<Item> STURDY_SCUTE = register("sturdy_scute",
+            () -> new Item(new Properties()));
 
     public static final ItemDefinition<Item> RESIN_OIL_BOTTLE = register("resin_oil_bottle",
             () -> new ResinOilBottleItem(new Properties()
@@ -106,8 +110,18 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> FIREBOMB = register("firebomb",
             () -> new FirebombItem(new Properties().stacksTo(8)));
+    public static final ItemDefinition<Item> INK_BOMB = register("ink_bomb",
+            () -> new InkBombItem(new Properties().stacksTo(8)));
     public static final ItemDefinition<Item> EXPLOSIVE = register("explosive",
             () -> new ExplosiveItem(new Properties().stacksTo(8)));
+    public static final ItemDefinition<Item> LIVING_URN = register("living_urn",
+            () -> new LivingUrnItem(new Properties().stacksTo(8).rarity(Rarity.UNCOMMON)));
+    public static final ItemDefinition<Item> INCENDIARY_ARROW = register("incendiary_arrow",
+            () -> new IncendiaryArrowItem(new Properties().stacksTo(16)));
+    public static final ItemDefinition<Item> TORTOISE_SHELL = register("tortoise_shell",
+            () -> new TortoiseShellItem(NMLArmorMaterials.TORTOISE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(NMLConfig.DURABILITY_VALUE.get()).component(NMLDataComponents.TIME_WHEN_DISABLED, 0L)));
+    public static final ItemDefinition<Item> ANCIENT_BRONZE_MASK = register("ancient_bronze_mask",
+            () -> new AncientBronzeMaskItem(NMLArmorMaterials.ANCIENT_BRONZE_MASK, ArmorItem.Type.HELMET, new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).rarity(Rarity.RARE).component(DataComponents.UNBREAKABLE, new Unbreakable(false)).component(NMLDataComponents.PUNCH_COOLDOWN, 0).component(NMLDataComponents.PUNCH_COUNT, 0)));
 
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
@@ -119,6 +133,9 @@ public class NMLItems {
     public static final ItemDefinition<Item> BILLHOOK_BASS_SPAWN_EGG = register("billhook_bass_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.BILLHOOK_BASS, 6443553, 11236417, new Properties()));
 
+    public static final ItemDefinition<Item> TORTOISE_SPAWN_EGG = register("tortoise_spawn_egg", // TODO: color
+            () -> new DeferredSpawnEggItem(NMLEntities.TORTOISE, 3681313, 7098676, new Properties()));
+
     public static final ItemDefinition<Item> DEER_SPAWN_EGG = register("deer_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.DEER, 8412743, 12828347, new Properties()));
 
@@ -126,8 +143,7 @@ public class NMLItems {
             () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
 
     public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
-            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 4335898, 2497045, new Properties()));
-    // egg color probably temporary - inverted deer lmao
+            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 5323048, 2694937, new Properties()));
 
 //    public static final ItemDefinition<Item> CAVE_CARP_BUCKET = registerItem("cave_carp_bucket",
 //            () -> new MobBucketItem(EntityType.PIG, Fluids.WATER, SoundEvents.BUCKET_EMPTY_FISH,

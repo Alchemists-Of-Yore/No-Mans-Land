@@ -1,0 +1,13 @@
+{
+  "values": [
+    "#minecraft:dirt",
+    "#c:sands",
+    "minecraft:gravel",
+    "nomansland:silt",
+    "nomansland:coarse_silt",
+    "minecraft:mud",
+    "minecraft:packed_mud",
+    "minecraft:clay",
+    "minecraft:moss_block"
+  ]
+}

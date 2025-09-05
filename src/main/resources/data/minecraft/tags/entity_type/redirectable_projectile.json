@@ -1,6 +1,7 @@
 {
   "values": [
-    "nomansland:explosive",
-    "nomansland:firebomb"
+    "nomansland:firebomb",
+    "nomansland:ink_bomb",
+    "nomansland:explosive"
   ]
 }

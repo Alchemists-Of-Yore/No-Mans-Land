@@ -4,7 +4,6 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.terraformersmc.biolith.api.biome.BiomePlacement;
 import com.terraformersmc.biolith.api.biome.sub.BiomeParameterTargets;
-import com.terraformersmc.biolith.api.biome.sub.CriterionBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
@@ -15,50 +14,6 @@ import static com.terraformersmc.biolith.api.biome.sub.CriterionBuilder.*;
 
 public class NMLBiomePlacements {
     public static void register() {
-
-        /*
-        if (NMLConfig.CAVES_BIOMES.get()) {
-            BiomePlacement.addOverworld(NMLBiomes.CAVES,
-                    Climate.parameters(
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(0.15F, 0.3F),
-                            Climate.Parameter.span(-2F, 2F),
-                            0.15F));
-
-            BiomePlacement.addOverworld(NMLBiomes.CAVES,
-                    Climate.parameters(
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(0.3F, 0.5F),
-                            Climate.Parameter.span(-2F, 2F),
-                            0.15F));
-
-            BiomePlacement.addOverworld(NMLBiomes.CAVE_DEPTHS,
-                    Climate.parameters(
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(0.6F, 0.8F),
-                            Climate.Parameter.span(-2F, 2F),
-                            0.15F));
-
-            BiomePlacement.addOverworld(NMLBiomes.CAVE_DEPTHS,
-                    Climate.parameters(
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            Climate.Parameter.span(0.8F, 2F),
-                            Climate.Parameter.span(-2F, 2F),
-                            0.1F));
-        }
-         */
 
         if (NMLConfig.MAPLE_BIOMES.get()) {
             BiomePlacement.replaceOverworld(
@@ -118,7 +73,7 @@ public class NMLBiomePlacements {
             );
         }
 
-        if (NMLConfig.OLD_GROWTH_BIOMES.get()) {
+        if (NMLConfig.OLD_GROWTH_FOREST.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.DARK_FOREST,
                     NMLBiomes.OLD_GROWTH_FOREST,
@@ -143,11 +98,65 @@ public class NMLBiomePlacements {
             );
         }
 
+        if (NMLConfig.BOREAL_FOREST.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.TAIGA,
+                    NMLBiomes.BOREAL_FOREST,
+                    0.25
+            );
+
+            BiomePlacement.replaceOverworld(
+                    Biomes.FOREST,
+                    NMLBiomes.BOREAL_FOREST,
+                    0.1
+            );
+
+            transitionalBiome(
+                    Biomes.TAIGA,
+                    NMLBiomes.AUTUMNAL_FOREST,
+                    NMLBiomes.BOREAL_FOREST
+            );
+
+            transitionalBiome(
+                    NMLBiomes.DARK_TAIGA,
+                    NMLBiomes.AUTUMNAL_FOREST,
+                    NMLBiomes.BOREAL_FOREST
+            );
+        }
+
+        if (NMLConfig.PRAIRIE.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.SAVANNA,
+                    NMLBiomes.PRAIRIE,
+                    0.3
+            );
+
+            transitionalBiome(
+                    Biomes.SAVANNA,
+                    Biomes.PLAINS,
+                    NMLBiomes.PRAIRIE
+            );
+
+            transitionalBiome(
+                    Biomes.DESERT,
+                    Biomes.PLAINS,
+                    NMLBiomes.PRAIRIE
+            );
+        }
+
+        if (NMLConfig.LAVENDER_FIELD.get()) {
+            BiomePlacement.replaceOverworld(
+                    Biomes.MEADOW,
+                    NMLBiomes.LAVENDER_FIELD,
+                    0.3
+            );
+        }
+
         if (NMLConfig.DARK_TAIGA.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.TAIGA,
                     NMLBiomes.DARK_TAIGA,
-                    0.2
+                    0.3
             );
         }
 
@@ -163,19 +172,24 @@ public class NMLBiomePlacements {
                     NMLBiomes.DARK_SWAMP,
                     0.1
             );
+            BiomePlacement.replaceOverworld(
+                    Biomes.SWAMP,
+                    NMLBiomes.DARK_SWAMP,
+                    0.2
+            );
         }
 
         if (NMLConfig.BAYOU.get()) {
             BiomePlacement.replaceOverworld(
                     Biomes.MANGROVE_SWAMP,
                     NMLBiomes.BAYOU,
-                    0.4
+                    0.3
             );
 
             BiomePlacement.replaceOverworld(
                     Biomes.JUNGLE,
                     NMLBiomes.BAYOU,
-                    0.1
+                    0.2
             );
 
             transitionalBiome(
@@ -200,22 +214,112 @@ public class NMLBiomePlacements {
             BiomePlacement.addSubOverworld(
                     Biomes.SWAMP,
                     NMLBiomes.BOG,
-                    neighbor(Biomes.PLAINS)
+                    neighbor(Tags.Biomes.IS_PLAINS)
+            );
+            BiomePlacement.addSubOverworld(
+                    Biomes.PLAINS,
+                    NMLBiomes.BOG,
+                    neighbor(Tags.Biomes.IS_SWAMP)
             );
         }
+
+        if (NMLConfig.BLACKWATER_RIVER.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.BLACKWATER_RIVER,
+                    neighbor(Tags.Biomes.IS_SWAMP)
+            );
+        }
+
+        if (NMLConfig.LUSH_RIVER.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.LUSH_RIVER,
+                    neighbor(Tags.Biomes.IS_LUSH)
+            );
+
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.LUSH_RIVER,
+                    neighbor(Tags.Biomes.IS_JUNGLE)
+            );
+        }
+
+        if (NMLConfig.DESERT_RIVER.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.RIVER,
+                    NMLBiomes.DESERT_RIVER,
+                    neighbor(Tags.Biomes.IS_DESERT)
+            );
+        }
+
+        if (NMLConfig.TROPICAL_BEACH.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.BEACH,
+                    NMLBiomes.TROPICAL_BEACH,
+                    neighbor(Tags.Biomes.IS_JUNGLE)
+            );
+        }
+
+        BiomePlacement.addSubOverworld(
+                Biomes.BEACH,
+                NMLBiomes.MUD_BEACH,
+                allOf(
+                        value(BiomeParameterTargets.TEMPERATURE, -0.9F, 2),
+                        value(BiomeParameterTargets.WEIRDNESS,-2, -1.86F),
+                        value(BiomeParameterTargets.EROSION, 1.1F, 2)
+                )
+        );
+
+        if (NMLConfig.MUD_BEACH.get()) {
+//            BiomePlacement.addSubOverworld(
+//                    Biomes.BEACH,
+//                    NMLBiomes.MUD_BEACH,
+//                    neighbor(Tags.Biomes.IS_SWAMP)
+//            );
+//
+//            BiomePlacement.addSubOverworld(
+//                    Biomes.STONY_SHORE,
+//                    NMLBiomes.MUD_BEACH,
+//                    neighbor(Tags.Biomes.IS_SWAMP)
+//            );
+
+
+        }
+
+        if (NMLConfig.FROZEN_SHORE.get()) {
+            BiomePlacement.addSubOverworld(
+                    Biomes.STONY_SHORE,
+                    NMLBiomes.FROZEN_SHORE,
+                    neighbor(Tags.Biomes.IS_SNOWY)
+            );
+        }
+
     }
 
-    public static void transitionalBiome(ResourceKey<Biome> mainBiome, ResourceKey<Biome> secondaryBiome, ResourceKey<Biome> transitionalBiome) {
+    public static void transitionalBiome(ResourceKey<Biome> firstBiome, ResourceKey<Biome> secondBiome, ResourceKey<Biome> transitionalBiome) {
         BiomePlacement.addSubOverworld(
-                mainBiome,
+                firstBiome,
                 transitionalBiome,
-                allOf(neighbor(secondaryBiome), not(NEAR_INTERIOR))
+                allOf(neighbor(secondBiome), not(NEAR_INTERIOR))
         );
 
         BiomePlacement.addSubOverworld(
-                secondaryBiome,
+                secondBiome,
                 transitionalBiome,
-                allOf(alternate(transitionalBiome, mainBiome), not(NEAR_INTERIOR))
+                allOf(neighbor(firstBiome), not(NEAR_INTERIOR))
+        );
+
+        BiomePlacement.addSubOverworld(
+                secondBiome,
+                transitionalBiome,
+                allOf(alternate(transitionalBiome, firstBiome), not(NEAR_INTERIOR))
+        );
+
+        BiomePlacement.addSubOverworld(
+                firstBiome,
+                transitionalBiome,
+                allOf(alternate(transitionalBiome, secondBiome), not(NEAR_INTERIOR))
         );
     }
 
@@ -224,14 +328,11 @@ public class NMLBiomePlacements {
                 interiorBiome,
                 edgeBiome,
                 allOf(
-                        CriterionBuilder.deviationMin(biomeParameterTarget, .02F),
+                        deviationMin(biomeParameterTarget, .05F),
                         anyOf(
-                                allOf(
-                                        NEAR_BORDER,
-                                        not(NEAR_INTERIOR)
-                                ),
-                                CriterionBuilder.BEACHSIDE,
-                                CriterionBuilder.OCEANSIDE,
+                                allOf(NEAR_BORDER, not(NEAR_INTERIOR)),
+                                BEACHSIDE,
+                                OCEANSIDE,
                                 allOf(NEAR_BORDER, neighbor(BiomeTags.IS_RIVER))
                         )
                 )
@@ -242,7 +343,7 @@ public class NMLBiomePlacements {
         BiomePlacement.addSubOverworld(
                 interiorBiome,
                 clearingBiome,
-                allOf(CriterionBuilder.deviationMin(BiomeParameterTargets.WEIRDNESS, .02F), NEAR_INTERIOR, not(NEAR_BORDER))
+                allOf(deviationMin(BiomeParameterTargets.PEAKS_VALLEYS, .05F), NEAR_INTERIOR, not(NEAR_BORDER))
         );
     }
 }

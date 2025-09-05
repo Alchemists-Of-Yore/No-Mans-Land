@@ -1,25 +1,25 @@
 {
   "variants": {
     "bites=0": {
-      "model": "nomansland:block/food/fruit_cake"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake"
     },
     "bites=1": {
-      "model": "nomansland:block/food/fruit_cake_slice1"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake_slice1"
     },
     "bites=2": {
-      "model": "nomansland:block/food/fruit_cake_slice2"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake_slice2"
     },
     "bites=3": {
-      "model": "nomansland:block/food/fruit_cake_slice3"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake_slice3"
     },
     "bites=4": {
-      "model": "nomansland:block/food/fruit_cake_slice4"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake_slice4"
     },
     "bites=5": {
-      "model": "nomansland:block/food/fruit_cake_slice5"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake_slice5"
     },
     "bites=6": {
-      "model": "nomansland:block/food/fruit_cake_slice6"
+      "model": "nomansland:block/food/fruit_cake/fruit_cake_slice6"
     }
   }
 }

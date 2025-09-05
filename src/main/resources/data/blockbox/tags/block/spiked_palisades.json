@@ -1,19 +1,37 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "blockbox"
-    }
-  ],
   "replace": false,
   "values": [
-    "nomansland:spiked_maple_palisade",
-    "nomansland:spiked_pine_palisade",
-    "nomansland:spiked_walnut_palisade",
-    "nomansland:spiked_willow_palisade",
-    "nomansland:stripped_spiked_maple_palisade",
-    "nomansland:stripped_spiked_pine_palisade",
-    "nomansland:stripped_spiked_walnut_palisade",
-    "nomansland:stripped_spiked_willow_palisade"
+    {
+      "id": "nomansland:spiked_maple_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:spiked_pine_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:spiked_walnut_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:spiked_willow_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:stripped_spiked_maple_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:stripped_spiked_pine_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:stripped_spiked_walnut_palisade",
+      "required": false
+    },
+    {
+      "id": "nomansland:stripped_spiked_willow_palisade",
+      "required": false
+    }
   ]
 }

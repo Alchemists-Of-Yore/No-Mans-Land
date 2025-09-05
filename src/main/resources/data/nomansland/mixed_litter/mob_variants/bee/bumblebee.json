@@ -1,9 +1,0 @@
-{
-  "type": "mixed_litter:bee",
-  "texture": "nomansland:entity/mob_variants/bee/bumblebee",
-  "angry_texture": "nomansland:entity/mob_variants/bee/bumblebee_angry",
-  "nectar_texture": "nomansland:entity/mob_variants/bee/bumblebee_nectar",
-  "angry_nectar_texture": "nomansland:entity/mob_variants/bee/bumblebee_angry_nectar",
-  "stinger_texture": "nomansland:entity/mob_variants/bee/bumblebee_stinger",
-  "biomes": "#nomansland:entity/spawns_bumblebees"
-}

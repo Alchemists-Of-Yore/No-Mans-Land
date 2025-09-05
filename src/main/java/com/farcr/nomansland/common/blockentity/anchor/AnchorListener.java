@@ -6,6 +6,7 @@ import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -115,7 +116,8 @@ public class AnchorListener implements GameEventListener {
                     if (!monster.wasExperienceConsumed()) {
 
                         // Add the entity to the dead entity list
-                        monsterAnchorBlockEntity.entityQueue.put(monster, monster.getPosition(0));
+                        CompoundTag tag = new CompoundTag();
+                        if (monster.save(tag)) monsterAnchorBlockEntity.entityQueue.add(tag);
 
                         // Stop the mob from dropping experience and loot
                         monster.skipDropExperience();

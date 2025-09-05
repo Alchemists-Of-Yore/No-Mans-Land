@@ -1,0 +1,13 @@
+{
+  "type": "mixed_litter:ageable_texture",
+  "group": "mixed_litter:remodeled_pigs",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "#nomansland:entity/spawns_wooly_pigs"
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/pig/pig_wooly_light",
+    "baby_texture": "nomansland:entity/mob_variants/pig/pig_wooly_light_baby"
+  }
+}

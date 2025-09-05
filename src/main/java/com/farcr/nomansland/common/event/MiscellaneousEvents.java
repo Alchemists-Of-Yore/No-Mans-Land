@@ -2,32 +2,50 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.torches.ExtinguishedTorchBlock;
-import com.farcr.nomansland.common.entity.bombs.ExplosiveEntity;
+import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
+import com.farcr.nomansland.common.entity.ai.EnemyAttackGoal;
+import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.farcr.nomansland.common.registry.items.NMLArmorMaterials;
+import com.farcr.nomansland.common.registry.items.NMLDataComponents;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
-import com.google.common.collect.ImmutableMap;
+import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,28 +54,34 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
+
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class MiscellaneousEvents {
@@ -70,48 +94,30 @@ public class MiscellaneousEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
 
-        List<Block> torches = List.of(
-                Blocks.TORCH,
-                Blocks.WALL_TORCH,
-                Blocks.SOUL_TORCH,
-                Blocks.SOUL_WALL_TORCH,
-                NMLBlocks.SCONCE_TORCH.get(),
-                NMLBlocks.SCONCE_WALL_TORCH.get(),
-                NMLBlocks.SCONCE_SOUL_TORCH.get(),
-                NMLBlocks.SCONCE_SOUL_WALL_TORCH.get()
-        );
+        boolean isExtinguishing = stack.is(ItemTags.SHOVELS) && NMLConfig.TORCH_EXTINGUISHING.get();
+        boolean isLighting = stack.is(NMLTags.FIRESTARTERS);
+        if (!player.isSpectator() && (isExtinguishing || isLighting)) {
+            for (ExtinguishableBlock holder : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
 
-        // Torch Extinguishing
-        if (torches.contains(state.getBlock()) && stack.is(ItemTags.SHOVELS) && !player.isSpectator() && NMLConfig.TORCH_EXTINGUISHING.get()) {
-            level.playSound(player, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 0.4F, 1.0F);
-
-            if (!level.isClientSide) {
-                stack.hurtAndBreak(1, player, stack.getEquipmentSlot());
-
-                BlockState extinguishedTorchState = ImmutableMap.ofEntries(
-                        Map.entry(Blocks.TORCH, NMLBlocks.EXTINGUISHED_TORCH),
-                        Map.entry(Blocks.WALL_TORCH, NMLBlocks.EXTINGUISHED_WALL_TORCH),
-                        Map.entry(Blocks.SOUL_TORCH, NMLBlocks.EXTINGUISHED_SOUL_TORCH),
-                        Map.entry(Blocks.SOUL_WALL_TORCH, NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_WALL_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_WALL_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_SOUL_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_SOUL_TORCH),
-                        Map.entry(NMLBlocks.SCONCE_SOUL_WALL_TORCH.get(), NMLBlocks.EXTINGUISHED_SCONCE_SOUL_WALL_TORCH)
-                ).get(state.getBlock()).value().withPropertiesOf(state);
-
-                level.setBlockAndUpdate(pos, extinguishedTorchState);
-            }
-            event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
-            event.setCanceled(true);
-        }
-
-        if (state.hasProperty(BlockStateProperties.LIT)) {
-            if (!state.getValue(BlockStateProperties.LIT) && stack.is(NMLTags.FIRESTARTERS) && !stack.is(Items.FLINT_AND_STEEL)) {
-                level.playSound(player, pos, NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
-                level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                level.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
-                event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
-                event.setCanceled(true);
+                if (isExtinguishing) { //extinguishing block
+                    if (state.is(holder.litBlock())) {
+                        level.playSound(player, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 0.4F, 1.0F);
+                        level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                        level.setBlockAndUpdate(pos, holder.extinguishedBlock().withPropertiesOf(state));
+                        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+                        event.setCanceled(true);
+                        break;
+                    }
+                } else { //lighting block
+                    if (state.is(holder.extinguishedBlock())) {
+                        level.playSound(player, pos, NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+                        level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                        level.setBlockAndUpdate(pos, holder.litBlock().withPropertiesOf(state));
+                        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+                        event.setCanceled(true);
+                        break;
+                    }
+                }
             }
         }
 
@@ -160,7 +166,7 @@ public class MiscellaneousEvents {
             Direction playerDir = player.getDirection();
             RailShape railShape = null;
             if (state.getBlock() instanceof BaseRailBlock) {
-                railShape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
+                railShape = state.getValue(((BaseRailBlock) state.getBlock()).getShapeProperty());
             }
             if (railShape != null) {
                 int railCount = 0;
@@ -187,7 +193,7 @@ public class MiscellaneousEvents {
                         // Continue along the chain normally
                         RailShape offsetShape = null;
                         if (stateBase.getBlock() instanceof BaseRailBlock) {
-                            offsetShape = stateBase.getValue(((BaseRailBlock)stateBase.getBlock()).getShapeProperty());
+                            offsetShape = stateBase.getValue(((BaseRailBlock) stateBase.getBlock()).getShapeProperty());
                         }
 
                         if (offsetShape == null)
@@ -224,7 +230,7 @@ public class MiscellaneousEvents {
                             else if (playerDir != Direction.EAST) break;
                         }
                         // Edge case
-                        else if (offsetShape != RailShape.EAST_WEST && offsetShape != RailShape.NORTH_SOUTH){
+                        else if (offsetShape != RailShape.EAST_WEST && offsetShape != RailShape.NORTH_SOUTH) {
                             break;
                         }
 
@@ -235,7 +241,7 @@ public class MiscellaneousEvents {
                         boolean canGoDown = false;
                         RailShape offsetShape = null;
                         if (stateBelow.getBlock() instanceof BaseRailBlock) {
-                            offsetShape = stateBelow.getValue(((BaseRailBlock)stateBelow.getBlock()).getShapeProperty());
+                            offsetShape = stateBelow.getValue(((BaseRailBlock) stateBelow.getBlock()).getShapeProperty());
                         }
 
                         if (offsetShape == null) break;
@@ -315,7 +321,7 @@ public class MiscellaneousEvents {
             default -> null;
         };
         if (state.getBlock() instanceof BaseRailBlock) {
-            state = state.setValue(((BaseRailBlock)state.getBlock()).getShapeProperty(), placedShape);
+            state = state.setValue(((BaseRailBlock) state.getBlock()).getShapeProperty(), placedShape);
         }
         if (state.canSurvive(level, position)) {
             SoundType soundtype = state.getSoundType(level, position, player);
@@ -338,25 +344,126 @@ public class MiscellaneousEvents {
     }
 
     @SubscribeEvent
+    public static void onEffectRemoved(MobEffectEvent.Remove event) {
+        if (event.getEntity() instanceof Mob mob && event.getEffect().value().equals(NMLEffects.PACIFIED.get())) {
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof EnemyAttackGoal);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEffectExpired(MobEffectEvent.Expired event) {
+        if (event.getEffectInstance() != null && event.getEntity() instanceof Mob mob && event.getEffectInstance().getEffect().value().equals(NMLEffects.PACIFIED.get())) {
+            mob.targetSelector.removeAllGoals(goal -> goal instanceof EnemyAttackGoal);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHurt(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        DamageSource source = event.getSource();
+        float damage = event.getAmount();
+
+        ItemStack chestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (chestplate.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
+            Vec3 vec32 = source.getSourcePosition();
+            if (vec32 != null) {
+                Vec3 vec3 = entity.calculateViewVector(0.0F, entity.getYHeadRot());
+                Vec3 vec31 = vec32.vectorTo(entity.position());
+                vec31 = new Vec3(vec31.x, 0.0, vec31.z).normalize();
+                if (!source.is(DamageTypeTags.BYPASSES_SHIELD) && vec31.dot(vec3) > 0.0) {
+                    if (chestplate.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
+                        return;
+                    if (entity instanceof Player playerReal)
+                        playerReal.awardStat(Stats.ITEM_USED.get(chestplate.getItem()));
+                    if (damage >= 3.0F) {
+                        int damageToItem = 1 + Mth.floor(damage);
+                        InteractionHand interactionhand = entity.getUsedItemHand();
+                        if (MiscellaneousEvents.isTortoiseShellDisabled(chestplate, entity))
+                            chestplate.hurtAndBreak(damageToItem, entity, EquipmentSlot.CHEST);
+                        if (chestplate.isEmpty()) {
+                            entity.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+                            entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BREAK, SoundSource.NEUTRAL, 1.0F, 0.2F);
+                        }
+                    }
+                    event.setCanceled(MiscellaneousEvents.isTortoiseShellDisabled(chestplate, entity));
+                    MiscellaneousEvents.disableTortoiseShell(source, entity, chestplate);
+                    if (event.isCanceled()) {
+                        entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.NEUTRAL, 1.0F, 0.2F);
+                    }
+                }
+            }
+        }
+
+        ItemStack helmet = entity.getItemBySlot(EquipmentSlot.HEAD);
+        if (helmet.is(NMLItems.ANCIENT_BRONZE_MASK)) {
+            if (source.getEntity() instanceof Player) {
+                int punchCount = helmet.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0);
+                if (punchCount >= 4) {
+                    entity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                    entity.spawnAtLocation(helmet.copy());
+                } else {
+                    helmet.set(NMLDataComponents.PUNCH_COUNT, punchCount + 1);
+                    helmet.set(NMLDataComponents.PUNCH_COOLDOWN, 100);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onKnockback(LivingKnockBackEvent event) {
+        LivingEntity entity = event.getEntity();
+        ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial().is(NMLArmorMaterials.TORTOISE)) {
+            if (entity.isCrouching()) {
+                event.setStrength(0.0F);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityTick(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof LivingEntity entity) {
+            ItemStack stack = entity.getItemBySlot(EquipmentSlot.HEAD);
+            if (stack.is(NMLItems.ANCIENT_BRONZE_MASK)) {
+                int punchCooldown = stack.getOrDefault(NMLDataComponents.PUNCH_COOLDOWN, 0);
+                if (punchCooldown > 0)
+                    stack.set(NMLDataComponents.PUNCH_COOLDOWN, punchCooldown - 1);
+                else if (stack.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0) > 0)
+                    stack.set(NMLDataComponents.PUNCH_COUNT, 0);
+
+                if (entity instanceof Enemy) entity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 200, 0, false, true, true));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAddAttributeTooltips(AddAttributeTooltipsEvent event) {
+        if (event.getStack().is(NMLItems.ANCIENT_BRONZE_MASK)) {
+            event.addTooltipLines(Component.translatable("nomansland.tooltip.mask.regeneration").withStyle(ChatFormatting.BLUE));
+        }
+    }
+
+    @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
         Explosion explosion = event.getExplosion();
         Level level = event.getLevel();
 
-        event.getAffectedBlocks().forEach(pos -> {
+        for (BlockPos pos : event.getAffectedBlocks()) {
             BlockState state = level.getBlockState(pos);
-            if (state.getBlock() instanceof TorchBlock && !(state.getBlock() instanceof ExtinguishedTorchBlock)) {
-                level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
-                level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 
-                if (state.is(Blocks.TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.WALL_TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_WALL_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.SOUL_TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_TORCH.get().withPropertiesOf(state), 11);
-                if (state.is(Blocks.SOUL_WALL_TORCH)) level.setBlock(pos, NMLBlocks.EXTINGUISHED_SOUL_WALL_TORCH.get().withPropertiesOf(state), 11);
+            for (ExtinguishableBlock block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+                if (state.is(block.litBlock())) {
+                    level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
+                    level.setBlock(pos, block.extinguishedBlock().withPropertiesOf(state), 11);
+                    level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    break;
+                }
             }
 
-            if (event.getExplosion().getDirectSourceEntity() instanceof ExplosiveEntity explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES))
+            if (event.getExplosion().getDirectSourceEntity() instanceof Explosive explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
                 NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
-        });
+            }
+        }
     }
 
     @SubscribeEvent
@@ -444,5 +551,45 @@ public class MiscellaneousEvents {
     public static void onServerStart(ServerAboutToStartEvent event) {
         NMLBiomes.CAVES_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.CAVES);
         NMLBiomes.CAVE_DEPTHS_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.CAVE_DEPTHS);
+    }
+
+    @SubscribeEvent
+    public static void onServerStop(ServerStoppingEvent event) {
+        LazilyCachedDensityFunctionSeedifier.clearCache();
+    }
+
+    public static void spawnItemParticles(int amount, RandomSource randomSource, Level level, ItemStack itemstack, LivingEntity entity) {
+        for (int i = 0; i < amount; i++) {
+            Vec3 vec3 = new Vec3(((double) randomSource.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
+            vec3 = vec3.xRot(-entity.getXRot() * (float) (Math.PI / 180.0));
+            vec3 = vec3.yRot(-entity.getYRot() * (float) (Math.PI / 180.0));
+            double d0 = (double) (-randomSource.nextFloat()) * 0.6 - 0.3;
+            Vec3 vec31 = new Vec3(((double) randomSource.nextFloat() - 0.5) * 0.3, d0, 0.6);
+            vec31 = vec31.xRot(-entity.getXRot() * (float) (Math.PI / 180.0));
+            vec31 = vec31.yRot(-entity.getYRot() * (float) (Math.PI / 180.0));
+            vec31 = vec31.add(entity.getX(), entity.getEyeY(), entity.getZ());
+            if (!itemstack.isEmpty())
+                ((ServerLevel) level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, itemstack), vec31.x, vec31.y, vec31.z, amount, vec3.x, vec3.y + 0.05, vec3.z, 0.5);
+        }
+    }
+
+    public static void disableTortoiseShell(DamageSource source, LivingEntity entity, ItemStack stack) {
+        if (stack.isEmpty() || !stack.isEmpty() && stack.get(NMLDataComponents.TIME_WHEN_DISABLED) != null && (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) < 100L)
+            return;
+        if (source.getEntity() instanceof LivingEntity living) {
+            if (living.getItemBySlot(EquipmentSlot.MAINHAND).canDisableShield(living.getItemBySlot(EquipmentSlot.MAINHAND), entity, living)) {
+                if (entity instanceof Player player)
+                    player.getCooldowns().addCooldown(stack.getItem(), 100);
+                stack.set(NMLDataComponents.TIME_WHEN_DISABLED.get(), entity.level().getGameTime());
+                MiscellaneousEvents.spawnItemParticles(5, living.getRandom(), living.level(), stack, living);
+                entity.level().playSound(null, entity.blockPosition(), SoundEvents.SHIELD_BREAK, SoundSource.NEUTRAL, 1.0F, 0.2F);
+            }
+        }
+    }
+
+    public static boolean isTortoiseShellDisabled(ItemStack stack, Entity entity) {
+        if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
+            return false;
+        return (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) > 100L;
     }
 }

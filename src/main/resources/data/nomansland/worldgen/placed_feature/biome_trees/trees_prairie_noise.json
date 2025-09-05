@@ -1,0 +1,31 @@
+{
+  "feature": "nomansland:biome_trees/trees_prairie",
+  "placement": [
+    {
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.65,
+
+      "noise_minimum": 0.43,                   
+      "noise_maximum": 0.62,  
+
+      "count_minimum": 0,          
+      "count_maximum": 16
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:surface_water_depth_filter",
+      "max_water_depth": 0
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

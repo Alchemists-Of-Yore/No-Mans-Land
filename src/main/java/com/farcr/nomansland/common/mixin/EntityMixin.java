@@ -6,7 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -44,12 +46,6 @@ public abstract class EntityMixin {
 
     @Shadow public abstract BlockPos blockPosition();
 
-    @Shadow private EntityDimensions dimensions;
-
-    @Shadow public abstract EntityDimensions getDimensions(Pose pose);
-
-    @Shadow public abstract Pose getPose();
-
     @Shadow public abstract Set<String> getTags();
 
     @Shadow public abstract BlockPos getOnPos();
@@ -68,11 +64,6 @@ public abstract class EntityMixin {
 
     @Unique @Nullable
     private Vec3 startingToFallPosition;
-
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void init(EntityType<?> entityType, Level level, CallbackInfo ci) {
-        if (entityType == EntityType.COW) dimensions = getDimensions(getPose()) == null ?  entityType.getDimensions() : getDimensions(getPose());
-    }
 
     @Inject(method = "getOnPosLegacy", at = @At("RETURN"), cancellable = true)
     private void getOnPosLegacy(CallbackInfoReturnable<BlockPos> cir) {

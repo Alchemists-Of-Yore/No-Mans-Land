@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "i i",
+    "iii",
+    "iii"
+  ],
+  "key": {
+    "i": {
+      "item": "nomansland:sturdy_scute"
+    }
+  },
+  "result": {
+    "id": "nomansland:tortoise_shell",
+    "count": 1
+  }
+}

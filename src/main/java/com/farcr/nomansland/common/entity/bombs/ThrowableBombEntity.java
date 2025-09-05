@@ -6,24 +6,23 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class ThrowableBombEntity extends ThrowableProjectile {
 
     private static final EntityDataAccessor<Boolean> DATA_SHOULD_FUSE_ID = SynchedEntityData.defineId(ThrowableBombEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private float oRoll;
-    private float roll;
-    private int oFuse;
-    private int fuse;
-    private int maxFuse = -1;
+    protected float oRoll;
+    protected float roll;
+    protected int oFuse;
+    protected int fuse;
+    protected int maxFuse = -1;
 
     protected ThrowableBombEntity(EntityType<? extends ThrowableProjectile> entityType, Level level) {
         super(entityType, level);
@@ -90,7 +89,7 @@ public abstract class ThrowableBombEntity extends ThrowableProjectile {
             }
 
             if (!onGround()) {
-                level.addParticle(getParticle(), getX(), getY() + getBbHeight(), getZ(), 0, 0, 0);
+                level.addParticle(getParticle(level), getX(), getY() + getBbHeight(), getZ(), 0, 0, 0);
             }
         } else {
             if (shouldFuse()) {
@@ -117,12 +116,11 @@ public abstract class ThrowableBombEntity extends ThrowableProjectile {
     public void startFuse(int maxFuse) {
         this.maxFuse = maxFuse;
         entityData.set(DATA_SHOULD_FUSE_ID, maxFuse >= 0);
-        level().playSound(null, getX(), getY(), getZ(), SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     protected abstract void explode();
 
-    protected abstract ParticleOptions getParticle();
+    protected abstract ParticleOptions getParticle(LevelAccessor levelAccessor);
 
     public float getRoll(float partialTicks) {
         return Mth.lerp(partialTicks, oRoll, roll);

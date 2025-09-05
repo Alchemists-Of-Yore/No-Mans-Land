@@ -7,8 +7,11 @@ import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
 import com.farcr.nomansland.common.registry.entities.*;
+import com.farcr.nomansland.common.registry.items.NMLArmorMaterials;
 import com.farcr.nomansland.common.registry.items.NMLCreativeTabs;
+import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.*;
 import net.minecraft.resources.ResourceLocation;
@@ -17,11 +20,14 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(NoMansLand.MODID)
 public class NoMansLand {
 
     public static final String MODID = "nomansland";
+    public static final Logger LOGGER = LogManager.getLogger("No Man's Land");
 
     public NoMansLand(IEventBus modEventBus, ModContainer modContainer) {
 
@@ -29,9 +35,11 @@ public class NoMansLand {
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("apple_fruit"), NoMansLand.location("apple"));
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("pear_fruit"), NoMansLand.location("pear"));
         NMLBlocks.BLOCKS.register(modEventBus);
+        NMLExtinguishables.EXTINGUISHABLES.register(modEventBus);
         NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(modEventBus);
         NMLEntities.ENTITIES.register(modEventBus);
         NMLSensors.SENSORS.register(modEventBus);
+        NMLMemoryModules.MEMORY_MODULES.register(modEventBus);
         NMLFeatures.FEATURES.register(modEventBus);
         NMLFoliagePlacerTypes.FOLIAGE_PLACER_TYPES.register(modEventBus);
         NMLTrunkPlacerTypes.TRUNK_PLACER_TYPES.register(modEventBus);
@@ -46,7 +54,6 @@ public class NoMansLand {
         NMLFallenTreeDecoratorTypes.FALLEN_TREE_DECORATOR_TYPES.register(modEventBus);
         NMLFogModifiers.FOG_MODIFIERS.register(modEventBus);
         NMLMobVariants.FROG_VARIANTS.register(modEventBus);
-        NMLMobVariants.MOB_VARIANT_TYPES.register(modEventBus);
         NMLEffects.MOB_EFFECTS.register(modEventBus);
         NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(modEventBus);
         NMLCriteriaTriggers.TRIGGERS.register(modEventBus);
@@ -55,6 +62,12 @@ public class NoMansLand {
         NMLFluids.FLUID_TYPES.register(modEventBus);
         NMLFluids.FLUIDS.register(modEventBus);
         NMLBiomeModifiers.BIOME_MODIFIERS.register(modEventBus);
+        NMLPlacementModifiers.PLACEMENT_MODIFIER_TYPES.register(modEventBus);
+        NMLDensityFunctions.DENSITY_FUNCTIONS.register(modEventBus);
+        NMLMaterialConditions.MATERIAL_CONDITIONS.register(modEventBus);
+        NMLMaterialRules.MATERIAL_RULES.register(modEventBus);
+        NMLArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
+        NMLDataComponents.DATA_COMPONENTS.register(modEventBus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
@@ -70,9 +83,10 @@ public class NoMansLand {
 
         modContainer.registerConfig(ModConfig.Type.COMMON, NMLConfig.COMMON_CONFIG);
         modContainer.registerConfig(ModConfig.Type.CLIENT, NMLConfig.CLIENT_CONFIG);
+        modContainer.registerConfig(ModConfig.Type.STARTUP, NMLConfig.STARTUP_CONFIG);
     }
     
     public static ResourceLocation location(String path) {
-        return ResourceLocation.fromNamespaceAndPath(NoMansLand.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 }

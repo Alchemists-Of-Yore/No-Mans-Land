@@ -4,7 +4,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "nomansland:block/food/stallion_strips",
-		"particle": "nomansland:block/food/stallion_strips"
+		"particle": "nomansland:block/food/stallion_strips_particle"
 	},
 	"elements": [
 		{

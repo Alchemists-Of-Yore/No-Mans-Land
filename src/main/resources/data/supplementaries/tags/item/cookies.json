@@ -1,10 +1,4 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "supplementaries"
-    }
-  ],
   "values": [
     "nomansland:honeyed_apple",
     "nomansland:syruped_pear"

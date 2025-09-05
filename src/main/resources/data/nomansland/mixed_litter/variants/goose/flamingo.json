@@ -1,0 +1,12 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:goose",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "#nomansland:entity/spawns_wild_chickens"
+    }
+  },
+  "arguments": {
+    "texture": "nomansland:entity/goose/goose_flamingo"
+  }
+}

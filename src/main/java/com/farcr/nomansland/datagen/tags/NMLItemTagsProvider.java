@@ -90,7 +90,6 @@ public class NMLItemTagsProvider extends ItemTagsProvider {
 
         addToTags(NMLTags.BOOKSHELVES.itemTag(), Tags.Items.BOOKSHELVES, BlueprintIntegration.woodenBookshelves().itemTag());
         tag(ItemTags.PLANKS).addTag(NMLTags.TRIMMED_PLANKS.itemTag());
-
         tag(ItemTags.LOGS_THAT_BURN).addTags(NMLTags.MAPLE_LOGS.itemTag(), NMLTags.PINE_LOGS.itemTag(), NMLTags.WALNUT_LOGS.itemTag(), NMLTags.WILLOW_LOGS.itemTag());
     }
 

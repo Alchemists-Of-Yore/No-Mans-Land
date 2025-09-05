@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.block;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -39,7 +40,7 @@ public class FrostedGrassBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (player.getMainHandItem().is(Blocks.SNOW.asItem()) && !state.getValue(SNOWLOGGED)) {
+        if (player.getMainHandItem().is(Blocks.SNOW.asItem()) && !state.getValue(SNOWLOGGED) && NMLConfig.GRASS_FROSTING.get()) {
             level.setBlockAndUpdate(pos, state.setValue(SNOWLOGGED, true));
             stack.consume(1, player);
             level.playSound(player, pos, SoundEvents.SNOW_PLACE, SoundSource.PLAYERS, 1.0F, (level.random.nextFloat() - level.random.nextFloat()) * 0.6F + 1.2F);

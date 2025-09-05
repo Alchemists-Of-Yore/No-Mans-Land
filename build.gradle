@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
-    id 'net.neoforged.moddev' version '2.0.86'
+    id 'net.neoforged.moddev' version '2.0.107'
 }
 
 
@@ -101,7 +101,8 @@ dependencies {
 //    }
 
     implementation "com.terraformersmc:biolith-neoforge:$bt_version"
-    implementation "maven.modrinth:mixed-litter:$ml_version"
+//    implementation "maven.modrinth:mixed-litter:$ml_version"
+    implementation "dev.tazer:mixed_litter:1.0.0"
     jarJar(implementation("com.moulberry:mixinconstraints:1.0.7") {
                 exclude group: "org.slf4j",
                         module: "slf4j-api"
@@ -118,14 +119,16 @@ dependencies {
     compileOnly "maven.modrinth:create:1.21.1-6.0.4"
     compileOnly "maven.modrinth:serene-seasons:SPj5bJoM"
     compileOnly "maven.modrinth:glitchcore:8wmCpbQ2"
-    compileOnly "maven.modrinth:supplementaries:neoforge_1.21-3.0.43-beta"
-    compileOnly "maven.modrinth:moonlight:neoforge_1.21-2.17.37"
+    implementation "maven.modrinth:supplementaries:neoforge_1.21-3.0.43-beta"
+    implementation "maven.modrinth:moonlight:neoforge_1.21-2.17.37"
+
+    implementation "maven.modrinth:vanity-core:5.0.2"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
     compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
     localRuntime "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
 
-    localRuntime "maven.modrinth:xaeros-world-map:1.38.9_NeoForge_1.21"
+//    localRuntime "maven.modrinth:xaeros-world-map:1.38.9_NeoForge_1.21"
     localRuntime "maven.modrinth:appleskin:3.0.5+mc1.21"
     localRuntime "maven.modrinth:worldedit:7.3.6"
     localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.9-neoforge"

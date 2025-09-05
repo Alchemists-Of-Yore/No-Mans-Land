@@ -52,6 +52,7 @@ public class NMLSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> DROPLET_FALLS = registerSound("particle.droplet.fall");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> LIVING_URN_SHATTERS = registerSound("entity.living_urn.shatter");
 
     public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
     public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);

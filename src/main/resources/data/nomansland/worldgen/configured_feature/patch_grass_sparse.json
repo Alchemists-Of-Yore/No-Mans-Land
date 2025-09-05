@@ -1,0 +1,62 @@
+{
+	"type": "nomansland:multispread_patch",
+	"config": {
+		"try_density": 2.5,
+		"xz_spread": {
+			"type": "minecraft:uniform",
+			"min_inclusive": 8,
+			"max_inclusive": 12
+		  },
+		"y_spread": 3,
+		"sparseness": 3,
+		"features": [
+		
+			{
+				"feature": {
+					"type": "minecraft:simple_block",
+					"config": {
+						"to_place": {
+							"type": "minecraft:simple_state_provider",
+							"state": {
+								"Name": "minecraft:short_grass"
+							}
+						}
+					}
+				},
+				"placement": [
+					{
+					  "type": "minecraft:block_predicate_filter",
+					  "predicate": {
+						"type": "minecraft:matching_blocks",
+						"blocks": "minecraft:air"
+					  }
+					}
+				]
+			},
+			
+			{
+				"feature": {
+					"type": "minecraft:simple_block",
+					"config": {
+						"to_place": {
+							"type": "minecraft:simple_state_provider",
+							"state": {
+								"Name": "nomansland:grass_sprouts"
+							}
+						}
+					}
+				},
+				"placement": [
+					{
+					  "type": "minecraft:block_predicate_filter",
+					  "predicate": {
+						"type": "minecraft:matching_blocks",
+						"blocks": "minecraft:air"
+					  }
+					}
+				]
+			}
+			
+    ]
+	}
+}

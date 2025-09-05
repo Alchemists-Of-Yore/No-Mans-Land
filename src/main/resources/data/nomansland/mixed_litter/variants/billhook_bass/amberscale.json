@@ -1,0 +1,7 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:billhook_bass",
+  "arguments": {
+    "texture": "nomansland:entity/billhook_bass/billhook_bass_amberscale"
+  }
+}

@@ -1,6 +1,0 @@
-{
-  "type": "mixed_litter:cow",
-  "texture": "nomansland:entity/mob_variants/cow/cow_highland",
-  "baby_texture": "nomansland:entity/mob_variants/cow/cow_highland_baby",
-  "biomes": "#nomansland:entity/spawns_fluffy_cows"
-}

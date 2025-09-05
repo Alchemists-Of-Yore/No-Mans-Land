@@ -2,7 +2,8 @@ package com.farcr.nomansland.common.item;
 
 
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -12,10 +13,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
-public abstract class ThrowableBombItem extends Item {
+public abstract class ThrowableBombItem extends Item implements ProjectileItem {
 
     protected static final int DEFAULT_THROW_TIME = 10;
     private static final int COOLDOWN_TIME = 40;
@@ -47,7 +49,7 @@ public abstract class ThrowableBombItem extends Item {
         }
 
         if (!level.isClientSide()) {
-            ThrowableBombEntity bomb = this.createBomb(entity, level);
+            ThrowableBombEntity bomb = asProjectile(level, entity.position(), stack, entity.getNearestViewDirection());
             bomb.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), 0.0F, 0.8F, 1.0F);
             level.addFreshEntity(bomb);
         }
@@ -69,7 +71,11 @@ public abstract class ThrowableBombItem extends Item {
         return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 
-    public abstract ThrowableBombEntity createBomb(LivingEntity entity, Level level);
+    @Override
+    public DispenseConfig createDispenseConfig() {
+        return DispenseConfig.builder().power(DispenseConfig.DEFAULT.power() * 0.5F).build();
+    }
 
-    public abstract ThrowableBombEntity createBomb(Level level, BlockPos pos);
+    @Override
+    public abstract ThrowableBombEntity asProjectile(Level level, Position position, ItemStack itemStack, Direction direction);
 }

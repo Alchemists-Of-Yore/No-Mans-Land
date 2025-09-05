@@ -1,0 +1,24 @@
+{
+  "feature": "nomansland:dithered_dirt_patch",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 7
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR"
+    },
+    {
+          "type": "nomansland:height_filter",
+          "height_min": 68,
+          "height_max": 74
+       },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

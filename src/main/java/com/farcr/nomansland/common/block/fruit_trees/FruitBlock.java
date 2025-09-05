@@ -111,7 +111,7 @@ public class FruitBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
-        level.destroyBlock(hit.getBlockPos(), true);
+        level.destroyBlock(hit.getBlockPos(), !projectile.isOnFire());
     }
 
     @Override

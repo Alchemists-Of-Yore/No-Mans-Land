@@ -42,6 +42,7 @@ public class NMLBiomeModifiers {
     private void setup() {
         GenerationStep.Decoration vegetalDecoration = GenerationStep.Decoration.VEGETAL_DECORATION;
         GenerationStep.Decoration localModifications = GenerationStep.Decoration.LOCAL_MODIFICATIONS;
+        GenerationStep.Decoration undergroundDecoration = GenerationStep.Decoration.UNDERGROUND_DECORATION;
 
         modifyBiome(Biomes.BADLANDS)
                 .changeColors(15322281,
@@ -83,8 +84,7 @@ public class NMLBiomeModifiers {
                         new SpawnerData(EntityType.COW, 6, 4, 4)
                 )
                 .addSpawns(
-                        new SpawnerData(EntityType.RABBIT, 15, 2, 8),
-                        new SpawnerData(EntityType.HUSK, 100, 4, 4)
+                        new SpawnerData(EntityType.RABBIT, 15, 2, 8)
                 )
                 .removeSpawns(EntityType.SHEEP)
                 .build(featureToBiomes);
@@ -300,8 +300,24 @@ public class NMLBiomeModifiers {
                         7631435
                 )
                 .changeParticle(NMLParticleTypes.CAVE_DUST.get(), 0.01F)
-                //.addFeatures(new FeatureWithStep(ORE_SILT, GenerationStep.Decoration.UNDERGROUND_ORES))
-                // Commented out until NML biomes are converted to modifiers to avoid a feature order cycle
+                .addFeatures(new FeatureWithStep(feature("underground/ore_silt"), GenerationStep.Decoration.UNDERGROUND_ORES))
+                .build(featureToBiomes);
+
+        modifyBiome(Biomes.ERODED_BADLANDS)
+                .changeColors(
+                        15322281,
+                        4106959,
+                        3048361,
+                        11128544,
+                        10387789,
+                        9470285
+                )
+                .changeSpawns(new SpawnerData(EntityType.ARMADILLO, 8, 1, 2))
+                .addSpawns(
+                        new SpawnerData(EntityType.RABBIT, 13, 2, 8),
+                        new SpawnerData(EntityType.HUSK, 100, 4, 4)
+                )
+                .removeSpawns(EntityType.ZOMBIE, EntityType.WOLF)
                 .build(featureToBiomes);
 
         modifyBiome(Biomes.FLOWER_FOREST)
@@ -555,6 +571,9 @@ public class NMLBiomeModifiers {
                                 PATCH_DEAD_BUSH,
                                 patch("dried_grass_mycelium")
                         )
+                )
+                .addSpawns(
+                        new SpawnerData(EntityType.FROG, 4, 3, 5)
                 )
                 .removeFeatures(DISK_SAND, DISK_GRAVEL, PATCH_SUGAR_CANE, PATCH_PUMPKIN)
                 .build(featureToBiomes);
@@ -869,7 +888,7 @@ public class NMLBiomeModifiers {
                         8960833
                 )
                 .addFeatures(
-                        new FeatureWithStep(feature("pond_stony_shore"), GenerationStep.Decoration.LOCAL_MODIFICATIONS),
+                        new FeatureWithStep(feature("pond_stony_shore"), localModifications),
                         new FeatureWithStep(feature("tuff_boulder"), GenerationStep.Decoration.UNDERGROUND_DECORATION) // later stage to avoid ore generation
                 )
                 .addFeatures(FeatureWithStep.vegetationFeatures(
@@ -1070,12 +1089,34 @@ public class NMLBiomeModifiers {
                 .removeSpawns(EntityType.SHEEP, EntityType.ARMADILLO)
                 .build(featureToBiomes);
 
+        modifyBiome(Biomes.WOODED_BADLANDS)
+                .changeColors(
+                        15322281,
+                        4106959,
+                        3048361,
+                        11128544,
+                        10387789,
+                        9470285
+                )
+                .addSpawns(
+                        new SpawnerData(EntityType.RABBIT, 15, 2, 8),
+                        new SpawnerData(EntityType.HUSK, 100, 4, 4),
+                        new SpawnerData(EntityType.PIG, 5, 2, 8),
+                        new SpawnerData(EntityType.CHICKEN, 8, 2, 8)
+                )
+                .removeSpawns(EntityType.ZOMBIE)
+                .build(featureToBiomes);
+
         /* Tag-based feature additions */
         // Biome category-based broad brushes
         addFeaturesToTag(NMLTags.HAS_CACTUS, vegetalDecoration, patch("barrel_cactus_desert"), patch("succulent_desert"), flowers("all_tulips"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_OVERWORLD_FOLIAGE, vegetalDecoration, patch("grass_sprouts_normal"), patch("roots"), patch("cattail"), patch("reeds"), patch("waterlily_common"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_SWAMP_FOLIAGE, vegetalDecoration, patch("duckweed"), patch("pickleweed"), patch("reeds_swamp"), patch("cattail_swamp"));
         addFeaturesToTag(NMLTags.IS_SHORELINE, vegetalDecoration, feature("seashells"));
+
+        // Biome category-based terrain modification
+        addFeaturesToTag(NMLTags.IS_CRAGLAND, localModifications, feature("crag_rock_craglands"));
+        addFeaturesToTag(NMLTags.IS_OCEANIC_CRAGLAND, localModifications, feature("crag_rock_ocean"));
 
         // Specific foliage patches
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_BEACHGRASS, vegetalDecoration, patch("beachgrass"));
@@ -1090,6 +1131,7 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_ICICLES, vegetalDecoration, patch("icicles"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_OAT_GRASS, vegetalDecoration, feature("oat_grass_patch"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_RAFFLESIA, vegetalDecoration, patch("rafflesia"));
+        addFeaturesToTag(NMLTags.FeatureAddition.HAS_GROUND_IVY, vegetalDecoration, feature("ground_ivy_patch"));
 
         // Fallen trees
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_FALLEN_TREES_DRY, vegetalDecoration, feature("fallen_tree_dry"));
@@ -1108,6 +1150,7 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_QUARTZITE_GEODE, localModifications, feature("underground/quartzite_geode"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_NETHER_QUARTZITE_GEODE, localModifications, feature("underground/nether_quartzite_geode"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_MUD_PATCH, GenerationStep.Decoration.FLUID_SPRINGS, feature("mud_patch"));
+        addFeaturesToTag(NMLTags.HAS_GRAVEL_SHORE, localModifications, feature("gravel_decorator_pebble"), feature("gravel_decorator_boulder"), feature("gravel_decorator_pond"));
 
         // Extra mushroom stuff
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_FIELD_MUSHROOM_CIRCLE, vegetalDecoration, feature("field_mushroom_circle"));
@@ -1115,6 +1158,8 @@ public class NMLBiomeModifiers {
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_SHELF_MUSHROOM_OLD_GROWTH, vegetalDecoration, feature("shelf_mushroom_old_growth"));
         addFeaturesToTag(NMLTags.FeatureAddition.HAS_SHELF_MUSHROOM_TAIGA, vegetalDecoration, feature("shelf_mushroom_taiga"));
 
+
+        addFeaturesToTag(NMLTags.FeatureAddition.REGULAR_TORTOISE_BURROWS, undergroundDecoration, feature("underground/tortoise_burrows/tortoise_burrow"));
         /* Tag-based feature removals */
         
         processFeatures();
