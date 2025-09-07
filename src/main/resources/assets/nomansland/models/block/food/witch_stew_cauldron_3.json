@@ -5,16 +5,16 @@
 	"render_type": "cutout",
 	"textures": {
 		"4": "block/cauldron_bottom",
-		"5": "nomansland/block/food:witch_stew_fluid_1",
-		"7": "nomansland/block/food:witch_stew_side_1",
-		"8": "nomansland/block/food:witch_stew_skull",
-		"9": "nomansland/block/food:witch_stew_side_0",
-		"10": "nomansland/block/food:witch_stew_bones",
-		"11": "nomansland/block/food:witch_stew_inner",
-		"top": "nomansland/block/food:witch_stew_top",
+		"5": "nomansland:block/food/witch_stew_fluid_1",
+		"7": "nomansland:block/food/witch_stew_side_1",
+		"8": "nomansland:block/food/witch_stew_skull",
+		"9": "nomansland:block/food/witch_stew_side_0",
+		"10": "nomansland:block/food/witch_stew_bones",
+		"11": "nomansland:block/food/witch_stew_inner",
+		"top": "nomansland:block/food/witch_stew_top",
 		"particle": "block/cauldron_side",
 		"side": "block/cauldron_side",
-		"inside": "nomansland/block/food:witch_stew_side_inner"
+		"inside": "nomansland:block/food/witch_stew_side_inner"
 	},
 	"elements": [
 		{
