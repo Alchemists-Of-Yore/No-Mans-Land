@@ -1,0 +1,21 @@
+{
+    "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+      "##",
+      "##"
+  ],
+  "key": {
+      "#": {
+          "item": "nomansland:fat_joint"
+      }
+  },
+  "result": {
+      "id": "nirvana:thc"
+  }
+}

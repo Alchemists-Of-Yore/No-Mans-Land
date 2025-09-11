@@ -1,0 +1,29 @@
+{
+    "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#",
+        "G",
+        "S"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:paper"
+        },
+        "G": {
+            "item": "minecraft:gunpowder"
+        },
+        "S": {
+            "item": "nirvana:weed"
+        }
+    },
+    "result": {
+        "id": "nomansland:fat_joint",
+        "count": 1
+    }
+}
