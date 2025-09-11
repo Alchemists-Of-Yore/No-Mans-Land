@@ -77,7 +77,7 @@ public class TortoiseModel<T extends Tortoise> extends AgeableHierarchicalModel<
         head.xRot = headPitch * (float) (Math.PI / 180.0);
         head.yRot = netHeadYaw * (float) (Math.PI / 180.0);
 
-        animateWalk(TortoiseAnimation.TORTOISE_WALK, limbSwing, limbSwingAmount, 9, 200);
+        animateWalk(TortoiseAnimation.TORTOISE_WALK, limbSwing, limbSwingAmount, 15, 200);
         animate(entity.emergingAnimationState, TortoiseAnimation.TORTOISE_EMERGE, ageInTicks);
         animate(entity.hidingAnimationState, TortoiseAnimation.TORTOISE_HIDE, ageInTicks);
         animate(entity.layingEggAnimationState, TortoiseAnimation.TORTOISE_LAY_EGG, ageInTicks);
