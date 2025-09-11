@@ -6,6 +6,8 @@ import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.model.*;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.moose.MooseModel;
+import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
+import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
@@ -35,7 +37,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID, value = Dist.CLIENT)
 public class ClientSetupEvents {
     @SubscribeEvent

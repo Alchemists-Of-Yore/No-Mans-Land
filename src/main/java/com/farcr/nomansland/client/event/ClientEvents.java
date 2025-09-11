@@ -27,8 +27,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unused")
-@EventBusSubscriber(modid = NoMansLand.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = NoMansLand.MODID, value = Dist.CLIENT)
 public class ClientEvents {
 
     @SubscribeEvent

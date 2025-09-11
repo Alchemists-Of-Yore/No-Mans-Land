@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.model;
+package com.farcr.nomansland.client.model.tortoise;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

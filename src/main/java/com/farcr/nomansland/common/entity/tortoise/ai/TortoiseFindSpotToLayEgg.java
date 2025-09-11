@@ -78,7 +78,7 @@ public class TortoiseFindSpotToLayEgg extends Goal {
                 if (level.isEmptyBlock(horizontalPos.above()) &&
                         level.getBlockState(horizontalPos).isPathfindable(PathComputationType.LAND)
                         && tortoise.isValidHome(horizontalPos) &&
-                        BlockPos.squareOutSouthEast(horizontalPos).allMatch(blockPos -> tortoise.isValidHome(blockPos))) {
+                        BlockPos.squareOutSouthEast(horizontalPos).allMatch(tortoise::isValidHome)) {
                     blockToGo = horizontalPos;
                     break;
                 }

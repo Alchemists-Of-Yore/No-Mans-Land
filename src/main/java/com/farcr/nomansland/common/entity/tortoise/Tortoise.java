@@ -62,6 +62,9 @@ public class Tortoise extends Animal {
             .scale(BABY_SCALE));
     private int layEggCounter;
     private int timesFedWhenBaby;
+    public final AnimationState hidingAnimationState = new AnimationState();
+    public final AnimationState emergingAnimationState = new AnimationState();
+    public final AnimationState layingEggAnimationState = new AnimationState();
 
     public Tortoise(EntityType<? extends Tortoise> entityType, Level level) {
         super(entityType, level);
@@ -90,13 +93,13 @@ public class Tortoise extends Animal {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new TortoiseSearchForDangerGoal(this));
         this.goalSelector.addGoal(1, new TortoiseStayAroundHomeGoal(this, 0.75F));
-        this.goalSelector.addGoal(1, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(2, new TortoiseSleepAndWakeUpGoal(this));
         this.goalSelector.addGoal(3, new TortoiseBreedGoal(this, 0.5F));
         this.goalSelector.addGoal(4, new TortoiseLayEggGoal(this));
         this.goalSelector.addGoal(4, new TortoiseFindSpotToLayEgg(this, 0.85F));
         this.goalSelector.addGoal(4, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
         this.goalSelector.addGoal(5, new FollowParentGoal(this, 0.5));
+        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.5F));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
     }
@@ -119,6 +122,24 @@ public class Tortoise extends Animal {
         builder.define(Tortoise.IN_SHELL, false);
         builder.define(Tortoise.SEARCHING, false);
         builder.define(Tortoise.HURT_WHEN, 0L);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        if (key.equals(LAYING_EGG)) {
+            resetAnimations();
+            if (isLayingEgg()) layingEggAnimationState.startIfStopped(tickCount);
+            refreshDimensions();
+        }
+
+        if (key.equals(IN_SHELL)) {
+            resetAnimations();
+            if (inShell()) hidingAnimationState.startIfStopped(tickCount);
+            else emergingAnimationState.startIfStopped(tickCount);
+            refreshDimensions();
+        }
+
+        super.onSyncedDataUpdated(key);
     }
 
     @Override
@@ -337,6 +358,12 @@ public class Tortoise extends Animal {
         if (!this.isBaby() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
             this.spawnAtLocation(new ItemStack(NMLItems.STURDY_SCUTE.get(), this.random.nextIntBetweenInclusive(1, 2)), 1);
         }
+    }
+
+    private void resetAnimations() {
+        hidingAnimationState.stop();
+        emergingAnimationState.stop();
+        layingEggAnimationState.stop();
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
-import com.farcr.nomansland.client.model.TortoiseModel;
+import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
