@@ -1,15 +1,18 @@
 package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.common.definitions.ItemLikeDefinition;
-import com.farcr.nomansland.common.integration.BoatloadIntegration;
 import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.integration.boatload.BoatloadIntegration;
+import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.*;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
@@ -310,6 +313,8 @@ public class CreativeModeTabHandler {
             insertAfter(CAULDRON, TAP);
             insertBefore(SCAFFOLDING, NMLItems.WOODEN_SCAFFOLDING);
             insertAfter(CONDUIT, WARDING_EFFIGY);
+
+            if (Mods.NIRVANA.isLoaded()) insertBefore(Mods.NIRVANA.getItem("thc"), NirvanaIntegration.FAT_JOINT_ITEM);
         }
 
         if (tab == CreativeModeTabs.FOOD_AND_DRINKS) {

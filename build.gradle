@@ -81,12 +81,34 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
+                name = "CurseMaven"
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
                 name = "Modrinth"
                 url = "https://api.modrinth.com/maven"
             }
         }
         filter {
             includeGroup "maven.modrinth"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Registrate"
+                url = "https://mvn.devos.one/snapshots"
+            }
+        }
+        filter {
+            includeGroup "com.tterrag.registrate"
         }
     }
     maven { url "https://maven.blamejared.com/" }
@@ -121,8 +143,9 @@ dependencies {
     compileOnly "maven.modrinth:glitchcore:8wmCpbQ2"
     implementation "maven.modrinth:supplementaries:neoforge_1.21-3.0.43-beta"
     implementation "maven.modrinth:moonlight:neoforge_1.21-2.17.37"
-
+    implementation "curse.maven:nirvana-1278909:6970116"
     implementation "maven.modrinth:vanity-core:5.0.2"
+    implementation "com.tterrag.registrate:Registrate:MC1.21-1.3.0+62"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
     compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"

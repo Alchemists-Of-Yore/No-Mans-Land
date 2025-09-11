@@ -1,11 +1,11 @@
-package com.farcr.nomansland.common.integration;
+package com.farcr.nomansland.common.integration.boatload;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.teamabnormals.boatload.core.api.BoatloadBoatType;
 
-public class BoatloadBoatTypes {
+public class BoatTypes {
 
 
     public static final BoatloadBoatType MAPLE = BoatloadBoatType.register(BoatloadBoatType.create(NoMansLand.location("maple"),
@@ -39,8 +39,4 @@ public class BoatloadBoatTypes {
             BoatloadIntegration.WILLOW_FURNACE_BOAT::item,
             BoatloadIntegration.LARGE_WILLOW_BOAT::item
     ));
-
-
-    public static void register() {
-    }
 }

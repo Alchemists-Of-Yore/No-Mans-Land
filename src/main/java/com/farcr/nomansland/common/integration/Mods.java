@@ -12,7 +12,8 @@ public enum Mods {
     BLOCKBOX,
     CREATE,
     BOATLOAD,
-    BLUEPRINT;
+    BLUEPRINT,
+    NIRVANA;
 
     private final String id;
 

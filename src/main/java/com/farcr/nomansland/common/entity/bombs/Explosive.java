@@ -10,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -30,10 +29,6 @@ public class Explosive extends ThrowableBombEntity {
 
     public Explosive(EntityType<? extends ThrowableProjectile> entityType, Level level) {
         super(entityType, level);
-    }
-
-    public Explosive(LivingEntity livingEntity, Level level) {
-        super(NMLEntities.EXPLOSIVE.get(), livingEntity, level);
     }
 
     public Explosive(Level level, double x, double y, double z) {

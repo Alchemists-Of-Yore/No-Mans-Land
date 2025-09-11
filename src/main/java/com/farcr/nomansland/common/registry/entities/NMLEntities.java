@@ -12,6 +12,7 @@ import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.moose.Moose;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.phys.Vec3;
@@ -67,25 +68,17 @@ public class NMLEntities {
                     .fireImmune().sized(6, 6).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("pacified_cloud"));
 
 
-    public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS =
-            ENTITIES.register("billhook_bass", () -> EntityType.Builder.of(BillhookBass::new, MobCategory.WATER_CREATURE)
-            .sized(0.7F, 0.5F).build("billhook_bass"));
+    public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS = register("billhook_bass", BillhookBass::new, MobCategory.WATER_CREATURE, 0.7F, 0.5F);
 
-    public static final Supplier<EntityType<Deer>> DEER =
-            ENTITIES.register("deer", () -> EntityType.Builder.of(Deer::new, MobCategory.CREATURE)
-                    .sized(0.8F, 1.4F).build("deer"));
+    public static final Supplier<EntityType<Deer>> DEER = register("deer", Deer::new, MobCategory.CREATURE, 0.8F, 1.4F);
 
-    public static final Supplier<EntityType<Goose>> GOOSE =
-            ENTITIES.register("goose", () -> EntityType.Builder.of(Goose::new, MobCategory.CREATURE)
-                    .sized(0.8F, 1).build("goose"));
+    public static final Supplier<EntityType<Goose>> GOOSE = register("goose", Goose::new, MobCategory.CREATURE, 0.8F, 1);
 
 //    public static final Supplier<EntityType<BuriedEntity>> BURIED =
 //            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)
 //                    .sized(1.0f, 1.0f).clientTrackingRange(8).build("buried"));
 //
-    public static final Supplier<EntityType<Moose>> MOOSE =
-            ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
-                    .sized(1.5f, 2.5f).build("moose"));
+    public static final Supplier<EntityType<Moose>> MOOSE = register("moose", Moose::new, MobCategory.CREATURE,1.5F, 2.5F);
 
     public static final Supplier<EntityType<Tortoise>> TORTOISE =
             ENTITIES.register("tortoise", () -> EntityType.Builder.of(Tortoise::new, MobCategory.CREATURE)
@@ -93,4 +86,8 @@ public class NMLEntities {
                     .eyeHeight(1.0F)
                     .passengerAttachments(new Vec3(0.0, 1.15, 0.0F))
                     .build("tortoise"));
+
+    public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {
+        return ENTITIES.register(name, () -> EntityType.Builder.of(entity, category).sized(width, height).build(name));
+    }
 }

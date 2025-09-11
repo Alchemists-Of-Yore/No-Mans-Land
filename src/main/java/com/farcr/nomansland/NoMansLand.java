@@ -2,9 +2,10 @@ package com.farcr.nomansland;
 
 import com.farcr.nomansland.common.event.CreativeModeTabHandler;
 import com.farcr.nomansland.common.integration.BBIntegration;
-import com.farcr.nomansland.common.integration.BoatloadIntegration;
 import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.integration.boatload.BoatloadIntegration;
+import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLExtinguishables;
@@ -75,6 +76,7 @@ public class NoMansLand {
             NeoForge.EVENT_BUS.addListener(FDIntegration::onFruitCakeInteraction);
         }
 
+        if (Mods.NIRVANA.isLoaded()) NirvanaIntegration.register();
         if (Mods.BLOCKBOX.isLoaded()) BBIntegration.register();
         if (Mods.BOATLOAD.isLoaded()) BoatloadIntegration.register();
 

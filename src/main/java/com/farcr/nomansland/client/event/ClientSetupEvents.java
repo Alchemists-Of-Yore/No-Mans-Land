@@ -3,13 +3,18 @@ package com.farcr.nomansland.client.event;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
-import com.farcr.nomansland.client.model.*;
+import com.farcr.nomansland.client.model.AncientBronzeMaskModel;
+import com.farcr.nomansland.client.model.BillhookBassModel;
+import com.farcr.nomansland.client.model.BuriedModel;
+import com.farcr.nomansland.client.model.GooseModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;
+import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -50,6 +55,7 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
+        if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
     }
 
     @SubscribeEvent
@@ -65,6 +71,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.INK_BOMB.get(), InkBombRenderer::new);
         event.registerEntityRenderer(NMLEntities.EXPLOSIVE.get(), ExplosiveRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_URN.get(), LivingUrnRenderer::new);
+        if (Mods.NIRVANA.isLoaded()) event.registerEntityRenderer(NirvanaIntegration.FAT_JOINT.get(), FatJointRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.INCENDIARY_ARROW.get(), IncendiaryArrowRenderer::new);
         event.registerEntityRenderer(NMLEntities.EMBER.get(), NoopRenderer::new);
