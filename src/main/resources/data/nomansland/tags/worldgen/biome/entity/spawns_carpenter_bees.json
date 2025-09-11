@@ -1,5 +1,7 @@
 {
   "values": [
-    "#minecraft:is_jungle"
+    "#minecraft:is_jungle",
+    "#c:is_hot",
+    "minecraft:old_growth_birch_forest"
   ]
 }
