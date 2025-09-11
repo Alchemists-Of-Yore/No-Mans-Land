@@ -1,0 +1,7 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:moose",
+  "arguments": {
+    "texture": "nomansland:entity/moose/moose_pale"
+  }
+}
