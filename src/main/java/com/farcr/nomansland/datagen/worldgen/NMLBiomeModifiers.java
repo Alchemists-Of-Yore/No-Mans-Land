@@ -351,10 +351,11 @@ public class NMLBiomeModifiers {
                         3902136,
                         2388383,
                         7715315,
-                        7974991,
-                        7252796
+                        8893516,
+                        8363073
                 )
                 .addFeatures(FeatureWithStep.vegetationFeatures(
+                        trees("forest_noise"),
                         flowers("forest"),
                         flowerBed("white_and_yellow"),
                         patch("peony_and_lilac")
