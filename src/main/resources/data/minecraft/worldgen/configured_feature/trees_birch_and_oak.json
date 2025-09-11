@@ -4,11 +4,11 @@
     "default": "minecraft:oak_bees_0002",
     "features": [
       {
-        "chance": 0.2,
+        "chance": 0.3,
         "feature": "minecraft:birch_bees_0002"
       },
       {
-        "chance": 0.2,
+        "chance": 0.3,
         "feature": "nomansland:yellow_birch_checked"
       },
       {

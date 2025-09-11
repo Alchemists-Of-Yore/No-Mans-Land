@@ -3,6 +3,7 @@
   "biomes": "minecraft:old_growth_birch_forest",
   "features": [
     "minecraft:forest_flowers",
-    "minecraft:flower_default"
+    "minecraft:flower_default",
+    "minecraft:birch_tall"
   ]
 }

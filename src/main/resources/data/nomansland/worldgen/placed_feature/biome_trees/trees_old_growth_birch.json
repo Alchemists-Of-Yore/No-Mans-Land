@@ -1,11 +1,21 @@
 {
-  "feature": "minecraft:fancy_oak_bees_0002",
+  "feature": "nomansland:yellow_birch_tall",
   "placement": [
     {
-      "type": "minecraft:noise_based_count",
-      "noise_factor": 261.4,
-      "noise_offset": 0.17,
-      "noise_to_count_ratio": 5
+      "type": "minecraft:count",
+      "count": {
+        "type": "minecraft:weighted_list",
+        "distribution": [
+          {
+            "data": 10,
+            "weight": 9
+          },
+          {
+            "data": 11,
+            "weight": 1
+          }
+        ]
+      }
     },
     {
       "type": "minecraft:in_square"
@@ -26,7 +36,7 @@
       "predicate": {
         "type": "minecraft:would_survive",
         "state": {
-          "Name": "minecraft:oak_sapling",
+          "Name": "nomansland:yellow_birch_sapling",
           "Properties": {
             "stage": "0"
           }

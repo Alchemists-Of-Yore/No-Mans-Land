@@ -603,17 +603,17 @@ public class NMLBiomeModifiers {
                         3902136,
                         2388383,
                         7715315,
-                        8367967,
+                        12300634,
                         6594108
                 )
                 .addFeatures(
                         FeatureWithStep.vegetationFeatures(
-                                flowers("birch_forest"),
-                                flowerBed("white"),
-                                patch("peony_and_lilac")
+                                trees("old_growth_birch"),
+                                flowers("old_growth_birch"),
+                                flowerBed("yellow")
                         )
                 )
-                .removeFeatures(FOREST_FLOWERS, FLOWER_DEFAULT)
+                .removeFeatures(FOREST_FLOWERS, FLOWER_DEFAULT, BIRCH_TALL)
                 .changeSpawns(
                         new SpawnerData(EntityType.SHEEP, 4, 1, 4),
                         new SpawnerData(EntityType.CHICKEN, 14, 4, 6),
