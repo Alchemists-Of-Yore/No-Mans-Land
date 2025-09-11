@@ -3,10 +3,10 @@
   "group": "nomansland:moose",
   "conditions": {
     "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_dark_moose"
+      "biomes": "#c:is_spooky"
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/moose/moose_gray"
+    "texture": "nomansland:entity/moose/moose_skull"
   }
 }
