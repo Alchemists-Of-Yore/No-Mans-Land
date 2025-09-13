@@ -77,7 +77,6 @@ public class Goose extends PathfinderMob {
         if (DATA_STATE.equals(key)) {
             resetAnimations();
             switch (getState()) {
-                case HURTING: hurtingAnimationState.start(tickCount);
                 case INTIMIDATING: intimidatingAnimationState.startIfStopped(tickCount);
                 case RUNNING: runningAnimationState.startIfStopped(tickCount);
                 default: break;
