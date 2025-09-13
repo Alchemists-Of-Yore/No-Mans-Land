@@ -72,15 +72,15 @@ public class TortoiseModel<T extends Tortoise> extends AgeableHierarchicalModel<
     }
 
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(T tortoise, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root.getAllParts().forEach(ModelPart::resetPose);
         head.xRot = headPitch * (float) (Math.PI / 180.0);
         head.yRot = netHeadYaw * (float) (Math.PI / 180.0);
 
         animateWalk(TortoiseAnimation.TORTOISE_WALK, limbSwing, limbSwingAmount, 15, 200);
-        animate(entity.emergingAnimationState, TortoiseAnimation.TORTOISE_EMERGE, ageInTicks);
-        animate(entity.hidingAnimationState, TortoiseAnimation.TORTOISE_HIDE, ageInTicks);
-        animate(entity.layingEggAnimationState, TortoiseAnimation.TORTOISE_LAY_EGG, ageInTicks);
+        animate(tortoise.emergingAnimationState, TortoiseAnimation.TORTOISE_EMERGE, ageInTicks);
+        animate(tortoise.hidingAnimationState, TortoiseAnimation.TORTOISE_HIDE, ageInTicks);
+        animate(tortoise.layingEggAnimationState, TortoiseAnimation.TORTOISE_LAY_EGG, ageInTicks);
 
         if (young) {
             head.xRot /= 2;
