@@ -2,7 +2,7 @@ package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
-import com.farcr.nomansland.client.model.GooseModel;
+import com.farcr.nomansland.client.model.goose.GooseModel;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

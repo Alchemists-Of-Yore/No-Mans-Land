@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.goose;
 
 import com.farcr.nomansland.common.entity.ai.MaintainChaseWithinRange;
+import com.farcr.nomansland.common.entity.ai.RetreatWhenHurt;
 import com.farcr.nomansland.common.entity.ai.StartChasingWhenHurt;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -43,7 +44,8 @@ public class GooseAI {
             MemoryModuleType.ANGRY_AT,
             MemoryModuleType.ATTACK_COOLING_DOWN,
             MemoryModuleType.NEAREST_PLAYERS,
-            MemoryModuleType.IS_IN_WATER
+            MemoryModuleType.IS_IN_WATER,
+            MemoryModuleType.AVOID_TARGET
     );
 
     public static Brain.Provider<Goose> brainProvider() {
@@ -54,14 +56,15 @@ public class GooseAI {
         initCoreActivity(brain);
         initIdleActivity(brain);
         initFightActivity(brain);
+        initAvoidActivity(brain);
         brain.setCoreActivities(Set.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.useDefaultActivity();
         return brain;
     }
 
-    public static void updateActivity(Goose Goose) {
-        Goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
+    public static void updateActivity(Goose goose) {
+        goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.AVOID, Activity.FIGHT, Activity.IDLE));
     }
 
     private static void initCoreActivity(Brain<Goose> brain) {
@@ -93,6 +96,7 @@ public class GooseAI {
                         ))
                 ),
                 ImmutableSet.of(
+                        Pair.of(MemoryModuleType.HURT_BY_ENTITY, MemoryStatus.VALUE_ABSENT),
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT)
                 )
         );
@@ -102,9 +106,10 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.FIGHT,
                 ImmutableList.of(
+                        Pair.of(0, new RetreatWhenHurt(MemoryModuleType.ATTACK_TARGET)),
                         Pair.of(0, new MaintainChaseWithinRange(MemoryModuleType.ATTACK_TARGET, 20)),
-                        Pair.of(1, new Intimidate()),
-                        Pair.of(2, new Peck())
+                        Pair.of(1, MeleeAttack.create(30)),
+                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.3F))
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT)
@@ -112,11 +117,28 @@ public class GooseAI {
         );
     }
 
+    private static void initAvoidActivity(Brain<Goose> brain) {
+        brain.addActivityWithConditions(
+                Activity.AVOID,
+                ImmutableList.of(
+                        Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.AVOID_TARGET, 1.6F, 8, true))
+                ),
+                ImmutableSet.of(
+                        Pair.of(MemoryModuleType.AVOID_TARGET, MemoryStatus.VALUE_PRESENT)
+                )
+        );
+    }
+
     private static Optional<? extends LivingEntity> findNearestValidAttackTarget(Goose goose) {
         Brain<Goose> brain = goose.getBrain();
-        Optional<UUID> angerTarget = brain.getMemory(MemoryModuleType.ANGRY_AT);
-        NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty());
 
-        return angerTarget.flatMap(uuid -> entities.findClosest(entity -> goose.distanceToSqr(entity) < Mth.square(10) && entity.getUUID() == uuid));
+        Optional<UUID> angerTarget = brain.getMemory(MemoryModuleType.ANGRY_AT);
+        return angerTarget.flatMap(uuid -> {
+            Optional<LivingEntity> avoidTarget = brain.getMemory(MemoryModuleType.AVOID_TARGET);
+            if (avoidTarget.isPresent() && avoidTarget.get().getUUID() == uuid) return Optional.empty();
+
+            NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty());
+            return entities.findClosest(entity -> entity.getUUID() == uuid && goose.distanceToSqr(entity) < Mth.square(10));
+        });
     }
 }

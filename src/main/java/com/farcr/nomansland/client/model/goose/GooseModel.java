@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.model;
+package com.farcr.nomansland.client.model.goose;
 
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -7,7 +7,6 @@ import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.util.Mth;
 
 public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
 
@@ -63,19 +62,24 @@ public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
 
     @Override
     public void setupAnim(T goose, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.head.xRot = headPitch * 0.017453292F / 3;
-        this.head.yRot = netHeadYaw * 0.017453292F / 3;
-        this.rightLeg.xRot = Mth.cos(limbSwing * 0.6662F + 3.1415927F) * 1.4F * limbSwingAmount;
-        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        if (!goose.isInWater()) {
-            this.rightWing.zRot = Mth.abs(Mth.cos(limbSwing * 0.6662F + 3.1415927F) * 1.2F * limbSwingAmount);
-            this.leftWing.zRot = Math.min(Mth.cos(limbSwing * 0.6662F) * 1.2F * limbSwingAmount * -1, Mth.cos(limbSwing * 0.6662F) * 1.2F * limbSwingAmount);
-        }
+        root.getAllParts().forEach(ModelPart::resetPose);
+        head.xRot = headPitch * 0.017453292F / 3;
+        head.yRot = netHeadYaw * 0.017453292F / 3;
 
-        rightFlightWing.visible = false;
-        leftFlightWing.visible = false;
 
-//        this.animate(goose.drinkAnimationState, STOMP, ageInTicks);
+        if (goose.isSwimming()) animateWalk(GooseAnimation.GOOSE_SWIM, limbSwing, limbSwingAmount, 2, 3);
+        else animateWalk(GooseAnimation.GOOSE_WALK, limbSwing, limbSwingAmount, 3.5F, 5);
+
+        animate(goose.hurtingAnimationState, GooseAnimation.GOOSE_HURT, ageInTicks);
+        animate(goose.intimidatingAnimationState, GooseAnimation.GOOSE_INTIMIDATE, ageInTicks);
+        animate(goose.runningAnimationState, GooseAnimation.GOOSE_RUN, ageInTicks);
+
+        boolean visible = goose.showWings();
+
+        rightFlightWing.visible = visible;
+        leftFlightWing.visible = visible;
+        rightWing.visible = !visible;
+        leftWing.visible = !visible;
     }
 
     @Override
