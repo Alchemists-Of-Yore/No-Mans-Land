@@ -7,7 +7,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/pig/pig_wooly_black",
-    "baby_texture": "nomansland:entity/mob_variants/pig/pig_wooly_black_baby"
+    "texture": "nomansland:entity/mob_variants/pig/pig_wooly_brown",
+    "baby_texture": "nomansland:entity/mob_variants/pig/pig_wooly_brown_baby"
   }
 }
