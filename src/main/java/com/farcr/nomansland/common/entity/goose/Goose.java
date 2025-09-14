@@ -232,8 +232,8 @@ public class Goose extends PathfinderMob {
 
     public enum State {
         IDLING(0),
-        INTIMIDATING(2),
-        RUNNING(3);
+        INTIMIDATING(1),
+        RUNNING(2);
 
         public static final IntFunction<State> BY_ID = ByIdMap.continuous(State::id, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final StreamCodec<ByteBuf, State> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, State::id);
