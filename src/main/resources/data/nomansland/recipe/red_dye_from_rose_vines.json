@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "nomansland:rose_vines"
+    }
+  },
+  "result": {
+    "id": "minecraft:red_dye",
+    "count": 1
+  }
+}
