@@ -129,6 +129,8 @@ public class NMLBlocks {
             () -> new BeardMossBlock(Block.Properties.of().mapColor(MapColor.PLANT).instabreak().sound(SoundType.MOSS).noOcclusion().noCollission().offsetType(OffsetType.XZ)), new BlockProperties(new ShearsBlockLootType(), false));
     public static final BlockDefinition<LeavesBlock> YELLOW_BIRCH_LEAVES = register("yellow_birch_leaves",
             () -> new LeavesBlock(ofFullCopy(Blocks.BIRCH_LEAVES).isViewBlocking((s, g, p) -> false).isSuffocating(((s, g, p) -> false))));
+    public static final BlockDefinition<MultifacePlantBlock> ROSE_VINES = register("rose_vines",
+            () -> new MultifacePlantBlock(Block.Properties.of().mapColor(MapColor.PLANT).instabreak().sound(SoundType.VINE).noOcclusion().noCollission()), new BlockProperties(new ShearsBlockLootType(), false));
     public static final BlockDefinition<SaplingBlock> YELLOW_BIRCH_SAPLING = register("yellow_birch_sapling",
             () -> new SaplingBlock(NMLTreeGrowers.YELLOW_BIRCH, ofFullCopy(Blocks.BIRCH_SAPLING)), BlockProperties.sapling());
     public static final BlockDefinition<FlowerPotBlock> POTTED_YELLOW_BIRCH_SAPLING = registerNoItem("potted_yellow_birch_sapling",

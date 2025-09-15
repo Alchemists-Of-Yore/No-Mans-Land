@@ -1,0 +1,8 @@
+{
+  "parent": "nomansland:block/growth_layer",
+  "textures": {
+    "layer_1": "nomansland:block/underground/sludge_lichen_layer_1",
+    "layer_2": "nomansland:block/underground/sludge_lichen_layer_2",
+    "particle": "#layer_1"
+  }
+}

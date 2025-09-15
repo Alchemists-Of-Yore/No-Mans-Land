@@ -1,0 +1,8 @@
+{
+  "parent": "nomansland:block/growth_layer",
+  "textures": {
+    "layer_1": "nomansland:block/plants/rose_vines_layer_1",
+    "layer_2": "nomansland:block/plants/rose_vines_layer_2",
+    "particle": "nomansland:item/rose_vines_inventory"
+  }
+}
