@@ -59,9 +59,14 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                 if (offsetPos != 0) {
                     offsetBlockPos = offsetBlockPos.relative(direction, 4);
                 }
-                if (offsetPos == maxOffset)
+                if (offsetPos == maxOffset) {
                     offsetBlockPos = offsetBlockPos.relative(direction, 3).below(2);
-                filledPos.add(offsetBlockPos);
+                }
+                Direction randomDirection = Direction.from2DDataValue(randomsource.nextInt(4));
+                while (randomDirection == direction || randomDirection == direction.getOpposite()) {
+                    randomDirection = Direction.from2DDataValue(randomsource.nextInt(4));
+                }
+                filledPos.add(offsetBlockPos.mutable().move(randomDirection));
             }
             if (filledPos.stream().noneMatch(blockPos -> blockPos != filledPos.getFirst() && !checkIfAllSolid(worldgenlevel, blockPos, 5, 5, 5))) {
                 if (!filledPos.isEmpty() && filledPos.size() > 2) {
@@ -82,9 +87,12 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                             worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                         }
                         this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos);
-                       // Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                     //   Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
                     }
-                    airPos.forEach(blockPos -> worldgenlevel.setBlock(blockPos, AIR, 2));
+                    for (BlockPos blockPos : airPos) {
+                        if (!worldgenlevel.getBlockState(blockPos).is(NMLBlocks.CAVE_WEEDS.get()))
+                            worldgenlevel.setBlock(blockPos, AIR, 2);
+                    }
                     return true;
                 }
             } else {
@@ -145,12 +153,14 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         if (this.canReplaceBlock(currentState)) {
                             boolean isTopLayer = y >= 0.0D;
                             if (!isTopLayer) {
-                                if (!belowState.isEmpty())
+                                if (belowState.isEmpty())
+                                    level.setBlock(selectedPos.below(), blockToPlace, 2);
+                                else
                                     level.setBlock(selectedPos, blockToPlace, 2);
                             } else {
                                 level.setBlock(selectedPos, AIR, 2);
                                 airPos.add(selectedPos);
-                                if (level.getBlockState(selectedPos.below()) == blockToPlace && randomSource.nextInt(5) == 0)
+                                if (level.getBlockState(selectedPos.below()).isSolid() && randomSource.nextInt(5) == 0)
                                     level.setBlock(selectedPos, NMLBlocks.CAVE_WEEDS.get().defaultBlockState(), 2);
                             }
                         }
