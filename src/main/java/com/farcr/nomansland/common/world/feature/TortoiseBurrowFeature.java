@@ -76,7 +76,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         BlockPos turtleSpawnPos = filledPos.getLast();
                         BlockState stoneState = listedPos.getY() <= 0 ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.STONE.defaultBlockState();
                         if (listedPos != turtleSpawnPos) {
-                            this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, stoneState, randomsource, listedPos != filledPos.getFirst(), stoneState, direction.getOpposite(), airPos);
+                            this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, stoneState, randomsource, listedPos != filledPos.getFirst(), stoneState, direction.getOpposite(), airPos, 1, 3);
                         }
                         if (!tortoiseSpawned) {
                             Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
@@ -86,8 +86,8 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                             tortoise.setHomePos(turtleSpawnPos);
                             worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                         }
-                        this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos);
-                     //   Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                        this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos, 3, 2);
+                      //  Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
                     }
                     for (BlockPos blockPos : airPos) {
                         if (!worldgenlevel.getBlockState(blockPos).is(NMLBlocks.CAVE_WEEDS.get()))
@@ -138,7 +138,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
         return null;
     }
 
-    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource, boolean shouldBarrier, BlockState barrierState, Direction direction, List<BlockPos> airPos) {
+    private void placeBurrow(double radiusX, double radiusY, double radiusZ, BlockPos origin, WorldGenLevel level, BlockState blockToPlace, RandomSource randomSource, boolean shouldBarrier, BlockState barrierState, Direction direction, List<BlockPos> airPos, int entranceOffset, int entranceFowardOffset) {
         for (int x = -8; x < 8; x++) {
             for (int y = -4; y < 5; y++) {
                 for (int z = -8; z < 8; z++) {
@@ -153,12 +153,21 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                         if (this.canReplaceBlock(currentState)) {
                             boolean isTopLayer = y >= 0.0D;
                             if (!isTopLayer) {
-                                if (belowState.isEmpty())
-                                    level.setBlock(selectedPos.below(), blockToPlace, 2);
-                                else
-                                    level.setBlock(selectedPos, blockToPlace, 2);
+                                if (belowState.isAir())
+                                    selectedPos.move(Direction.DOWN);
+                                level.setBlock(selectedPos, blockToPlace, 2);
                             } else {
                                 level.setBlock(selectedPos, AIR, 2);
+                                for (Direction aroundDirection : Direction.values()) {
+                                    if (aroundDirection != direction && aroundDirection != direction.getOpposite()) {
+                                        BlockPos toAlsoDelete = origin.relative(direction, entranceFowardOffset).above(entranceOffset);
+                                        BlockPos aroundOrigin = toAlsoDelete.relative(aroundDirection);
+                                        airPos.add(aroundOrigin);
+                                        airPos.add(aroundOrigin.above());
+                                        airPos.add(toAlsoDelete);
+                                        airPos.add(toAlsoDelete.above());
+                                    }
+                                }
                                 airPos.add(selectedPos);
                                 if (level.getBlockState(selectedPos.below()).isSolid() && randomSource.nextInt(5) == 0)
                                     level.setBlock(selectedPos, NMLBlocks.CAVE_WEEDS.get().defaultBlockState(), 2);
