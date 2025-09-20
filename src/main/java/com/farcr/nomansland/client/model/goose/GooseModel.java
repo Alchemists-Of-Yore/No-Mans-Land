@@ -66,13 +66,25 @@ public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
         head.xRot = headPitch * 0.017453292F / 3;
         head.yRot = netHeadYaw * 0.017453292F / 3;
 
-
-        if (goose.isSwimming()) animateWalk(GooseAnimation.GOOSE_SWIM, limbSwing, limbSwingAmount, 2, 3);
-        else animateWalk(GooseAnimation.GOOSE_WALK, limbSwing, limbSwingAmount, 3.5F, 5);
+        if (!goose.hurtingAnimationState.isStarted()) {
+            if (goose.getState() == Goose.State.RUNNING) {
+                animateWalk(GooseAnimation.GOOSE_RUN, limbSwing, limbSwingAmount, 2, 3);
+            } else {
+                if (goose.isFallFlying()) {
+                    animateWalk(GooseAnimation.GOOSE_FALL, limbSwing, limbSwingAmount, 4, 5);
+                } else {
+                    if (goose.isInWater()) {
+                        animateWalk(GooseAnimation.GOOSE_SWIM, limbSwing, limbSwingAmount, 4, 5);
+                    }
+                    else {
+                        animateWalk(GooseAnimation.GOOSE_WALK, limbSwing, limbSwingAmount, 4, 5);
+                        animate(goose.intimidatingAnimationState, GooseAnimation.GOOSE_INTIMIDATE, ageInTicks);
+                    }
+                }
+            }
+        }
 
         animate(goose.hurtingAnimationState, GooseAnimation.GOOSE_HURT, ageInTicks);
-        animate(goose.intimidatingAnimationState, GooseAnimation.GOOSE_INTIMIDATE, ageInTicks);
-        animate(goose.runningAnimationState, GooseAnimation.GOOSE_RUN, ageInTicks);
 
         boolean visible = goose.showWings();
 

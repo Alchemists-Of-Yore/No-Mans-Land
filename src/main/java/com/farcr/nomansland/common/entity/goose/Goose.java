@@ -41,9 +41,9 @@ import java.util.function.IntFunction;
 public class Goose extends PathfinderMob {
 
     private static final EntityDataAccessor<State> DATA_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
+    private int hurtAnimationTick = 0;
     public final AnimationState hurtingAnimationState = new AnimationState();
     public final AnimationState intimidatingAnimationState = new AnimationState();
-    public final AnimationState runningAnimationState = new AnimationState();
 
     public Goose(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -76,10 +76,8 @@ public class Goose extends PathfinderMob {
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (DATA_STATE.equals(key)) {
             resetAnimations();
-            switch (getState()) {
-                case INTIMIDATING: intimidatingAnimationState.startIfStopped(tickCount);
-                case RUNNING: runningAnimationState.startIfStopped(tickCount);
-                default: break;
+            if (getState() == State.INTIMIDATING) {
+                intimidatingAnimationState.startIfStopped(tickCount);
             }
             refreshDimensions();
         }
@@ -88,12 +86,10 @@ public class Goose extends PathfinderMob {
     }
 
     private void resetAnimations() {
-        hurtingAnimationState.stop();
         intimidatingAnimationState.stop();
-        runningAnimationState.stop();
     }
 
-    private State getState() {
+    public State getState() {
         return entityData.get(DATA_STATE);
     }
 
@@ -101,7 +97,7 @@ public class Goose extends PathfinderMob {
         return getState() != State.IDLING || hurtingAnimationState.isStarted();
     }
 
-    private void setState(State state) {
+    public void setState(State state) {
         entityData.set(DATA_STATE, state);
     }
 
@@ -147,6 +143,10 @@ public class Goose extends PathfinderMob {
         playSound(NMLSounds.GOOSE_STEP.get(), 0.15F, 1.0F);
     }
 
+    public boolean canFight() {
+        return getHealth() > getMaxHealth() / 2;
+    }
+
     @Override
     protected void customServerAiStep() {
         ServerLevel level = (ServerLevel) level();
@@ -166,6 +166,7 @@ public class Goose extends PathfinderMob {
     public void handleEntityEvent(byte id) {
         if (id == 4) {
             hurtingAnimationState.start(tickCount);
+            hurtAnimationTick = 22;
         }
 
         super.handleEntityEvent(id);
@@ -181,6 +182,9 @@ public class Goose extends PathfinderMob {
     public void tick() {
         super.tick();
 
+        if (hurtAnimationTick > 0) hurtAnimationTick--;
+        else hurtingAnimationState.ifStarted(AnimationState::stop);
+
         floatGoose();
     }
 
@@ -193,7 +197,8 @@ public class Goose extends PathfinderMob {
         if (isInWater()) {
             CollisionContext collisioncontext = CollisionContext.of(this);
             if (collisioncontext.isAbove(LiquidBlock.STABLE_SHAPE, blockPosition(), true) && !level().getFluidState(blockPosition().above()).is(FluidTags.WATER)) {
-                setOnGround(true);
+                if (random.nextFloat() < 0.2F) setDeltaMovement(getDeltaMovement().scale(0.5).add(0.0, 0.05, 0.0));
+                else setOnGround(true);
             } else {
                 setDeltaMovement(getDeltaMovement().scale(0.5).add(0.0, 0.05, 0.0));
             }

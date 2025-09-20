@@ -1,13 +1,9 @@
 package com.farcr.nomansland.common.entity.goose;
 
-import com.farcr.nomansland.common.entity.ai.MaintainChaseWithinRange;
-import com.farcr.nomansland.common.entity.ai.RetreatWhenHurt;
-import com.farcr.nomansland.common.entity.ai.StartChasingWhenHurt;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,14 +11,13 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 public class GooseAI {
 
@@ -74,8 +69,7 @@ public class GooseAI {
                 ImmutableList.of(
                         new LookAtTargetSink(45, 90),
                         new MoveToTargetSink(),
-                        new StartChasingWhenHurt<>(),
-                        StartAttacking.create(GooseAI::findNearestValidAttackTarget)
+                        new GooseCoreBehavior()
                 )
         );
     }
@@ -106,10 +100,8 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.FIGHT,
                 ImmutableList.of(
-                        Pair.of(0, new RetreatWhenHurt(MemoryModuleType.ATTACK_TARGET)),
-                        Pair.of(0, new MaintainChaseWithinRange(MemoryModuleType.ATTACK_TARGET, 20)),
-                        Pair.of(1, MeleeAttack.create(30)),
-                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.3F))
+                        Pair.of(0, MeleeAttack.create(15)),
+                        Pair.of(1, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.3F))
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT)
@@ -121,7 +113,7 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.AVOID,
                 ImmutableList.of(
-                        Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.AVOID_TARGET, 1.6F, 8, true))
+                        Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.AVOID_TARGET, 1.3F, 8, true))
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.AVOID_TARGET, MemoryStatus.VALUE_PRESENT)
@@ -129,16 +121,7 @@ public class GooseAI {
         );
     }
 
-    private static Optional<? extends LivingEntity> findNearestValidAttackTarget(Goose goose) {
-        Brain<Goose> brain = goose.getBrain();
-
-        Optional<UUID> angerTarget = brain.getMemory(MemoryModuleType.ANGRY_AT);
-        return angerTarget.flatMap(uuid -> {
-            Optional<LivingEntity> avoidTarget = brain.getMemory(MemoryModuleType.AVOID_TARGET);
-            if (avoidTarget.isPresent() && avoidTarget.get().getUUID() == uuid) return Optional.empty();
-
-            NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty());
-            return entities.findClosest(entity -> entity.getUUID() == uuid && goose.distanceToSqr(entity) < Mth.square(10));
-        });
+    public static boolean isThreat(LivingEntity entity) {
+        return entity instanceof Enemy || entity instanceof Player;
     }
 }

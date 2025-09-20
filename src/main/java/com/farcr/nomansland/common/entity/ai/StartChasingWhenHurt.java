@@ -21,8 +21,9 @@ public class StartChasingWhenHurt<T extends Mob> extends Behavior<T> {
     protected void start(ServerLevel level, T mob, long gameTime) {
         mob.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(attacker -> {
             if (attacker.isAlive()) {
-                mob.getBrain().setMemoryWithExpiry(MemoryModuleType.ANGRY_AT, attacker.getUUID(), 20 * 60 * 24 * 2);
+                mob.getBrain().setMemoryWithExpiry(MemoryModuleType.ANGRY_AT, attacker.getUUID(), 20 * 60 * 60 * 24 * 2);
                 mob.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, attacker);
+                mob.getBrain().eraseMemory(MemoryModuleType.HURT_BY_ENTITY);
             }
         });
     }
