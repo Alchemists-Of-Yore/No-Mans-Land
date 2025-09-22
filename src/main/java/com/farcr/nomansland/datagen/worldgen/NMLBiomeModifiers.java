@@ -38,7 +38,7 @@ public class NMLBiomeModifiers {
         this.bootstrap = bootstrap;
         setup();
     }
-    
+
     private void setup() {
         GenerationStep.Decoration vegetalDecoration = GenerationStep.Decoration.VEGETAL_DECORATION;
         GenerationStep.Decoration localModifications = GenerationStep.Decoration.LOCAL_MODIFICATIONS;
@@ -87,7 +87,6 @@ public class NMLBiomeModifiers {
                 )
                 .removeSpawns(EntityType.SHEEP)
                 .build(featureToBiomes);
-
 
 
         modifyBiome(Biomes.BEACH)
@@ -191,7 +190,7 @@ public class NMLBiomeModifiers {
                 )
                 .removeSpawns(EntityType.SHEEP, EntityType.COW)
                 .build(featureToBiomes);
-        
+
         modifyBiome(Biomes.DEEP_COLD_OCEAN)
                 .changeColors(
                         12639487,
@@ -350,7 +349,7 @@ public class NMLBiomeModifiers {
                         3902136,
                         2388383,
                         7715315,
-                        8893516,
+                        8102218,
                         8363073
                 )
                 .addFeatures(FeatureWithStep.vegetationFeatures(
@@ -431,7 +430,7 @@ public class NMLBiomeModifiers {
                 .changeSpawns(
                         new SpawnerData(EntityType.WOLF, 3, 1, 1),
                         new SpawnerData(EntityType.RABBIT, 12, 2, 3),
-                        new SpawnerData(EntityType.FOX, 7, 2 ,4)
+                        new SpawnerData(EntityType.FOX, 7, 2, 4)
                 )
                 .addSpawns(new SpawnerData(EntityType.POLAR_BEAR, 1, 1, 2))
                 .build(featureToBiomes);
@@ -1029,7 +1028,7 @@ public class NMLBiomeModifiers {
                         new SpawnerData(EntityType.PIG, 3, 4, 4),
                         new SpawnerData(EntityType.CHICKEN, 4, 4, 4),
                         new SpawnerData(EntityType.COW, 6, 4, 4),
-                        new SpawnerData(EntityType.LLAMA,  7, 4, 6)
+                        new SpawnerData(EntityType.LLAMA, 7, 4, 6)
                 )
                 .addSpawns(new SpawnerData(EntityType.GOAT, 6, 2, 4))
                 .build(featureToBiomes);
@@ -1051,7 +1050,7 @@ public class NMLBiomeModifiers {
                 .removeFeatures(FLOWER_DEFAULT)
                 .changeSpawns(
                         new SpawnerData(EntityType.SHEEP, 8, 4, 4),
-                        new SpawnerData(EntityType.PIG, 4, 4,4),
+                        new SpawnerData(EntityType.PIG, 4, 4, 4),
                         new SpawnerData(EntityType.CHICKEN, 5, 4, 4),
                         new SpawnerData(EntityType.COW, 7, 4, 4),
                         new SpawnerData(EntityType.LLAMA, 8, 4, 6)
@@ -1161,10 +1160,10 @@ public class NMLBiomeModifiers {
 
         addFeaturesToTag(NMLTags.FeatureAddition.REGULAR_TORTOISE_BURROWS, GenerationStep.Decoration.TOP_LAYER_MODIFICATION, feature("underground/tortoise_burrows/tortoise_burrow"));
         /* Tag-based feature removals */
-        
+
         processFeatures();
     }
-    
+
     private BiomeModifierBuilder modifyBiome(ResourceKey<Biome> biome) {
         return new BiomeModifierBuilder(bootstrap, biome);
     }

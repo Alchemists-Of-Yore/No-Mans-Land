@@ -1,0 +1,62 @@
+{
+	"format_version": "1.21.6",
+	"parent": "block/block",
+	"credit": "Made by Farcr",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "nomansland:block/dungeon/ancient_pots/ancient_pot_base",
+		"2": "nomansland:block/dungeon/ancient_pots/ancient_vessel",
+		"particle": "nomansland:block/dungeon/ancient_pots/ancient_pot_particle"
+	},
+	"elements": [
+		{
+			"from": [0, 2, 0],
+			"to": [16, 21, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 2, 4]},
+			"faces": {
+				"north": {"uv": [0, 5.5, 8, 15], "texture": "#2"},
+				"east": {"uv": [0, 5.5, 8, 15], "texture": "#2"},
+				"south": {"uv": [0, 5.5, 8, 15], "texture": "#2"},
+				"west": {"uv": [0, 5.5, 8, 15], "texture": "#2"},
+				"up": {"uv": [0, 4, 4, 8], "texture": "#0"},
+				"down": {"uv": [0, 8, 4, 12], "texture": "#0"}
+			}
+		},
+		{
+			"from": [4, 21, 4],
+			"to": [12, 22, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 21, 6]},
+			"faces": {
+				"north": {"uv": [2, 5, 6, 5.5], "texture": "#2"},
+				"east": {"uv": [2, 5, 6, 5.5], "texture": "#2"},
+				"south": {"uv": [2, 5, 6, 5.5], "texture": "#2"},
+				"west": {"uv": [2, 5, 6, 5.5], "texture": "#2"}
+			}
+		},
+		{
+			"from": [2, 0, 2],
+			"to": [14, 2, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 0, 6]},
+			"faces": {
+				"north": {"uv": [1, 15, 7, 16], "texture": "#2"},
+				"east": {"uv": [1, 15, 7, 16], "texture": "#2"},
+				"south": {"uv": [1, 15, 7, 16], "texture": "#2"},
+				"west": {"uv": [1, 15, 7, 16], "texture": "#2"},
+				"down": {"uv": [0, 8, 4, 12], "texture": "#0"}
+			}
+		},
+		{
+			"from": [3, 22, 3],
+			"to": [13, 25, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 22, 4]},
+			"faces": {
+				"north": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#2"},
+				"east": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#2"},
+				"south": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#2"},
+				"west": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#2"},
+				"up": {"uv": [9.5, 1.5, 14.5, 6.5], "texture": "#2"},
+				"down": {"uv": [9.5, 9.5, 14.5, 14.5], "texture": "#2"}
+			}
+		}
+	]
+}
