@@ -349,7 +349,7 @@ public class NMLBiomeModifiers {
                         3902136,
                         2388383,
                         7715315,
-                        8102218,
+                        8497229,
                         8363073
                 )
                 .addFeatures(FeatureWithStep.vegetationFeatures(
