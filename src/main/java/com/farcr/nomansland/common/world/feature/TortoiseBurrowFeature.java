@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.world.feature;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
@@ -74,7 +75,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                     for (int listEntry = 0; listEntry < filledPos.size(); listEntry++) {
                         BlockPos listedPos = filledPos.get(listEntry);
                         BlockPos turtleSpawnPos = filledPos.getLast();
-                        BlockState stoneState = listedPos.getY() <= 0 ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.STONE.defaultBlockState();
+                        BlockState stoneState = (listedPos.getY() <= 0 || worldgenlevel.getBiome(listedPos).is(NMLBiomes.CAVE_DEPTHS)) ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.STONE.defaultBlockState();
                         if (listedPos != turtleSpawnPos) {
                             this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, stoneState, randomsource, listedPos != filledPos.getFirst(), stoneState, direction.getOpposite(), airPos, 1, 3);
                         }
@@ -87,7 +88,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                             worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                         }
                         this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos, 3, 2);
-                      //  Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                     //  Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
                     }
                     for (BlockPos blockPos : airPos) {
                         if (!worldgenlevel.getBlockState(blockPos).is(NMLBlocks.CAVE_WEEDS.get()))

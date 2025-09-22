@@ -15,7 +15,10 @@ import com.farcr.nomansland.common.registry.items.NMLCreativeTabs;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.*;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -87,7 +90,7 @@ public class NoMansLand {
         modContainer.registerConfig(ModConfig.Type.CLIENT, NMLConfig.CLIENT_CONFIG);
         modContainer.registerConfig(ModConfig.Type.STARTUP, NMLConfig.STARTUP_CONFIG);
     }
-    
+
     public static ResourceLocation location(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
