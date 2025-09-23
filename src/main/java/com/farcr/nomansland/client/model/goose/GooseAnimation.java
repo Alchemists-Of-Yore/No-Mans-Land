@@ -71,12 +71,6 @@ public class GooseAnimation {
                     new Keyframe(0.8333F, KeyframeAnimations.posVec(0, -0.22F, 0), AnimationChannel.Interpolations.LINEAR),
                     new Keyframe(1, KeyframeAnimations.posVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR)
             ))
-            .addAnimation("left_flight_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR)
-            ))
-            .addAnimation("right_flight_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR)
-            ))
             .addAnimation("left_wing", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                     new Keyframe(0, KeyframeAnimations.degreeVec(10, 0, 0), AnimationChannel.Interpolations.LINEAR),
                     new Keyframe(0.1667F, KeyframeAnimations.degreeVec(7.5F, 0, 0), AnimationChannel.Interpolations.LINEAR),
@@ -158,20 +152,6 @@ public class GooseAnimation {
                     new Keyframe(0.8333F, KeyframeAnimations.degreeVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(1, KeyframeAnimations.degreeVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM)
             ))
-            .addAnimation("left_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.0417F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.8333F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.875F, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(1, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR)
-            ))
-            .addAnimation("right_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.0417F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.8333F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.875F, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(1, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR)
-            ))
             .addAnimation("left_flight_wing", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                     new Keyframe(0, KeyframeAnimations.degreeVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(0.125F, KeyframeAnimations.degreeVec(0, 0, -47.5F), AnimationChannel.Interpolations.CATMULLROM),
@@ -183,14 +163,6 @@ public class GooseAnimation {
                     new Keyframe(0.875F, KeyframeAnimations.degreeVec(0, 0, -47.5F), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(1, KeyframeAnimations.degreeVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM)
             ))
-            .addAnimation("left_flight_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.0833F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.125F, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.8333F, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.875F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(1, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR)
-            ))
             .addAnimation("right_flight_wing", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                     new Keyframe(0, KeyframeAnimations.degreeVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(0.125F, KeyframeAnimations.degreeVec(0, 0, 47.5F), AnimationChannel.Interpolations.CATMULLROM),
@@ -201,14 +173,6 @@ public class GooseAnimation {
                     new Keyframe(0.75F, KeyframeAnimations.degreeVec(0, 0, -22.5F), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(0.875F, KeyframeAnimations.degreeVec(0, 0, 47.5F), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(1, KeyframeAnimations.degreeVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM)
-            ))
-            .addAnimation("right_flight_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.0833F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.125F, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.8333F, KeyframeAnimations.scaleVec(1, 1, 1), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(0.875F, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR),
-                    new Keyframe(1, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.LINEAR)
             ))
             .build();
 
@@ -299,12 +263,6 @@ public class GooseAnimation {
                     new Keyframe(0.8333F, KeyframeAnimations.posVec(0, 1.53F, 0), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(0.9167F, KeyframeAnimations.posVec(0, 1.69F, 0), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(1, KeyframeAnimations.posVec(0, 1.35F, 0), AnimationChannel.Interpolations.CATMULLROM)
-            ))
-            .addAnimation("left_flight_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM)
-            ))
-            .addAnimation("right_flight_wing", new AnimationChannel(AnimationChannel.Targets.SCALE,
-                    new Keyframe(0, KeyframeAnimations.scaleVec(0, 0, 0), AnimationChannel.Interpolations.CATMULLROM)
             ))
             .build();
 

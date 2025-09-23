@@ -62,8 +62,9 @@ public class GooseCoreBehavior extends Behavior<Goose> {
     private static void intimidatedBy(Brain<Goose> brain, Goose goose, LivingEntity entity) {
         goose.setState(Goose.State.INTIMIDATING);
         brain.setMemoryWithExpiry(MemoryModuleType.LOOK_TARGET, new EntityTracker(entity, true), 20*3);
-        goose.getMoveControl().strafe(-1, 0.0F);
-        goose.setYRot(Mth.rotateIfNecessary(goose.getYRot(), goose.yHeadRot, 0.0F));
+        brain.setMemoryWithExpiry(MemoryModuleType.AVOID_TARGET, entity, 20);
+        goose.getMoveControl().strafe(-0.3F, 0.0F);
+        goose.setYRot(Mth.rotateIfNecessary(goose.getYRot(), goose.yHeadRot, 0.3F));
     }
 
     private static void clearCombatMemory(Brain<Goose> brain, Goose goose) {
