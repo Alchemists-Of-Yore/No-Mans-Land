@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "texture": "nomansland:entity/deer/pattern_nothing",
+    "baby_texture": "nomansland:entity/deer/pattern_nothing"
+  },
+  "actions": [
+    {
+      "type": "nomansland:set_pattern_layer",
+      "arguments": {
+        "texture": "texture",
+        "baby_texture": "baby_texture"
+      }
+    }
+  ]
+}

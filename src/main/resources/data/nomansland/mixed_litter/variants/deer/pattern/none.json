@@ -1,0 +1,7 @@
+{
+  "type": "nomansland:pattern",
+  "group": "nomansland:deer_pattern",
+  "arguments": {
+    "weight": 4
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "nomansland:antlers",
+  "group": "nomansland:deer_antlers",
+  "arguments": {
+    "texture": "nomansland:entity/deer/antlers_pointy"
+  }
+}

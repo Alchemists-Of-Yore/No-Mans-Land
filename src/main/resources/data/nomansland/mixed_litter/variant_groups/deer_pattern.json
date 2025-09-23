@@ -1,0 +1,9 @@
+{
+  "conditions": {
+    "entity_predicate": {
+      "type": "nomansland:deer"
+    }
+  },
+  "exclusive": true,
+  "selection": "weighted"
+}

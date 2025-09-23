@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "type": "nomansland:set_antler_layer",
+      "arguments": {
+        "texture": "texture"
+      }
+    }
+  ]
+}

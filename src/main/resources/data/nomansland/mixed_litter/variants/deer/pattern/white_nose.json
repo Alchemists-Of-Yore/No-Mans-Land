@@ -1,0 +1,8 @@
+{
+  "type": "nomansland:pattern",
+  "group": "nomansland:deer_pattern",
+  "arguments": {
+    "weight": 4,
+    "texture": "nomansland:entity/deer/pattern_white_nose"
+  }
+}

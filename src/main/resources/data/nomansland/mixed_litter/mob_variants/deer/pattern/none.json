@@ -1,6 +1,0 @@
-{
-  "type": "nomansland:deer_pattern",
-  "texture": "nomansland:entity/deer/pattern_nothing",
-  "weight": 4,
-  "baby_texture": "nomansland:entity/deer/pattern_nothing"
-}
