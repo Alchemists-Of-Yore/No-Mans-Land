@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.integration;
+package com.farcr.nomansland.common.integration.everycompat;
 
 import com.farcr.nomansland.common.block.TrimmedPlankBlock;
 import net.mehvahdjukaar.every_compat.EveryCompat;
@@ -13,12 +13,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 
-public class WoodGood extends SimpleModule {
+public class EveryCompatIntegration extends SimpleModule {
 
     public final SimpleEntrySet<WoodType, Block> trimmedPlanks,
             bookshelf;
 
-    public WoodGood(String modId) {
+    public EveryCompatIntegration(String modId) {
         super(modId, "nml", EveryCompat.MOD_ID);
 
         ResourceLocation tab = modRes(modId);
