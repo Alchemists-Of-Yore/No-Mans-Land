@@ -304,6 +304,8 @@
   "block.nomansland.yellow_candle_fruit_cake": "Yellow Candle Fruit Cake",
   "block.nomansland.yellow_flowerbed": "Жовта клумба",
   "block.nomansland.yellow_lupine": "Жовтий люпин",
+  "block_type.nomansland.trimmed_planks": "Обрізані %s дошки",
+  "block_type.nomansland.bookshelf": "%s книжкова полиця",
   "death.attack.nomansland.combust": "%1$s зіткнувся зі спаленням",
   "death.attack.nomansland.combust.player": "%1$s зіткнувся зі спаленням через %2$s",
   "death.attack.nomansland.icicle_pierce": "%1$s було пронизано бурулькою",

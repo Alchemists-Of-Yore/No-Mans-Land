@@ -304,6 +304,8 @@
   "block.nomansland.yellow_candle_fruit_cake": "Yellow Candle Fruit Cake",
   "block.nomansland.yellow_flowerbed": "Žluté kvítí",
   "block.nomansland.yellow_lupine": "Žlutá lupina",
+  "block_type.nomansland.trimmed_planks": "Ořezaná %s prkna",
+  "block_type.nomansland.bookshelf": "%s knihovna",
   "death.attack.nomansland.combust": "%1$s faced immolation",
   "death.attack.nomansland.combust.player": "%1$s was immolated by %2$s",
   "death.attack.nomansland.icicle_pierce": "%1$s was pierced by an icicle",

@@ -304,6 +304,8 @@
   "block.nomansland.yellow_candle_fruit_cake": "Yellow Candle Fruit Cake",
   "block.nomansland.yellow_flowerbed": "Macizo amarillo",
   "block.nomansland.yellow_lupine": "Lupino amarillo",
+  "block_type.nomansland.trimmed_planks": "Tablones de %s recortados",
+  "block_type.nomansland.bookshelf": "Librería de %s",
   "death.attack.nomansland.combust": "%1$s se enfrentó a la inmolación",
   "death.attack.nomansland.combust.player": "%1$s fue inmolado por %2$s",
   "death.attack.nomansland.icicle_pierce": "%1$s was pierced by an icicle",

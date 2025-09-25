@@ -142,10 +142,11 @@ dependencies {
     compileOnly "maven.modrinth:serene-seasons:SPj5bJoM"
     compileOnly "maven.modrinth:glitchcore:8wmCpbQ2"
     implementation "maven.modrinth:supplementaries:neoforge_1.21-3.0.43-beta"
-    implementation "maven.modrinth:moonlight:neoforge_1.21-2.17.37"
+    implementation "maven.modrinth:moonlight:pyycmzcd"
     implementation "curse.maven:nirvana-1278909:6970116"
     implementation "maven.modrinth:vanity-core:5.0.2"
     implementation "com.tterrag.registrate:Registrate:MC1.21-1.3.0+62"
+    compileOnly "maven.modrinth:every-compat:jUq5MG3r"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
     compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
