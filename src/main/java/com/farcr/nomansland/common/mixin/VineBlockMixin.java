@@ -1,6 +1,8 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,18 +38,18 @@ public abstract class VineBlockMixin implements BonemealableBlock {
         return direction;
     }
 
-    @Redirect(method = "canSupportAtFace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
-    private boolean nml$isCutVine(BlockState instance, Block block) {
+    @WrapOperation(method = "canSupportAtFace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
+    private boolean nml$isCutVine(BlockState instance, Block block, Operation<Boolean> original) {
         if (block == NMLBlocks.CUT_VINE.get() && instance.is(Blocks.VINE)) return true;
         if (instance.is(NMLBlocks.CUT_VINE.block())) return false;
-        return instance.is(block);
+        return original.call(instance, block);
     }
 
-    @Redirect(method = "getUpdatedState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
-    private boolean nml$isCutVine1(BlockState instance, Block block) {
+    @WrapOperation(method = "getUpdatedState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
+    private boolean nml$isCutVine1(BlockState instance, Block block, Operation<Boolean> original) {
         if (block == NMLBlocks.CUT_VINE.get() && instance.is(Blocks.VINE)) return true;
         if (instance.is(NMLBlocks.CUT_VINE.block())) return false;
-        return instance.is(block);
+        return original.call(instance, block);
     }
 
     @Override

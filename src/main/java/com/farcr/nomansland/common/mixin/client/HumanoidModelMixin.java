@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.ArmedModel;

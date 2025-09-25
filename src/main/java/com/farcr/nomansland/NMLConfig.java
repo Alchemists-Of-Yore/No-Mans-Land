@@ -90,7 +90,7 @@ public class NMLConfig {
                 .comment("If torches can be extinguished through interactions like campfires.")
                 .define("torchExtinguishing", true);
         GRASS_FROSTING = COMMON_BUILDER
-                .comment("If grass generating/placed on snow converts to Frosted Grass.")
+                .comment("If snow and grass can combine to form snowlogged frosted grass.")
                 .define("allowGrassFrosting", true);
         COMMON_BUILDER.pop();
 

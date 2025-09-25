@@ -26,10 +26,8 @@ public class RandomUpdateHandlerMixin {
 
     @Inject(method = "meltInChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getBiome(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/core/Holder;", ordinal = 1, shift = At.Shift.AFTER))
     private static void meltFrostedGrass(ChunkMap chunkMap, LevelChunk chunkIn, float meltChance, CallbackInfo ci, @Local ServerLevel world, @Local Holder<Biome> biome, @Local(ordinal = 0) BlockPos topAirPos, @Local(ordinal = 1) BlockPos topGroundPos, @Local(ordinal = 0) BlockState aboveGroundState) {
-        if (!biome.is(ModTags.Biomes.BLACKLISTED_BIOMES) && SeasonHooks.getBiomeTemperature(world, biome, topGroundPos) >= 0.15F) {
-            if (aboveGroundState.is(NMLBlocks.FROSTED_GRASS)) {
-                world.setBlockAndUpdate(topAirPos, aboveGroundState.getValue(FrostedGrassBlock.SNOWLOGGED) ? aboveGroundState.setValue(FrostedGrassBlock.SNOWLOGGED, false) : Blocks.SHORT_GRASS.defaultBlockState());
-            }
+        if (!biome.is(ModTags.Biomes.BLACKLISTED_BIOMES) && SeasonHooks.getBiomeTemperature(world, biome, topGroundPos) >= 0.15F && aboveGroundState.is(NMLBlocks.FROSTED_GRASS)) {
+            world.setBlockAndUpdate(topAirPos, aboveGroundState.getValue(FrostedGrassBlock.SNOWLOGGED) ? aboveGroundState.setValue(FrostedGrassBlock.SNOWLOGGED, false) : Blocks.SHORT_GRASS.defaultBlockState());
         }
     }
 }

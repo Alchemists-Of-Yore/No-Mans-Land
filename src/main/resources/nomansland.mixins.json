@@ -56,9 +56,9 @@
   ],
   "client": [
     "client.CapeRenderLayerMixin",
+    "client.HumanoidModelMixin",
     "client.LevelRendererMixin",
-    "client.SkinManagerMixin",
-    "client.HumanoidModelMixin"
+    "client.SkinManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

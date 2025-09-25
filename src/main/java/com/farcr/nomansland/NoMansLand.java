@@ -31,50 +31,50 @@ public class NoMansLand {
     public static final String MODID = "nomansland";
     public static final Logger LOGGER = LogManager.getLogger("No Man's Land");
 
-    public NoMansLand(IEventBus modEventBus, ModContainer modContainer) {
+    public NoMansLand(IEventBus bus, ModContainer modContainer) {
 
-        NMLItems.ITEMS.register(modEventBus);
+        NMLItems.ITEMS.register(bus);
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("apple_fruit"), NoMansLand.location("apple"));
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("pear_fruit"), NoMansLand.location("pear"));
-        NMLBlocks.BLOCKS.register(modEventBus);
-        NMLExtinguishables.EXTINGUISHABLES.register(modEventBus);
-        NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(modEventBus);
-        NMLEntities.ENTITIES.register(modEventBus);
-        NMLSensors.SENSORS.register(modEventBus);
-        NMLMemoryModules.MEMORY_MODULES.register(modEventBus);
-        NMLFeatures.FEATURES.register(modEventBus);
-        NMLFoliagePlacerTypes.FOLIAGE_PLACER_TYPES.register(modEventBus);
-        NMLTrunkPlacerTypes.TRUNK_PLACER_TYPES.register(modEventBus);
-        NMLSounds.SOUND_EVENTS.register(modEventBus);
-        NMLCreativeTabs.CREATIVE_TABS.register(modEventBus);
-        NMLParticleTypes.PARTICLE_TYPES.register(modEventBus);
-        NMLBlockEntities.BLOCK_ENTITIES.register(modEventBus);
-        NMLLootModifiers.LOOT_MODIFIERS.register(modEventBus);
-        NMLTreeDecoratorTypes.TREE_DECORATOR_TYPES.register(modEventBus);
-        NMLPondDecoratorTypes.POND_DECORATOR_TYPES.register(modEventBus);
-        NMLBoulderDecoratorTypes.BOULDER_DECORATOR_TYPES.register(modEventBus);
-        NMLFallenTreeDecoratorTypes.FALLEN_TREE_DECORATOR_TYPES.register(modEventBus);
-        NMLFogModifiers.FOG_MODIFIERS.register(modEventBus);
-        NMLMobVariants.FROG_VARIANTS.register(modEventBus);
-        NMLEffects.MOB_EFFECTS.register(modEventBus);
-        NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(modEventBus);
-        NMLCriteriaTriggers.TRIGGERS.register(modEventBus);
-        NMLRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
-        NMLRecipeSerializers.RECIPE_TYPES.register(modEventBus);
-        NMLFluids.FLUID_TYPES.register(modEventBus);
-        NMLFluids.FLUIDS.register(modEventBus);
-        NMLBiomeModifiers.BIOME_MODIFIERS.register(modEventBus);
-        NMLPlacementModifiers.PLACEMENT_MODIFIER_TYPES.register(modEventBus);
-        NMLDensityFunctions.DENSITY_FUNCTIONS.register(modEventBus);
-        NMLMaterialConditions.MATERIAL_CONDITIONS.register(modEventBus);
-        NMLMaterialRules.MATERIAL_RULES.register(modEventBus);
-        NMLArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
-        NMLDataComponents.DATA_COMPONENTS.register(modEventBus);
-        NMLVariantActions.ACTIONS.register(modEventBus);
+        NMLBlocks.BLOCKS.register(bus);
+        NMLExtinguishables.EXTINGUISHABLES.register(bus);
+        NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(bus);
+        NMLEntities.ENTITIES.register(bus);
+        NMLSensors.SENSORS.register(bus);
+        NMLMemoryModules.MEMORY_MODULES.register(bus);
+        NMLFeatures.FEATURES.register(bus);
+        NMLFoliagePlacerTypes.FOLIAGE_PLACER_TYPES.register(bus);
+        NMLTrunkPlacerTypes.TRUNK_PLACER_TYPES.register(bus);
+        NMLSounds.SOUND_EVENTS.register(bus);
+        NMLCreativeTabs.CREATIVE_TABS.register(bus);
+        NMLParticleTypes.PARTICLE_TYPES.register(bus);
+        NMLBlockEntities.BLOCK_ENTITIES.register(bus);
+        NMLLootModifiers.LOOT_MODIFIERS.register(bus);
+        NMLTreeDecoratorTypes.TREE_DECORATOR_TYPES.register(bus);
+        NMLPondDecoratorTypes.POND_DECORATOR_TYPES.register(bus);
+        NMLBoulderDecoratorTypes.BOULDER_DECORATOR_TYPES.register(bus);
+        NMLFallenTreeDecoratorTypes.FALLEN_TREE_DECORATOR_TYPES.register(bus);
+        NMLFogModifiers.FOG_MODIFIERS.register(bus);
+        NMLMobVariants.FROG_VARIANTS.register(bus);
+        NMLEffects.MOB_EFFECTS.register(bus);
+        NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(bus);
+        NMLCriteriaTriggers.TRIGGERS.register(bus);
+        NMLRecipeSerializers.RECIPE_SERIALIZERS.register(bus);
+        NMLRecipeSerializers.RECIPE_TYPES.register(bus);
+        NMLFluids.FLUID_TYPES.register(bus);
+        NMLFluids.FLUIDS.register(bus);
+        NMLBiomeModifiers.BIOME_MODIFIERS.register(bus);
+        NMLPlacementModifiers.PLACEMENT_MODIFIER_TYPES.register(bus);
+        NMLDensityFunctions.DENSITY_FUNCTIONS.register(bus);
+        NMLMaterialConditions.MATERIAL_CONDITIONS.register(bus);
+        NMLMaterialRules.MATERIAL_RULES.register(bus);
+        NMLArmorMaterials.ARMOR_MATERIALS.register(bus);
+        NMLDataComponents.DATA_COMPONENTS.register(bus);
+        NMLVariantActions.ACTIONS.register(bus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
-            modEventBus.addListener(FDIntegration::addBlockEntities);
+            bus.addListener(FDIntegration::addBlockEntities);
             NeoForge.EVENT_BUS.addListener(FDIntegration::onFruitCakeInteraction);
         }
 
@@ -83,8 +83,8 @@ public class NoMansLand {
         if (Mods.BOATLOAD.isLoaded()) BoatloadIntegration.register();
         if (Mods.EVERYCOMP.isLoaded()) EveryCompatIntegration.register();
 
-        modEventBus.register(new CreativeModeTabHandler());
-        modEventBus.addListener(NMLBlockEntities::addBlockEntities);
+        bus.register(new CreativeModeTabHandler());
+        bus.addListener(NMLBlockEntities::addBlockEntities);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, NMLConfig.COMMON_CONFIG);
         modContainer.registerConfig(ModConfig.Type.CLIENT, NMLConfig.CLIENT_CONFIG);

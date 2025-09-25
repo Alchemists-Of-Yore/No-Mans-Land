@@ -21,6 +21,6 @@ public class NMLCreativeTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.nomansland"))
                     .icon(NMLItems.NO_MANS_GLOBE::stack)
-                    .displayItems((parameters, output) -> CREATIVE_TAB_ITEMS.forEach((definition) -> output.accept(definition.item())))
+                    .displayItems(CREATIVE_TAB_ITEMS)
                     .build());
 }

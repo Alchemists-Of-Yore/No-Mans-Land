@@ -72,7 +72,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<Deer>> DEER = register("deer", Deer::new, MobCategory.CREATURE, 0.8F, 1.4F);
 
-    public static final Supplier<EntityType<Goose>> GOOSE = register("goose", Goose::new, MobCategory.CREATURE, 0.8F, 1);
+    public static final Supplier<EntityType<Goose>> GOOSE = register("goose", Goose::new, MobCategory.CREATURE, 0.6F, 0.9F);
 
 //    public static final Supplier<EntityType<BuriedEntity>> BURIED =
 //            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)
