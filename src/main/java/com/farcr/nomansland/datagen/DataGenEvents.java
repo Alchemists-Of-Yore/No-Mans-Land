@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class DataGenEvents {
 
