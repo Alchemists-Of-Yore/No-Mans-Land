@@ -1,8 +1,13 @@
 {
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_chicken",
+  "conditions": {
+    "spawning_location": {
+      "biomes": "#nomansland:entity/spawns_dark_chickens"
+    }
+  },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/chicken/chicken_black",
+    "texture": "nomansland:entity/mob_variants/chicken/chicken_dark",
     "baby_texture": "nomansland:entity/mob_variants/chicken/chicken_baby"
   }
 }
