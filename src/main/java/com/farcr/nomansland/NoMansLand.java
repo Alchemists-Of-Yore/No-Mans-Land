@@ -4,6 +4,7 @@ import com.farcr.nomansland.common.event.CreativeModeTabHandler;
 import com.farcr.nomansland.common.integration.BBIntegration;
 import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.integration.WoodGood;
 import com.farcr.nomansland.common.integration.boatload.BoatloadIntegration;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.*;
@@ -15,6 +16,7 @@ import com.farcr.nomansland.common.registry.items.NMLCreativeTabs;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.*;
+import net.mehvahdjukaar.every_compat.api.EveryCompatAPI;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -80,6 +82,7 @@ public class NoMansLand {
         if (Mods.NIRVANA.isLoaded()) NirvanaIntegration.register();
         if (Mods.BLOCKBOX.isLoaded()) BBIntegration.register();
         if (Mods.BOATLOAD.isLoaded()) BoatloadIntegration.register();
+        if (Mods.EVERYCOMP.isLoaded()) EveryCompatAPI.registerModule(new WoodGood(MODID));
 
         modEventBus.register(new CreativeModeTabHandler());
         modEventBus.addListener(NMLBlockEntities::addBlockEntities);

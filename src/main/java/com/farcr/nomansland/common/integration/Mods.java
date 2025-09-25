@@ -13,7 +13,8 @@ public enum Mods {
     CREATE,
     BOATLOAD,
     BLUEPRINT,
-    NIRVANA;
+    NIRVANA,
+    EVERYCOMP;
 
     private final String id;
 
