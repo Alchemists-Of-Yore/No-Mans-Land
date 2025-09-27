@@ -1,13 +1,13 @@
 {
-  "feature": "nomansland:underground/tortoise_burrows/tortoise_burrow",
+  "feature": "nomansland:underground/tortoise_burrows/tortoise_burrow_lush",
   "placement": [
     {
       "type": "minecraft:count",
-      "count": 10
+      "count": 12
     },
     {
       "type": "minecraft:rarity_filter",
-      "chance": 3
+      "chance": 2
     },
     {
       "type": "minecraft:in_square"

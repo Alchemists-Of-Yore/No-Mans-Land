@@ -1,0 +1,13 @@
+{
+  "type": "nomansland:tortoise_burrow",
+  "config": {
+    "blocks": [
+      {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "minecraft:moss_block"
+        }
+      }
+    ]
+  }
+}
