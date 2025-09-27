@@ -6,8 +6,13 @@ import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.tazer.mixed_litter.VariantUtil;
+import dev.tazer.mixed_litter.registry.MLDataAttachmentTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.MobSpawnType;
@@ -82,10 +87,12 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                             tortoise.moveTo(turtleSpawnPos.getX(), turtleSpawnPos.getY(), turtleSpawnPos.getZ(), 0, 0);
                             tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
                             tortoise.setHomePos(turtleSpawnPos);
+                            tortoise.setData(MLDataAttachmentTypes.SPAWN_LOCATION, GlobalPos.of(tortoise.level().dimension(), tortoise.blockPosition()));
+                            VariantUtil.applySuitableVariants(tortoise);
                             worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
                         }
                         this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos, 3, 2);
-                     //  Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                        //Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
                     }
                     for (BlockPos blockPos : airPos) {
                         if (!worldgenlevel.getBlockState(blockPos).is(NMLBlocks.CAVE_WEEDS.get()))

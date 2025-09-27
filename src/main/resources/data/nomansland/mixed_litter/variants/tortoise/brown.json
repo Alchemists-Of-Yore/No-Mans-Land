@@ -1,6 +1,15 @@
 {
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:tortoise",
+  "conditions": {
+    "spawning_location": {
+      "biomes": [
+        "minecraft:plains",
+        "minecraft:jungle",
+        "minecraft:sparse_jungle"
+      ]
+    }
+  },
   "arguments": {
     "texture": "nomansland:entity/tortoise/brown"
   }
