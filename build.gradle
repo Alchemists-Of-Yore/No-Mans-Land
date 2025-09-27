@@ -123,12 +123,13 @@ dependencies {
 //    }
 
     implementation "com.terraformersmc:biolith-neoforge:$bt_version"
-//    implementation "maven.modrinth:mixed-litter:$ml_version"
-    implementation "dev.tazer:mixed_litter:1.0.0"
+    jarJar(implementation("maven.modrinth:mixed-litter:$ml_version"))
     jarJar(implementation("com.moulberry:mixinconstraints:1.0.7") {
                 exclude group: "org.slf4j",
                         module: "slf4j-api"
     })
+
+
 //MAKE SURE THESE ARE ALL "IMPLEMENTATION" WHEN RUNNING DATA! OTHERWISE DATA WILL BREAK!
     implementation "maven.modrinth:farmers-delight:1.21.1-1.2.7"
     implementation "maven.modrinth:blueprint:8.0.5"
