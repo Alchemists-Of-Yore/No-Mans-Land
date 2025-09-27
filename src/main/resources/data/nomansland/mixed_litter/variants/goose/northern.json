@@ -3,6 +3,6 @@
   "group": "nomansland:goose",
   "arguments": {
     "texture": "nomansland:entity/goose/goose_northern",
-    "baby_texture": "nomansland:entity/mob_variants/chicken/chicken_baby"
+    "baby_texture": "nomansland:entity/goose/goose_baby"
   }
 }

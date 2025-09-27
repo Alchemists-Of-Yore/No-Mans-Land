@@ -19,9 +19,12 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
     private final ModelPart leftFlightWing;
     private final ModelPart tail;
     private final ModelPart bodyBaby;
+    private final ModelPart headBaby;
+    private final ModelPart rightLegBaby;
+    private final ModelPart leftLegBaby;
 
     public GooseModel(ModelPart root) {
-        super(0.5F, 0);
+        super(1, 0);
         this.root = root;
         this.body = root.getChild("body");
         this.head = body.getChild("head");
@@ -33,6 +36,9 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
         this.leftFlightWing = body.getChild("left_flight_wing");
         this.tail = body.getChild("tail");
         this.bodyBaby = root.getChild("body_baby");
+        this.headBaby = bodyBaby.getChild("head_baby");
+        this.rightLegBaby = bodyBaby.getChild("right_leg_baby");
+        this.leftLegBaby = bodyBaby.getChild("left_leg_baby");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -60,13 +66,14 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
 
         body.addOrReplaceChild("right_flight_wing", CubeListBuilder.create().texOffs(0, 15).mirror().addBox(-17, -0.5F, -1.5F, 17, 1, 7, new CubeDeformation(0.01F)).mirror(false), PartPose.offset(-3.5F, -2.5F, -3));
 
-        PartDefinition bodyBaby = partdefinition.addOrReplaceChild("body_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-2.0F, -1.5F, -1.0F, 4.0F, 3.0F, 4.0F), PartPose.offset(0.0F, 16.9F, -0.5F));
+        PartDefinition bodyBaby = partdefinition.addOrReplaceChild("body_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-2, -1.5F, -1, 4, 3, 4), PartPose.offset(0, 20.5F, -0.5F));
 
-        bodyBaby.addOrReplaceChild("head_baby", CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2.0F, -3.0F, 3.0F, 3.0F, 3.0F).texOffs(12, 0).addBox(-0.5F, -1.0F, -4.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -0.5F, 0.0F));
+        bodyBaby.addOrReplaceChild("head_baby", CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2, -3, 3, 3, 3)
+                .texOffs(12, 0).addBox(-0.5F, -1, -4, 1, 1, 1), PartPose.offset(0, -0.5F, 0));
 
-        bodyBaby.addOrReplaceChild("right_leg_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 0.0F, -1.0F, 1.0F, 2.0F, 1.0F), PartPose.offset(-1.0F, 1.5F, 1.0F));
+        bodyBaby.addOrReplaceChild("right_leg_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 0, -1, 1, 2, 1), PartPose.offset(-1, 1.5F, 1));
 
-        bodyBaby.addOrReplaceChild("left_leg_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 0.0F, -1.0F, 1.0F, 2.0F, 1.0F), PartPose.offset(1.0F, 1.5F, 1.0F));
+        bodyBaby.addOrReplaceChild("left_leg_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 0, -1, 1, 2, 1), PartPose.offset(1, 1.5F, 1));
 
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
@@ -112,7 +119,15 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
         rightLeg.visible = !baby;
         leftLeg.visible = !baby;
         tail.visible = !baby;
+        body.visible = !baby;
         bodyBaby.visible = baby;
+
+        bodyBaby.xRot = body.xRot;
+        bodyBaby.yRot = body.yRot;
+        headBaby.xRot = head.xRot / 2;
+        headBaby.yRot = head.yRot / 2;
+        rightLegBaby.xRot = rightLeg.xRot / 2;
+        leftLegBaby.xRot = leftLeg.xRot / 2;
     }
 
     @Override

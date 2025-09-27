@@ -34,7 +34,10 @@ public class GooseCoreBehavior extends Behavior<Goose> {
             } else goose.setState(Goose.State.RUNNING);
         } else {
             brain.getMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(hurtBy -> {
-                brain.setMemoryWithExpiry(MemoryModuleType.ANGRY_AT, hurtBy.getUUID(), 20 * 60);
+                brain.setMemoryWithExpiry(MemoryModuleType.ANGRY_AT, hurtBy.getUUID(), 20 * 60 * 10);
+                entities.findAll(entity -> entity instanceof Goose).forEach(entity -> {
+                    entity.getBrain().setMemoryWithExpiry(MemoryModuleType.ANGRY_AT, hurtBy.getUUID(), 20 * 60 * 10);
+                });
             });
 
             LivingEntity threat = entities.findClosest(entity ->
@@ -43,9 +46,9 @@ public class GooseCoreBehavior extends Behavior<Goose> {
             if (threat != null) {
                 UUID angryAt = brain.getMemory(MemoryModuleType.ANGRY_AT).orElse(null);
 
-                if (threat.getUUID().equals(angryAt)) {
+                if (threat.isHolding(goose::isFood) || threat.getUUID().equals(angryAt)) {
                     if (goose.canFight()) {
-                        brain.setMemory(MemoryModuleType.ATTACK_TARGET, threat);
+                        brain.setMemoryWithExpiry(MemoryModuleType.ATTACK_TARGET, threat, 20*4);
                         goose.setTarget(threat);
                         brain.eraseMemory(MemoryModuleType.AVOID_TARGET);
                     } else {

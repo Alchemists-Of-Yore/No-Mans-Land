@@ -8,6 +8,6 @@
   },
   "arguments": {
     "texture": "nomansland:entity/goose/goose_flamingo",
-    "baby_texture": "nomansland:entity/mob_variants/chicken/chicken_baby"
+    "baby_texture": "nomansland:entity/goose/goose_baby"
   }
 }

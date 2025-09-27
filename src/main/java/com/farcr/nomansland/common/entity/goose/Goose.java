@@ -24,9 +24,11 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -87,6 +89,26 @@ public class Goose extends Animal {
     @Override
     public boolean isFood(ItemStack itemStack) {
         return itemStack.is(Items.PUMPKIN_SEEDS);
+    }
+
+    @Override
+    public void setInLove(@Nullable Player player) {
+        super.setInLove(player);
+
+        if (player != null) {
+            getBrain().getMemory(MemoryModuleType.ANGRY_AT).ifPresent(angryAt -> {
+                if (angryAt == player.getUUID()) {
+                    getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
+                }
+            });
+
+            getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> {
+                if (target == player) {
+                    getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+                    setTarget(null);
+                }
+            });
+        }
     }
 
     @Override
