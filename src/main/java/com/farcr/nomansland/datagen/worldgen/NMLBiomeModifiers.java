@@ -518,6 +518,7 @@ public class NMLBiomeModifiers {
                         11851346
                 )
                 .addFeatures(FeatureWithStep.vegetationFeatures(feature("underground/patch_duckweed_lush_caves")))
+                .addFeatures(new FeatureWithStep(feature("underground/tortoise_burrows/tortoise_burrow_lush"), GenerationStep.Decoration.TOP_LAYER_MODIFICATION))
                 .build(featureToBiomes);
 
         modifyBiome(Biomes.MANGROVE_SWAMP)

@@ -2,6 +2,11 @@
   "values": [
     "nomansland:firebomb",
     "nomansland:ink_bomb",
-    "nomansland:explosive"
+    "nomansland:explosive",
+    "nomansland:living_urn",
+    {
+    "id":"nomansland:far_joint",
+    "required":false
+    }
   ]
 }
