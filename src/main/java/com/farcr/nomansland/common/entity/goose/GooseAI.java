@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.entity.goose;
 
+import com.farcr.nomansland.common.entity.ai.LeapAtTargetBehavior;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -13,7 +15,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 
@@ -25,7 +27,8 @@ public class GooseAI {
             SensorType.NEAREST_LIVING_ENTITIES,
             SensorType.HURT_BY,
             SensorType.NEAREST_PLAYERS,
-            SensorType.IS_IN_WATER
+            SensorType.IS_IN_WATER,
+            SensorType.NEAREST_ADULT
     );
 
     private static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(
@@ -40,7 +43,10 @@ public class GooseAI {
             MemoryModuleType.ATTACK_COOLING_DOWN,
             MemoryModuleType.NEAREST_PLAYERS,
             MemoryModuleType.IS_IN_WATER,
-            MemoryModuleType.AVOID_TARGET
+            MemoryModuleType.AVOID_TARGET,
+            MemoryModuleType.BREED_TARGET,
+            MemoryModuleType.NEAREST_VISIBLE_ADULT,
+            MemoryModuleType.IS_PANICKING
     );
 
     public static Brain.Provider<Goose> brainProvider() {
@@ -75,12 +81,13 @@ public class GooseAI {
     }
 
     private static void initIdleActivity(Brain<Goose> brain) {
-        brain.addActivityWithConditions(
+        brain.addActivity(
                 Activity.IDLE,
                 ImmutableList.of(
-                        Pair.of(0, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
-                        Pair.of(1, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
-                        Pair.of(2, new RunOne<>(
+                        Pair.of(0, new AnimalMakeLove(NMLEntities.GOOSE.get(), 1, 1)),
+                        Pair.of(1, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
+                        Pair.of(2, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
+                        Pair.of(3, new RunOne<>(
                                 ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                 ImmutableList.of(
                                         Pair.of(RandomStroll.stroll(1.0F), 1),
@@ -88,10 +95,6 @@ public class GooseAI {
                                         Pair.of(new DoNothing(30, 60), 1)
                                 )
                         ))
-                ),
-                ImmutableSet.of(
-                        Pair.of(MemoryModuleType.HURT_BY_ENTITY, MemoryStatus.VALUE_ABSENT),
-                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT)
                 )
         );
     }
@@ -100,8 +103,10 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.FIGHT,
                 ImmutableList.of(
-                        Pair.of(0, MeleeAttack.create(15)),
-                        Pair.of(1, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.3F))
+                        Pair.of(0, new LeapAtTargetBehavior(MemoryModuleType.ATTACK_TARGET)),
+                        Pair.of(1, MeleeAttack.create(15)),
+                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.3F)),
+                        Pair.of(3, StopAttackingIfTargetInvalid.create())
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT)
@@ -116,12 +121,13 @@ public class GooseAI {
                         Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.AVOID_TARGET, 1.3F, 8, true))
                 ),
                 ImmutableSet.of(
+                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT),
                         Pair.of(MemoryModuleType.AVOID_TARGET, MemoryStatus.VALUE_PRESENT)
                 )
         );
     }
 
     public static boolean isThreat(LivingEntity entity) {
-        return entity instanceof Enemy || entity instanceof Player;
+        return entity.canBeSeenAsEnemy() && (entity instanceof Monster || entity instanceof Player);
     }
 }

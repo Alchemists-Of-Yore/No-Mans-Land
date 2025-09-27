@@ -1,5 +1,5 @@
 {
-  "type": "mixed_litter:simple_texture",
+  "type": "mixed_litter:ageable_texture",
   "group": "nomansland:goose",
   "conditions": {
     "spawning_location": {
@@ -7,6 +7,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/goose/goose_flamingo"
+    "texture": "nomansland:entity/goose/goose_flamingo",
+    "baby_texture": "nomansland:entity/mob_variants/chicken/chicken_baby"
   }
 }

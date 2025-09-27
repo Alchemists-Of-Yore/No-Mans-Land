@@ -1,14 +1,12 @@
 package com.farcr.nomansland.client.model.goose;
 
 import com.farcr.nomansland.common.entity.goose.Goose;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.AgeableHierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 
-public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
+public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
 
     private final ModelPart root;
     private final ModelPart body;
@@ -19,8 +17,11 @@ public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
     private final ModelPart leftWing;
     private final ModelPart rightFlightWing;
     private final ModelPart leftFlightWing;
+    private final ModelPart tail;
+    private final ModelPart bodyBaby;
 
     public GooseModel(ModelPart root) {
+        super(0.5F, 0);
         this.root = root;
         this.body = root.getChild("body");
         this.head = body.getChild("head");
@@ -30,6 +31,8 @@ public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
         this.leftWing = body.getChild("left_wing");
         this.rightFlightWing = body.getChild("right_flight_wing");
         this.leftFlightWing = body.getChild("left_flight_wing");
+        this.tail = body.getChild("tail");
+        this.bodyBaby = root.getChild("body_baby");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -57,6 +60,14 @@ public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
 
         body.addOrReplaceChild("right_flight_wing", CubeListBuilder.create().texOffs(0, 15).mirror().addBox(-17, -0.5F, -1.5F, 17, 1, 7, new CubeDeformation(0.01F)).mirror(false), PartPose.offset(-3.5F, -2.5F, -3));
 
+        PartDefinition bodyBaby = partdefinition.addOrReplaceChild("body_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-2.0F, -1.5F, -1.0F, 4.0F, 3.0F, 4.0F), PartPose.offset(0.0F, 16.9F, -0.5F));
+
+        bodyBaby.addOrReplaceChild("head_baby", CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2.0F, -3.0F, 3.0F, 3.0F, 3.0F).texOffs(12, 0).addBox(-0.5F, -1.0F, -4.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -0.5F, 0.0F));
+
+        bodyBaby.addOrReplaceChild("right_leg_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 0.0F, -1.0F, 1.0F, 2.0F, 1.0F), PartPose.offset(-1.0F, 1.5F, 1.0F));
+
+        bodyBaby.addOrReplaceChild("left_leg_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 0.0F, -1.0F, 1.0F, 2.0F, 1.0F), PartPose.offset(1.0F, 1.5F, 1.0F));
+
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
 
@@ -70,33 +81,38 @@ public class GooseModel<T extends Goose> extends HierarchicalModel<T> {
             if (goose.getState() == Goose.State.RUNNING) {
                 animateWalk(GooseAnimation.GOOSE_RUN, limbSwing, limbSwingAmount, 2, 3);
             } else {
-                if (goose.isFallFlying()) {
-                    animateWalk(GooseAnimation.GOOSE_FALL, limbSwing, limbSwingAmount, 4, 5);
+                if (goose.isInWater()) {
+                    animateWalk(GooseAnimation.GOOSE_SWIM, limbSwing, limbSwingAmount, 4, 5);
                 } else {
-                    if (goose.isInWater()) {
-                        animateWalk(GooseAnimation.GOOSE_SWIM, limbSwing, limbSwingAmount, 4, 5);
-                    }
-                    else {
-                        animateWalk(GooseAnimation.GOOSE_WALK, limbSwing, limbSwingAmount, 4, 5);
-                        animate(goose.intimidatingAnimationState, GooseAnimation.GOOSE_INTIMIDATE, ageInTicks);
-                    }
+                    animateWalk(GooseAnimation.GOOSE_WALK, limbSwing, limbSwingAmount, 4, 5);
+                    animate(goose.intimidatingAnimationState, GooseAnimation.GOOSE_INTIMIDATE, ageInTicks);
+                    animate(goose.fallingAnimationState, GooseAnimation.GOOSE_FALL, ageInTicks);
                 }
             }
         }
 
         animate(goose.hurtingAnimationState, GooseAnimation.GOOSE_HURT, ageInTicks);
 
-        boolean visible = goose.showWings();
+        boolean baby = goose.isBaby();
+        if (baby) {
+            rightFlightWing.visible = false;
+            leftFlightWing.visible = false;
+            rightWing.visible = false;
+            leftWing.visible = false;
+        } else {
+            boolean wingsVisible = goose.showWings();
 
-        rightFlightWing.visible = visible;
-        leftFlightWing.visible = visible;
-        rightWing.visible = !visible;
-        leftWing.visible = !visible;
-    }
+            rightFlightWing.visible = wingsVisible;
+            leftFlightWing.visible = wingsVisible;
+            rightWing.visible = !wingsVisible;
+            leftWing.visible = !wingsVisible;
+        }
 
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        root.getChild("body").render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        head.visible = !baby;
+        rightLeg.visible = !baby;
+        leftLeg.visible = !baby;
+        tail.visible = !baby;
+        bodyBaby.visible = baby;
     }
 
     @Override

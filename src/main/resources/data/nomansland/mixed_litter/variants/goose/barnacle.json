@@ -1,7 +1,8 @@
 {
-  "type": "mixed_litter:simple_texture",
+  "type": "mixed_litter:ageable_texture",
   "group": "nomansland:goose",
   "arguments": {
-    "texture": "nomansland:entity/goose/goose_barnacle"
+    "texture": "nomansland:entity/goose/goose_barnacle",
+    "baby_texture": "nomansland:entity/mob_variants/chicken/chicken_baby"
   }
 }

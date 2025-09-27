@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.goose;
 
 import com.farcr.nomansland.common.registry.NMLSounds;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
 import com.mojang.serialization.Dynamic;
 import io.netty.buffer.ByteBuf;
@@ -16,16 +17,20 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,27 +38,34 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntFunction;
 
-public class Goose extends PathfinderMob {
+public class Goose extends Animal {
 
     private static final EntityDataAccessor<State> DATA_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
     private int hurtAnimationTick = 0;
     public final AnimationState hurtingAnimationState = new AnimationState();
+    public final AnimationState fallingAnimationState = new AnimationState();
     public final AnimationState intimidatingAnimationState = new AnimationState();
 
-    public Goose(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public Goose(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10)
-                .add(Attributes.ATTACK_DAMAGE, 2)
+                .add(Attributes.ATTACK_DAMAGE, 1)
                 .add(Attributes.MOVEMENT_SPEED, 0.2);
+    }
+
+    @Override
+    public @Nullable AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob ageableMob) {
+        return NMLEntities.GOOSE.get().create(serverLevel);
     }
 
     @Override
@@ -70,6 +82,11 @@ public class Goose extends PathfinderMob {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+    }
+
+    @Override
+    public boolean isFood(ItemStack itemStack) {
+        return itemStack.is(Items.PUMPKIN_SEEDS);
     }
 
     @Override
@@ -94,7 +111,7 @@ public class Goose extends PathfinderMob {
     }
 
     public boolean showWings() {
-        return getState() != State.IDLING || hurtingAnimationState.isStarted();
+        return getState() != State.IDLING || hurtingAnimationState.isStarted() || fallingAnimationState.isStarted();
     }
 
     public void setState(State state) {
@@ -140,11 +157,11 @@ public class Goose extends PathfinderMob {
     }
 
     protected void playStepSound(BlockPos pos, BlockState block) {
-        playSound(NMLSounds.GOOSE_STEP.get(), 0.15F, 1.0F);
+        playSound(NMLSounds.GOOSE_STEP.get(), 0.15F, 1);
     }
 
     public boolean canFight() {
-        return getHealth() > getMaxHealth() / 2;
+        return !isBaby() && getHealth() > getMaxHealth() / 2;
     }
 
     @Override
@@ -160,6 +177,16 @@ public class Goose extends PathfinderMob {
         level.getProfiler().pop();
 
         super.customServerAiStep();
+    }
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+
+        Vec3 vec3 = this.getDeltaMovement();
+        if (!this.onGround() && vec3.y < 0) {
+            this.setDeltaMovement(vec3.multiply(1, 0.6, 1));
+        }
     }
 
     @Override
@@ -182,10 +209,18 @@ public class Goose extends PathfinderMob {
     public void tick() {
         super.tick();
 
+        if (onGround() || getDeltaMovement().y > 0) fallingAnimationState.ifStarted(AnimationState::stop);
+        else fallingAnimationState.startIfStopped(tickCount);
+        
         if (hurtAnimationTick > 0) hurtAnimationTick--;
         else hurtingAnimationState.ifStarted(AnimationState::stop);
 
         floatGoose();
+    }
+
+    @Override
+    public float getWalkTargetValue(BlockPos pos, LevelReader level) {
+        return level.getFluidState(pos).is(FluidTags.WATER) ? 5 : level.getPathfindingCostFromLightLevels(pos);
     }
 
     @Override
