@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "nomansland:dried_grass",
+    "nomansland:fiddlehead",
+    "nomansland:frosted_grass",
+    "nomansland:grass_sprouts",
+    "nomansland:oat_grass",
+    "nomansland:short_beachgrass",
+    "nomansland:tall_beachgrass"
+  ]
+}
