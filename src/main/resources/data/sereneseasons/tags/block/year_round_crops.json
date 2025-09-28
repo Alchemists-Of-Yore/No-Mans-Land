@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "nomansland:field_mushroom",
+    "nomansland:shelf_mushroom",
+    "nomansland:autumnal_oak_sapling",
+    "nomansland:pine_sapling",
+    "nomansland:yellow_birch_sapling",
+    "nomansland:maple_sapling",
+    "nomansland:red_maple_sapling",
+    "nomansland:walnut_sapling",
+    "nomansland:willow_sapling",
+    "nomansland:pale_cherry_sapling"
+  ]
+}
