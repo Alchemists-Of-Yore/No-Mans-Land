@@ -148,6 +148,7 @@ dependencies {
     compileOnly "maven.modrinth:glitchcore:8wmCpbQ2"
     compileOnly "maven.modrinth:supplementaries:neoforge_1.21-3.0.43-beta"
     compileOnly "maven.modrinth:vanity-core:5.0.2"
+    compileOnly "maven.modrinth:snow-real-magic:12.1.2+neoforge"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
     compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
@@ -156,7 +157,7 @@ dependencies {
 //    localRuntime "maven.modrinth:xaeros-world-map:1.38.9_NeoForge_1.21"
     localRuntime "maven.modrinth:appleskin:3.0.5+mc1.21"
     localRuntime "maven.modrinth:worldedit:7.3.6"
-    localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.9-neoforge"
+    localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
     localRuntime "me.djtheredstoner:DevAuth-neoforge:1.2.1"
     //localRuntime "maven.modrinth:cyanide:v4LiMGGH"
 }
