@@ -1,6 +1,6 @@
 {
   "type": "mixed_litter:simple_texture",
-  "group": "nomansland:cod",
+  "group": "nomansland:salmon",
   "conditions": {
     "spawning_location": {
       "biomes": "#nomansland:entity/spawns_ocean_salmon"

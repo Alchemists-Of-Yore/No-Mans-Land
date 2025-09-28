@@ -102,7 +102,7 @@
     "axolotls": [],
     "creature": [
       {
-      "type": "minecraft:sea_turtle",
+      "type": "minecraft:turtle",
       "maxCount": 3,
       "minCount": 1,
       "weight": 5
