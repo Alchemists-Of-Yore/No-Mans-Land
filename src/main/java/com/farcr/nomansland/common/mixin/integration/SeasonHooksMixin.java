@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.mixin.integration;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
@@ -17,6 +18,7 @@ import sereneseasons.season.SeasonHooks;
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 
 @IfModLoaded("sereneseasons")
+@IfModAbsent("snowrealmagic")
 @Mixin(SeasonHooks.class)
 public class SeasonHooksMixin {
 

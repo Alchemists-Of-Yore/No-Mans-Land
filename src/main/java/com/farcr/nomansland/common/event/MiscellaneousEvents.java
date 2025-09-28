@@ -5,6 +5,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
 import com.farcr.nomansland.common.entity.ai.EnemyAttackGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
+import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
@@ -122,7 +123,7 @@ public class MiscellaneousEvents {
         }
 
         // Grass Frosting
-        if (stack.is(Blocks.SNOW.asItem()) && !player.isSpectator() && state.is(Blocks.SHORT_GRASS)) {
+        if (stack.is(Blocks.SNOW.asItem()) && !player.isSpectator() && state.is(Blocks.SHORT_GRASS) && !Mods.SNOWREALMAGIC.isLoaded()) {
             level.setBlockAndUpdate(pos, NMLBlocks.FROSTED_GRASS.get().defaultBlockState().setValue(SNOWLOGGED, true));
             stack.consume(1, player);
             level.playSound(player, pos, SoundEvents.SNOW_PLACE, SoundSource.PLAYERS, 1, (level.random.nextFloat() - level.random.nextFloat()) * 0.6F + 1.2F);

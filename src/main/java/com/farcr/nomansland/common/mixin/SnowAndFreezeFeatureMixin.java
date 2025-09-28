@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.WorldGenLevel;
@@ -19,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 
+@IfModAbsent("snowrealmagic")
 @Mixin(SnowAndFreezeFeature.class)
 public class SnowAndFreezeFeatureMixin {
 
@@ -44,7 +46,10 @@ public class SnowAndFreezeFeatureMixin {
                 if (biome.shouldSnow(worldgenlevel, mutableblockpos)) {
                     if (worldgenlevel.getBlockState(mutableblockpos).is(NMLBlocks.FROSTED_GRASS.block())) {
                         worldgenlevel.setBlock(mutableblockpos, NMLBlocks.FROSTED_GRASS.get().defaultBlockState().setValue(SNOWLOGGED, true), 2);
-                    } else worldgenlevel.setBlock(mutableblockpos, Blocks.SNOW.defaultBlockState(), 2);                    BlockState blockstate = worldgenlevel.getBlockState(mutableblockpos1);
+                    } else {
+                        worldgenlevel.setBlock(mutableblockpos, Blocks.SNOW.defaultBlockState(), 2);
+                    }
+                    BlockState blockstate = worldgenlevel.getBlockState(mutableblockpos1);
                     if (blockstate.hasProperty(SnowyDirtBlock.SNOWY)) {
                         worldgenlevel.setBlock(mutableblockpos1, blockstate.setValue(SnowyDirtBlock.SNOWY, true), 2);
                     }
