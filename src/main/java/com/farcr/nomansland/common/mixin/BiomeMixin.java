@@ -21,9 +21,10 @@ public class BiomeMixin {
 
     @Inject(method = "shouldSnow", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelReader;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;", shift = At.Shift.AFTER), cancellable = true)
     private void snowOnShortGrass(LevelReader level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        BlockState blockstate = level.getBlockState(pos);
+        if(!NMLConfig.GRASS_FROSTING.get()) return;
 
-        if (blockstate.is(Blocks.SHORT_GRASS) || (blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED)) && NMLConfig.GRASS_FROSTING.get()) {
+        BlockState blockstate = level.getBlockState(pos);
+        if (blockstate.is(Blocks.SHORT_GRASS) || blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED)) {
             cir.setReturnValue(true);
         }
     }

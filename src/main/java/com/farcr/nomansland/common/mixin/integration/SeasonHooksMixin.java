@@ -22,8 +22,10 @@ public class SeasonHooksMixin {
 
     @Inject(method = "shouldSnowHook", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelReader;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;", shift = At.Shift.AFTER), cancellable = true)
     private static void snowOnShortGrass(Biome biome, LevelReader levelReader, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+        if(!NMLConfig.GRASS_FROSTING.get()) return;
+
         BlockState blockstate = levelReader.getBlockState(pos);
-        if (blockstate.is(Blocks.SHORT_GRASS) || (blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED)) && NMLConfig.GRASS_FROSTING.get()) {
+        if (blockstate.is(Blocks.SHORT_GRASS) || blockstate.is(NMLBlocks.FROSTED_GRASS.get()) && !blockstate.getValue(SNOWLOGGED)) {
             cir.setReturnValue(true);
         }
     }
