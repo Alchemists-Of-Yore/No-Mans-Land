@@ -13,6 +13,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 
+import java.util.List;
+
 public class NMLEveryCompatModule extends SimpleModule {
 
     public final SimpleEntrySet<WoodType, Block> trimmedPlanks,
@@ -52,7 +54,10 @@ public class NMLEveryCompatModule extends SimpleModule {
                 .setTabKey(tab)
                 .build();
         this.addEntry(bookshelf);
+    }
 
+    public List<String> getAlreadySupportedMods() {
+        return List.of("blockbox", "boatload", "farmersdelight");
     }
 
 }
