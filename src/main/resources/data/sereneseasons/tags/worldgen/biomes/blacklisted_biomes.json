@@ -1,0 +1,10 @@
+{
+    "replace": false,
+    "values": [
+        "nomansland:cave_depths",
+        "nomansland:caves",
+        "nomansland:desert_river",
+        "nomansland:frozen_shore",
+        "nomansland:frozen_woods"
+    ]
+}

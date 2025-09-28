@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    "nomansland:aconite",
+    "nomansland:autumn_crocus",
+    "nomansland:barrel_cactus",
+    "nomansland:blue_flowerbed",
+    "nomansland:blue_lupine",
+    "nomansland:cattail",
+    "nomansland:cave_weeds",
+    "nomansland:clover_patch",
+    "nomansland:frosted_grass",
+    "nomansland:ground_ivy",
+    "nomansland:lavender_bush",
+    "nomansland:mycelium_sprouts",
+    "nomansland:pebbles",
+    "nomansland:pink_lupine",
+    "nomansland:rafflesia",
+    "nomansland:red_flowerbed",
+    "nomansland:red_lupine",
+    "nomansland:reeds",
+    "nomansland:rose_vines",
+    "nomansland:seashells",
+    "nomansland:starflower",
+    "nomansland:succulent",
+    "nomansland:thistle",
+    "nomansland:violet_flowerbed",
+    "nomansland:white_flowerbed",
+    "nomansland:wild_mint",
+    "nomansland:yellow_flowerbed",
+    "nomansland:yellow_lupine"
+  ]
+}

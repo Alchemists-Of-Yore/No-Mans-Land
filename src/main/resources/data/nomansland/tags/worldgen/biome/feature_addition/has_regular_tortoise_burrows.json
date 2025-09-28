@@ -3,6 +3,7 @@
     "#c:is_cave"
   ],
   "remove":[
-    "minecraft:lush_caves"
+    "minecraft:lush_caves",
+    "minecraft:deep_dark"
   ]
 }
