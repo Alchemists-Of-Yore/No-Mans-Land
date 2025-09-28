@@ -45,6 +45,8 @@
     "WolfMixin",
     "ZombieMixin",
     "caves.DimensionBiomePlacementMixin",
+    "fogsea.NoiseBasedChunkGeneratorMixin",
+    "fogsea.StructurePlacementMixin",
     "integration.PloughMovementBehaviorMixin",
     "integration.RandomUpdateHandlerMixin",
     "integration.RichSoilBlockMixin",
