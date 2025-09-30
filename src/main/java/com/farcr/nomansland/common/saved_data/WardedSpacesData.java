@@ -75,9 +75,9 @@ public class WardedSpacesData extends SavedData {
 
         BlockPos closestEffigy = null;
         for (BlockPos wardedPos : positions) {
-            if (wardedPos.distToCenterSqr(pos.getX(), pos.getY(), pos.getZ()) <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
+            if (wardedPos.distSqr(pos) <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
                 if (closestEffigy == null) closestEffigy = wardedPos;
-                else if (wardedPos.distToCenterSqr(pos.getX(), pos.getY(), pos.getZ()) < closestEffigy.distToCenterSqr(pos.getX(), pos.getY(), pos.getZ()))
+                else if (wardedPos.distSqr(pos) < closestEffigy.distSqr(pos))
                     closestEffigy = wardedPos;
             }
         }

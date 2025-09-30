@@ -24,11 +24,13 @@ public class WaterAvoidingRandomStrollGoalMixin extends RandomStrollGoalMixin {
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::load), WardedSpacesData.NAME);
 
             if (wardedSpacesData.isWarded(mob.blockPosition())) {
-                BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.blockPosition()).orElseThrow();
-                int effigyRange = wardedSpacesData.ranges.get(wardedSpacesData.positions.indexOf(effigyPos));
+                BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.blockPosition()).orElse(null);
+                if (effigyPos != null) {
+                    int effigyRange = wardedSpacesData.ranges.get(wardedSpacesData.positions.indexOf(effigyPos));
 
-                Vec3 newPosition = LandRandomPos.getPosAway(mob, mob.getRandom().nextInt(effigyRange / 4, effigyRange + effigyRange / 4), 10, Vec3.atCenterOf(effigyPos));
-                if (newPosition != null) cir.setReturnValue(newPosition);
+                    Vec3 newPosition = LandRandomPos.getPosAway(mob, mob.getRandom().nextInt(effigyRange / 4, effigyRange + effigyRange / 4), 10, Vec3.atCenterOf(effigyPos));
+                    if (newPosition != null) cir.setReturnValue(newPosition);
+                }
             }
         }
     }

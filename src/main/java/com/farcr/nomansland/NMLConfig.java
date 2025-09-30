@@ -242,6 +242,8 @@ public class NMLConfig {
 
         ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
 
+        STARTUP_BUILDER.comment("For configuring the mob remodels, go to the mixed litter startup config!");
+
         STARTUP_BUILDER.push(CATEGORY_TORTOISE_SHELL_ATTRIBUTES);
         STARTUP_BUILDER.comment("The attributes of the tortoise shell armor item");
         DURABILITY_VALUE= STARTUP_BUILDER

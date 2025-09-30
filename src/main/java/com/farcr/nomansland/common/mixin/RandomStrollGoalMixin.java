@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.saved_data.WardedSpacesData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
@@ -28,8 +29,13 @@ public class RandomStrollGoalMixin {
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::load), WardedSpacesData.NAME);
 
             if (wardedSpacesData.isWarded(mob.blockPosition())) {
-                Vec3 newPosition = LandRandomPos.getPosAway(mob, mob.getRandom().nextInt(5, 20), 10, Vec3.atCenterOf(wardedSpacesData.getAffectingEffigyAt(mob.blockPosition()).orElseThrow()));
-                if (newPosition != null) cir.setReturnValue(newPosition);
+                BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.blockPosition()).orElse(null);
+                if (effigyPos != null) {
+                    int effigyRange = wardedSpacesData.ranges.get(wardedSpacesData.positions.indexOf(effigyPos));
+
+                    Vec3 newPosition = LandRandomPos.getPosAway(mob, mob.getRandom().nextInt(effigyRange / 4, effigyRange + effigyRange / 4), 10, Vec3.atCenterOf(effigyPos));
+                    if (newPosition != null) cir.setReturnValue(newPosition);
+                }
             }
         }
     }

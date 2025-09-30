@@ -8,11 +8,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.tazer.mixed_litter.VariantUtil;
 import dev.tazer.mixed_litter.registry.MLDataAttachmentTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.MobSpawnType;
@@ -76,23 +74,24 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                     List<BlockPos> airPos = new ArrayList<>();
                     for (int listEntry = 0; listEntry < filledPos.size(); listEntry++) {
                         BlockPos listedPos = filledPos.get(listEntry);
-                        BlockPos turtleSpawnPos = filledPos.getLast();
+                        BlockPos tortoiseSpawnPos = filledPos.getLast();
                         BlockState stoneState = (listedPos.getY() <= 0 || worldgenlevel.getBiome(listedPos).is(NMLBiomes.CAVE_DEPTHS)) ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.STONE.defaultBlockState();
-                        if (listedPos != turtleSpawnPos) {
+                        if (listedPos != tortoiseSpawnPos) {
                             this.placeBurrow(5.0D, 5.0D, 5.0D, listedPos, worldgenlevel, stoneState, randomsource, listedPos != filledPos.getFirst(), stoneState, direction.getOpposite(), airPos, 1, 3);
                         }
                         if (!tortoiseSpawned) {
                             Tortoise tortoise = NMLEntities.TORTOISE.get().create(worldgenlevel.getLevel());
-                            tortoiseSpawned = true;
-                            tortoise.moveTo(turtleSpawnPos.getX(), turtleSpawnPos.getY(), turtleSpawnPos.getZ(), 0, 0);
-                            tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
-                            tortoise.setHomePos(turtleSpawnPos);
-                            tortoise.setData(MLDataAttachmentTypes.SPAWN_LOCATION, GlobalPos.of(tortoise.level().dimension(), tortoise.blockPosition()));
-                            VariantUtil.applySuitableVariants(tortoise);
-                            worldgenlevel.getLevel().addFreshEntityWithPassengers(tortoise);
+                            if (tortoise != null) {
+                                tortoiseSpawned = true;
+                                tortoise.moveTo(tortoiseSpawnPos.getX(), tortoiseSpawnPos.getY(), tortoiseSpawnPos.getZ(), 0, 0);
+                                tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
+                                tortoise.setHomePos(tortoiseSpawnPos);
+                                tortoise.setData(MLDataAttachmentTypes.SPAWN_LOCATION, GlobalPos.of(tortoise.level().dimension(), tortoise.blockPosition()));
+                                VariantUtil.applySuitableVariants(tortoise);
+                                worldgenlevel.addFreshEntityWithPassengers(tortoise);
+                            }
                         }
-                        this.placeBurrow(5.0D, 5.0D, 5.0D, turtleSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos, 3, 2);
-                        //Minecraft.getInstance().getChatListener().handleSystemMessage(Component.literal(turtleSpawnPos.toString()), false);
+                        this.placeBurrow(5.0D, 5.0D, 5.0D, tortoiseSpawnPos, worldgenlevel, blockToPlace, randomsource, true, stoneState, direction.getOpposite(), airPos, 3, 2);
                     }
                     for (BlockPos blockPos : airPos) {
                         if (!worldgenlevel.getBlockState(blockPos).is(NMLBlocks.CAVE_WEEDS.get()))
@@ -204,7 +203,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                             }
                             if (nearBurrow) {
                                 BlockPos currentPos = origin.offset(x, y, z);
-                                boolean flag = (Math.abs(x) >= 0 && Math.abs(x) <= 3) && (Math.abs(y) >= 0 && Math.abs(y) <= 3) && (Math.abs(z) >= 0 && Math.abs(z) <= 3);
+                                boolean flag = Math.abs(x) <= 3 && Math.abs(y) <= 3 && Math.abs(z) <= 3;
                                 if (flag)
                                     level.setBlock(currentPos, barrierState, 2);
                             }
@@ -218,7 +217,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
     private boolean canPlace(WorldGenLevel level, BlockPos origin) {
         int openingCount = 0;
         for (int x = -2; x <= 2; x++) {
-            for (int y = -4; y < 4; y++) {
+            for (int y = -4; y <= 4; y++) {
                 for (int z = -2; z <= 2; z++) {
                     BlockPos currentPos = origin.offset(x, y, z);
                     boolean isSolid = level.getBlockState(currentPos).isSolid() && level.getBlockState(currentPos).getFluidState().isEmpty();
