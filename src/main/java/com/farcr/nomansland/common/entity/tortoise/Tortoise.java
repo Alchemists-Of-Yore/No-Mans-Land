@@ -90,18 +90,17 @@ public class Tortoise extends Animal {
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new TortoiseSearchForDangerGoal(this));
-        this.goalSelector.addGoal(1, new TortoiseStayAroundHomeGoal(this, 0.75F));
-        this.goalSelector.addGoal(2, new TortoiseSleepAndWakeUpGoal(this));
-        this.goalSelector.addGoal(3, new TortoiseBreedGoal(this, 0.5F));
-        this.goalSelector.addGoal(4, new TortoiseLayEggGoal(this));
-        this.goalSelector.addGoal(4, new TortoiseFindSpotToLayEgg(this, 0.85F));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
-        this.goalSelector.addGoal(5, new FollowParentGoal(this, 0.5));
-        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.5F));
-        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(0, new TortoiseSearchForDangerGoal(this));
+        this.goalSelector.addGoal(0, new TortoiseStayAroundHomeGoal(this, 0.75F));
+        this.goalSelector.addGoal(1, new TortoiseSleepAndWakeUpGoal(this));
+        this.goalSelector.addGoal(2, new TortoiseBreedGoal(this, 0.5F));
+        this.goalSelector.addGoal(3, new TortoiseLayEggGoal(this));
+        this.goalSelector.addGoal(3, new TortoiseFindSpotToLayEgg(this, 0.85F));
+        this.goalSelector.addGoal(3, new TemptGoal(this, 0.5F, itemStack -> itemStack.is(NMLTags.TORTOISE_FOOD), false));
+        this.goalSelector.addGoal(4, new FollowParentGoal(this, 0.5));
+        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5F));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
