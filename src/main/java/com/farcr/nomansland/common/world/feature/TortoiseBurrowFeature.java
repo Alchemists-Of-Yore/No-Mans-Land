@@ -133,7 +133,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                     List<BlockPos> checkedPositions = new ArrayList<>();
                     BlockPos airPos = pos.relative(direction, offsetPos);
                     checkedPositions.add(airPos);
-                    if (checkedPositions.stream().allMatch(blockPos -> level.isEmptyBlock(blockPos))) {
+                    if (checkedPositions.stream().allMatch(level::isEmptyBlock)) {
                         return direction.getOpposite();
                     }
                 }

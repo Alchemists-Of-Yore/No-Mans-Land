@@ -33,7 +33,6 @@ public abstract class LadderBlockMixin {
         while (mutable.getY() < blockReader.getMaxBuildHeight()) {
             mutable.move(Direction.UP);
             mutableL.move(Direction.UP);
-            blockState = blockReader.getBlockState(mutable);
             ladderState = blockReader.getBlockState(mutableL);
             if (!ladderState.hasProperty(LadderBlock.FACING) || ladderState.getValue(LadderBlock.FACING) != direction) {
                 cir.setReturnValue(false);
