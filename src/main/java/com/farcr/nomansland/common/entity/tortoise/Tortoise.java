@@ -13,6 +13,7 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -154,8 +155,7 @@ public class Tortoise extends Animal {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         if (this.getHomePos() != null)
-            BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.getHomePos()).resultOrPartial(LOGGER::error)
-                    .ifPresent(tag -> compound.put("home_pos", tag));
+            compound.put("home_pos", NbtUtils.writeBlockPos(this.getHomePos()));
         compound.putBoolean("HasEgg", this.hasEgg());
         compound.putBoolean("Searching", this.isSearching());
         compound.putBoolean("InShell", this.inShell());
@@ -169,8 +169,7 @@ public class Tortoise extends Animal {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        BlockPos.CODEC.decode(NbtOps.INSTANCE, compound.get("home_pos")).resultOrPartial(LOGGER::error)
-                .ifPresent(pair -> this.setHomePos(pair.getFirst()));
+        NbtUtils.readBlockPos(compound, "home_pos").ifPresent(this::setHomePos);
         this.setSearching(compound.getBoolean("Searching"));
         this.retreatShell(compound.getBoolean("InShell"));
         this.setHasEgg(compound.getBoolean("HasEgg"));
@@ -340,7 +339,7 @@ public class Tortoise extends Animal {
                                     3,
                                     ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
                                     ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
-                                            ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
+                                    ((double) this.getRandom().nextFloat() - 0.5) * 0.08,
                                     0.15F
                             );
                 }
