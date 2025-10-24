@@ -1,0 +1,27 @@
+{
+  "feature": "nomansland:crag_rock_mycelium",
+  "placement": [
+    {
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.85,
+
+      "noise_minimum": 0.75,                   
+      "noise_maximum": 1.0,  
+
+      "count_minimum": 0,          
+      "count_maximum": 4
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR_WG"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

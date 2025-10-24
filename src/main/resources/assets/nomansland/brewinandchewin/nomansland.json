@@ -1,0 +1,11 @@
+{
+  "nomansland:resin_oil": { 
+    "id":"nomansland:resin_oil_bottle",
+    "optional": true
+  },
+
+  "nomansland:maple_syrup": { 
+    "id":"nomansland:maple_syrup_bottle",
+    "optional": true
+  }
+}

@@ -10,6 +10,7 @@
     "minecraft:frozen_peaks",
     "#c:is_badlands",
     "#minecraft:is_nether",
-    "#minecraft:is_end"
+    "#minecraft:is_end",
+    "minecraft:mushroom_fields"
   ]
 }

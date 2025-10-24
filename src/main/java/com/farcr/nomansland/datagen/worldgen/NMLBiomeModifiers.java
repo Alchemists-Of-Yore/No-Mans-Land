@@ -572,6 +572,7 @@ public class NMLBiomeModifiers {
                                 patch("dried_grass_mycelium")
                         )
                 )
+                .addFeatures(new FeatureWithStep(feature("crag_rock_mycelium"), GenerationStep.Decoration.LOCAL_MODIFICATIONS))
                 .addSpawns(
                         new SpawnerData(EntityType.FROG, 4, 3, 5)
                 )

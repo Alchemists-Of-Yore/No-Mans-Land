@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:mushroom_fields",
+  "features": "nomansland:crag_rock_mycelium",
+  "step": "local_modifications"
+}

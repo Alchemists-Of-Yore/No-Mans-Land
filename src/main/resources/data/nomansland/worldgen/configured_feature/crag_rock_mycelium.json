@@ -1,0 +1,36 @@
+{
+  "type": "nomansland:crag_rock",
+  "config": {
+    "radius": {
+      "type": "uniform",
+      "min_inclusive": 4,
+      "max_inclusive": 7
+    },
+    "height": {
+      "type": "uniform",
+      "min_inclusive": 6,
+      "max_inclusive": 18
+    },
+    "radius_strength": 1.0,
+    "noise_strength": 5.0,
+
+    "base_block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:stone"
+      }
+    },
+    "soil_block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:dirt"
+      }
+    },
+    "surface_block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:mycelium"
+      }
+    }
+  }
+}
