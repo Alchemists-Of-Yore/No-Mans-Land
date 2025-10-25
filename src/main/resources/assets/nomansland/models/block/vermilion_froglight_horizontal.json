@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "nomansland:block/vermilion_froglight_top",
+    "side": "nomansland:block/vermilion_froglight_side"
+  }
+}

@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "nomansland:block/garnet_froglight_top",
-    "side": "nomansland:block/garnet_froglight_side"
-  }
-}
