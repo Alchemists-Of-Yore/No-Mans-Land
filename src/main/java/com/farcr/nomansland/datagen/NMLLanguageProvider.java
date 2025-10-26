@@ -61,7 +61,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitles.block.monster_anchor.activate", "Monster anchor activates");
         add("nomansland.subtitles.block.monster_anchor.deactivate", "Monster anchor deactivates");
         add("nomansland.subtitles.torch.extinguish", "Torch extinguishes");
-        add("nomansland.subtitles.torch.lights", "Torch lights");
+        add("nomansland.subtitles.torch.light", "Torch lights");
         add("nomansland.subtitles.block.witch_stew_cauldron.ambient", "Witch Stew Cauldron gurgles");
         add("nomansland.subtitles.block.witch_stew_cauldron.clean", "Witch Stew Cauldron is cleaned");
         add("nomansland.subtitles.block.witch_stew_cauldron.empty", "Witch Stew pours into bowl");

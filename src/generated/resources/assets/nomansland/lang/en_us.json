@@ -451,6 +451,6 @@
   "nomansland.subtitles.item.generic.consumed": "Item consumed",
   "nomansland.subtitles.particle.droplet.fall": "Droplet falls",
   "nomansland.subtitles.torch.extinguish": "Torch extinguishes",
-  "nomansland.subtitles.torch.lights": "Torch lights",
+  "nomansland.subtitles.torch.light": "Torch lights",
   "nomansland.tooltip.mask.regeneration": "Slowly regenerates health"
 }
