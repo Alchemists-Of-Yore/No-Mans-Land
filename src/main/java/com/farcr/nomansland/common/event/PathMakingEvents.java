@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
@@ -8,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +26,6 @@ import java.util.Map;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
 
 @EventBusSubscriber(modid = NoMansLand.MODID)
-@SuppressWarnings("unused")
 public class PathMakingEvents {
 
     @SubscribeEvent
@@ -37,7 +36,7 @@ public class PathMakingEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
 
-        if ((stack.is(ItemTags.HOES) || stack.is(ItemTags.SHOVELS)) && !player.isSpectator() && state.canBeReplaced()) {
+        if ((stack.is(NMLTags.MAKES_FARMLAND) || stack.is(NMLTags.MAKES_PATHS)) && !player.isSpectator() && state.canBeReplaced()) {
             pos = pos.below();
             state = level.getBlockState(pos);
         }
@@ -57,7 +56,7 @@ public class PathMakingEvents {
         );
 
         //Paths
-        if ((pathableBlocks.contains(state.getBlock()) || (state.is(Blocks.GRASS_BLOCK) && state.getValue(SNOWY))) && event.getFace() != Direction.DOWN && stack.is(ItemTags.SHOVELS) && !player.isSpectator() && (level.isEmptyBlock(pos.above()) || level.getBlockState(pos.above()).canBeReplaced())) {
+        if ((pathableBlocks.contains(state.getBlock()) || (state.is(Blocks.GRASS_BLOCK) && state.getValue(SNOWY))) && event.getFace() != Direction.DOWN && stack.is(NMLTags.MAKES_PATHS) && !player.isSpectator() && (level.isEmptyBlock(pos.above()) || level.getBlockState(pos.above()).canBeReplaced())) {
             if (state.is(BlockTags.SAND))
                 level.playSound(player, pos, SoundEvents.SAND_FALL, SoundSource.BLOCKS, 1, 1);
             else if (state.is(Blocks.GRAVEL))
@@ -93,7 +92,7 @@ public class PathMakingEvents {
         }
 
         //Dirt Path into Farmland
-        if (stack.is(ItemTags.HOES) && (state.is(NMLBlocks.DIRT_PATH.get()) || state.is(Blocks.PODZOL)) && !player.isSpectator() && level.isEmptyBlock(pos.above())) {
+        if (stack.is(NMLTags.MAKES_FARMLAND) && (state.is(NMLBlocks.DIRT_PATH.get()) || state.is(Blocks.PODZOL)) && !player.isSpectator() && level.isEmptyBlock(pos.above())) {
             level.playSound(player, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             if (!level.isClientSide()) {
@@ -107,7 +106,7 @@ public class PathMakingEvents {
         }
 
         // Farmland
-        if ((state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.DIRT)) && stack.is(ItemTags.HOES)) {
+        if ((state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.DIRT)) && stack.is(NMLTags.MAKES_FARMLAND)) {
             level.playSound(player, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1, 1);
 
             if (!level.isClientSide()) {
@@ -122,7 +121,7 @@ public class PathMakingEvents {
         }
 
         //Farmland untilling
-        if (event.getFace() != Direction.DOWN && stack.is(ItemTags.SHOVELS) && state.is(Blocks.FARMLAND) && !player.isSpectator() && level.isEmptyBlock(pos.above())) {
+        if (event.getFace() != Direction.DOWN && stack.is(NMLTags.MAKES_PATHS) && state.is(Blocks.FARMLAND) && !player.isSpectator() && level.isEmptyBlock(pos.above())) {
             level.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             if (!level.isClientSide()) {

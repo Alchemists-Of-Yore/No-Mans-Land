@@ -20,15 +20,19 @@ public class WardedSpacesData extends SavedData {
         this.ranges = ranges;
     }
 
-    public static WardedSpacesData load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+    public WardedSpacesData() {
+        this.positions = new ArrayList<>();
+        this.ranges = new ArrayList<>();
+    }
+
+    public static WardedSpacesData create(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         ArrayList<BlockPos> positions = new ArrayList<>();
         Arrays.stream(tag.getLongArray("positions")).forEachOrdered(pos -> positions.add(BlockPos.of(pos)));
 
         ArrayList<Integer> ranges = new ArrayList<>();
         Arrays.stream(tag.getIntArray("ranges")).forEachOrdered(ranges::add);
-        WardedSpacesData data = new WardedSpacesData(positions, ranges);
 
-        return data;
+        return new WardedSpacesData(positions, ranges);
     }
 
     @Override

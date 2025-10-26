@@ -372,7 +372,7 @@
         "volume": 1.75
       }
     ],
-    "subtitle": "subtitles.torch.extinguish"
+    "subtitle": "nomansland.subtitles.torch.extinguish"
   },
   "block.torch.light": {
     "sounds": [
@@ -392,7 +392,7 @@
         "volume": 0.6
       }
     ],
-    "subtitle": "subtitles.torch.light"
+    "subtitle": "nomansland.subtitles.torch.light"
   },
   "block.torch.light_by_flint_and_steel": {
     "sounds": [
@@ -412,7 +412,7 @@
         "volume": 0.6
       }
     ],
-    "subtitle": "subtitles.torch.light"
+    "subtitle": "nomansland.subtitles.torch.light"
   },
   "block.witch_stew_cauldron.ambient": {
     "sounds": [

@@ -49,7 +49,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =
             ENTITIES.register("incendiary_arrow", () -> EntityType.Builder.<IncendiaryArrow>of(IncendiaryArrow::new, MobCategory.MISC)
-                    .sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
+                    .sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20).build("incendiary_arrow"));
 
     public static final Supplier<EntityType<Ember>> EMBER =
             ENTITIES.register("ember", () -> EntityType.Builder.<Ember>of(Ember::new, MobCategory.MISC)

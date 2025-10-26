@@ -21,7 +21,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,8 +30,7 @@ public class NoMansLand {
     public static final String MODID = "nomansland";
     public static final Logger LOGGER = LogManager.getLogger("No Man's Land");
 
-    public NoMansLand(IEventBus bus, ModContainer modContainer) {
-
+    public NoMansLand(IEventBus bus, ModContainer container) {
         NMLItems.ITEMS.register(bus);
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("apple_fruit"), NoMansLand.location("apple"));
         NMLBlocks.BLOCKS.addAlias(NoMansLand.location("pear_fruit"), NoMansLand.location("pear"));
@@ -58,6 +56,7 @@ public class NoMansLand {
         NMLMobVariants.FROG_VARIANTS.register(bus);
         NMLEffects.MOB_EFFECTS.register(bus);
         NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(bus);
+        NMLStructureTypes.STRUCTURE_TYPES.register(bus);
         NMLCriteriaTriggers.TRIGGERS.register(bus);
         NMLRecipeSerializers.RECIPE_SERIALIZERS.register(bus);
         NMLRecipeSerializers.RECIPE_TYPES.register(bus);
@@ -85,9 +84,9 @@ public class NoMansLand {
         bus.register(new CreativeModeTabHandler());
         bus.addListener(NMLBlockEntities::addBlockEntities);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, NMLConfig.COMMON_CONFIG);
-        modContainer.registerConfig(ModConfig.Type.CLIENT, NMLConfig.CLIENT_CONFIG);
-        modContainer.registerConfig(ModConfig.Type.STARTUP, NMLConfig.STARTUP_CONFIG);
+        container.registerConfig(ModConfig.Type.COMMON, NMLConfig.COMMON_CONFIG);
+        container.registerConfig(ModConfig.Type.CLIENT, NMLConfig.CLIENT_CONFIG);
+        container.registerConfig(ModConfig.Type.STARTUP, NMLConfig.STARTUP_CONFIG);
     }
 
     public static ResourceLocation location(String path) {

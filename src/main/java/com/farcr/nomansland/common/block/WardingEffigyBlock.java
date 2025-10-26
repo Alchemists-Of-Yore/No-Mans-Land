@@ -24,7 +24,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 public class WardingEffigyBlock extends BaseEntityBlock {
 
@@ -128,7 +127,7 @@ public class WardingEffigyBlock extends BaseEntityBlock {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (level instanceof ServerLevel serverLevel) {
             WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                    () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::load), WardedSpacesData.NAME);
+                    WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
 
             wardedSpacesData.removeEffigy(pos);
         }
@@ -140,7 +139,7 @@ public class WardingEffigyBlock extends BaseEntityBlock {
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (level instanceof ServerLevel serverLevel) {
             WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                    () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::load), WardedSpacesData.NAME);
+                    WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
 
             wardedSpacesData.addEffigy(pos, getRange(state));
         }
