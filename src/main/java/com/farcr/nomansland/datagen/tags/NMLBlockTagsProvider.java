@@ -43,6 +43,8 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 tag(BlockTags.LEAVES).add(definition.block());
             if (definition.get() instanceof SlabBlock)
                 tag(BlockTags.SLABS).add(definition.block());
+            if (definition.get() instanceof StairBlock)
+                tag(BlockTags.STAIRS).add(definition.block());
         }
 
         tag(BlockTags.CAULDRONS).addOptional(NoMansLand.location("pot_of_witch_stew"));
