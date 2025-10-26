@@ -488,6 +488,9 @@ public class NMLBlocks {
     public static final BlockDefinition<SlabBlock> SHELF_MUSHROOM_BLOCK = register("shelf_mushroom_block",
             () -> new SlabBlock((ofFullCopy(Blocks.BROWN_MUSHROOM_BLOCK).sound(NMLSounds.MUSHROOM_CAP))));
 
+    public static final BlockDefinition<RotatedPillarBlock> VERMILION_FROGLIGHT = register("vermilion_froglight",
+            () -> new RotatedPillarBlock(ofFullCopy(Blocks.OCHRE_FROGLIGHT).mapColor(MapColor.COLOR_PINK)));
+
     // Fruity Stuff
     public static final BlockDefinition<Block> APPLE_FRUIT = registerNoItem("apple",
             () -> new FruitBlock(of()
