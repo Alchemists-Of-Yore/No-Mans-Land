@@ -12,27 +12,18 @@ import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLFoods;
 import com.farcr.nomansland.common.registry.items.NMLItems;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CakeBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import vectorwing.farmersdelight.common.FoodValues;
 import vectorwing.farmersdelight.common.block.CabinetBlock;
 import vectorwing.farmersdelight.common.block.MushroomColonyBlock;
@@ -42,8 +33,6 @@ import vectorwing.farmersdelight.common.item.DrinkableItem;
 import vectorwing.farmersdelight.common.item.MushroomColonyItem;
 import vectorwing.farmersdelight.common.registry.ModBlockEntityTypes;
 import vectorwing.farmersdelight.common.registry.ModEffects;
-import vectorwing.farmersdelight.common.tag.ModTags;
-import vectorwing.farmersdelight.common.utility.ItemUtils;
 
 import static net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy;
 
@@ -188,31 +177,5 @@ public class FDIntegration {
     }
 
     public static void register() {
-    }
-
-
-    // Farmer's Delights interaction with vanilla cake adapted to Fruit Cake
-    public static void onFruitCakeInteraction(PlayerInteractEvent.RightClickBlock event) {
-        ItemStack toolStack = event.getEntity().getItemInHand(event.getHand());
-        if (toolStack.is(ModTags.KNIVES)) {
-            Level level = event.getLevel();
-            BlockPos pos = event.getPos();
-            BlockState state = event.getLevel().getBlockState(pos);
-            Block block = state.getBlock();
-
-            if (block == CANDLE_FRUIT_CAKE.block()) {
-                int bites = state.getValue(CakeBlock.BITES);
-                if (bites < 6) {
-                    level.setBlock(pos, state.setValue(CakeBlock.BITES, bites + 1), 3);
-                } else {
-                    level.removeBlock(pos, false);
-                }
-
-                ItemUtils.spawnItemEntity(level, new ItemStack((ItemLike) FRUIT_CAKE_SLICE), (double) pos.getX() + (double) bites * 0.1, (double) pos.getY() + 0.2, (double) pos.getZ() + 0.5, -0.05, 0.0, 0.0);
-                level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
-                event.setCancellationResult(InteractionResult.SUCCESS);
-                event.setCanceled(true);
-            }
-        }
     }
 }

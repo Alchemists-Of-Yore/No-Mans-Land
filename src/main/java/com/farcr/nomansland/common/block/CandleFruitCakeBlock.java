@@ -8,6 +8,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,6 +36,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.Nullable;
+import vectorwing.farmersdelight.common.tag.ModTags;
+import vectorwing.farmersdelight.common.utility.ItemUtils;
 
 import java.util.Map;
 
@@ -64,7 +68,7 @@ public class CandleFruitCakeBlock extends AbstractCandleBlock {
             this.candleBlock = candleblock;
         } else {
             String var10002 = String.valueOf(CandleBlock.class);
-            throw new IllegalArgumentException("Expected block to be of " + var10002 + " was " + String.valueOf(candleBlock.getClass()));
+            throw new IllegalArgumentException("Expected block to be of " + var10002 + " was " + candleBlock.getClass());
         }
     }
 
@@ -81,12 +85,21 @@ public class CandleFruitCakeBlock extends AbstractCandleBlock {
             if (candleHit(hitResult) && stack.isEmpty() && state.getValue(LIT)) {
                 extinguish(player, state, level, pos);
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
-            } else {
-                return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
             }
-        } else {
-            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
+
+        if (stack.is(ModTags.KNIVES)) {
+            level.setBlock(pos, FDIntegration.FRUIT_CAKE.get().defaultBlockState().setValue(CakeBlock.BITES, 1), 3);
+            Block.dropResources(state, level, pos);
+            ItemUtils.spawnItemEntity(level, new ItemStack(FDIntegration.FRUIT_CAKE_SLICE.get()),
+                    pos.getX(), pos.getY() + 0.2, pos.getZ() + 0.5,
+                    -0.05, 0, 0);
+            level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
+
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {

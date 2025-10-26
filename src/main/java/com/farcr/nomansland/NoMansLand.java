@@ -75,7 +75,6 @@ public class NoMansLand {
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
             bus.addListener(FDIntegration::addBlockEntities);
-            NeoForge.EVENT_BUS.addListener(FDIntegration::onFruitCakeInteraction);
         }
 
         if (Mods.NIRVANA.isLoaded()) NirvanaIntegration.register();

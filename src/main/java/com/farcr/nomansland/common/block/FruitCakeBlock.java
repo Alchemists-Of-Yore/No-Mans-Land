@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.block;
 
+import com.farcr.nomansland.common.integration.FDIntegration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,6 +18,8 @@ import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
+import vectorwing.farmersdelight.common.tag.ModTags;
+import vectorwing.farmersdelight.common.utility.ItemUtils;
 
 public class FruitCakeBlock extends CakeBlock {
     public FruitCakeBlock(Properties properties) {
@@ -26,7 +29,8 @@ public class FruitCakeBlock extends CakeBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         Item item = stack.getItem();
-        if (stack.is(ItemTags.CANDLES) && state.getValue(BITES) == 0) {
+        int bites = state.getValue(BITES);
+        if (stack.is(ItemTags.CANDLES) && bites == 0) {
             Block var10 = Block.byItem(item);
             if (var10 instanceof CandleBlock candleBlock) {
                 stack.consume(1, player);
@@ -38,7 +42,20 @@ public class FruitCakeBlock extends CakeBlock {
             }
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (stack.is(ModTags.KNIVES)) {
+            if (bites < 6) {
+                level.setBlockAndUpdate(pos, state.setValue(CakeBlock.BITES, bites + 1));
+            } else level.removeBlock(pos, false);
+
+            ItemUtils.spawnItemEntity(level, new ItemStack(FDIntegration.FRUIT_CAKE_SLICE.get()),
+                    pos.getX() + (bites * 0.1), pos.getY() + 0.2, pos.getZ() + 0.5,
+                    -0.05, 0, 0);
+            level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
+
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
 
