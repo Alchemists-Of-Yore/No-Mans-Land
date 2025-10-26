@@ -261,6 +261,8 @@ public class CreativeModeTabHandler {
 
             insertAfter(TURTLE_EGG, TORTOISE_EGGS);
 
+            insertAfter(OCHRE_FROGLIGHT, VERMILION_FROGLIGHT);
+
 //            event.accept(REMAINS);
 
             insertAfter(SPRUCE_LOG, PINE.log());
@@ -313,6 +315,8 @@ public class CreativeModeTabHandler {
             insertAfter(CAULDRON, TAP);
             insertBefore(SCAFFOLDING, NMLItems.WOODEN_SCAFFOLDING);
             insertAfter(CONDUIT, WARDING_EFFIGY);
+
+            insertAfter(OCHRE_FROGLIGHT, VERMILION_FROGLIGHT);
 
             if (Mods.NIRVANA.isLoaded()) insertBefore(Mods.NIRVANA.getItem("thc"), NirvanaIntegration.FAT_JOINT_ITEM);
         }
