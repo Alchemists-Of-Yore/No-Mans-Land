@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "nomansland:block/building/cobbled_deepslate_bricks_0"
+  }
+}
