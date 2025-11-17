@@ -21,6 +21,7 @@
     "FrogMixin",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
+    "LevelInvoker",
     "LivingEntityMixin",
     "MinecraftServerMixin",
     "NoiseRouterAccessModifier",

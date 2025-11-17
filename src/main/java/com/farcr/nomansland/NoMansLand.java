@@ -5,6 +5,7 @@ import com.farcr.nomansland.common.integration.BBIntegration;
 import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.boatload.BoatloadIntegration;
+import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.integration.everycompat.EveryCompatIntegration;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.*;
@@ -79,6 +80,7 @@ public class NoMansLand {
         if (Mods.BLOCKBOX.isLoaded()) BBIntegration.register();
         if (Mods.BOATLOAD.isLoaded()) BoatloadIntegration.register();
         if (Mods.EVERYCOMP.isLoaded()) EveryCompatIntegration.register();
+        if (Mods.CREATE.isLoaded()) CreateIntegration.register();
 
         bus.register(new CreativeModeTabHandler());
         bus.addListener(NMLBlockEntities::addBlockEntities);
