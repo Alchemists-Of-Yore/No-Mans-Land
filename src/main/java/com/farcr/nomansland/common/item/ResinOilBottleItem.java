@@ -53,13 +53,12 @@ public class ResinOilBottleItem extends Item implements ProjectileItem {
             Objects.requireNonNull(tooltipComponents);
             potioncontents.addPotionTooltip(tooltipComponents::add, 1.0F, context.tickRate());
         }
-
     }
 
     public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        ThrownOilBottle thrownpotion = new ThrownOilBottle(level, pos.x(), pos.y(), pos.z());
-        thrownpotion.setItem(stack);
-        return thrownpotion;
+        ThrownOilBottle thrownOilBottle = new ThrownOilBottle(level, pos.x(), pos.y(), pos.z());
+        thrownOilBottle.setItem(stack);
+        return thrownOilBottle;
     }
 
     public ProjectileItem.DispenseConfig createDispenseConfig() {
