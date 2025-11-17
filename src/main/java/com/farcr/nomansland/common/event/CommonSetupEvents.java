@@ -3,26 +3,35 @@ package com.farcr.nomansland.common.event;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
+import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
+import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.deer.Deer;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.moose.Moose;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
+import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.BoatItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,6 +62,14 @@ public class CommonSetupEvents {
                 if (definition.get() instanceof FlowerPotBlock flowerPotBlock) {
                     flowerPotBlock.getEmptyPot().addPlant(BuiltInRegistries.BLOCK.getKey(flowerPotBlock.getPotted()), () -> flowerPotBlock);
                 }
+            }
+
+            for (ItemDefinition<?> definition : NMLItems.ITEM_DEFINITIONS) {
+                Item item = definition.item();
+                if (item instanceof ThrowableBombItem) DispenserBlock.registerBehavior(item, new BombDispenseBehavior(item));
+                else if (item instanceof ProjectileItem) DispenserBlock.registerProjectileBehavior(item);
+
+                if (item instanceof BoatItem boat) DispenserBlock.registerBehavior(item, new BoatDispenseItemBehavior(boat.type, boat.hasChest));
             }
         });
     }
