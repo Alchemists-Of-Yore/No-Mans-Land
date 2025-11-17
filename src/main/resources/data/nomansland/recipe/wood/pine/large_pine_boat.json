@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "boatload"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "large_boat",
+  "pattern": [
+    "#B#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "nomansland:pine_planks"
+    },
+    "B": {
+      "item": "nomansland:pine_boat"
+    }
+  },
+  "result": {
+    "id": "nomansland:large_pine_boat"
+  }
+}

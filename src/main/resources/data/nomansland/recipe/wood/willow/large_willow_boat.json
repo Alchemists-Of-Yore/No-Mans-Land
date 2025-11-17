@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "boatload"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "large_boat",
+  "pattern": [
+    "#B#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "nomansland:willow_planks"
+    },
+    "B": {
+      "item": "nomansland:willow_boat"
+    }
+  },
+  "result": {
+    "id": "nomansland:large_willow_boat"
+  }
+}

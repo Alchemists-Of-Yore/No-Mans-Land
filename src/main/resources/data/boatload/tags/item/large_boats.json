@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:large_maple_boat",
+      "required": false
+    },
+    {
+      "id": "nomansland:large_pine_boat",
+      "required": false
+    },
+    {
+      "id": "nomansland:large_walnut_boat",
+      "required": false
+    },
+    {
+      "id": "nomansland:large_willow_boat",
+      "required": false
+    }
+  ]
+}

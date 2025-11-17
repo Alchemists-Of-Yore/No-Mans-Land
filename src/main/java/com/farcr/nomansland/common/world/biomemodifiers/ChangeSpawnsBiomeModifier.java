@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -26,12 +27,11 @@ public record ChangeSpawnsBiomeModifier(HolderSet<Biome> biomes, List<MobSpawnSe
     public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
         if (phase == Phase.BEFORE_EVERYTHING && biomes.contains(biome)) {
             MobSpawnSettingsBuilder spawnSettingsBuilder = builder.getMobSpawnSettings();
-            MobCategory[] mobCategories = MobCategory.values();
 
             spawners.forEach(spawner -> {
-                for (MobCategory category : mobCategories) {
+                for (MobCategory category : MobCategory.values()) {
                     List<MobSpawnSettings.SpawnerData> spawns = spawnSettingsBuilder.getSpawner(category);
-                    if (spawns.removeIf((spawnerData) -> spawnerData.type == spawner.type)) {
+                    if (spawns.removeIf(spawnerData -> EntityType.getKey(spawnerData.type).equals(EntityType.getKey(spawner.type)))) {
                         spawnSettingsBuilder.addSpawn(spawner.type.getCategory(), spawner);
                     }
                 }

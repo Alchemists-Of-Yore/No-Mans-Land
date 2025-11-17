@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:maple_furnace_boat",
+      "required": false
+    },
+    {
+      "id": "nomansland:pine_furnace_boat",
+      "required": false
+    },
+    {
+      "id": "nomansland:walnut_furnace_boat",
+      "required": false
+    },
+    {
+      "id": "nomansland:willow_furnace_boat",
+      "required": false
+    }
+  ]
+}

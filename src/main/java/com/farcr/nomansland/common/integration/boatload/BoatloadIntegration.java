@@ -10,7 +10,7 @@ public class BoatloadIntegration {
     public static final ItemDefinition<FurnaceBoatItem> MAPLE_FURNACE_BOAT = NMLItems.register("maple_furnace_boat",
             () -> new FurnaceBoatItem(BoatTypes.MAPLE), true);
 
-    public static final ItemDefinition<LargeBoatItem> LARGE_MAPLE_BOAT = NMLItems.register("large_maple_boat",
+    public static final ItemDefinition<LargeBoatItem> LARGE_MAPLE_BOAT = NMLItems.register("large_pine_boat.json",
             () -> new LargeBoatItem(BoatTypes.MAPLE));
 
     public static final ItemDefinition<FurnaceBoatItem> PINE_FURNACE_BOAT = NMLItems.register("pine_furnace_boat",
