@@ -342,6 +342,15 @@ public class NMLBlocks {
             () -> new SlabBlock(ofFullCopy(NMLBlocks.MOSSY_COBBLESTONE_BRICKS.get())), BlockProperties.stoneLikeSlab());
     public static final BlockDefinition<WallBlock> MOSSY_COBBLESTONE_BRICK_WALL = register("mossy_cobblestone_brick_wall",
             () -> new WallBlock(ofFullCopy(NMLBlocks.MOSSY_COBBLESTONE_BRICKS.get())), BlockProperties.stoneLikeWall());
+    //Deepslate
+    public static final BlockDefinition<Block> COBBLED_DEEPSLATE_BRICKS = register("cobbled_deepslate_bricks",
+            () -> new Block(ofFullCopy(Blocks.COBBLED_DEEPSLATE)), BlockProperties.stoneLike());
+    public static final BlockDefinition<StairBlock> COBBLED_DEEPSLATE_BRICK_STAIRS = register("cobbled_deepslate_brick_stairs",
+            () -> new StairBlock(COBBLED_DEEPSLATE_BRICKS.get().defaultBlockState(), ofFullCopy(Blocks.COBBLED_DEEPSLATE_STAIRS)), BlockProperties.stoneLikeStairs());
+    public static final BlockDefinition<SlabBlock> COBBLED_DEEPSLATE_BRICK_SLAB = register("cobbled_deepslate_brick_slab",
+            () -> new SlabBlock(ofFullCopy(Blocks.COBBLED_DEEPSLATE_SLAB)), BlockProperties.stoneLikeSlab());
+    public static final BlockDefinition<WallBlock> COBBLED_DEEPSLATE_BRICK_WALL = register("cobbled_deepslate_brick_wall",
+            () -> new WallBlock(ofFullCopy(Blocks.COBBLED_DEEPSLATE_WALL)), BlockProperties.stoneLikeWall());
     //Bricks
     public static final BlockDefinition<Block> COARSE_BRICKS = register("coarse_bricks",
             () -> new Block(ofFullCopy(Blocks.BRICKS)), BlockProperties.stoneLike());

@@ -53,5 +53,11 @@ public class DataGenEvents {
         generator.addProvider(client, new NMLLanguageProvider(packOutput));
 
         generator.addProvider(server, new NMLDatapackEntriesProvider(packOutput, lookupProvider));
+
+        // these don't really work with the existing file structure...
+        // made mostly for my sake. use further if you'd like :P
+        //    ~ cappin
+        //generator.addProvider(true, new NMLRecipeProvider(packOutput, lookupProvider));
+        //generator.addProvider(client, new NMLBlockStateProvider(packOutput, existingFileHelper));
     }
 }
