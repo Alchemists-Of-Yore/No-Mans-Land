@@ -62,7 +62,7 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
         );
 
         tag(BiomeTags.IS_OVERWORLD).addTags(NMLTags.OLD_GROWTH_FOREST, NMLTags.CAVES);
-        addToTags(NMLTags.CAVES, Tags.Biomes.IS_UNDERGROUND, Tags.Biomes.IS_CAVE);
+        addToTags(NMLTags.CAVES, Tags.Biomes.IS_CAVE);
 
         addToTags(NMLBiomes.AUTUMNAL_FOREST, BiomeTags.IS_FOREST, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_TEMPERATE);
         addToTags(NMLBiomes.BAYOU, BiomeTags.HAS_SWAMP_HUT, BiomeTags.IS_JUNGLE, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_HOT, Tags.Biomes.IS_JUNGLE_TREE, Tags.Biomes.IS_WET);
