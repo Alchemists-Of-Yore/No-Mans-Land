@@ -20,7 +20,6 @@ import static com.farcr.nomansland.common.registry.blocks.NMLBlocks.*;
 import static com.farcr.nomansland.common.registry.items.NMLItems.*;
 import static net.minecraft.world.item.Items.*;
 
-@SuppressWarnings("unused")
 public class CreativeModeTabHandler {
 
     private BuildCreativeModeTabContentsEvent event;

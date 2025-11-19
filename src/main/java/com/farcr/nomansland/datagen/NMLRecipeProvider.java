@@ -2,15 +2,16 @@ package com.farcr.nomansland.datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.concurrent.CompletableFuture;
 
-import static net.minecraft.world.level.block.Blocks.*;
 import static com.farcr.nomansland.common.registry.blocks.NMLBlocks.*;
+import static net.minecraft.world.level.block.Blocks.COBBLED_DEEPSLATE;
 
 public class NMLRecipeProvider extends RecipeProvider {
     public NMLRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

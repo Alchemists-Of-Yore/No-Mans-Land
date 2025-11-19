@@ -83,7 +83,6 @@ import java.util.List;
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class MiscellaneousEvents {
 

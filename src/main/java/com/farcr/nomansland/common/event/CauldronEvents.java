@@ -33,7 +33,6 @@ import java.util.Optional;
 
 import static com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock.LEVEL;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class CauldronEvents {
 

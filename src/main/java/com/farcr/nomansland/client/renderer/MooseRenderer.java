@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-// todo: texture variants
 public class MooseRenderer extends MobRenderer<Moose, MooseModel<Moose>> {
 
     public MooseRenderer(EntityRendererProvider.Context pContext) {

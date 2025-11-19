@@ -18,8 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(DimensionBiomePlacement.class)
 public class DimensionBiomePlacementMixin {
     @Inject(method = "getReplacement", at = @At("RETURN"), cancellable = true)
-    private void addCaveReplacement(int x, int y, int z, Climate.TargetPoint noisePoint, BiolithFittestNodes<Holder<Biome>> fittestNodes, CallbackInfoReturnable<Holder<Biome>> cir, @Local Holder<Biome> biomeEntry)
-    {
+    private void addCaveReplacement(int x, int y, int z, Climate.TargetPoint noisePoint, BiolithFittestNodes<Holder<Biome>> fittestNodes, CallbackInfoReturnable<Holder<Biome>> cir, @Local(name = "biomeEntry") Holder<Biome> biomeEntry) {
         if ((DimensionBiomePlacement)(Object)this instanceof OverworldBiomePlacement) {
             if (NMLConfig.CAVES_BIOMES.get()) {
                 if (!biomeEntry.is(Tags.Biomes.IS_UNDERGROUND)) {

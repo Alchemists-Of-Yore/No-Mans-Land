@@ -20,7 +20,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class BoneMealingEvents {
 
@@ -31,9 +30,6 @@ public class BoneMealingEvents {
         BlockState state = level.getBlockState(pos);
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
-        int x = pos.getX();
-        int y = pos.getY();
-        int z = pos.getZ();
 
         //Sugarcane Cutting
         if (event.getFace() != Direction.DOWN && stack.is(Items.SHEARS) && state.is(Blocks.SUGAR_CANE) && !player.isSpectator()) {
