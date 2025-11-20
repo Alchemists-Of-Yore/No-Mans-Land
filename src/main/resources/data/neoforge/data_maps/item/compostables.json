@@ -24,6 +24,9 @@
     "nomansland:walnut_leaves": {
       "chance": 0.3
     },
+    "nomansland:willow_leaves": {
+      "chance": 0.3
+    },
     "nomansland:yellow_birch_sapling": {
       "chance": 0.3
     },
@@ -43,6 +46,9 @@
       "chance": 0.3
     },
     "nomansland:walnut_sapling": {
+      "chance": 0.3
+    },
+    "nomansland:willow_sapling": {
       "chance": 0.3
     },
     "nomansland:grass_sprouts": {
