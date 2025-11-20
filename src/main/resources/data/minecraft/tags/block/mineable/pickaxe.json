@@ -47,6 +47,10 @@
     "nomansland:resin_oil_cauldron",
     "nomansland:spike_trap",
     "nomansland:monster_anchor",
-    "nomansland:icicles"
+    "nomansland:icicles",
+    "nomansland:cobbled_deepslate_bricks",
+    "nomansland:cobbled_deepslate_brick_stairs",
+    "nomansland:cobbled_deepslate_brick_slab",
+    "nomansland:cobbled_deepslate_brick_wall"
   ]
 }
