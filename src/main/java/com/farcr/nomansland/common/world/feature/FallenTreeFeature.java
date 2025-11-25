@@ -37,29 +37,26 @@ public class FallenTreeFeature extends Feature<FallenTreeFeatureConfiguration> {
                 for (int z = -10; z <= 10; z++) {
                     posMutable.set(origin.offset(x, y, z));
                     BlockState blockState = level.getBlockState(posMutable);
-                    if (blockState.is(BlockTags.LOGS) && blockState.hasProperty(RotatedPillarBlock.AXIS)) {
+                    if (blockState.is(BlockTags.LOGS) && blockState.hasProperty(RotatedPillarBlock.AXIS) && blockState.isCollisionShapeFullBlock(level, posMutable)) {
                         if (logScan.containsKey(blockState.getBlock())) {
                             logScan.put(blockState.getBlock(), logScan.get(blockState.getBlock()) + 1);
-                        } else {
-                            logScan.put(blockState.getBlock(), 1);
-                        }
+                        } else logScan.put(blockState.getBlock(), 1);
                     }
                 }
             }
         }
 
-        if (logScan.isEmpty())
-            return false;
+        if (logScan.isEmpty()) return false;
 
         // Figure out what sources block to use
         int totalBlockCount = logScan.values().stream().mapToInt(i -> i).sum();
         Block blockChoice = null;
-        for (Map.Entry<Block, Integer> i : logScan.entrySet()) {
-            if (random.nextInt(totalBlockCount) < i.getValue()) {
-                blockChoice = i.getKey();
+        for (Map.Entry<Block, Integer> entry : logScan.entrySet()) {
+            if (random.nextInt(totalBlockCount) < entry.getValue()) {
+                blockChoice = entry.getKey();
                 break;
             }
-            totalBlockCount -= i.getValue();
+            totalBlockCount -= entry.getValue();
         }
 
         if (blockChoice == null)
@@ -74,8 +71,7 @@ public class FallenTreeFeature extends Feature<FallenTreeFeatureConfiguration> {
 
         for (int i = 0; i < size; i++) {
             BlockPos pos = origin.relative(dir, gap + i + 1);
-            if (!level.getBlockState(pos).is(BlockTags.REPLACEABLE) || !level.getBlockState(pos.below()).isSolid())
-                return false;
+            if (!level.getBlockState(pos).is(BlockTags.REPLACEABLE) || !level.getBlockState(pos.below()).isSolid()) return false;
             logPos.add(pos);
             }
 
@@ -96,6 +92,7 @@ public class FallenTreeFeature extends Feature<FallenTreeFeatureConfiguration> {
             decoPos.add(pos1.immutable());
             level.setBlock(pos1, state1, 19);
         };
+
         if (!config.decorators().isEmpty()) {
             FallenTreeDecorator.Context fallentreedecorator$context = new FallenTreeDecorator.Context(level, decoratorConsumer, random, logPos, context.chunkGenerator());
             config.decorators().forEach((deco) -> deco.place(fallentreedecorator$context));

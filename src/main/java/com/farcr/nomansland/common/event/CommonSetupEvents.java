@@ -12,6 +12,7 @@ import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.moose.Moose;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -56,6 +57,7 @@ public class CommonSetupEvents {
             NMLDensityModifications.register();
             NMLSurfaceRules.register();
             NMLFlammables.register();
+            if (Mods.CREATE.isLoaded()) CreateIntegration.registerOpenPipeEffects();
 
             for (BlockDefinition<?> definition : NMLBlocks.BLOCK_DEFINITIONS) {
                 if (definition.get() instanceof FlowerPotBlock flowerPotBlock) {

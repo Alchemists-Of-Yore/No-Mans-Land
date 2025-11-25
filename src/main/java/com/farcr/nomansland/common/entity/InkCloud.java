@@ -1,11 +1,9 @@
 package com.farcr.nomansland.common.entity;
 
-import com.farcr.nomansland.common.mixin.LevelInvoker;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.util.AbortableIterationConsumer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -15,12 +13,10 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class InkCloud extends LingeringCloud {
 
@@ -53,9 +49,7 @@ public class InkCloud extends LingeringCloud {
             float radius = getRadius();
             double centerY = getY() + getBbHeight() / 2.0;
 
-            AtomicInteger number = new AtomicInteger();
-            ((LevelInvoker) level).getEntities().get(EntityTypeTest.forClass(InkCloud.class), AbortableIterationConsumer.forConsumer(i -> number.getAndIncrement()));
-            if (isWaiting && random.nextInt(number.get()) == 0) return;
+            if (isWaiting && random.nextInt(2) == 0) return;
 
             ParticleOptions particle = getParticle(level);
             int count = isWaiting ? 2 : Mth.ceil(Math.PI * radius * radius);
