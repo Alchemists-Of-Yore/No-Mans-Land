@@ -43,8 +43,6 @@ public class NMLFoods {
     public static final FoodProperties FRUIT_CAKE_SLICE = new FoodProperties.Builder().nutrition(3).saturationModifier(0.6F).fast()
             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 160, 0), 1).build();
 
-    public static final FoodProperties PEAR_JELLY = new FoodProperties.Builder().nutrition(9).saturationModifier(1.0F).build();
-
 }
 
 

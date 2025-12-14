@@ -417,6 +417,8 @@ public class CreativeModeTabHandler {
             insertBefore(TURTLE_SPAWN_EGG, TORTOISE_SPAWN_EGG);
         }
 
+       // if (Mods.FARMERSDELIGHT.isLoaded() && tab ==  CreativeModeTabs.SPAWN_EGGS  ) {
+        //}
         if (Mods.CREATE.isLoaded())
             event.remove(Mods.CREATE.getItem("honeyed_apple").getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }

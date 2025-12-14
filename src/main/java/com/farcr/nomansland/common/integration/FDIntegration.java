@@ -158,7 +158,7 @@ public class FDIntegration {
     public static final ItemDefinition<DrinkableItem> PEAR_JUICE = NMLItems.register("pear_juice",
             () -> new DrinkableItem(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16).food(FDIntegration.PEAR_JUICE_FOOD), true));
 
-    public static final FoodProperties PEAR_JUICE_FOOD = new FoodProperties.Builder().alwaysEdible()
+    public static final FoodProperties PEAR_JUICE_FOOD = new FoodProperties.Builder().nutrition(9).saturationModifier(1.0F).alwaysEdible()
             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 300, 0), 1).build();
 
     public static final ItemDefinition<DrinkableItem> PESTO_BOTTLE = NMLItems.register("pesto_bottle",
