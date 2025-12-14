@@ -1,0 +1,15 @@
+{
+    "type": "default",
+    "styles": {
+        "restored": 
+        [
+            {
+                "item": "nomansland:ancient_bronze_mask",
+                "assets": {
+                    "default": "nomansland:ancient_bronze_mask_restored",
+                    "armor": "nomansland:textures/armor/ancient_bronze_mask_restored.png"
+                }
+            }
+        ]
+    }
+}
