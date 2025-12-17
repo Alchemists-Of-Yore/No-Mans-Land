@@ -19,7 +19,7 @@
     },
     {
       "condition": "block_state_property",
-      "block": "nomansland:oat_grass"
+      "block": "nomansland:fiddlehead"
     }
   ],
   "item": "farmersdelight:straw"
