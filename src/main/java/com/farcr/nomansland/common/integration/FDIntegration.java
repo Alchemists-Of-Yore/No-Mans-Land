@@ -176,6 +176,8 @@ public class FDIntegration {
         );
     }
 
+    //public static final Supplier<CreativeModeTab> TAB = ModCreativeTabs.TAB_FARMERS_DELIGHT;
+
     public static void register() {
     }
 }
