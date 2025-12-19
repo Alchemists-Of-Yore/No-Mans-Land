@@ -1,0 +1,35 @@
+{
+  "variants": 
+  {
+    "facing=east,up=true": {
+      "model": "nomansland:block/dungeon/ancestral_effigy_bottom",
+      "y": 270
+    },
+    "facing=north,up=true": {
+      "model": "nomansland:block/dungeon/ancestral_effigy_bottom",
+      "y": 180
+    },
+    "facing=south,up=true": {
+      "model": "nomansland:block/dungeon/ancestral_effigy_bottom"
+    },
+    "facing=west,up=true": {
+      "model": "nomansland:block/dungeon/ancestral_effigy_bottom",
+      "y": 90
+    },
+    "facing=east,up=false": {
+      "model": "nomansland:block/dungeon/ancestral_effigy",
+      "y": 270
+    },
+    "facing=north,up=false": {
+      "model": "nomansland:block/dungeon/ancestral_effigy",
+      "y": 180
+    },
+    "facing=south,up=false": {
+      "model": "nomansland:block/dungeon/ancestral_effigy"
+    },
+    "facing=west,up=false": {
+      "model": "nomansland:block/dungeon/ancestral_effigy",
+      "y": 90
+    }
+  }
+}

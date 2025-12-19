@@ -287,6 +287,8 @@ public class NMLBlocks {
                     .pushReaction(PushReaction.DESTROY)
                     .sound(SoundType.CHERRY_WOOD)
             ));
+    public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
+          () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
 
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
