@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -89,7 +90,7 @@ public class TapBlock extends BaseEntityBlock {
         return null;
     }
 
-    public static void spawnDrippingParticles(Level level, BlockPos pos, BlockState state, ParticleOptions particleType) {
+    public static void spawnDrippingParticles(Level level, BlockPos pos, BlockState state, ParticleType<?> particleType) {
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
@@ -120,8 +121,8 @@ public class TapBlock extends BaseEntityBlock {
             }
         }
 
-        if (level.isClientSide) level.addParticle(particleType, x, y, z, 0, 0,0);
-        else ((ServerLevel) (level)).sendParticles(particleType, x, y, z, 1, 0, 0,0,0);
+        if (level.isClientSide) level.addParticle((ParticleOptions) particleType, x, y, z, 0, 0,0);
+        else ((ServerLevel) (level)).sendParticles((ParticleOptions) particleType, x, y, z, 1, 0, 0,0,0);
     }
 
     @Nullable

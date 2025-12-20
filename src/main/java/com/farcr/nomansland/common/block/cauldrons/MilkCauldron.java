@@ -6,7 +6,6 @@ import com.farcr.nomansland.common.registry.NMLSounds;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -33,7 +32,7 @@ import java.util.Iterator;
 
 public class MilkCauldron extends FourLayeredCauldronBlock {
     public MilkCauldron() {
-        super((ParticleOptions) NMLParticleTypes.MILK_DROPLET);
+        super(NMLParticleTypes.MILK_DROPLET);
     }
 
     @Override

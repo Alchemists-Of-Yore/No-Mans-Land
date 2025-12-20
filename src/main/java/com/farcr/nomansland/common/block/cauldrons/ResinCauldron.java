@@ -7,7 +7,6 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -26,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class ResinCauldron extends FourLayeredCauldronBlock {
     public ResinCauldron() {
-        super((ParticleOptions) NMLParticleTypes.RESIN_DROPLET);
+        super(NMLParticleTypes.RESIN_DROPLET);
     }
 
     @Override

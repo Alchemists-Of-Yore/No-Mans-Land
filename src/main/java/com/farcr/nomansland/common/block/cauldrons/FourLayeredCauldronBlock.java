@@ -6,9 +6,10 @@ import com.farcr.nomansland.common.registry.NMLRecipeSerializers;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.cauldron.CauldronInteraction;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -39,13 +40,13 @@ import java.util.Optional;
 
 public class FourLayeredCauldronBlock extends AbstractCauldronBlock {
     public static final MapCodec<FourLayeredCauldronBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ParticleTypes.CODEC.fieldOf("particle_type").forGetter(f -> f.particleType)
+            BuiltInRegistries.PARTICLE_TYPE.holderByNameCodec().fieldOf("particle_type").forGetter(f -> f.particleType)
     ).apply(instance, FourLayeredCauldronBlock::new));
 
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 1, 4);
-    public final @Nullable ParticleOptions particleType;
+    public final @Nullable Holder<ParticleType<?>> particleType;
 
-    public FourLayeredCauldronBlock(@Nullable ParticleOptions particleType) {
+    public FourLayeredCauldronBlock(@Nullable Holder<ParticleType<?>> particleType) {
         super(Properties.ofFullCopy(Blocks.CAULDRON), CauldronInteraction.EMPTY);
         registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 1));
         this.particleType = particleType;
