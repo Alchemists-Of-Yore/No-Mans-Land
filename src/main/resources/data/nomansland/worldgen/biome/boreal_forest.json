@@ -7,6 +7,7 @@
     ]
   },
   "downfall": 0.8,
+  "has_precipitation":true,
   "effects": {
     "fog_color": 15134448,
     "grass_color": 9542993,
