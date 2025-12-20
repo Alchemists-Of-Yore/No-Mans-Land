@@ -1,13 +1,11 @@
 {
   "size": "small",
-  "model": "nomansland:dungeon/ancient_pot/ancient_pot_1a",
+  "model": "nomansland:dungeon/ancient_pot/ancient_pot_small_2",
   "shape": [
     [1, 0, 1, 15, 16, 15]
   ],
   "traits": [
     "regenerates",
-    "brittle",
-    "drops_experience",
     "flammable"
   ]
 }
