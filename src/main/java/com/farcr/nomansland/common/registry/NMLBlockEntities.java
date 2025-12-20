@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.blockentity.RemainsBlockEntity;
 import com.farcr.nomansland.common.blockentity.TapBlockEntity;
 import com.farcr.nomansland.common.blockentity.WardingEffigyBlockEntity;
@@ -32,6 +33,10 @@ public class NMLBlockEntities {
     public static final Supplier<BlockEntityType<RemainsBlockEntity>> REMAINS =
             BLOCK_ENTITIES.register("remains", () ->
                     BlockEntityType.Builder.of(RemainsBlockEntity::new, NMLBlocks.REMAINS.get()).build(null));
+
+    public static final Supplier<BlockEntityType<PotBlockEntity>> POT =
+            BLOCK_ENTITIES.register("pot", () ->
+                    BlockEntityType.Builder.of(PotBlockEntity::new, NMLBlocks.POT.get()).build(null));
 
     public static void addBlockEntities(final BlockEntityTypeAddBlocksEvent event) {
         event.modify(

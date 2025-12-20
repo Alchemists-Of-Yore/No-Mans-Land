@@ -6,6 +6,7 @@ import com.farcr.nomansland.common.block.cauldrons.*;
 import com.farcr.nomansland.common.block.fruit_trees.FruitBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitLeavesBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitType;
+import com.farcr.nomansland.common.block.pots.PotBlock;
 import com.farcr.nomansland.common.block.tap.TapBlock;
 import com.farcr.nomansland.common.block.torches.*;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
@@ -289,6 +290,10 @@ public class NMLBlocks {
             ));
     public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
+
+    public static final BlockDefinition<PotBlock> POT = register("ancient_pot", () -> new PotBlock(ofFullCopy(Blocks.DECORATED_POT)));
+
+//    public static final BlockDefinition<PotBlock> VESSEL = register("ancient_vessel", () -> new PotBlock(ofFullCopy(Blocks.DECORATED_POT)));
 
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
