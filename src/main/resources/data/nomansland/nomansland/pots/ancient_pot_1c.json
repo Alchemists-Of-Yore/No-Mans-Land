@@ -1,0 +1,11 @@
+{
+  "size": "small",
+  "model": "nomansland:dungeon/ancient_pot/ancient_pot_1c",
+  "shape": [
+    [1, 0, 1, 15, 16, 15]
+  ],
+  "traits": [
+    "regenerates",
+    "flammable"
+  ]
+}
