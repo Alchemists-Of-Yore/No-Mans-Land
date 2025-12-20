@@ -95,7 +95,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
                 .add(Attributes.MOVEMENT_SPEED, 0.15D)
                 .add(Attributes.FOLLOW_RANGE, 20.0D)
                 .add(Attributes.ATTACK_DAMAGE, 5.0D)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(Attributes.STEP_HEIGHT, 1);
     }
 
     @Override
