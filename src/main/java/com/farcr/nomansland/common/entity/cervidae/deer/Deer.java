@@ -114,7 +114,7 @@ public class Deer extends Animal implements IAntlers {
     @Override
     protected void customServerAiStep() {
         if (!isBaby()) {
-            tickAntlerGrowth(this);
+            regrowLostAntlers(this);
         }
 
         super.customServerAiStep();

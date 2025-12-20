@@ -28,7 +28,7 @@ public interface IAntlers {
     }
 
     //TODO: Antler Growth SFX & Particles
-    default void tickAntlerGrowth(Mob mob) {
+    default void regrowLostAntlers(Mob mob) {
         int value = getAntlerTimer();
         if (value > 0) {
             value--;

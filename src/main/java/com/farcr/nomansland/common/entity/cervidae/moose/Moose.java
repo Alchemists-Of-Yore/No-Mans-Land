@@ -151,7 +151,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     @Override
     protected void customServerAiStep() {
         if (!isBaby()) {
-            tickAntlerGrowth(this);
+            regrowLostAntlers(this);
         }
 
         super.customServerAiStep();
