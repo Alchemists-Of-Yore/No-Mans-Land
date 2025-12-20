@@ -1,5 +1,6 @@
-package com.farcr.nomansland.common.entity.moose;
+package com.farcr.nomansland.common.entity.cervidae.moose.deprecated;
 
+import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.NearestVisibleLivingEntitySensor;

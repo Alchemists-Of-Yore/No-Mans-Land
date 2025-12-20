@@ -1,11 +1,5 @@
 {
   "values": [
-    "minecraft:moss_carpet",
-    "minecraft:glow_lichen",
-    "nomansland:beard_moss",
-    {
-      "id": "abundant_atmosphere:moss_clump",
-      "required": false
-    }
+    "minecraft:golden_carrot"
   ]
 }

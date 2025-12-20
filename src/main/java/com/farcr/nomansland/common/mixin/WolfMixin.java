@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.entity.deer.Deer;
-import com.farcr.nomansland.common.entity.moose.Moose;
+import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
+import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.animal.Wolf;

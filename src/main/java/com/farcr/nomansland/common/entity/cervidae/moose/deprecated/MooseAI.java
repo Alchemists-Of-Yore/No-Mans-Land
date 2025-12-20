@@ -1,8 +1,9 @@
-package com.farcr.nomansland.common.entity.moose;
+package com.farcr.nomansland.common.entity.cervidae.moose.deprecated;
 
 import com.farcr.nomansland.common.entity.ai.MaintainChaseWithinRange;
 import com.farcr.nomansland.common.entity.ai.StartChasingWhenHurt;
 import com.farcr.nomansland.common.entity.ai.WarningAttack;
+import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.registry.entities.NMLSensors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -135,10 +136,11 @@ public class MooseAI {
     }
 
     private static Optional<? extends LivingEntity> findNearestValidAttackTarget(Moose moose) {
-        Brain<Moose> brain = moose.getBrain();
-        Optional<UUID> angerTarget = brain.getMemory(MemoryModuleType.ANGRY_AT);
-        NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty());
+        return Optional.empty();
+//        Brain<Moose> brain = moose.getBrain();
+//        Optional<UUID> angerTarget = brain.getMemory(MemoryModuleType.ANGRY_AT);
+//        NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty());
 
-        return angerTarget.flatMap(uuid -> entities.findClosest(entity -> moose.distanceToSqr(entity) < Mth.square(10) && entity.getUUID() == uuid));
+//        return angerTarget.flatMap(uuid -> entities.findClosest(entity -> moose.distanceToSqr(entity) < Mth.square(10) && entity.getUUID() == uuid));
     }
 }
