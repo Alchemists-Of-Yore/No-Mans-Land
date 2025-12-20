@@ -5,7 +5,9 @@ import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -23,9 +25,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class ResinCauldron extends FourLayeredCauldronBlock {
-
     public ResinCauldron() {
-        super(NMLParticleTypes.RESIN_DROPLET);
+        super((ParticleOptions) NMLParticleTypes.RESIN_DROPLET);
+    }
+
+    @Override
+    protected MapCodec<ResinCauldron> codec() {
+        return MapCodec.unit(ResinCauldron::new);
     }
 
     @Override

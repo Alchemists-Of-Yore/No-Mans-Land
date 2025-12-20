@@ -1,18 +1,9 @@
 package com.farcr.nomansland.client.model.moose;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.model.deer.DeerModel;
-import com.farcr.nomansland.client.variant_action.SetAntlerLayer;
-import com.farcr.nomansland.client.variant_action.SetPatternLayer;
-import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.tazer.mixed_litter.VariantUtil;
-import dev.tazer.mixed_litter.actions.Action;
-import dev.tazer.mixed_litter.actions.VariantActionType;
-import dev.tazer.mixed_litter.variants.Variant;
-import dev.tazer.mixed_litter.variants.VariantType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;

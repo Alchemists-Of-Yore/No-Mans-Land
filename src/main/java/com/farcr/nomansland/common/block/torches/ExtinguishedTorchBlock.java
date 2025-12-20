@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.block.torches;
 
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
@@ -26,8 +27,17 @@ public class ExtinguishedTorchBlock extends TorchBlock {
 
     public final Block litBlock;
 
-    public ExtinguishedTorchBlock(SimpleParticleType flameParticle, Properties properties, Block litBlock) {
+    public ExtinguishedTorchBlock(SimpleParticleType flameParticle, Properties properties) {
         super(flameParticle, properties);
+
+        Block litBlock = null;
+        for (ExtinguishableBlock block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+            if (this == block.extinguishedBlock()) {
+                litBlock = block.litBlock();
+                break;
+            }
+        }
+
         this.litBlock = litBlock;
     }
 

@@ -22,9 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MonsterAnchorBlock extends BaseEntityBlock {
-
-    public static final MapCodec<MonsterAnchorBlock> CODEC = simpleCodec(MonsterAnchorBlock::new);
-
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     public MonsterAnchorBlock(Properties properties) {
@@ -35,7 +32,7 @@ public class MonsterAnchorBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return simpleCodec(MonsterAnchorBlock::new);
     }
 
     @Override

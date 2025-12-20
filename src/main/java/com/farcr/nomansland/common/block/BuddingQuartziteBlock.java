@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.block;
 
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -13,26 +12,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 
 public class BuddingQuartziteBlock extends BuddingAmethystBlock {
-
-    public static final MapCodec<BuddingAmethystBlock> CODEC = simpleCodec(BuddingQuartziteBlock::new);
-    @Override
-    public MapCodec<BuddingAmethystBlock> codec() {
-        return CODEC;
-    }
-
     public static final int GROWTH_CHANCE = 5;
     private static final Direction[] DIRECTIONS = Direction.values();
 
-    public BuddingQuartziteBlock(Properties pProperties) {
-        super(pProperties);
+    public BuddingQuartziteBlock(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public void randomTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
-        if (pRandom.nextInt(5) == 0) {
-            Direction direction = DIRECTIONS[pRandom.nextInt(DIRECTIONS.length)];
-            BlockPos blockpos = pPos.relative(direction);
-            BlockState blockstate = pLevel.getBlockState(blockpos);
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (random.nextInt(GROWTH_CHANCE) == 0) {
+            Direction direction = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
+            BlockPos blockpos = pos.relative(direction);
+            BlockState blockstate = level.getBlockState(blockpos);
             Block block = null;
             if (canClusterGrowAtState(blockstate)) {
                 block = NMLBlocks.SMALL_QUARTZITE_BUD.get();
@@ -46,7 +38,7 @@ public class BuddingQuartziteBlock extends BuddingAmethystBlock {
 
             if (block != null) {
                 BlockState blockstate1 = block.defaultBlockState().setValue(AmethystClusterBlock.FACING, direction).setValue(AmethystClusterBlock.WATERLOGGED, Boolean.valueOf(blockstate.getFluidState().getType() == Fluids.WATER));
-                pLevel.setBlockAndUpdate(blockpos, blockstate1);
+                level.setBlockAndUpdate(blockpos, blockstate1);
             }
 
         }

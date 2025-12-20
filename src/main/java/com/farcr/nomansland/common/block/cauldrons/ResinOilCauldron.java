@@ -4,7 +4,9 @@ import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -26,9 +28,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class ResinOilCauldron extends FourLayeredCauldronBlock {
-
     public ResinOilCauldron() {
-        super(NMLParticleTypes.OIL);
+        super((ParticleOptions) NMLParticleTypes.OIL);
+    }
+
+    @Override
+    protected MapCodec<ResinOilCauldron> codec() {
+        return MapCodec.unit(ResinOilCauldron::new);
     }
 
     @Override

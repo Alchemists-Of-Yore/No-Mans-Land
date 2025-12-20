@@ -23,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -42,34 +41,37 @@ import vectorwing.farmersdelight.common.utility.ItemUtils;
 import java.util.Map;
 
 public class CandleFruitCakeBlock extends AbstractCandleBlock {
-
     public static final MapCodec<CandleFruitCakeBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("candle").forGetter(block -> block.candleBlock),
                     propertiesCodec()
             ).apply(instance, CandleFruitCakeBlock::new));
+
     public static final BooleanProperty LIT = AbstractCandleBlock.LIT;
+
     protected static final VoxelShape CAKE_SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 8.0, 15.0);
     protected static final VoxelShape CANDLE_SHAPE = Block.box(7.0, 8.0, 7.0, 9.0, 14.0, 9.0);
     protected static final VoxelShape SHAPE = Shapes.or(CAKE_SHAPE, CANDLE_SHAPE);
     private static final Map<CandleBlock, CandleFruitCakeBlock> BY_CANDLE = Maps.newHashMap();
+
     private static final Iterable<Vec3> PARTICLE_OFFSETS = ImmutableList.of(new Vec3(0.5, 1.0, 0.5));
+
     private final CandleBlock candleBlock;
 
-    public MapCodec<CandleFruitCakeBlock> codec() {
-        return CODEC;
-    }
-
-    public CandleFruitCakeBlock(Block candleBlock, BlockBehaviour.Properties properties) {
+    public CandleFruitCakeBlock(Block candleBlock, Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(LIT, false));
         if (candleBlock instanceof CandleBlock candleblock) {
             BY_CANDLE.put(candleblock, this);
             this.candleBlock = candleblock;
         } else {
-            String var10002 = String.valueOf(CandleBlock.class);
-            throw new IllegalArgumentException("Expected block to be of " + var10002 + " was " + candleBlock.getClass());
+            String candleClass = String.valueOf(CandleBlock.class);
+            throw new IllegalArgumentException("Expected block to be of " + candleClass + " was " + candleBlock.getClass());
         }
+    }
+
+    public MapCodec<CandleFruitCakeBlock> codec() {
+        return CODEC;
     }
 
     protected Iterable<Vec3> getParticleOffsets(BlockState state) {

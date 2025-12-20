@@ -12,7 +12,6 @@ import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.Nullable;
 
 public class LogBlock extends RotatedPillarBlock {
-
     public LogBlock(Properties properties) {
         super(properties);
     }

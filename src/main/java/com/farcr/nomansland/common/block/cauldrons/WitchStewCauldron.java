@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.block.cauldrons;
 
 import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.registry.NMLSounds;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.BlockPos;
@@ -21,9 +22,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class WitchStewCauldron extends FourLayeredCauldronBlock {
-
     public WitchStewCauldron() {
         super(null);
+    }
+
+    @Override
+    protected MapCodec<WitchStewCauldron> codec() {
+        return MapCodec.unit(WitchStewCauldron::new);
     }
 
     @Override

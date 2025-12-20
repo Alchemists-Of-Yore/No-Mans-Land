@@ -26,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class WardingEffigyBlock extends BaseEntityBlock {
-
     public static final IntegerProperty EFFIGIES = IntegerProperty.create("effigies", 1, 4);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -40,7 +39,7 @@ public class WardingEffigyBlock extends BaseEntityBlock {
 
     public WardingEffigyBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(stateDefinition.any().setValue(EFFIGIES, 1));
+        registerDefaultState(stateDefinition.any().setValue(EFFIGIES, 1));
     }
 
     @Override
@@ -86,17 +85,17 @@ public class WardingEffigyBlock extends BaseEntityBlock {
 
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return switch (state.getValue(EFFIGIES)) {
-            default -> switch (state.getValue(FACING)) {
-                default -> Z_ONE_AABB;
-                case EAST, WEST -> X_ONE_AABB;
-            };
             case 2 -> switch (state.getValue(FACING)) {
-                default -> Z_TWO_AABB;
                 case EAST, WEST -> X_TWO_AABB;
+                default -> Z_TWO_AABB;
             };
             case 3, 4 -> switch (state.getValue(FACING)) {
-                default -> Z_FULL_AABB;
                 case EAST, WEST -> X_FULL_AABB;
+                default -> Z_FULL_AABB;
+            };
+            default -> switch (state.getValue(FACING)) {
+                case EAST, WEST -> X_ONE_AABB;
+                default -> Z_ONE_AABB;
             };
         };
     }

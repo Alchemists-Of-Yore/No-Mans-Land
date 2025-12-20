@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.block.torches;
 
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
@@ -27,10 +28,18 @@ public class ExtinguishedWallTorchBlock extends WallTorchBlock {
 
     public final Block litBlock;
 
-    public ExtinguishedWallTorchBlock(SimpleParticleType flameParticle, Properties properties, Block litBlock) {
+    public ExtinguishedWallTorchBlock(SimpleParticleType flameParticle, Properties properties) {
         super(flameParticle, properties);
-        this.litBlock = litBlock;
-    }
+
+        Block litBlock = null;
+        for (ExtinguishableBlock block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+            if (this == block.extinguishedBlock()) {
+                litBlock = block.litBlock();
+                break;
+            }
+        }
+
+        this.litBlock = litBlock;    }
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

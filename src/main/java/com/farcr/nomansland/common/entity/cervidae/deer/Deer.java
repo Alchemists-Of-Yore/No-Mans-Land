@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.entity.cervidae.deer;
 
-import com.farcr.nomansland.common.entity.cervidae.ShedAntlersGoal;
 import com.farcr.nomansland.common.entity.cervidae.IAntlers;
+import com.farcr.nomansland.common.entity.cervidae.ShedAntlersGoal;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;

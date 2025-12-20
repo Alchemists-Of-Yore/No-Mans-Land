@@ -10,6 +10,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -40,9 +41,8 @@ import java.util.Map;
 import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
 
 public class TapBlock extends BaseEntityBlock {
-
-    public static final MapCodec<TapBlock> CODEC = simpleCodec(TapBlock::new);
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+
     private static final Map<Direction, VoxelShape> AABBS = Maps.newEnumMap(ImmutableMap.of(
             Direction.NORTH, Block.box(6.0D, 3.0D, 10.0D, 10.0D, 8.0D, 16.0D),
             Direction.SOUTH, Block.box(6.0D, 3.0D, 0.0D, 10.0D, 8.0D, 6.0D),
@@ -52,12 +52,11 @@ public class TapBlock extends BaseEntityBlock {
 
     public TapBlock(Properties properties) {
         super(properties);
-
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return simpleCodec(TapBlock::new);
     }
 
     public static VoxelShape getShape(BlockState state) {
@@ -90,7 +89,7 @@ public class TapBlock extends BaseEntityBlock {
         return null;
     }
 
-    public static void spawnDrippingParticles(Level level, BlockPos pos, BlockState state, SimpleParticleType particleType) {
+    public static void spawnDrippingParticles(Level level, BlockPos pos, BlockState state, ParticleOptions particleType) {
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
@@ -224,7 +223,6 @@ public class TapBlock extends BaseEntityBlock {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-
         List<Holder.Reference<TapInteraction>> allTapInteractions = level.registryAccess().registryOrThrow(NMLRegistries.TAP_INTERACTION_KEY).holders().filter(tapInteractionReference -> tapInteractionReference.value().particleType().isPresent()).toList();
         BlockState stateBehind = getBlockStateBehind(level, pos, state);
 

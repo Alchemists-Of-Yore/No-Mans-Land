@@ -3,8 +3,10 @@ package com.farcr.nomansland.common.block.cauldrons;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -30,9 +32,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MilkCauldron extends FourLayeredCauldronBlock {
-
     public MilkCauldron() {
-        super(NMLParticleTypes.MILK_DROPLET);
+        super((ParticleOptions) NMLParticleTypes.MILK_DROPLET);
+    }
+
+    @Override
+    protected MapCodec<MilkCauldron> codec() {
+        return MapCodec.unit(MilkCauldron::new);
     }
 
     @Override

@@ -93,7 +93,7 @@ public class TapBlockEntity extends BlockEntity {
         if (stateBehind.getBlock() instanceof FourLayeredCauldronBlock fourLayeredCauldronBlock && !((AbstractCauldronBlock) cauldronBlock).isFull(cauldronState)) {
             tap.timeEmptying++;
             if (tap.timeEmptying < NMLConfig.TICKS_TO_FILL_CAULDRON.get() && fourLayeredCauldronBlock.particleType != null)
-                spawnDrippingParticles(level, pos, state, fourLayeredCauldronBlock.particleType.get());
+                spawnDrippingParticles(level, pos, state, fourLayeredCauldronBlock.particleType);
             else {
                 tap.timeEmptying = 0;
                 FourLayeredCauldronBlock.lowerFillLevel(stateBehind, level, posBehind);

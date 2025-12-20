@@ -16,8 +16,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class DesertFoliageBlock extends BushBlock implements BonemealableBlock {
-
-    public static final MapCodec<DesertFoliageBlock> CODEC = simpleCodec(DesertFoliageBlock::new);
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 10.0D, 14.0D);
 
     public DesertFoliageBlock(Properties pProperties) {
@@ -26,7 +24,7 @@ public class DesertFoliageBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     protected MapCodec<? extends BushBlock> codec() {
-        return CODEC;
+        return simpleCodec(DesertFoliageBlock::new);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.block.fruit_trees;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -14,18 +16,28 @@ import net.minecraft.world.level.block.state.BlockState;
 import static com.farcr.nomansland.common.block.fruit_trees.FruitBlock.AGE;
 
 public class FruitLeavesBlock extends LeavesBlock {
+    public static final MapCodec<FruitLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            propertiesCodec(),
+            FruitType.CODEC.fieldOf("fruit_type").forGetter(f -> f.fruitType)
+    ).apply(instance, FruitLeavesBlock::new));
 
+    private final FruitType fruitType;
     public Holder<Block> fruit;
     public Holder<Block> leaves;
     public int growthSpeed;
 
     public FruitLeavesBlock(Properties properties, FruitType fruitType) {
         super(properties);
-        this.fruit = fruitType.getFruitBlock();
-        this.leaves = fruitType.getLeaves();
-        this.growthSpeed = fruitType.getGrowthSpeed();
+        this.fruitType = fruitType;
+        fruit = fruitType.getFruitBlock();
+        leaves = fruitType.getLeaves();
+        growthSpeed = fruitType.getGrowthSpeed();
     }
 
+    @Override
+    public MapCodec<FruitLeavesBlock> codec() {
+        return CODEC;
+    }
 
     @Override
     protected boolean isRandomlyTicking(BlockState state) {

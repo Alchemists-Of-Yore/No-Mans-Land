@@ -24,7 +24,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Map;
 
 public class ShelfMushroomBlock extends BaseCoralWallFanBlock implements BonemealableBlock {
-
     private static final Map<Direction, VoxelShape> SHAPES = Maps.newEnumMap(ImmutableMap.of(
             Direction.NORTH, Block.box(4, 6, 9, 12, 9, 16.0),
             Direction.SOUTH, Block.box(4, 6, 0, 12, 9, 7),

@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class TrimmedPlankBlock extends Block {
-
     public static final BooleanProperty UP = BlockStateProperties.UP;
     public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
 
@@ -21,8 +20,7 @@ public class TrimmedPlankBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(UP);
-        builder.add(DOWN);
+        builder.add(UP, DOWN);
     }
 
     @Override

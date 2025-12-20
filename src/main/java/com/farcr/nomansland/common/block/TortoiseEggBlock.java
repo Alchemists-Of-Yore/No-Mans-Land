@@ -20,7 +20,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -32,20 +31,19 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class TortoiseEggBlock extends Block {
-    public static final MapCodec<TortoiseEggBlock> CODEC = simpleCodec(TortoiseEggBlock::new);
     private static final VoxelShape ONE_EGG_AABB = Block.box(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
     private static final VoxelShape MULTIPLE_EGGS_AABB = Block.box(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
     public static final IntegerProperty HATCH = BlockStateProperties.HATCH;
     public static final IntegerProperty EGGS = IntegerProperty.create("eggs", 1, 3);
 
-    @Override
-    public MapCodec<TortoiseEggBlock> codec() {
-        return CODEC;
-    }
-
-    public TortoiseEggBlock(BlockBehaviour.Properties properties) {
+    public TortoiseEggBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(HATCH, Integer.valueOf(0)).setValue(EGGS, Integer.valueOf(1)));
+    }
+
+    @Override
+    public MapCodec<TortoiseEggBlock> codec() {
+        return simpleCodec(TortoiseEggBlock::new);
     }
 
     @Override
