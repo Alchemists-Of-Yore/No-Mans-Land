@@ -95,7 +95,7 @@ public class ShedAntlersGoal extends Goal {
         if (hasNearbyLog) {
             shedAnimationTick = Math.max(0, shedAnimationTick - 1);
             if (shedAnimationTick == adjustedTickDelay(4)) {
-                antlerData.setHasAntlers(false);
+                antlerData.removeAntlers(mob.getRandom());
                 antlerData.onShedAntlers();
             }
         }

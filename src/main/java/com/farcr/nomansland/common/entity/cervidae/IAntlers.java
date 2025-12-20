@@ -51,7 +51,7 @@ public interface IAntlers {
         setAntlerTimer(random.nextInt(0, MIN_ANTLER_GROWTH_TIME/2));
     }
 
-    default void removeAntlersUponBirth(RandomSource random) {
+    default void removeAntlers(RandomSource random) {
         setHasAntlers(false);
         setAntlerTimer(random.nextInt(MIN_ANTLER_GROWTH_TIME, MAX_ANTLER_GROWTH_TIME));
     }

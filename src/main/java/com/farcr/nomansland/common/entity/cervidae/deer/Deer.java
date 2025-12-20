@@ -81,7 +81,7 @@ public class Deer extends Animal implements IAntlers {
         goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Monster.class, 12, 1.5, 1.75));
         goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Player.class, 12, 1.5, 1.75, player -> !player.isDiscrete() && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(player)));
         goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Villager.class, 12, 1.5, 1.75));
-        goalSelector.addGoal(5, new AvoidEntityGoal<>(this, LivingEntity.class, 12, 1.5, 1.75, livingEntity -> livingEntity instanceof  NeutralMob));
+        goalSelector.addGoal(5, new AvoidEntityGoal<>(this, LivingEntity.class, 12, 1.5, 1.75, livingEntity -> livingEntity instanceof NeutralMob));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 12));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
     }
@@ -105,6 +105,7 @@ public class Deer extends Animal implements IAntlers {
     public void setAntlerTimer(int antlersAge) {
         this.antlerTimer = antlersAge;
     }
+
     @Override
     public void onShedAntlers() {
         playSound(NMLSounds.DEER_SHED_ANTLERS.get(), 0.6F, 1.0F);
@@ -134,7 +135,7 @@ public class Deer extends Animal implements IAntlers {
     public AgeableMob getBreedOffspring(ServerLevel serverLevel, AgeableMob otherParent) {
         Deer offspringDeer = (Deer) getType().create(level());
         Deer otherDeer = (Deer) otherParent;
-        offspringDeer.removeAntlersUponBirth(random);
+        offspringDeer.removeAntlers(random);
         return offspringDeer;
     }
 
@@ -148,6 +149,7 @@ public class Deer extends Animal implements IAntlers {
     protected SoundEvent getAmbientSound() {
         return NMLSounds.DEER_AMBIENT.get();
     }
+
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
