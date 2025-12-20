@@ -5,7 +5,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "nomansland:block/dungeon/ancient_pots/ancient_pot_base",
-		"2": "nomansland:block/dungeon/ancient_pots/ancient_vessel",
+		"2": "nomansland:block/dungeon/ancient_pots/ancient_pot_large_1",
 		"particle": "nomansland:block/dungeon/ancient_pots/ancient_pot_particle"
 	},
 	"elements": [

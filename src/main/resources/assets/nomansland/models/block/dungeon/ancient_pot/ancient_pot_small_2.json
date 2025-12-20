@@ -4,7 +4,7 @@
 	"credit": "Made by Farcr",
 	"textures": {
 		"0": "nomansland:block/dungeon/ancient_pots/ancient_pot_base",
-		"2": "nomansland:block/dungeon/ancient_pots/ancient_vase",
+		"2": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_2",
 		"particle": "nomansland:block/dungeon/ancient_pots/ancient_pot_particle"
 	},
 	"elements": [
