@@ -1,6 +1,10 @@
 package com.farcr.nomansland.client.model.moose;
 
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.variant_action.SetAntlerLayer;
+import com.farcr.nomansland.client.variant_action.SetPatternLayer;
+import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -19,35 +23,20 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class MooseAntlersLayer extends RenderLayer<Moose, MooseModel<Moose>> {
+public class MooseSaddleLayer extends RenderLayer<Moose, MooseModel<Moose>> {
 
-    public MooseAntlersLayer(RenderLayerParent<Moose, MooseModel<Moose>> renderer) {
+    private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/moose/moose_saddle.png");
+
+    public MooseSaddleLayer(RenderLayerParent<Moose, MooseModel<Moose>> renderer) {
         super(renderer);
     }
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, Moose moose, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (moose.hasAntlers()) {
-            ResourceLocation texture = null;
-
-            for (Variant variant : VariantUtil.getVariants(moose)) {
-                VariantType variantType = VariantUtil.getType(moose, variant);
-                for (Action action : variantType.actions()) {
-                    VariantActionType actionType = action.type();
-
-                    actionType.initialize(action.arguments(), variant.arguments(), variantType.defaults());
-
-                    if (actionType instanceof SetAntlerLayer setAntlerLayer) {
-                        texture = setAntlerLayer.texture;
-                    }
-                }
-            }
-
-            if (texture != null) {
-                getParentModel().prepareMobModel(moose, limbSwing, limbSwingAmount, partialTicks);
-                VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
-                getParentModel().renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
-            }
+        if (moose.isSaddled()) {
+            getParentModel().prepareMobModel(moose, limbSwing, limbSwingAmount, partialTicks);
+            VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+            getParentModel().renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
         }
     }
 }

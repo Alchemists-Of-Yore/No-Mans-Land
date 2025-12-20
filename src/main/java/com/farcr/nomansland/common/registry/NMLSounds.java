@@ -39,6 +39,16 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_DEATH = registerSound("entity.deer.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_HURT = registerSound("entity.deer.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_STEP = registerSound("entity.deer.step");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DEER_SHED_ANTLERS = registerSound("entity.deer.shed_antlers");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_AMBIENT = registerSound("entity.moose.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_DEATH = registerSound("entity.moose.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_HURT = registerSound("entity.moose.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_STEP = registerSound("entity.moose.step");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_EAT = registerSound("entity.moose.eat");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_REJECTS_FOOD = registerSound("entity.moose.reject_food");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_SHEDS_ANTLERS = registerSound("entity.moose.shed_antlers");
+
 
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_AMBIENT = registerSound("entity.goose.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_DEATH = registerSound("entity.goose.death");

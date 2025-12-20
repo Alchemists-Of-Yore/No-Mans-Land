@@ -1,6 +1,6 @@
 package com.farcr.nomansland.client.model.deer;
 
-import com.farcr.nomansland.common.entity.deer.Deer;
+import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.model.QuadrupedModel;
 import net.minecraft.client.model.geom.ModelPart;

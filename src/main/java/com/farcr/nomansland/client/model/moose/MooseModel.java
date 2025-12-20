@@ -1,7 +1,7 @@
 package com.farcr.nomansland.client.model.moose;
 
 import com.farcr.nomansland.client.model.utils.AnimUtil;
-import com.farcr.nomansland.common.entity.moose.Moose;
+import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import net.minecraft.client.model.AgeableHierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;

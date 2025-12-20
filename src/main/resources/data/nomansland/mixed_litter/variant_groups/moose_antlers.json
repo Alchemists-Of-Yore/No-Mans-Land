@@ -1,0 +1,9 @@
+{
+  "conditions": {
+    "entity_predicate": {
+      "type": "nomansland:moose"
+    }
+  },
+  "exclusive": true,
+  "selection": "weighted"
+}

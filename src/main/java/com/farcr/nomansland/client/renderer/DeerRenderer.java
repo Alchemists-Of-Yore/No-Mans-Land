@@ -5,7 +5,7 @@ import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.model.deer.DeerAntlersLayer;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.deer.DeerPatternLayer;
-import com.farcr.nomansland.common.entity.deer.Deer;
+import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
