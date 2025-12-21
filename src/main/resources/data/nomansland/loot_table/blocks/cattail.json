@@ -36,8 +36,8 @@
                 {
                   "condition": "minecraft:match_tool",
                   "predicate": {
-                    "items": [
-                      "minecraft:shears"
+                    "tag": [
+                      "c:tools/shear"
                     ]
                   }
                 }
@@ -104,8 +104,8 @@
                 {
                   "condition": "minecraft:match_tool",
                   "predicate": {
-                    "items": [
-                      "minecraft:shears"
+                    "tag": [
+                      "c:tools/shear"
                     ]
                   }
                 }
