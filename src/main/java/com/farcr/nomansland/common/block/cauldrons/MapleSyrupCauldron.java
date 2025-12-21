@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.block.cauldrons;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -21,9 +22,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class MapleSyrupCauldron extends FourLayeredCauldronBlock {
-
     public MapleSyrupCauldron() {
         super(NMLParticleTypes.MAPLE_SYRUP_DROPLET);
+    }
+
+    @Override
+    protected MapCodec<MapleSyrupCauldron> codec() {
+        return MapCodec.unit(MapleSyrupCauldron::new);
     }
 
     @Override

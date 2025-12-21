@@ -15,33 +15,32 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.util.TriState;
 
 public class CutSugarCaneBlock extends SugarCaneBlock {
-
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 13.0D, 14.0D);
 
-    public CutSugarCaneBlock(Properties pProperties) {
-        super(pProperties);
+    public CutSugarCaneBlock(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
-        BlockState soil = pLevel.getBlockState(pPos.below());
-        if (soil.canSustainPlant(pLevel, pPos.below(), Direction.UP, this.defaultBlockState()) == TriState.TRUE) return true;
-        BlockState blockstate = pLevel.getBlockState(pPos.below());
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockState soil = level.getBlockState(pos.below());
+        if (soil.canSustainPlant(level, pos.below(), Direction.UP, this.defaultBlockState()) == TriState.TRUE) return true;
+        BlockState blockstate = level.getBlockState(pos.below());
         if (blockstate.is(Blocks.SUGAR_CANE)) {
             return true;
         } else {
             if (blockstate.is(BlockTags.DIRT) || blockstate.is(BlockTags.SAND)) {
-                BlockPos blockpos = pPos.below();
+                BlockPos blockpos = pos.below();
 
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
-                    BlockState blockstate1 = pLevel.getBlockState(blockpos.relative(direction));
-                    FluidState fluidstate = pLevel.getFluidState(blockpos.relative(direction));
-                    if (pState.canBeHydrated(pLevel, pPos, fluidstate, blockpos.relative(direction)) || blockstate1.is(Blocks.FROSTED_ICE)) {
+                    BlockState hydratingState = level.getBlockState(blockpos.relative(direction));
+                    FluidState fluidstate = level.getFluidState(blockpos.relative(direction));
+                    if (state.canBeHydrated(level, pos, fluidstate, blockpos.relative(direction)) || hydratingState.is(Blocks.FROSTED_ICE)) {
                         return true;
                     }
                 }

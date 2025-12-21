@@ -21,8 +21,8 @@ public class ExtinguishedSconceWallTorchBlock extends ExtinguishedWallTorchBlock
             Direction.EAST, Block.box(0.0D, 1.5D, 5.5D, 5.0D, 13.5D, 10.5D)
     ));
 
-    public ExtinguishedSconceWallTorchBlock(Properties properties, Block litBlock, SimpleParticleType pFlameParticle) {
-        super(pFlameParticle, properties, litBlock);
+    public ExtinguishedSconceWallTorchBlock(SimpleParticleType flameParticle, Properties properties) {
+        super(flameParticle, properties);
     }
 
     public static VoxelShape getShape(BlockState state) {

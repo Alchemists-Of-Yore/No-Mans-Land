@@ -12,15 +12,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.ScaffoldingBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 
 public class WoodenScaffoldingBlock extends ScaffoldingBlock {
-
-    public WoodenScaffoldingBlock(BlockBehaviour.Properties properties) {
+    public WoodenScaffoldingBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(DISTANCE, 6).setValue(WATERLOGGED, false).setValue(BOTTOM, false));
+        registerDefaultState(stateDefinition.any().setValue(DISTANCE, 6).setValue(WATERLOGGED, false).setValue(BOTTOM, false));
     }
     public static int getDistance(BlockGetter level, BlockPos pos) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = pos.mutable().move(Direction.DOWN);

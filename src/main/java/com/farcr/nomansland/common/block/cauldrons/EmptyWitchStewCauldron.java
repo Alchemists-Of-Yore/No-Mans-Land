@@ -18,7 +18,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class EmptyWitchStewCauldron extends Block {
-
     public static final VoxelShape SHAPE = Shapes.join(
             Shapes.block(),
             Shapes.or(

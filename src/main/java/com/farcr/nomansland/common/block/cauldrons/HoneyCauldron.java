@@ -1,7 +1,9 @@
 package com.farcr.nomansland.common.block.cauldrons;
 
 import com.farcr.nomansland.common.registry.NMLSounds;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,9 +25,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class HoneyCauldron extends FourLayeredCauldronBlock {
-
     public HoneyCauldron() {
-        super(() -> ParticleTypes.FALLING_HONEY);
+        super(Holder.direct(ParticleTypes.FALLING_HONEY));
+    }
+
+    @Override
+    protected MapCodec<HoneyCauldron> codec() {
+        return MapCodec.unit(HoneyCauldron::new);
     }
 
     @Override

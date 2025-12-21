@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class PaleCherryLeavesBlock extends LeavesBlock {
-
     public PaleCherryLeavesBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }

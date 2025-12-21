@@ -1,0 +1,50 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/entrance/door_0",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/entrance/door_1",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/entrance/door_2",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/entrance/door_3",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/entrance/collapsed",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

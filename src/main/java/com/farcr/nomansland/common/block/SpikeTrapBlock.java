@@ -31,12 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class
-SpikeTrapBlock extends DirectionalBlock implements SimpleWaterloggedBlock {
-
+public class SpikeTrapBlock extends DirectionalBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final MapCodec<SpikeTrapBlock> CODEC = simpleCodec(SpikeTrapBlock::new);
+
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 0.0D, 0.0D, 2.0D, 16.0D, 16.0D);
     protected static final VoxelShape WEST_AABB = Block.box(14.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     protected static final VoxelShape SOUTH_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 2.0D);
@@ -52,17 +50,17 @@ SpikeTrapBlock extends DirectionalBlock implements SimpleWaterloggedBlock {
 
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
-        return null;
+        return simpleCodec(SpikeTrapBlock::new);
     }
 
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return switch (state.getValue(FACING)) {
-            default -> UP_AABB;
             case NORTH -> NORTH_AABB;
             case SOUTH -> SOUTH_AABB;
             case WEST -> WEST_AABB;
             case EAST -> EAST_AABB;
             case DOWN -> DOWN_AABB;
+            default -> UP_AABB;
         };
     }
 

@@ -4,9 +4,12 @@ import com.farcr.nomansland.common.recipe.CauldronInteractionInput;
 import com.farcr.nomansland.common.recipe.CauldronInteractionRecipe;
 import com.farcr.nomansland.common.registry.NMLRecipeSerializers;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.cauldron.CauldronInteraction;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -31,17 +34,21 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class FourLayeredCauldronBlock extends AbstractCauldronBlock {
+    public static final MapCodec<FourLayeredCauldronBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BuiltInRegistries.PARTICLE_TYPE.holderByNameCodec().fieldOf("particle_type").forGetter(f -> f.particleType)
+    ).apply(instance, FourLayeredCauldronBlock::new));
 
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 1, 4);
-    public final Supplier<SimpleParticleType> particleType;
-    public FourLayeredCauldronBlock(Supplier<SimpleParticleType> particleType) {
+    public final @Nullable Holder<ParticleType<?>> particleType;
+
+    public FourLayeredCauldronBlock(@Nullable Holder<ParticleType<?>> particleType) {
         super(Properties.ofFullCopy(Blocks.CAULDRON), CauldronInteraction.EMPTY);
-        this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 1));
+        registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 1));
         this.particleType = particleType;
     }
 
@@ -51,8 +58,8 @@ public class FourLayeredCauldronBlock extends AbstractCauldronBlock {
     }
 
     @Override
-    protected MapCodec<? extends AbstractCauldronBlock> codec() {
-        return null;
+    protected MapCodec<? extends FourLayeredCauldronBlock> codec() {
+        return CODEC;
     }
 
     @Override

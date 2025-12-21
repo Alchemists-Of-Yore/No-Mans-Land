@@ -1,0 +1,338 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/anvil",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/armor_stand",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/barrel",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/barrel_chest",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/barrel_chest_mirrored",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/bookshelf",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/brown_mushroom",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/campfire",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/candle",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/cauldron",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/chest",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/crafting_chest",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/crafting_chest_mirrored",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/crafting_table",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/double_chest",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/double_chest_mirrored",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/effigy",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/friend_table",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/furnace",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/furnace_chest",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/furnace_chest_mirrored",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/grindstone",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/lantern",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/large_bookshelf",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/large_scaffolding",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/lectern",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/left_bookshelf",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/pot",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/red_mushroom",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/right_bookshelf",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/scaffolding",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/table",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/table_mirrored",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/tall_bookshelf",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/tap",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/tap_mirrored",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:underground_shelter/decoration/wide_bookshelf",
+        "processors": "nomansland:underground_shelter",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

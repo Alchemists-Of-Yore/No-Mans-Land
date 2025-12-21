@@ -1,0 +1,7 @@
+{
+  "type": "nomansland:cave",
+  "start_pool": "nomansland:underground_shelter/entrance",
+  "biomes": "#minecraft:is_overworld",
+  "step": "underground_decoration",
+  "spawn_overrides": {}
+}

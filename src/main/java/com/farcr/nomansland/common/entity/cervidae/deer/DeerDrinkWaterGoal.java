@@ -1,16 +1,6 @@
 package com.farcr.nomansland.common.entity.cervidae.deer;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.PathComputationType;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumSet;
 
 public abstract class DeerDrinkWaterGoal  extends Goal {
 

@@ -14,8 +14,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import vectorwing.farmersdelight.common.block.FeastBlock;
 
 public class StallionStripsBlock extends FeastBlock {
-
     public static final IntegerProperty STRIP_SERVINGS = IntegerProperty.create("servings", 0, 5);
+
     protected static final VoxelShape PLATE_SHAPE_Z = Block.box(0, 0, 1, 16, 2, 15);
     protected static final VoxelShape FOOD_SHAPE_Z = Shapes.or(
             PLATE_SHAPE_Z,

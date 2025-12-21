@@ -2,14 +2,15 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
-import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
+import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
@@ -87,7 +88,8 @@ public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void registerDatapackRegistries(final DataPackRegistryEvent.NewRegistry event) {
-        event.dataPackRegistry(NMLRegistries.TAP_INTERACTION_KEY, TapInteraction.DIRECT_CODEC, TapInteraction.DIRECT_CODEC);
+        event.dataPackRegistry(NMLRegistries.TAP_INTERACTION_KEY, TapInteraction.CODEC, TapInteraction.CODEC);
+        event.dataPackRegistry(NMLRegistries.POT_VARIANT_KEY, PotVariant.CODEC, PotVariant.CODEC);
     }
 
     @SubscribeEvent

@@ -18,9 +18,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.IShearable;
 
 public class GrassSproutsBlock extends BushBlock implements BonemealableBlock, IShearable {
-
-    public static final MapCodec<GrassSproutsBlock> CODEC = simpleCodec(GrassSproutsBlock::new);
-
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 6.0D, 14.0D);
 
     public GrassSproutsBlock(BlockBehaviour.Properties properties) {
@@ -29,7 +26,7 @@ public class GrassSproutsBlock extends BushBlock implements BonemealableBlock, I
 
     @Override
     protected MapCodec<? extends BushBlock> codec() {
-        return CODEC;
+        return simpleCodec(GrassSproutsBlock::new);
     }
 
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

@@ -11,7 +11,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class FlowerbedBlock extends FlowerBlock {
-
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D);
 
     public FlowerbedBlock(Holder<MobEffect> effect, float seconds, Properties properties) {

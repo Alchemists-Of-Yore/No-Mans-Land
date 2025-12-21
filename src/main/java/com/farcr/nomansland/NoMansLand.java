@@ -69,6 +69,7 @@ public class NoMansLand {
         NMLArmorMaterials.ARMOR_MATERIALS.register(bus);
         NMLDataComponents.DATA_COMPONENTS.register(bus);
         NMLVariantActions.ACTIONS.register(bus);
+        NMLStructureTypes.STRUCTURE_TYPES.register(bus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();

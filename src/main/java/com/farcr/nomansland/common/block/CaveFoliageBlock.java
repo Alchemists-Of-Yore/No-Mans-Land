@@ -17,9 +17,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CaveFoliageBlock extends BushBlock implements BonemealableBlock {
-
-    public static final MapCodec<CaveFoliageBlock> CODEC = simpleCodec(CaveFoliageBlock::new);
-
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 12.0D, 14.0D);
 
     public CaveFoliageBlock(Properties pProperties) {
@@ -27,13 +24,13 @@ public class CaveFoliageBlock extends BushBlock implements BonemealableBlock {
     }
 
     @Override
-    protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(BlockTags.DIRT) || state.is(BlockTags.BASE_STONE_OVERWORLD) || state.getBlock() instanceof FarmBlock;
+    protected MapCodec<? extends BushBlock> codec() {
+        return simpleCodec(CaveFoliageBlock::new);
     }
 
     @Override
-    protected MapCodec<? extends BushBlock> codec() {
-        return CODEC;
+    protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+        return state.is(BlockTags.DIRT) || state.is(BlockTags.BASE_STONE_OVERWORLD) || state.getBlock() instanceof FarmBlock;
     }
 
     @Override

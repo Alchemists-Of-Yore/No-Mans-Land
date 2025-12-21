@@ -13,7 +13,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -27,7 +26,7 @@ public class BeardMossBlock extends Block implements BonemealableBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     protected static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
-    public BeardMossBlock(BlockBehaviour.Properties properties) {
+    public BeardMossBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().getOwner().defaultBlockState().setValue(HALF, DoubleBlockHalf.LOWER));
     }

@@ -15,7 +15,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -27,12 +26,12 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class GroundPickupBlock extends Block implements SimpleWaterloggedBlock {
-
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
     protected static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 4.0D, 15.0D);
 
-    public GroundPickupBlock(BlockBehaviour.Properties pProperties) {
-        super(pProperties);
+    public GroundPickupBlock(Properties properties) {
+        super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 

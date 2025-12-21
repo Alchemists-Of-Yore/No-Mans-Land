@@ -2,7 +2,6 @@ package com.farcr.nomansland.common.block;
 
 import com.farcr.nomansland.common.registry.NMLDamageTypes;
 import com.farcr.nomansland.common.registry.NMLTags;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Fallable;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -32,11 +30,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class IciclesBlock extends Block implements Fallable {
-    public static final MapCodec<IciclesBlock> CODEC = simpleCodec(IciclesBlock::new);
-
     public static final DirectionProperty TIP_DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
 
-    public IciclesBlock(BlockBehaviour.Properties properties) {
+    public IciclesBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(TIP_DIRECTION, Direction.DOWN));
     }

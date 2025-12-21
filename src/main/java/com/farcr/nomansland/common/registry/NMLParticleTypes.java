@@ -9,6 +9,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Function;
@@ -21,15 +22,15 @@ public class NMLParticleTypes {
     
     public static final Supplier<SimpleParticleType> CAVE_DUST = register("cave_dust");
     
-    public static final Supplier<SimpleParticleType> RESIN_DROPLET = register("resin_droplet");
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RESIN_DROPLET = register("resin_droplet");
     
     public static final Supplier<SimpleParticleType> RESIN_DROPLET_FLAT = register("resin_droplet_flat");
     
-    public static final Supplier<SimpleParticleType> MAPLE_SYRUP_DROPLET = register("maple_syrup_droplet");
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MAPLE_SYRUP_DROPLET = register("maple_syrup_droplet");
     
     public static final Supplier<SimpleParticleType> MAPLE_SYRUP_DROPLET_FLAT = register("maple_syrup_droplet_flat");
 
-    public static final Supplier<SimpleParticleType> OIL = register("oil");
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> OIL = register("oil");
 
     public static final Supplier<SimpleParticleType> OIL_SPLASH = register("oil_splash");
 
@@ -44,7 +45,7 @@ public class NMLParticleTypes {
     public static final Supplier<SimpleParticleType> MALEVOLENT_EMBERS = register("malevolent_embers");
 
     public static final Supplier<SimpleParticleType> SCULK_AMBIENCE = register("sculk_ambience");
-    public static final Supplier<SimpleParticleType> MILK_DROPLET = register("milk_droplet");
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MILK_DROPLET = register("milk_droplet");
     public static final Supplier<SimpleParticleType> MILK_DROPLET_FLAT = register("milk_droplet_flat");
 
     public static final Supplier<ParticleType<TranslucentDustParticleOptions>> TRANSLUCENT_DUST = register(
@@ -64,7 +65,7 @@ public class NMLParticleTypes {
         });
     }
 
-    private static Supplier<SimpleParticleType> register(String name) {
+    private static DeferredHolder<ParticleType<?>, SimpleParticleType> register(String name) {
         return PARTICLE_TYPES.register(name, () -> new SimpleParticleType(false));
     }
 }

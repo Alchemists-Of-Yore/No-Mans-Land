@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "nomansland:underground_shelter",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 1491,
+    "separation": 2,
+    "spacing": 5,
+    "type": "minecraft:random_spread"
+  }
+}

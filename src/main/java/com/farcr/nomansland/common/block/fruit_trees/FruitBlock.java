@@ -33,17 +33,17 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.function.BiConsumer;
 
 public class FruitBlock extends BushBlock implements BonemealableBlock {
-
     public static final IntegerProperty AGE = BlockStateProperties.AGE_4;
+
     private final VoxelShape[] shapesByAge;
     private final Holder<Block> fruitLeaves;
     private final Holder<Item> fruitDrops;
 
     public FruitBlock(Properties properties, FruitType fruitType) {
         super(properties);
-        this.shapesByAge = fruitType.getShapesByAge();
-        this.fruitLeaves = fruitType.getFruitLeaves();
-        this.fruitDrops = fruitType.getFruitDrops();
+        shapesByAge = fruitType.getShapesByAge();
+        fruitLeaves = fruitType.getFruitLeaves();
+        fruitDrops = fruitType.getFruitDrops();
         registerDefaultState(stateDefinition.any().setValue(AGE, 0));
     }
 
@@ -77,6 +77,7 @@ public class FruitBlock extends BushBlock implements BonemealableBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (state.getValue(AGE) != getMaxAge()) return InteractionResult.PASS;
+
         if (!(player.isCreative() && player.getInventory().hasAnyMatching(stack -> stack.getItem() == fruitDrops.value()))) {
             ItemStack fruitStack = new ItemStack(fruitDrops.value());
             if (!player.addItem(fruitStack)) {
@@ -101,6 +102,7 @@ public class FruitBlock extends BushBlock implements BonemealableBlock {
                     0.2F,
                     (level.random.nextFloat() - level.random.nextFloat()) * 1.4F + 2.0F);
         }
+
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

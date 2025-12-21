@@ -18,16 +18,15 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class WaterSurfacePlant extends BushBlock implements BonemealableBlock {
-
-    public static final MapCodec<WaterSurfacePlant> CODEC = simpleCodec(WaterSurfacePlant::new);
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 1.5, 16.0);
+
     public WaterSurfacePlant(Properties properties) {
         super(properties);
     }
 
     @Override
     protected MapCodec<? extends BushBlock> codec() {
-        return CODEC;
+        return simpleCodec(WaterSurfacePlant::new);
     }
 
     @Override

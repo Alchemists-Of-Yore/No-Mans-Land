@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class RemainsBlock extends BrushableBlock {
-
     public RemainsBlock(Block turnsInto, SoundEvent brushSound, SoundEvent brushCompletedSound, Properties properties) {
         super(turnsInto, brushSound, brushCompletedSound, properties);
     }
