@@ -157,11 +157,6 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
         }
     }
 
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
-    }
-
     //    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
 //        BlockEntity blockEntity = level.getBlockEntity(pos);
 //        ItemStack var10000;

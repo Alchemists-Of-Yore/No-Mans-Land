@@ -15,6 +15,7 @@ import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
+import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -56,6 +57,11 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
+
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_1")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_2")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_3")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_large_1")));
     }
 
     @SubscribeEvent
@@ -79,6 +85,8 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.LINGERING_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(NMLEntities.PACIFIED_CLOUD.get(), NoopRenderer::new);
+
+        event.registerBlockEntityRenderer(NMLBlockEntities.POT.get(), PotRenderer::new);
     }
 
     @SubscribeEvent

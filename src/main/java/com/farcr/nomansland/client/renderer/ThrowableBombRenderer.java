@@ -23,8 +23,8 @@ import java.util.List;
 
 public abstract class ThrowableBombRenderer<T extends ThrowableBombEntity> extends EntityRenderer<T> {
 
-    public ThrowableBombRenderer(EntityRendererProvider.Context pContext) {
-        super(pContext);
+    public ThrowableBombRenderer(EntityRendererProvider.Context context) {
+        super(context);
     }
 
     private void renderModelLists(BakedModel bakedModel, int packedLight, int packedOverlay, PoseStack poseStack, VertexConsumer vertexConsumer) {
