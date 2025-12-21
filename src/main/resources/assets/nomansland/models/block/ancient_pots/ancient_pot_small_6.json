@@ -5,28 +5,27 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"bottom": "nomansland:block/dungeon/ancient_pots/ancient_pot_base",
-		"side": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_3",
-		"front": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_3",
+		"front": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_6",
 		"particle": "nomansland:block/dungeon/ancient_pots/ancient_pot_particle"
 	},
 	"elements": [
 		{
 			"from": [1, 0, 1],
-			"to": [15, 11, 15],
+			"to": [15, 8, 15],
 			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0, 4]},
 			"faces": {
-				"north": {"uv": [0.5, 10.5, 7.5, 16], "texture": "#front"},
-				"east": {"uv": [0.5, 10.5, 7.5, 16], "texture": "#side"},
-				"south": {"uv": [0.5, 10.5, 7.5, 16], "texture": "#side"},
-				"west": {"uv": [0.5, 10.5, 7.5, 16], "texture": "#side"},
+				"north": {"uv": [0.5, 12, 7.5, 16], "texture": "#front"},
+				"east": {"uv": [0.5, 12, 7.5, 16], "texture": "#side"},
+				"south": {"uv": [0.5, 12, 7.5, 16], "texture": "#side"},
+				"west": {"uv": [0.5, 12, 7.5, 16], "texture": "#side"},
 				"up": {"uv": [0.25, 4.25, 3.75, 7.75], "texture": "#bottom"},
 				"down": {"uv": [0.25, 8.25, 3.75, 11.75], "texture": "#bottom"}
 			}
 		},
 		{
-			"from": [4, 11, 4],
-			"to": [12, 12, 12],
-			"rotation": {"angle": 0, "axis": "y", "origin": [6, 11, 6]},
+			"from": [4, 8, 4],
+			"to": [12, 9, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 8, 6]},
 			"faces": {
 				"north": {"uv": [2, 9, 6, 9.5], "texture": "#front"},
 				"east": {"uv": [2, 9, 6, 9.5], "texture": "#side"},
@@ -35,9 +34,9 @@
 			}
 		},
 		{
-			"from": [3, 12, 3],
-			"to": [13, 14, 13],
-			"rotation": {"angle": 0, "axis": "y", "origin": [4, 12, 4]},
+			"from": [3, 9, 3],
+			"to": [13, 11, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 9, 4]},
 			"faces": {
 				"north": {"uv": [1.5, 8, 6.5, 9], "texture": "#front"},
 				"east": {"uv": [1.5, 8, 6.5, 9], "texture": "#side"},
