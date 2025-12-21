@@ -1,6 +1,6 @@
 {
   "size": "large",
-  "model": "nomansland:block/ancient_pots/ancient_pot_large_1",
+  "model": "nomansland:ancient_pots/ancient_pot_large_1",
   "shape": [
     [1, 0, 1, 15, 16, 15]
   ],
