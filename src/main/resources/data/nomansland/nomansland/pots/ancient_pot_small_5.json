@@ -1,0 +1,8 @@
+{
+  "size": "small",
+  "model": "nomansland:block/ancient_pots/ancient_pot_small_5",
+  "shape": [
+    [1, 0, 1, 15, 16, 15]
+  ],
+  "traits": []
+}
