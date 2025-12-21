@@ -25,7 +25,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
@@ -47,15 +49,22 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     private static final EntityDataAccessor<Boolean> DATA_HAS_ANTLERS = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_SADDLED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
 
-    private static final byte TAME_EVENT = 8;
-    private static final byte EAT_EVENT = 7;
-    private static final byte REJECT_FOOD_EVENT = 6;
+    public static final byte STOMP_EVENT = 10;
+    public static final byte ATTACK_EVENT = 9;
+    public static final byte TAME_EVENT = 8;
+    public static final byte EAT_EVENT = 7;
+    public static final byte REJECT_FOOD_EVENT = 6;
 
+    public static final int STOMP_COOLDOWN = 100;
+    public static final int STOMP_DURATION = 20;
     private static final int MINIMUM_TAME_ATTEMPTS = 4;
     private static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
 
+    public AnimationState stompAnimationState = new AnimationState();
+    public AnimationState attackAnimationState = new AnimationState();
 
     public int antlerTimer;
+    public int stompCooldown;
 
     private int pacificationStage;
 
@@ -75,6 +84,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         saveAntlerData(compound);
+        compound.putInt("StompCooldown", stompCooldown);
 
         compound.putInt("PacificationStage", getPacificationStage());
         compound.putBoolean("IsSaddled", isSaddled());
@@ -84,6 +94,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         readAntlerData(compound);
+        stompCooldown = compound.getInt("StompCooldown");
 
         setPacificationStage(compound.getInt("PacificationStage"));
         setIsSaddled(compound.getBoolean("IsSaddled"));
@@ -99,6 +110,17 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
                 .add(Attributes.STEP_HEIGHT, 1);
     }
 
+
+    public static void registerMooseRelatedGoals(Mob otherMob) {
+        if (otherMob instanceof Wolf wolf) {
+            wolf.goalSelector.addGoal(3, new AvoidEntityGoal<>(wolf, Moose.class, 12.0F, 1.5, 1.5));
+        }
+        if (otherMob instanceof Monster monster) {
+            monster.goalSelector.addGoal(0,
+                    new AvoidEntityGoal<>(monster, Moose.class, Moose::shouldHostilesAvoid,12.0F, 1.5, 1.5, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
+        }
+    }
+
     @Override
     protected void registerGoals() {
         super.registerGoals();
@@ -108,7 +130,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 //        goalSelector.addGoal(3, new FollowParentGoal(this, 1.5));
         goalSelector.addGoal(4, new ShedAntlersGoal(this));
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        goalSelector.addGoal(5, new MooseIntrovertedBehaviorGoal(this, 1.25f, 8, 4));
+        goalSelector.addGoal(5, new MooseIntrovertedBehaviorGoal(this, 1.25f, 6, 2));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 14));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
     }
@@ -154,6 +176,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         if (!isBaby()) {
             regrowLostAntlers(this);
         }
+        if (stompCooldown > 0) {
+            stompCooldown--;
+        }
 
         super.customServerAiStep();
     }
@@ -186,6 +211,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     @Override
     public void handleEntityEvent(byte id) {
         switch (id) {
+            case STOMP_EVENT -> stompAnimationState.start(tickCount);
+            case ATTACK_EVENT -> attackAnimationState.start(tickCount);
             case TAME_EVENT -> spawnTamingParticles(true);
             case EAT_EVENT -> spawnTamingParticles(false);
             case REJECT_FOOD_EVENT -> spawnRejectedFoodParticles();
@@ -239,6 +266,17 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         return super.mobInteract(player, hand);
     }
 
+    /**
+     * Controls whether hostile mobs should avoid the Moose.
+     * @param theMojangMethodDoesntApplyAGenericTypeToThisThing Unless something has gone horribly wrong, this will be the Moose.
+     * @return Whether the moose should be avoided at all cost.
+     */
+    public static boolean shouldHostilesAvoid(LivingEntity theMojangMethodDoesntApplyAGenericTypeToThisThing) {
+        if (theMojangMethodDoesntApplyAGenericTypeToThisThing instanceof Moose moose) {
+            return moose.stompCooldown > 0 && moose.stompCooldown < STOMP_COOLDOWN - STOMP_DURATION;
+        }
+        return false;
+    }
     /**
      * Attempts to equip a saddle from the given stack
      * @param stack The soon-to-be saddle, if it's an actual saddle

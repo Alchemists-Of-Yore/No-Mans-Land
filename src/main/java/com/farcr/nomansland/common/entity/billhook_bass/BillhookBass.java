@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity.billhook_bass;
 
+import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.mixinduck.LivingEntityDuck;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -24,8 +25,10 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.animal.AbstractFish;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,6 +48,12 @@ public class BillhookBass extends AbstractFish implements NeutralMob {
     
     public BillhookBass(EntityType<? extends AbstractFish> entityType, Level level) {
         super(entityType, level);
+    }
+
+    public static void registerBillhookBassRelatedGoals(Mob otherMob) {
+        if (otherMob instanceof AbstractFish fish && !(fish instanceof BillhookBass)) {
+            fish.goalSelector.addGoal(3, new AvoidEntityGoal<>(fish, BillhookBass.class, 5.0F, 1.6, 1.4));
+        }
     }
 
     @Override

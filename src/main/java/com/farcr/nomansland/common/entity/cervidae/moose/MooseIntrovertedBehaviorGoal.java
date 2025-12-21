@@ -5,14 +5,13 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.List;
 
 
 /**
@@ -21,7 +20,10 @@ import java.util.List;
  */
 public class MooseIntrovertedBehaviorGoal extends Goal {
 
-    private static final TargetingConditions ESCAPE_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+
+    public static final float STOMP_ANIMATION_SPEED_MULTIPLIER = 0.5f;
+    public static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
 
     protected final Moose moose;
     protected final double speedModifier;
@@ -43,21 +45,34 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
         setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
     }
 
-    public boolean shouldAvoid(Entity entity) {
+    public boolean shouldPassivelyAvoid(Entity entity) {
         //TODO: Replace this with a tag
-        return entity instanceof Player || entity instanceof Wolf || (entity instanceof Mob mob && mob.isAggressive());
+        return entity instanceof Player;
+    }
+
+    public boolean shouldStompButNotAvoid(Entity entity) {
+        return entity instanceof Monster monster;
     }
 
     @Override
     public boolean canUse() {
-        List<LivingEntity> nearbyEntities = moose.level()
-                .getEntitiesOfClass(LivingEntity.class, moose.getBoundingBox().inflate(introvertDistance, 3.0, introvertDistance),
-                        EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldAvoid));
+        var introvertArea = moose.getBoundingBox().inflate(introvertDistance, 3.0, introvertDistance);
+        var avoided = moose.level()
+                .getEntitiesOfClass(LivingEntity.class, introvertArea,
+                        EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldPassivelyAvoid));
+
+        var stompArea = moose.getBoundingBox().inflate(stompDistance, 3.0, stompDistance);
+        var stompOnSight = moose.level()
+                .getEntitiesOfClass(LivingEntity.class, stompArea,
+                        EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldStompButNotAvoid));
+
+        var relevantList = stompOnSight.isEmpty() ? avoided : stompOnSight;
         avoidedTarget = moose
                 .level()
                 .getNearestEntity(
-                        nearbyEntities, ESCAPE_TARGETING,
+                        relevantList, INTROVERT_TARGETING,
                         moose, moose.getX(), moose.getY(), moose.getZ());
+
         if (avoidedTarget == null) {
             return false;
         }
@@ -74,7 +89,7 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return !pathNav.isDone();
+        return !pathNav.isDone() || moose.stompCooldown > 0;
     }
 
     @Override
@@ -89,9 +104,21 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
 
     @Override
     public void tick() {
-        moose.getNavigation().setSpeedModifier(speedModifier);
-        if (avoidedTarget != null && moose.distanceTo(avoidedTarget) < stompDistance) {
-            avoidedTarget.igniteForTicks(10);
+        double speedModifier = this.speedModifier;
+        if (moose.stompCooldown == 0) {
+            if (avoidedTarget != null && moose.distanceTo(avoidedTarget) < stompDistance) {
+                moose.level().broadcastEntityEvent(moose, Moose.STOMP_EVENT);
+                moose.stompCooldown = Moose.STOMP_COOLDOWN;
+            }
         }
+        else if (moose.stompCooldown >= Moose.STOMP_COOLDOWN - Moose.STOMP_DURATION) {
+            //Actively stomping
+            speedModifier *= STOMP_ANIMATION_SPEED_MULTIPLIER;
+        }
+        else {
+            //Hastened speed after stomp
+            speedModifier *= POST_STOMP_SPEED_MULTIPLIER;
+        }
+        moose.getNavigation().setSpeedModifier(speedModifier);
     }
 }

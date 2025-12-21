@@ -17,7 +17,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -67,6 +69,12 @@ public class Deer extends Animal implements IAntlers {
                 .add(Attributes.JUMP_STRENGTH, 0.5)
                 .add(Attributes.MOVEMENT_SPEED, 0.22)
                 .add(Attributes.STEP_HEIGHT, 1);
+    }
+
+    public static void registerDeerRelatedGoals(Mob otherMob) {
+        if (otherMob instanceof Wolf wolf) {
+            wolf.goalSelector.addGoal(5, new NonTameRandomTargetGoal<>(wolf, Deer.class, false, target -> true));
+        }
     }
 
     @Override

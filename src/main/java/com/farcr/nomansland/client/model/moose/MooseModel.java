@@ -98,7 +98,7 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
     }
     
     @Override
-    public void setupAnim(Moose entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(Moose moose, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
 
         // IDLE ANIMATION
@@ -234,5 +234,7 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
             left_ear.xRot  += earXRot;
             right_ear.xRot += earXRot;
         }
+        animate(moose.stompAnimationState, MooseAnimations.STOMPING, ageInTicks);
+
     }
 }
