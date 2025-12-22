@@ -291,7 +291,7 @@ public class NMLBlocks {
     public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
 
-    public static final BlockDefinition<PotBlock> POT = register("ancient_pot", () -> new PotBlock(ofFullCopy(Blocks.DECORATED_POT).noOcclusion()));
+    public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 
 //    public static final BlockDefinition<PotBlock> VESSEL = register("ancient_vessel", () -> new PotBlock(ofFullCopy(Blocks.DECORATED_POT)));
 

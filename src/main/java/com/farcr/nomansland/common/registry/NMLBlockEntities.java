@@ -36,7 +36,7 @@ public class NMLBlockEntities {
 
     public static final Supplier<BlockEntityType<PotBlockEntity>> POT =
             BLOCK_ENTITIES.register("pot", () ->
-                    BlockEntityType.Builder.of(PotBlockEntity::new, NMLBlocks.POT.get()).build(null));
+                    BlockEntityType.Builder.of(PotBlockEntity::new, NMLBlocks.ANCIENT_POT.get()).build(null));
 
     public static void addBlockEntities(final BlockEntityTypeAddBlocksEvent event) {
         event.modify(
