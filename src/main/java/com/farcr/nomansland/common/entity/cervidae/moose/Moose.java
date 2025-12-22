@@ -540,13 +540,13 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         var particle = new BlockParticleOption(ParticleTypes.DUST_PILLAR, state);
         level().levelEvent(2001, pos, Block.getId(state));
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 40; i++) {
             double radialOffset = 0.75f;
             double xPos = stompPosition.x + radialOffset * Math.cos(i) + random.nextGaussian() / 2.0;
             double yPos = stompPosition.y + 0.1f;
             double zPos = stompPosition.z + radialOffset * Math.sin(i) + random.nextGaussian() / 2.0;
             double xVelocity = random.nextGaussian() * 0.05F;
-            double yVelocity = random.nextGaussian() * 0.2F;
+            double yVelocity = random.nextGaussian() * 0.075F;
             double zVelocity = random.nextGaussian() * 0.05F;
             level().addParticle(particle, xPos, yPos, zPos, xVelocity, yVelocity, zVelocity);
         }
