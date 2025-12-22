@@ -33,6 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -42,10 +43,10 @@ public class BillhookBass extends AbstractFish implements NeutralMob {
     private static final EntityDataAccessor<Integer> DATA_REMAINING_ANGER_TIME = SynchedEntityData.defineId(BillhookBass.class, EntityDataSerializers.INT);
 
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
-    
+
     @Nullable
     private UUID persistentAngerTarget;
-    
+
     public BillhookBass(EntityType<? extends AbstractFish> entityType, Level level) {
         super(entityType, level);
     }
@@ -74,22 +75,16 @@ public class BillhookBass extends AbstractFish implements NeutralMob {
         readPersistentAngerSaveData(level(), compound);
     }
 
-    @Nullable
-    @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
-    }
-
     @Override
     protected void registerGoals() {
         super.registerGoals();
         goalSelector.removeAllGoals(goal -> goal instanceof PanicGoal);
         goalSelector.removeAllGoals(goal -> goal instanceof AvoidEntityGoal<?>);
-        this.goalSelector.addGoal(0, new MeleeAttackGoal(this, 1.3, false));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
-        this.targetSelector.addGoal(5, new ResetUniversalAngerTargetGoal<>(this, true));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractFish.class, 10, true, true, target -> target.getType() != NMLEntities.BILLHOOK_BASS.get() && distanceTo(target) < 2));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        goalSelector.addGoal(0, new MeleeAttackGoal(this, 1.3, false));
+        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
+        targetSelector.addGoal(5, new ResetUniversalAngerTargetGoal<>(this, true));
+        targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractFish.class, 10, true, true, target -> target.getType() != NMLEntities.BILLHOOK_BASS.get() && distanceTo(target) < 2));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this));
 
     }
 
@@ -113,20 +108,28 @@ public class BillhookBass extends AbstractFish implements NeutralMob {
     public SoundEvent getAmbientSound() {
         return NMLSounds.BASS_AMBIENT.get();
     }
-    public SoundEvent getFlopSound() {
+
+    @Override
+    public @NotNull SoundEvent getFlopSound() {
         return NMLSounds.BASS_FLOP.get();
     }
+
+    @Override
     public SoundEvent getHurtSound(DamageSource damageSource) {
         return NMLSounds.BASS_HURT.get();
     }
+
+    @Override
     public SoundEvent getDeathSound() {
         return NMLSounds.BASS_DEATH.get();
     }
 
+    @Override
     public ItemStack getBucketItemStack() {
         return NMLItems.BILLHOOK_BASS_BUCKET.stack();
     }
 
+    @Override
     public EntityType<?> getType() {
         return NMLEntities.BILLHOOK_BASS.get();
     }

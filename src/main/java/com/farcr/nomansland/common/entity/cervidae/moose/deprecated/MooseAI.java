@@ -80,26 +80,26 @@ public class MooseAI {
     }
 
     private static void initIdleActivity(Brain<Moose> brain) {
-        brain.addActivityWithConditions(
-                Activity.IDLE,
-                ImmutableList.of(
-                        Pair.of(0, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
-                        Pair.of(1, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
-                        Pair.of(2, new RunOne<>(
-                                ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
-                                ImmutableList.of(
-                                        Pair.of(new ShakeOffSaddle(), 1),
-                                        Pair.of(RandomStroll.stroll(1.0F), 1),
-                                        Pair.of(SetWalkTargetFromLookTarget.create(1.0F, 3), 1),
-                                        Pair.of(new DoNothing(30, 60), 1)
-                                )
-                        ))
-                ),
-                ImmutableSet.of(
-                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT),
-                        Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_ABSENT)
-                )
-        );
+//        brain.addActivityWithConditions(
+//                Activity.IDLE,
+//                ImmutableList.of(
+//                        Pair.of(0, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
+//                        Pair.of(1, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
+//                        Pair.of(2, new RunOne<>(
+//                                ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
+//                                ImmutableList.of(
+//                                        Pair.of(new ShakeOffSaddle(), 1),
+//                                        Pair.of(RandomStroll.stroll(1.0F), 1),
+//                                        Pair.of(SetWalkTargetFromLookTarget.create(1.0F, 3), 1),
+//                                        Pair.of(new DoNothing(30, 60), 1)
+//                                )
+//                        ))
+//                ),
+//                ImmutableSet.of(
+//                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT),
+//                        Pair.of(MemoryModuleType.NEAREST_ATTACKABLE, MemoryStatus.VALUE_ABSENT)
+//                )
+//        );
     }
 
     private static void initAvoidActivity(Brain<Moose> brain) {

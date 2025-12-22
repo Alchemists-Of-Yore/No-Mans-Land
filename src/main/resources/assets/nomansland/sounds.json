@@ -818,6 +818,19 @@
     ],
     "subtitle": "nomansland.subtitles.entity.moose.reject_food"
   },
+  "entity.moose.stomp": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/moose/stomp1",
+        "pitch": 0.5
+      },
+      {
+        "name": "nomansland:entity/moose/stomp2",
+        "pitch": 0.5
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.stomp"
+  },
   "entity.moose.shed_antlers": {
     "sounds": [
       {

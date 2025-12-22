@@ -6,6 +6,7 @@ import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
@@ -16,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -35,6 +37,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
@@ -49,7 +52,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     private static final EntityDataAccessor<Boolean> DATA_HAS_ANTLERS = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_SADDLED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
 
-    public static final byte STOMP_EVENT = 10;
+    public static final byte ADD_STOMP_FEEDBACK_EVENT = 11;
+    public static final byte START_STOMP_EVENT = 10;
     public static final byte ATTACK_EVENT = 9;
     public static final byte TAME_EVENT = 8;
     public static final byte EAT_EVENT = 7;
@@ -57,6 +61,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     public static final int STOMP_COOLDOWN = 100;
     public static final int STOMP_DURATION = 20;
+    public static final int STOMP_EFFECT_DELAY = 15;
+    public static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
+    public static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
+
+    public static final int SADDLE_SHAKEOFF_DELAY = 10;
     private static final int MINIMUM_TAME_ATTEMPTS = 4;
     private static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
 
@@ -64,7 +73,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public AnimationState attackAnimationState = new AnimationState();
 
     public int antlerTimer;
-    public int stompCooldown;
+    public boolean isInStompState;
+    public int stompStateTimer;
+    public int saddleShakeOffTimer;
 
     private int pacificationStage;
 
@@ -84,7 +95,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         saveAntlerData(compound);
-        compound.putInt("StompCooldown", stompCooldown);
+        compound.putBoolean("IsInStompState", isInStompState);
+        compound.putInt("StompStateTimer", stompStateTimer);
+        compound.putInt("SaddleShakeOffTimer", saddleShakeOffTimer);
 
         compound.putInt("PacificationStage", getPacificationStage());
         compound.putBoolean("IsSaddled", isSaddled());
@@ -94,7 +107,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         readAntlerData(compound);
-        stompCooldown = compound.getInt("StompCooldown");
+        isInStompState = compound.getBoolean("IsInStompState");
+        stompStateTimer = compound.getInt("StompStateTimer");
+        saddleShakeOffTimer = compound.getInt("SaddleShakeOffTimer");
 
         setPacificationStage(compound.getInt("PacificationStage"));
         setIsSaddled(compound.getBoolean("IsSaddled"));
@@ -109,7 +124,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.STEP_HEIGHT, 1);
     }
-
 
     public static void registerMooseRelatedGoals(Mob otherMob) {
         if (otherMob instanceof Wolf wolf) {
@@ -163,7 +177,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     @Override
     public boolean isSaddleable() {
-        return isPacified();
+        return true;
     }
 
     @Override
@@ -176,8 +190,23 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         if (!isBaby()) {
             regrowLostAntlers(this);
         }
-        if (stompCooldown > 0) {
-            stompCooldown--;
+        if (isInStompState) {
+            stompStateTimer++;
+            if (stompStateTimer == STOMP_EFFECT_DELAY) {
+                playSound(NMLSounds.MOOSE_STOMPS.get(), 1.5f, 1 + random.nextFloat() * 0.3f);
+                level().broadcastEntityEvent(this, Moose.ADD_STOMP_FEEDBACK_EVENT);
+            }
+            if (stompStateTimer > STOMP_COOLDOWN) {
+                isInStompState = false;
+                stompStateTimer = 0;
+            }
+        }
+        if (isSaddled() && !isPacified()) {
+            saddleShakeOffTimer++;
+            if (saddleShakeOffTimer == SADDLE_SHAKEOFF_DELAY) {
+                shakeOffSaddle();
+                saddleShakeOffTimer = 0;
+            }
         }
 
         super.customServerAiStep();
@@ -197,21 +226,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
-    public void shakeOffSaddle() {
-        setIsSaddled(false);
-        ItemEntity itementity = spawnAtLocation(Items.SADDLE, 1);
-        if (itementity != null) {
-            itementity.setDeltaMovement(itementity.getDeltaMovement().add((random.nextFloat() - random.nextFloat()) * 0.1F, random.nextFloat() * 0.05F, (random.nextFloat() - random.nextFloat()) * 0.1F));
-        }
-    }
-
     /**
      * Handles networked entity events, including our particle stuff
      */
     @Override
     public void handleEntityEvent(byte id) {
         switch (id) {
-            case STOMP_EVENT -> stompAnimationState.start(tickCount);
+            case ADD_STOMP_FEEDBACK_EVENT -> spawnStompParticles();
+            case START_STOMP_EVENT -> stompAnimationState.start(tickCount);
             case ATTACK_EVENT -> attackAnimationState.start(tickCount);
             case TAME_EVENT -> spawnTamingParticles(true);
             case EAT_EVENT -> spawnTamingParticles(false);
@@ -241,6 +263,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         }
         return false;
     }
+
     /**
      * All the right-click logic of the Moose is handled here.
      * Runs once for each hand whenever the mob is right-clicked.
@@ -250,10 +273,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
 
-        var saddleInteraction = tryEquipSaddle(heldItem);
-        if (saddleInteraction.isPresent()) {
-            return saddleInteraction.get();
-        }
         var mountInteraction = tryMount(player);
         if (mountInteraction.isPresent()) {
             return mountInteraction.get();
@@ -265,7 +284,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
         return super.mobInteract(player, hand);
     }
-
     /**
      * Controls whether hostile mobs should avoid the Moose.
      * @param theMojangMethodDoesntApplyAGenericTypeToThisThing Unless something has gone horribly wrong, this will be the Moose.
@@ -273,26 +291,23 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
      */
     public static boolean shouldHostilesAvoid(LivingEntity theMojangMethodDoesntApplyAGenericTypeToThisThing) {
         if (theMojangMethodDoesntApplyAGenericTypeToThisThing instanceof Moose moose) {
-            return moose.stompCooldown > 0 && moose.stompCooldown < STOMP_COOLDOWN - STOMP_DURATION;
+            return !moose.shouldScareOffMonsters();
         }
         return false;
     }
-    /**
-     * Attempts to equip a saddle from the given stack
-     * @param stack The soon-to-be saddle, if it's an actual saddle
-     * @return An optional containing the result of the interaction if it was successful
-     */
-    public Optional<InteractionResult> tryEquipSaddle(ItemStack stack) {
-        if (stack.is(Items.SADDLE) && !isBaby() && !isSaddled()) {
-            boolean isClientSide = level().isClientSide;
-            if (isClientSide) {
-                equipSaddle(stack, SoundSource.NEUTRAL);
-                stack.shrink(1);
-            }
 
-            return Optional.of(InteractionResult.sidedSuccess(isClientSide));
+    /**
+     * Shakes off the equipped saddle, dropping it on the ground.
+     */
+    public void shakeOffSaddle() {
+        setIsSaddled(false);
+        ItemEntity itementity = spawnAtLocation(Items.SADDLE, 1);
+        if (itementity != null) {
+            float x = (random.nextFloat() - random.nextFloat()) * 0.3F;
+            float y = 0.2f + random.nextFloat() * 0.05F;
+            float z = (random.nextFloat() - random.nextFloat()) * 0.3F;
+            itementity.setDeltaMovement(itementity.getDeltaMovement().add(x, y, z));
         }
-        return Optional.empty();
     }
 
     /**
@@ -360,17 +375,35 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         return Optional.empty();
     }
 
+    public float getStompAdjustedMovementSpeed(float speed) {
+        if (canStomp()) {
+            return speed;
+        }
+        if (stompStateTimer <= STOMP_EFFECT_DELAY) {
+            //Actively stomping
+            return speed * ACTIVE_STOMP_SPEED_MULTIPLIER;
+        } else {
+            //Hastened speed after stomp
+            return speed * POST_STOMP_SPEED_MULTIPLIER;
+        }
+    }
+
+    public boolean canStomp() {
+        return !isInStompState && stompStateTimer == 0;
+    }
+
+    public boolean shouldScareOffMonsters() {
+        return stompStateTimer > STOMP_EFFECT_DELAY;
+    }
+
     /**
      * Partially Matches behavior from {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
      * The Horse method disables some animation flags that the Moose doesn't use, besides that the method is equal.
      */
     protected void doPlayerRide(Player player) {
-        if (!level().isClientSide) {
-            player.setYRot(getYRot());
-            player.setXRot(getXRot());
-            player.startRiding(this);
-        }
-
+        player.setYRot(getYRot());
+        player.setXRot(getXRot());
+        player.startRiding(this);
     }
 
     /**
@@ -408,11 +441,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     }
 
     /**
-     * Matches behavior from {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
+     * Mostly matches behavior from {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
+     * Added modifier through stomping.
      */
     @Override
     protected float getRiddenSpeed(@NotNull Player player) {
-        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
+        return getStompAdjustedMovementSpeed((float) getAttributeValue(Attributes.MOVEMENT_SPEED));
     }
 
     /**
@@ -492,6 +526,29 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
             double y = random.nextGaussian() * motion;
             double z = random.nextGaussian() * motion;
             level().addParticle(ParticleTypes.SMOKE, getRandomX(1.0F), getRandomY() + (double)0.5F, getRandomZ(1.0F), x, y, z);
+        }
+    }
+
+    protected void spawnStompParticles() {
+        float forwardsYaw = yBodyRot - 180F;
+        float x = Mth.sin(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
+        float z = Mth.cos(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
+        float offset = getBbWidth()/2f;
+        var stompPosition = position().add(x*offset, 0, z*offset);
+        var pos = BlockPos.containing(Math.round(stompPosition.x), Math.round(stompPosition.y)-1, Math.round(stompPosition.z));
+        var state = level().getBlockState(pos);
+        var particle = new BlockParticleOption(ParticleTypes.DUST_PILLAR, state);
+        level().levelEvent(2001, pos, Block.getId(state));
+
+        for (int i = 0; i < 30; i++) {
+            double radialOffset = 0.75f;
+            double xPos = stompPosition.x + radialOffset * Math.cos(i) + random.nextGaussian() / 2.0;
+            double yPos = stompPosition.y + 0.1f;
+            double zPos = stompPosition.z + radialOffset * Math.sin(i) + random.nextGaussian() / 2.0;
+            double xVelocity = random.nextGaussian() * 0.05F;
+            double yVelocity = random.nextGaussian() * 0.2F;
+            double zVelocity = random.nextGaussian() * 0.05F;
+            level().addParticle(particle, xPos, yPos, zPos, xVelocity, yVelocity, zVelocity);
         }
     }
 
