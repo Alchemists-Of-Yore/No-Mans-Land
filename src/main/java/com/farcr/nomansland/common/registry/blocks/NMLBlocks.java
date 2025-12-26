@@ -293,8 +293,6 @@ public class NMLBlocks {
 
     public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 
-//    public static final BlockDefinition<PotBlock> VESSEL = register("ancient_vessel", () -> new PotBlock(ofFullCopy(Blocks.DECORATED_POT)));
-
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
