@@ -1,0 +1,7 @@
+{
+  "type": "nomansland:cave",
+  "start_pool": "nomansland:small_dungeon/core",
+  "biomes": "#minecraft:is_overworld",
+  "step": "underground_decoration",
+  "spawn_overrides": {}
+}
