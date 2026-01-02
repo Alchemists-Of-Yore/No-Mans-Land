@@ -2,7 +2,6 @@ package com.farcr.nomansland.common.world.structure;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.farcr.nomansland.common.registry.worldgen.NMLStructureTypes;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.*;
@@ -344,6 +343,7 @@ public class CaveStructure extends Structure {
 
     @Override
     public StructureType<?> type() {
-        return NMLStructureTypes.CAVE.get();
+        return null;
+//        return NMLStructureTypes.CAVE.get();
     }
 }
