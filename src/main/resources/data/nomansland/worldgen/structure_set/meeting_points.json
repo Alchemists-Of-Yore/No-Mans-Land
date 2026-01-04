@@ -1,0 +1,12 @@
+{
+  "structures": [
+    {
+      "structure": "nomansland:forest_temple",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "nomansland:meeting_point",
+    "preferred_biomes": "#nomansland:meeting_point_biased_to"
+  }
+}

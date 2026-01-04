@@ -11,6 +11,7 @@
     "BiomeMixin",
     "BlockBehaviourMixin",
     "CactusBlockMixin",
+    "ChunkGeneratorStructureStateMixin",
     "EntityMixin",
     "FallLocationMixin",
     "FeatureSorterMixin",
