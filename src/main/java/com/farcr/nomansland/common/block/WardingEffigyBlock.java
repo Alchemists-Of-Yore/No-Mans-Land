@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.block;
 
 import com.farcr.nomansland.common.blockentity.WardingEffigyBlockEntity;
-import com.farcr.nomansland.common.saved_data.WardedSpacesData;
+import com.farcr.nomansland.common.world.saved_data.WardedSpacesData;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

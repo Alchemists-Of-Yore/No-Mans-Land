@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.saved_data;
+package com.farcr.nomansland.common.world.saved_data;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
