@@ -14,7 +14,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -45,41 +44,41 @@ public class NMLItems {
     public static LinkedHashSet<ItemDefinition<?>> CREATIVE_TAB_ITEMS = Sets.newLinkedHashSet();
     //Foods
     public static final ItemDefinition<Item> MASHED_POTATOES_WITH_MUSHROOMS = register("mashed_potatoes_with_mushrooms",
-            new Properties().food(NMLFoods.MASHED_POTATOES_WITH_MUSHROOMS).stacksTo(1));
-    public static final ItemDefinition<Item> GRILLED_MUSHROOMS = register("grilled_mushrooms", NMLFoods.GRILLED_MUSHROOMS);
+            () -> new Item(new Properties().food(NMLFoods.MASHED_POTATOES_WITH_MUSHROOMS).stacksTo(1)));
+    public static final ItemDefinition<Item> GRILLED_MUSHROOMS = register("grilled_mushrooms", () -> new Item(new Properties().food(NMLFoods.GRILLED_MUSHROOMS)));
 
-    public static final ItemDefinition<Item> FROG_LEG = register("frog_leg", NMLFoods.FROG_LEG);
-    public static final ItemDefinition<Item> COOKED_FROG_LEG = register("cooked_frog_leg", NMLFoods.COOKED_FROG_LEG);
-    public static final ItemDefinition<Item> RAW_HORSE = register("raw_horse", NMLFoods.RAW_HORSE);
-    public static final ItemDefinition<Item> HORSE_STEAK = register("horse_steak", NMLFoods.HORSE_STEAK);
-    public static final ItemDefinition<Item> RAW_VENISON = register("raw_venison", NMLFoods.RAW_VENISON);
-    public static final ItemDefinition<Item> COOKED_VENISON = register("cooked_venison", NMLFoods.COOKED_VENISON);
+    public static final ItemDefinition<Item> FROG_LEG = register("frog_leg", () -> new Item(new Properties().food(NMLFoods.FROG_LEG)));
+    public static final ItemDefinition<Item> COOKED_FROG_LEG = register("cooked_frog_leg", () -> new Item(new Properties().food(NMLFoods.COOKED_FROG_LEG)));
+    public static final ItemDefinition<Item> RAW_HORSE = register("raw_horse", () -> new Item(new Properties().food(NMLFoods.RAW_HORSE)));
+    public static final ItemDefinition<Item> HORSE_STEAK = register("horse_steak", () -> new Item(new Properties().food(NMLFoods.HORSE_STEAK)));
+    public static final ItemDefinition<Item> RAW_VENISON = register("raw_venison", () -> new Item(new Properties().food(NMLFoods.RAW_VENISON)));
+    public static final ItemDefinition<Item> COOKED_VENISON = register("cooked_venison", () -> new Item(new Properties().food(NMLFoods.COOKED_VENISON)));
 
     public static final ItemDefinition<Item> BILLHOOK_BASS = register("billhook_bass",
             () -> new Item(new Properties().food(NMLFoods.BILLHOOK_BASS)), true);
-    public static final ItemDefinition<Item> COOKED_BILLHOOK_BASS = register("cooked_billhook_bass", NMLFoods.COOKED_BILLHOOK_BASS);
+    public static final ItemDefinition<Item> COOKED_BILLHOOK_BASS = register("cooked_billhook_bass", () -> new Item(new Properties().food(NMLFoods.COOKED_BILLHOOK_BASS)));
 //    public static final ItemDefinition<Item> CAVE_CARP = registerItem("cave_carp",
 //            () -> new Item(new Properties().food(NMLFoods.CAVE_CARP)), true);
 
-    public static final ItemDefinition<Item> PEAR = register("pear", NMLFoods.PEAR);
-    public static final ItemDefinition<Item> SYRUPED_PEAR = register("syruped_pear", NMLFoods.SYRUPED_PEAR);
-    public static final ItemDefinition<Item> HONEYED_APPLE = register("honeyed_apple", NMLFoods.HONEYED_APPLE);
-    public static final ItemDefinition<Item> PANCAKE = register("pancake", NMLFoods.PANCAKE);
+    public static final ItemDefinition<Item> PEAR = register("pear", () -> new Item(new Properties().food(NMLFoods.PEAR)));
+    public static final ItemDefinition<Item> SYRUPED_PEAR = register("syruped_pear", () -> new Item(new Properties().food(NMLFoods.SYRUPED_PEAR)));
+    public static final ItemDefinition<Item> HONEYED_APPLE = register("honeyed_apple", () -> new Item(new Properties().food(NMLFoods.HONEYED_APPLE)));
+    public static final ItemDefinition<Item> PANCAKE = register("pancake", () -> new Item(new Properties().food(NMLFoods.PANCAKE)));
     public static final ItemDefinition<Item> MAPLE_SYRUP_BOTTLE = register("maple_syrup_bottle",
             () -> new MapleSyrupBottleItem(new Properties().food(NMLFoods.MAPLE_SYRUP_BOTTLE).craftRemainder(Items.GLASS_BOTTLE).stacksTo(16)));
-    public static final ItemDefinition<Item> MAPLE_TART = register("maple_tart", NMLFoods.MAPLE_TART);
-    public static final ItemDefinition<Item> SWEET_TART = register("sweet_tart", NMLFoods.SWEET_TART);
-    public static final ItemDefinition<Item> PINE_NUTS = register("pine_nuts", NMLFoods.PINE_NUTS);
-    public static final ItemDefinition<Item> WALNUTS = register("walnuts", NMLFoods.WALNUTS);
-    public static final ItemDefinition<Item> TRAIL_MIX = register("trail_mix", NMLFoods.TRAIL_MIX);
+    public static final ItemDefinition<Item> MAPLE_TART = register("maple_tart", () -> new Item(new Properties().food(NMLFoods.MAPLE_TART)));
+    public static final ItemDefinition<Item> SWEET_TART = register("sweet_tart", () -> new Item(new Properties().food(NMLFoods.SWEET_TART)));
+    public static final ItemDefinition<Item> PINE_NUTS = register("pine_nuts", () -> new Item(new Properties().food(NMLFoods.PINE_NUTS)));
+    public static final ItemDefinition<Item> WALNUTS = register("walnuts", () -> new Item(new Properties().food(NMLFoods.WALNUTS)));
+    public static final ItemDefinition<Item> TRAIL_MIX = register("trail_mix", () -> new Item(new Properties().food(NMLFoods.TRAIL_MIX)));
 
-    public static final ItemDefinition<Item> HARDTACK = register("hardtack", NMLFoods.HARDTACK);
+    public static final ItemDefinition<Item> HARDTACK = register("hardtack", () -> new Item(new Properties().food(NMLFoods.HARDTACK)));
 
     //Materials
     public static final ItemDefinition<Item> RESIN = register("resin",
-            new Properties());
+            () -> new Item(new Properties()));
     public static final ItemDefinition<Item> STURDY_SCUTE = register("sturdy_scute",
-            new Properties());
+            () -> new Item(new Properties()));
 
     public static final ItemDefinition<Item> RESIN_OIL_BOTTLE = register("resin_oil_bottle",
             () -> new ResinOilBottleItem(new Properties()
@@ -189,7 +188,7 @@ public class NMLItems {
     public static final ItemDefinition<Item> WATER_MOSAIC = register("water_mosaic",
             () -> new PlaceOnWaterBlockItem(NMLBlocks.WATER_MOSAIC.get(), new Properties()));
 
-    public static final ItemDefinition<Item> AWKWARD_RESIDUE = register("awkward_residue", NMLFoods.AWKWARD_RESIDUE);
+    public static final ItemDefinition<Item> AWKWARD_RESIDUE = register("awkward_residue", () -> new Item(new Properties().food(NMLFoods.AWKWARD_RESIDUE)));
 
     public static final ItemDefinition<BandageItem> BANDAGE = register("bandage",
             () -> new BandageItem(new Properties()));
@@ -217,13 +216,5 @@ public class NMLItems {
 
     public static <T extends Item> ItemDefinition<T> register(String name, Supplier<T> item) {
         return register(name, item, false);
-    }
-
-    public static ItemDefinition<Item> register(String name, Properties properties) {
-        return register(name, () -> new Item(properties));
-    }
-
-    public static ItemDefinition<Item> register(String name, FoodProperties food) {
-        return register(name, new Properties().food(food));
     }
 }

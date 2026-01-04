@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.fruit_trees.FruitBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitLeavesBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitType;
 import com.farcr.nomansland.common.block.pots.PotBlock;
+import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.tap.TapBlock;
 import com.farcr.nomansland.common.block.torches.*;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
@@ -291,7 +292,8 @@ public class NMLBlocks {
     public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
 
-    public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
+    public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
+//    public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = register("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
