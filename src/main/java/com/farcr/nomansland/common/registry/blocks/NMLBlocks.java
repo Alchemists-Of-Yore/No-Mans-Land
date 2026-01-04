@@ -282,7 +282,7 @@ public class NMLBlocks {
             () -> new RemainsBlock(Blocks.COARSE_DIRT, SoundEvents.BRUSH_SAND, SoundEvents.BRUSH_SAND_COMPLETED, of().mapColor(MapColor.DIRT).strength(0.25F).sound(SoundType.SUSPICIOUS_SAND).pushReaction(PushReaction.DESTROY)), BlockProperties.custom(false));
     public static final BlockDefinition<MonsterAnchorBlock> MONSTER_ANCHOR = register("monster_anchor",
             () -> new MonsterAnchorBlock(ofFullCopy(Blocks.SPAWNER).strength(7, 7).sound(NMLSounds.MONSTER_ANCHOR).noOcclusion()));
-    public static final BlockDefinition<WardingEffigyBlock> WARDING_EFFIGY = register("warding_effigy",
+    public static final BlockDefinition<WardingEffigyBlock> WARDING_EFFIGY = registerNoItem("warding_effigy",
             () -> new WardingEffigyBlock(of()
                     .strength(1.5F)
                     .noOcclusion()

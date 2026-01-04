@@ -190,6 +190,9 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> AWKWARD_RESIDUE = register("awkward_residue", () -> new Item(new Properties().food(NMLFoods.AWKWARD_RESIDUE)));
 
+    public static final ItemDefinition<Item> WARDING_EFFIGY = register("warding_effigy",
+            () -> new BlockItem(NMLBlocks.WARDING_EFFIGY.get(), new Properties().rarity(Rarity.UNCOMMON)));
+
     public static final ItemDefinition<BandageItem> BANDAGE = register("bandage",
             () -> new BandageItem(new Properties()));
 
