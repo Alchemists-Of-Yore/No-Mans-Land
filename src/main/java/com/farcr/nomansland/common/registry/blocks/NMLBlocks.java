@@ -260,6 +260,12 @@ public class NMLBlocks {
             () -> new PathBlock(ofFullCopy(NMLBlocks.SILT.get()), NMLBlocks.SILT.get(), false), BlockProperties.simplePath(SILT));
     public static final BlockDefinition<Block> COARSE_SILT = register("coarse_silt",
             () -> new Block(ofFullCopy(NMLBlocks.SILT.get())), BlockProperties.dirtLike());
+    public static final BlockDefinition<Block> SILTSTONE = register("siltstone",
+            () -> new Block(ofFullCopy(Blocks.STONE)), BlockProperties.stoneLike());
+    public static final BlockDefinition<Block> POLISHED_SILTSTONE = register("polished_siltstone",
+            () -> new Block(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLike());
+    public static final BlockDefinition<Block> SILTSTONE_BRICKS = register("siltstone_bricks",
+            () -> new Block(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLike());
     //Paths
     public static final BlockDefinition<PathBlock> DIRT_PATH = register("dirt_path",
             () -> new PathBlock(ofFullCopy(Blocks.DIRT), Blocks.DIRT, false), BlockProperties.simplePath(Blocks.DIRT));
