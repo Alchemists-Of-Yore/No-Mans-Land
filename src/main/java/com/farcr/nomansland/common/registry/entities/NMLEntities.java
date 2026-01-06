@@ -82,14 +82,14 @@ public class NMLEntities {
             ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
                     .sized(1.5F, 2.5F)
                     .eyeHeight(2.0F)
-                    .passengerAttachments(new Vec3(0.0, 2.25, 0.0F))
+                    .passengerAttachments(new Vec3(0.0F, 2.2F, 0.0F))
                     .build("moose"));
 
     public static final Supplier<EntityType<Tortoise>> TORTOISE =
             ENTITIES.register("tortoise", () -> EntityType.Builder.of(Tortoise::new, MobCategory.CREATURE)
                     .sized(1.25F, 1.25F)
                     .eyeHeight(1.0F)
-                    .passengerAttachments(new Vec3(0.0, 1.15, 0.0F))
+                    .passengerAttachments(new Vec3(0.0F, 1.15F, 0.0F))
                     .build("tortoise"));
 
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {

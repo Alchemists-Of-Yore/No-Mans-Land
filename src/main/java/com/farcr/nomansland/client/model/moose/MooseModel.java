@@ -28,7 +28,7 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
     private final ModelPart left_leg;
     private final ModelPart saddle_upperbody;
 
-    private final List<ModelPart> saddleParts;
+    protected final List<ModelPart> saddleParts;
 
     public MooseModel(ModelPart root) {
         super(0.5F, 24.0F);
@@ -116,17 +116,14 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
     public ModelPart root() {
         return this.root;
     }
-    
+
+
     @Override
     public void setupAnim(Moose moose, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
-
         for (ModelPart saddlePart : saddleParts) {
-            saddlePart.visible = moose.isSaddled();
+            saddlePart.visible = false;
         }
-
-
-
         // IDLE ANIMATION
         {
             float idleTime = ageInTicks * 0.01F;
