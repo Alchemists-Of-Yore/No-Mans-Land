@@ -213,12 +213,12 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
 
             tail.y += AnimUtil.wave(walkTime * 2 + 0.2F) * walkPower * -0.1F;
 
-            float earZRot = (AnimUtil.wave(walkTime * 2 - 0.4F)/2.0F+0.5F) * walkPower * 0.1F;
-            left_ear.zRot  -= earZRot;
-            right_ear.zRot += earZRot;
-            float earXRot = (AnimUtil.wave(walkTime * 2 - 0.7F)/2.0F+0.5F) * walkPower * 0.1F;
-            left_ear.xRot  += earXRot;
-            right_ear.xRot += earXRot;
+//            float earZRot = (AnimUtil.wave(walkTime * 2 - 0.4F)/2.0F+0.5F) * walkPower * 0.1F;
+//            left_ear.zRot  -= earZRot;
+//            right_ear.zRot += earZRot;
+//            float earXRot = (AnimUtil.wave(walkTime * 2 - 0.7F)/2.0F+0.5F) * walkPower * 0.1F;
+//            left_ear.xRot  += earXRot;
+//            right_ear.xRot += earXRot;
         }
         // RUN ANIMATION
         {
