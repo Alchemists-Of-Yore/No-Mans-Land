@@ -83,4 +83,9 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
         pathNav.moveTo(path, speedModifier);
         pathNav.setSpeedModifier(speedModifier);
     }
+
+    @Override
+    public void tick() {
+        moose.getNavigation().setSpeedModifier(moose.getStompAdjustedMovementSpeed((float) speedModifier));
+    }
 }
