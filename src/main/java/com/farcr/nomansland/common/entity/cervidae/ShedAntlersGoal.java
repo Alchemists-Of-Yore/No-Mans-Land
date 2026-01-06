@@ -68,7 +68,7 @@ public class ShedAntlersGoal extends Goal {
     public void start() {
         shedAnimationTick = adjustedTickDelay(mob.getRandom().nextInt(40, 120));
         mob.getNavigation().moveTo(path, 1);
-        Minecraft.getInstance().player.displayClientMessage(Component.literal(mob.getName().getString() + " is looking for logs to shed their pretty little antlers at :3"), false);
+//        Minecraft.getInstance().player.displayClientMessage(Component.literal(mob.getName().getString() + " is looking for logs to shed their pretty little antlers at :3"), false);
     }
 
     public boolean canContinueToUse() {
