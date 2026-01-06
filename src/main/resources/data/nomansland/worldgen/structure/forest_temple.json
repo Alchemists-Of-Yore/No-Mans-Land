@@ -2,7 +2,7 @@
   "type": "minecraft:jigsaw",
   "start_pool": "nomansland:forest_temple/forest_temple_base",
   "size": 10,
-  "max_distance_from_center": 64,
+  "max_distance_from_center": 1,
   "biomes": "#nomansland:classic_soil",
   "step": "surface_structures",
   "terrain_adaptation": "beard_thin",

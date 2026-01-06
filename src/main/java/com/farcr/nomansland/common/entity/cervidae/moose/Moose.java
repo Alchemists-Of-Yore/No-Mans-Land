@@ -126,11 +126,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     public static void registerMooseRelatedGoals(Mob otherMob) {
         if (otherMob instanceof Wolf wolf) {
-            wolf.goalSelector.addGoal(3, new AvoidEntityGoal<>(wolf, Moose.class, 12.0F, 1.5, 1.5));
+            wolf.goalSelector.addGoal(3, new AvoidEntityGoal<>(wolf, Moose.class, 12.0F, 1.2, 1.2));
         }
+
         if (otherMob instanceof Monster monster) {
             monster.goalSelector.addGoal(0,
-                    new AvoidEntityGoal<>(monster, Moose.class, Moose::shouldHostilesAvoid,12.0F, 1.5, 1.5, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
+                    new AvoidEntityGoal<>(monster, Moose.class, Moose::shouldHostilesAvoid,12.0F, 1.1, 1.1, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
         }
     }
 

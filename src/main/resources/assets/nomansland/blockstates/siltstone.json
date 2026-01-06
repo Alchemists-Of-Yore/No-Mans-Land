@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "nomansland:block/underground/siltstone"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_mirrored"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone",
+        "y": 180
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_mirrored",
+        "y": 180
+      }
+    ]
+  }
+}

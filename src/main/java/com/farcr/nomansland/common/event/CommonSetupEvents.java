@@ -24,15 +24,20 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -40,11 +45,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+
+import java.util.ArrayList;
 
 import static com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock.LEVEL;
 
@@ -118,5 +127,45 @@ public class CommonSetupEvents {
             event.register(NMLBlocks.MILK_CAULDRON.get(), NeoForgeMod.MILK.get(), 1000, LEVEL);
         if (Mods.CREATE.isLoaded())
             event.register(NMLBlocks.HONEY_CAULDRON.get(), Mods.CREATE.getFluid("honey"), 1000, LEVEL);
+    }
+
+    @SubscribeEvent
+    public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
+        event.getBuilder().addMix(Potions.WATER, NMLItems.AWKWARD_RESIDUE.get(), Potions.AWKWARD);
+
+        event.getBuilder().addRecipe(new IBrewingRecipe() {
+            @Override
+            public boolean isInput(ItemStack stack) {
+                PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                for (MobEffectInstance effect : contents.getAllEffects()) {
+                    if (effect.getAmplifier() > 0) return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public boolean isIngredient(ItemStack stack) {
+                return stack.is(NMLItems.AWKWARD_RESIDUE);
+            }
+
+            @Override
+            public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
+                PotionContents potionContents = input.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                ArrayList<MobEffectInstance> newEffects = new ArrayList<>();
+
+                for (MobEffectInstance effect : potionContents.customEffects()) {
+                    newEffects.add(new MobEffectInstance(effect.getEffect(), Math.min(1800, effect.getDuration() / 2), Math.min(0, effect.getAmplifier() - 1)));
+                }
+
+                potionContents = new PotionContents(potionContents.potion(), potionContents.customColor(), newEffects);
+                ItemStack result = input.copy();
+                result.set(DataComponents.POTION_CONTENTS, potionContents);
+                return result;
+            }
+        });
+
+        // TODO: bandages inheriting from level 1 potion recipes
+        // TODO: awkward residue applying to non-custom effects
     }
 }

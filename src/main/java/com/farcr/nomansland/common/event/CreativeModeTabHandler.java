@@ -318,7 +318,7 @@ public class CreativeModeTabHandler {
             insertAfter(REDSTONE_TORCH, NMLItems.SCONCE_TORCH);
             insertAfter(CAULDRON, TAP);
             insertBefore(SCAFFOLDING, NMLItems.WOODEN_SCAFFOLDING);
-            insertAfter(CONDUIT, WARDING_EFFIGY);
+            insertAfter(CONDUIT, NMLItems.WARDING_EFFIGY);
 
             insertAfter(OCHRE_FROGLIGHT, VERMILION_FROGLIGHT);
 
@@ -382,7 +382,7 @@ public class CreativeModeTabHandler {
             }
 
             insertAfter(SALMON_BUCKET, BILLHOOK_BASS_BUCKET);
-            insertAfter(ELYTRA, WARDING_EFFIGY);
+            insertAfter(ELYTRA, NMLItems.WARDING_EFFIGY);
             insertAfter(ELYTRA, LIVING_URN);
 //            insertAfter(TROPICAL_FISH_BUCKET, CAVE_CARP_BUCKET);
             if (!event.getFlags().contains(FeatureFlags.BUNDLE)) event.insertBefore(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);

@@ -38,6 +38,7 @@ public class NMLBlockLootSubProvider extends BlockLootSubProvider {
             Block block = definition.get();
             BlockLootType lootType = definition.lootType();
 
+            // TODO: make shears go to c:tools/shear
             if (lootType instanceof SelfBlockLootType)
                 dropSelf(block);
             else if (lootType instanceof OtherBlockLootType otherBlockLootType)

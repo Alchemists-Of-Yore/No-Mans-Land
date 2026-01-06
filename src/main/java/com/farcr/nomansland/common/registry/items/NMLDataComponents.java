@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -18,8 +19,13 @@ public class NMLDataComponents {
             "punch_cooldown", builder -> builder
                     .persistent(Codec.INT));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PUNCH_COUNT= DATA_COMPONENTS.registerComponentType(
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PUNCH_COUNT = DATA_COMPONENTS.registerComponentType(
             "punch_count", builder -> builder
                     .persistent(Codec.INT));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> POT_VARIANT = DATA_COMPONENTS.registerComponentType(
+            "pot_variant", builder -> builder
+                    .persistent(ResourceLocation.CODEC)
+    );
 
 }

@@ -3,16 +3,19 @@ package com.farcr.nomansland.common.block.pots;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,16 +35,26 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final MapCodec<PotBlock> CODEC = RecordCodecBuilder.mapCodec(
+            (instance) -> instance.group(
+                    PotSize.CODEC.fieldOf("size").forGetter(p -> p.size),
+                    propertiesCodec()
+            ).apply(instance, PotBlock::new)
+    );
+
     private static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    public PotBlock(Properties properties) {
+    private final PotSize size;
+
+    public PotBlock(PotSize size, Properties properties) {
         super(properties);
+        this.size = size;
         registerDefaultState(stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH).setValue(WATERLOGGED, false));
     }
 
     public MapCodec<PotBlock> codec() {
-        return simpleCodec(PotBlock::new);
+        return CODEC;
     }
 
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
@@ -130,7 +143,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
         super.onPlace(state, level, pos, oldState, movedByPiston);
         if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
             if (pot.variant == null) {
-                List<Holder.Reference<PotVariant>> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).holders().filter(variant -> variant.value().size() == pot.size).toList();
+                List<Holder.Reference<PotVariant>> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).holders().filter(variant -> variant.value().size() == size).toList();
                 pot.variant = variants.get(level.getRandom().nextInt(variants.size())).value();
             }
         }
@@ -157,17 +170,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
         }
     }
 
-    //    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
-//        BlockEntity blockEntity = level.getBlockEntity(pos);
-//        ItemStack var10000;
-//        if (blockEntity instanceof PotBlockEntity decoratedpotblockentity) {
-//            var10000 = decoratedpotblockentity.getPotAsItem();
-//        } else {
-//            var10000 = super.getCloneItemStack(level, pos, state);
-//        }
-//
-//        return var10000;
-//    }
+        public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        return blockEntity instanceof PotBlockEntity pot ? pot.getPotAsItem() : super.getCloneItemStack(level, pos, state);
+    }
 
     protected boolean hasAnalogOutputSignal(BlockState state) {
         return true;

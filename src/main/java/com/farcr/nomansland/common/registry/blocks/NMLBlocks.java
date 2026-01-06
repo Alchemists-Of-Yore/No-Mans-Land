@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.fruit_trees.FruitBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitLeavesBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitType;
 import com.farcr.nomansland.common.block.pots.PotBlock;
+import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.tap.TapBlock;
 import com.farcr.nomansland.common.block.torches.*;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
@@ -259,6 +260,12 @@ public class NMLBlocks {
             () -> new PathBlock(ofFullCopy(NMLBlocks.SILT.get()), NMLBlocks.SILT.get(), false), BlockProperties.simplePath(SILT));
     public static final BlockDefinition<Block> COARSE_SILT = register("coarse_silt",
             () -> new Block(ofFullCopy(NMLBlocks.SILT.get())), BlockProperties.dirtLike());
+    public static final BlockDefinition<Block> SILTSTONE = register("siltstone",
+            () -> new Block(ofFullCopy(Blocks.STONE)), BlockProperties.stoneLike());
+    public static final BlockDefinition<Block> POLISHED_SILTSTONE = register("polished_siltstone",
+            () -> new Block(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLike());
+    public static final BlockDefinition<Block> SILTSTONE_BRICKS = register("siltstone_bricks",
+            () -> new Block(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLike());
     //Paths
     public static final BlockDefinition<PathBlock> DIRT_PATH = register("dirt_path",
             () -> new PathBlock(ofFullCopy(Blocks.DIRT), Blocks.DIRT, false), BlockProperties.simplePath(Blocks.DIRT));
@@ -281,7 +288,7 @@ public class NMLBlocks {
             () -> new RemainsBlock(Blocks.COARSE_DIRT, SoundEvents.BRUSH_SAND, SoundEvents.BRUSH_SAND_COMPLETED, of().mapColor(MapColor.DIRT).strength(0.25F).sound(SoundType.SUSPICIOUS_SAND).pushReaction(PushReaction.DESTROY)), BlockProperties.custom(false));
     public static final BlockDefinition<MonsterAnchorBlock> MONSTER_ANCHOR = register("monster_anchor",
             () -> new MonsterAnchorBlock(ofFullCopy(Blocks.SPAWNER).strength(7, 7).sound(NMLSounds.MONSTER_ANCHOR).noOcclusion()));
-    public static final BlockDefinition<WardingEffigyBlock> WARDING_EFFIGY = register("warding_effigy",
+    public static final BlockDefinition<WardingEffigyBlock> WARDING_EFFIGY = registerNoItem("warding_effigy",
             () -> new WardingEffigyBlock(of()
                     .strength(1.5F)
                     .noOcclusion()
@@ -291,7 +298,8 @@ public class NMLBlocks {
     public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
 
-    public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
+    public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
+//    public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = register("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
