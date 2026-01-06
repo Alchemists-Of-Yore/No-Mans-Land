@@ -60,7 +60,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public static final byte REJECT_FOOD_EVENT = 6;
 
     public static final int STOMP_COOLDOWN = 100;
-    public static final int STOMP_DURATION = 20;
     public static final int STOMP_EFFECT_DELAY = 15;
     public static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
     public static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
