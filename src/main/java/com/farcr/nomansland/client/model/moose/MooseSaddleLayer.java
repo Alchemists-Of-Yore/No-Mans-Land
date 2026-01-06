@@ -27,10 +27,7 @@ public class MooseSaddleLayer extends RenderLayer<Moose, MooseModel<Moose>> {
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, Moose moose, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         if (moose.isSaddled()) {
             var mooseModel = getParentModel();
-            for (ModelPart saddlePart : mooseModel.saddleParts) {
-                saddlePart.visible = true;
-            }
-
+            mooseModel.setSaddleVisibility(true);
             var vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
             mooseModel.prepareMobModel(moose, limbSwing, limbSwingAmount, partialTicks);
             mooseModel.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
