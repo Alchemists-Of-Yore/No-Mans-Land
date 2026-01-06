@@ -140,13 +140,16 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         super.registerGoals();
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(0, new PanicGoal(this, 1.75));
-//        goalSelector.addGoal(2, new BreedGoal(this, 1.25));
+        goalSelector.addGoal(1, new MooseStompGoal(this, 0.5f, 2));
+        goalSelector.addGoal(2, new ShedAntlersGoal(this));
+        goalSelector.addGoal(3, new MooseIntrovertedBehaviorGoal(this, 1.25f, 6));
+        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0));
+        goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 14));
+        goalSelector.addGoal(5, new RandomLookAroundGoal(this));
+
+
+        //        goalSelector.addGoal(2, new BreedGoal(this, 1.25));
 //        goalSelector.addGoal(3, new FollowParentGoal(this, 1.5));
-        goalSelector.addGoal(4, new ShedAntlersGoal(this));
-        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        goalSelector.addGoal(5, new MooseIntrovertedBehaviorGoal(this, 1.25f, 6, 2));
-        goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 14));
-        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
     }
 
 
@@ -291,7 +294,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
      */
     public static boolean shouldHostilesAvoid(LivingEntity theMojangMethodDoesntApplyAGenericTypeToThisThing) {
         if (theMojangMethodDoesntApplyAGenericTypeToThisThing instanceof Moose moose) {
-            return !moose.shouldScareOffMonsters();
+            return moose.shouldScareOffMonsters();
         }
         return false;
     }
