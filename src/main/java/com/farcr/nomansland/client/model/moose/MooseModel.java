@@ -34,8 +34,8 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         super(0.5F, 24.0F);
         this.root = root;
         this.head = root.getChild("head");
-        this.right_ear = head.getChild("rightear_r1");
-        this.left_ear = head.getChild("leftear_r1");
+        this.right_ear = head.getChild("right_ear");
+        this.left_ear = head.getChild("left_ear");
         this.dewlap = head.getChild("dewlap");
         this.saddle_head = head.getChild("saddle_head");
         this.saddle_reins = head.getChild("saddle_reins");
@@ -64,10 +64,6 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create().texOffs(26, 65).addBox(-3.5F, -3.0F, -4.0F, 7.0F, 9.0F, 6.0F, new CubeDeformation(0.0F))
                 .texOffs(58, 0).addBox(-3.5F, -3.0F, -13.0F, 7.0F, 8.0F, 9.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -8.75F, -16.0F));
 
-        PartDefinition rightear_r1 = head.addOrReplaceChild("rightear_r1", CubeListBuilder.create().texOffs(10, 41).mirror().addBox(-2.1014F, -9.2713F, -18.0F, 2.0F, 5.0F, 1.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(-0.5F, 2.0F, 10.0F, 0.0F, 0.0F, -0.1745F));
-
-        PartDefinition leftear_r1 = head.addOrReplaceChild("leftear_r1", CubeListBuilder.create().texOffs(10, 41).addBox(0.1014F, -9.2713F, -18.0F, 2.0F, 5.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 2.0F, 10.0F, 0.0F, 0.0F, 0.1745F));
-
         PartDefinition rightantler_r1 = head.addOrReplaceChild("rightantler_r1", CubeListBuilder.create().texOffs(44, 19).mirror().addBox(0.0F, -8.0F, 0.0F, 8.0F, 8.0F, 14.0F, new CubeDeformation(0.1F)).mirror(false), PartPose.offsetAndRotation(-2.0F, -2.75F, -12.5F, 0.5824F, 0.0555F, -1.1258F));
 
         PartDefinition rightantlerconnection_r1 = head.addOrReplaceChild("rightantlerconnection_r1", CubeListBuilder.create().texOffs(37, 41).mirror().addBox(-3.761F, -0.0463F, 0.1866F, 4.0F, 1.0F, 2.0F, new CubeDeformation(0.1F)).mirror(false), PartPose.offsetAndRotation(-1.0F, -3.0F, -11.0F, 0.0117F, -0.6323F, 0.3834F));
@@ -77,6 +73,10 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         PartDefinition leftantler_r1 = head.addOrReplaceChild("leftantler_r1", CubeListBuilder.create().texOffs(44, 19).addBox(-8.0F, -8.0F, 0.0F, 8.0F, 8.0F, 14.0F, new CubeDeformation(0.1F)), PartPose.offsetAndRotation(2.0F, -2.75F, -12.5F, 0.5824F, -0.0555F, 1.1258F));
 
         PartDefinition leftantlerconnection_r1 = head.addOrReplaceChild("leftantlerconnection_r1", CubeListBuilder.create().texOffs(37, 41).addBox(-0.239F, -0.0463F, 0.1866F, 4.0F, 1.0F, 2.0F, new CubeDeformation(0.1F)), PartPose.offsetAndRotation(1.0F, -3.0F, -11.0F, 0.0111F, 0.6399F, -0.3842F));
+
+        PartDefinition left_ear = head.addOrReplaceChild("left_ear", CubeListBuilder.create().texOffs(10, 41).addBox(-1.3473F, -4.4696F, -0.5F, 2.0F, 5.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.7605F, -2.4772F, -7.5F, 0.0F, 0.0F, 0.1745F));
+
+        PartDefinition right_ear = head.addOrReplaceChild("right_ear", CubeListBuilder.create().texOffs(10, 41).mirror().addBox(-0.6527F, -4.4696F, -0.5F, 2.0F, 5.0F, 1.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offsetAndRotation(-2.7605F, -2.4772F, -7.5F, 0.0F, 0.0F, -0.1745F));
 
         PartDefinition dewlap = head.addOrReplaceChild("dewlap", CubeListBuilder.create().texOffs(0, 25).addBox(0.0F, 0.0F, -6.0F, 0.0F, 8.0F, 8.0F, new CubeDeformation(0.0F))
                 .texOffs(52, 66).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 4.0F, -6.0F));
@@ -213,12 +213,12 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
 
             tail.y += AnimUtil.wave(walkTime * 2 + 0.2F) * walkPower * -0.1F;
 
-//            float earZRot = (AnimUtil.wave(walkTime * 2 - 0.4F)/2.0F+0.5F) * walkPower * 0.1F;
-//            left_ear.zRot  -= earZRot;
-//            right_ear.zRot += earZRot;
-//            float earXRot = (AnimUtil.wave(walkTime * 2 - 0.7F)/2.0F+0.5F) * walkPower * 0.1F;
-//            left_ear.xRot  += earXRot;
-//            right_ear.xRot += earXRot;
+            float earZRot = (AnimUtil.wave(walkTime * 2 - 0.4F)/2.0F+0.5F) * walkPower * 0.1F;
+            left_ear.zRot  -= earZRot;
+            right_ear.zRot += earZRot;
+            float earXRot = (AnimUtil.wave(walkTime * 2 - 0.7F)/2.0F+0.5F) * walkPower * 0.1F;
+            left_ear.xRot  += earXRot;
+            right_ear.xRot += earXRot;
         }
         // RUN ANIMATION
         {
