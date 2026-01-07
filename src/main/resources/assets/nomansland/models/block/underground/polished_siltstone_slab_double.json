@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "nomansland:block/underground/polished_siltstone",
+    "side": "nomansland:block/underground/polished_siltstone_slab"
+  }
+}

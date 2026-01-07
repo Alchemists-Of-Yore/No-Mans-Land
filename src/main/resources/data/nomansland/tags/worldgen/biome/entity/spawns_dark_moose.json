@@ -1,9 +1,0 @@
-{
-  "values": [
-    "#minecraft:is_overworld"
-  ],
-  "remove":[
-    "#c:is_snowy",
-    "#c:is_jungle"
-  ]
-}
