@@ -2,6 +2,7 @@
 	"format_version": "1.9.0",
 	"credit": "Made by Farcr",
 	"parent": "block/block",
+  "render_type": "minecraft:cutout",
 	"textures": {
 		"0": "nomansland:block/dungeon/moonlight_candle",
 		"1": "nomansland:block/no_particle",
@@ -34,9 +35,9 @@
 			}
 		},
 		{
-			"from": [4, 0, 4],
-			"to": [12, 0, 12],
-			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0, 4]},
+			"from": [4, 0.25, 4],
+			"to": [12, 0.25, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0.25, 4]},
 			"faces": {
 				"up": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"down": {"uv": [8, 8, 16, 16], "texture": "#0"}
