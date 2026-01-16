@@ -1,0 +1,170 @@
+package com.farcr.nomansland.common.block.moonlight;
+
+import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+/*
+* TODO: Implement some bulllsshiiit java consumer stuff to minimize the amount of rendundant for loops.
+*  Probably not important, but I'm going to write it down for the sake of my sanity.
+ */
+
+public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWaterloggedBlock {
+    public static final VoxelShape BASIN_CENTER = Block.box(0, 4, 0, 16, 12, 16);
+    public static final VoxelShape BASIN_TOP = Block.box(0, 12, 0, 16, 16, 4);
+    public static final VoxelShape BASIN_BOTTOM = Block.box(0, 0, 4, 16, 4, 16);
+
+    public static final int MULTIBLOCK_SIZE = 3;
+    public static final int MULTIBLOCK_CENTER = ((MULTIBLOCK_SIZE * MULTIBLOCK_SIZE) / 2);
+
+    /*
+     * Apologies for this UNHOLY code
+     */
+    public static VoxelShape rotateBoundingBox(VoxelShape baseShape, int times) {
+        List<AABB> boxes = baseShape.toAabbs();
+        VoxelShape rotatedShape = Shapes.empty();
+
+        for (AABB box : boxes) {
+            double minX = box.minX;
+            double minY = box.minY;
+            double minZ = box.minZ;
+            double maxX = box.maxX;
+            double maxY = box.maxY;
+            double maxZ = box.maxZ;
+
+            for (int i = 0; i < times; i++) {
+                double rMinX = 1.0 - maxZ;
+                double rMinZ = minX;
+                double rMaxX = 1.0 - minZ;
+                double rMaxZ = maxX;
+
+                minX = Math.min(rMinX, rMaxX);
+                maxX = Math.max(rMinX, rMaxX);
+                minZ = Math.min(rMinZ, rMaxZ);
+                maxZ = Math.max(rMinZ, rMaxZ);
+            }
+
+            if (minX >= maxX || minZ >= maxZ || minY >= maxY) continue;
+            rotatedShape = Shapes.or(rotatedShape, Shapes.box(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+        return rotatedShape;
+    }
+
+    public static final VoxelShape BASIN_RIDGE_TOP = Shapes.or(BASIN_TOP, BASIN_CENTER, BASIN_BOTTOM);
+
+    public static final VoxelShape BASIN_TOP_LEFT = Block.box(0, 12, 0, 4, 16, 16);
+    public static final VoxelShape BASIN_RIDGE_TOP_LEFT = Shapes.or(
+        BASIN_TOP, BASIN_CENTER, BASIN_TOP_LEFT, Block.box(4, 0, 4, 16, 4, 16)
+    );
+    public static final VoxelShape BASIN_CENTER_BOTTOM = Block.box(0, 0, 0, 16, 4, 16);
+    public static final VoxelShape BASIN_CENTER_COMPOSITE = Shapes.or(BASIN_CENTER, BASIN_CENTER_BOTTOM);
+
+    public static final VoxelShape[] VOXEL_SHAPE_MAP = new VoxelShape[]{
+        BASIN_RIDGE_TOP_LEFT, BASIN_RIDGE_TOP, rotateBoundingBox(BASIN_RIDGE_TOP_LEFT, 1),
+        rotateBoundingBox(BASIN_RIDGE_TOP, 3), BASIN_CENTER_COMPOSITE, rotateBoundingBox(BASIN_RIDGE_TOP, 1),
+        rotateBoundingBox(BASIN_RIDGE_TOP_LEFT, 3), rotateBoundingBox(BASIN_RIDGE_TOP, 2), rotateBoundingBox(BASIN_RIDGE_TOP_LEFT, 2)
+    };
+
+    public static final IntegerProperty PART = IntegerProperty.create("part", 0, 8);
+
+    public MoonlightBasinBlock(Properties properties) {
+        super(properties);
+        this.registerDefaultState(
+            this.stateDefinition.any().setValue(PART, MULTIBLOCK_CENTER)
+                .setValue(BlockStateProperties.WATERLOGGED, false)
+        );
+    }
+
+    @Nullable
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockPos blockpos = context.getClickedPos();
+        Level level = context.getLevel();
+        for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+            for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
+                BlockPos newPosition = blockpos.offset(new Vec3i(i - 1, 0, j - 1));
+                if (!level.getBlockState(newPosition).canBeReplaced(context))
+                    return null;
+            }
+        }
+        return this.defaultBlockState();
+    }
+
+    public static BlockPos calculateCenterPosition(BlockPos pos, BlockState state) {
+        int position = state.getValue(PART);
+        int i = (position % MULTIBLOCK_SIZE);
+        int j = (position / MULTIBLOCK_SIZE);
+        return pos.offset(new Vec3i(1 - i, 0, 1 - j));
+    }
+
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockPos centerPosition = calculateCenterPosition(pos, state);
+        for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+            for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
+                BlockPos newPosition = centerPosition.offset(new Vec3i(i - 1, 0, j - 1));
+                if (!newPosition.equals(pos)) {
+                    level.setBlock(newPosition, Blocks.AIR.defaultBlockState(), 35);
+                    level.levelEvent(player, 2001, newPosition, Block.getId(state));
+                }
+            }
+        }
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+            for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
+                BlockPos newPosition = pos.offset(new Vec3i(i - 1, 0, j - 1));
+                if (!newPosition.equals(pos))
+                    level.setBlock(newPosition, (BlockState) state.setValue(PART, ((j * 3) + i)), 3);
+            }
+        }
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(PART).add(BlockStateProperties.WATERLOGGED);
+    }
+
+    @Override protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (state == null)
+            return BASIN_CENTER_COMPOSITE;
+        return VOXEL_SHAPE_MAP[state.getOptionalValue(PART).orElse(MULTIBLOCK_CENTER)];
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        if (state.getValue(PART) == MULTIBLOCK_CENTER)
+            return RenderShape.MODEL;
+        return RenderShape.INVISIBLE;
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new MoonlightBasinBlockEntity(blockPos, blockState);
+    }
+}

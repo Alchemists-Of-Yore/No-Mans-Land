@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.moonlight.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.blockentity.RemainsBlockEntity;
 import com.farcr.nomansland.common.blockentity.TapBlockEntity;
@@ -37,6 +38,10 @@ public class NMLBlockEntities {
     public static final Supplier<BlockEntityType<PotBlockEntity>> POT =
             BLOCK_ENTITIES.register("pot", () ->
                     BlockEntityType.Builder.of(PotBlockEntity::new, NMLBlocks.ANCIENT_POT.get()).build(null));
+
+    public static final Supplier<BlockEntityType<MoonlightBasinBlockEntity>> MOONLIGHT_BASIN =
+        BLOCK_ENTITIES.register("moonlight_basin", () ->
+            BlockEntityType.Builder.of(MoonlightBasinBlockEntity::new, NMLBlocks.MOONLIGHT_BASIN.get()).build(null));
 
     public static void addBlockEntities(final BlockEntityTypeAddBlocksEvent event) {
         event.modify(

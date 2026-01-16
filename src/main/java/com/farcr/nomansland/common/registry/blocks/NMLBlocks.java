@@ -6,6 +6,8 @@ import com.farcr.nomansland.common.block.cauldrons.*;
 import com.farcr.nomansland.common.block.fruit_trees.FruitBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitLeavesBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitType;
+import com.farcr.nomansland.common.block.moonlight.MoonlightBasinBlock;
+import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.block.pots.PotBlock;
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.tap.TapBlock;
@@ -296,6 +298,15 @@ public class NMLBlocks {
     public static final BlockDefinition<PotBlock> ANCIENT_POT = register("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 //    public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = register("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 
+    // Moonlight
+    /* Farcr doesn't want these to show up in the Creative Tabs, so I'm just manually registering the items. */
+    public static final BlockDefinition<MoonlightBasinBlock> MOONLIGHT_BASIN = registerNoItem("moonlight_basin",
+        () -> new MoonlightBasinBlock(of()));
+    public static final ItemDefinition<BlockItem> MOONLIGHT_BASIN_ITEM = registerBlockItem("moonlight_basin", MOONLIGHT_BASIN);
+    public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
+        () -> new MoonlightCandleBlock(of().noOcclusion()));
+    public static final ItemDefinition<BlockItem> MOONLIGHT_CANDLE_ITEM = registerBlockItem("moonlight_candle", MOONLIGHT_CANDLE);
+
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
@@ -491,7 +502,6 @@ public class NMLBlocks {
             () -> new TapBlock(of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().noOcclusion().strength(2.0F).randomTicks().pushReaction(PushReaction.DESTROY)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<SpikeTrapBlock> SPIKE_TRAP = register("spike_trap",
             () -> new SpikeTrapBlock(of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).requiresCorrectToolForDrops().noOcclusion()), new BlockProperties(new SelfBlockLootType(), false));
-
 
     //Storage
     public static final BlockDefinition<Block> COD_BARREL = register("cod_barrel",

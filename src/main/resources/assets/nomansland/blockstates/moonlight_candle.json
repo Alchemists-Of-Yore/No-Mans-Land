@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "nomansland:block/dungeon/moonlight_candle"
+    },
+    "lit=true": {
+      "model": "nomansland:block/dungeon/moonlight_candle_lit"
+    }
+  }
+}
