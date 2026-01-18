@@ -1,11 +1,14 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.farcr.nomansland.common.world.surfacerule.NMLSteepMaterialCondition;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SurfaceRules.Context.SteepMaterialCondition.class)
 public abstract class SteepMaterialConditionMixin extends SurfaceRules.LazyXZCondition {
@@ -14,25 +17,20 @@ public abstract class SteepMaterialConditionMixin extends SurfaceRules.LazyXZCon
         super(p_189622_);
     }
 
-    @ModifyReturnValue(method = "compute", at = @At(value = "TAIL"))
-    private boolean fixMountainBug(boolean original)  {
-        int i = context.blockX & 15;
-        int j = context.blockZ & 15;
-        int k = Math.max(j - 1, 0);
-        int l = Math.min(j + 1, 15);
-        ChunkAccess chunkaccess = context.chunk;
-        int i1 = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, i, k);
-        int j1 = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, i, l);
-        if (i1 >= j1 + 4) {
-            return true;
-        }
-        int k1 = Math.max(i - 1, 0);
-        int l1 = Math.min(i + 1, 15);
-        int i2 = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, k1, j);
-        int j2 = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, l1, j);
-        if (j2 >= i2 + 4) {
-            return true;
-        }
-        return original;
+    @Inject(method = "compute", at = @At(value = "HEAD"), cancellable = true)
+    private void fixMountainBug(CallbackInfoReturnable<Boolean> cir)  {
+        cir.setReturnValue(NMLSteepMaterialCondition.evaluate(context));
+
+//        int lastZ = Math.max(chunkZ - 1, 0), nextZ = Math.min(chunkZ + 1, 15);
+//        int lastZHeight = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, chunkX, lastZ);
+//        int nextZHeight = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, chunkX, nextZ);
+//        if (lastZHeight >= nextZHeight + 4) return true;
+//
+//        int lastX = Math.max(chunkX - 1, 0), nextX = Math.min(chunkX + 1, 15);
+//        int lastXHeight = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, lastX, chunkZ);
+//        int nextXHeight = chunkaccess.getHeight(Heightmap.Types.WORLD_SURFACE_WG, nextX, chunkZ);
+//        if (nextXHeight >= lastXHeight + 4) return true;
+//
+//        return original;
     }
 }
