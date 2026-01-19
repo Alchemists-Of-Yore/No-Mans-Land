@@ -11,12 +11,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -91,12 +95,13 @@ public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWat
     };
 
     public static final IntegerProperty PART = IntegerProperty.create("part", 0, 8);
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public MoonlightBasinBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
             this.stateDefinition.any().setValue(PART, MULTIBLOCK_CENTER)
-                .setValue(BlockStateProperties.WATERLOGGED, false)
+                .setValue(WATERLOGGED, false)
         );
     }
 
@@ -127,7 +132,7 @@ public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWat
             for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
                 BlockPos newPosition = centerPosition.offset(new Vec3i(i - 1, 0, j - 1));
                 if (!newPosition.equals(pos)) {
-                    level.setBlock(newPosition, Blocks.AIR.defaultBlockState(), 35);
+                    level.setBlock(newPosition, level.getFluidState(newPosition).createLegacyBlock(), 35);
                     level.levelEvent(player, 2001, newPosition, Block.getId(state));
                 }
             }
@@ -147,12 +152,10 @@ public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWat
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(PART).add(BlockStateProperties.WATERLOGGED);
+        builder.add(WATERLOGGED).add(PART);
     }
 
     @Override protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (state == null)
-            return BASIN_CENTER_COMPOSITE;
         return VOXEL_SHAPE_MAP[state.getOptionalValue(PART).orElse(MULTIBLOCK_CENTER)];
     }
 
@@ -165,6 +168,18 @@ public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWat
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new MoonlightBasinBlockEntity(blockPos, blockState);
+        if (blockState.getValue(PART) == MULTIBLOCK_CENTER)
+            return new MoonlightBasinBlockEntity(blockPos, blockState);
+        return null;
+    }
+
+    protected FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+        if (state.getValue(WATERLOGGED))
+            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 }

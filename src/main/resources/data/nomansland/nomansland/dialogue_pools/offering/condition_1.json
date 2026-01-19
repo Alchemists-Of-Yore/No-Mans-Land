@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:diamond"
+    },
+    "weight": 1.0,
+    "text": "ababababababa 32"
+}

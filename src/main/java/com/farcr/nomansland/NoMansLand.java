@@ -52,6 +52,7 @@ public class NoMansLand {
         NMLPondDecoratorTypes.POND_DECORATOR_TYPES.register(bus);
         NMLBoulderDecoratorTypes.BOULDER_DECORATOR_TYPES.register(bus);
         NMLFallenTreeDecoratorTypes.FALLEN_TREE_DECORATOR_TYPES.register(bus);
+        NMLDialogueConditions.DIALOGUE_CONDITION_REGISTRY.register(bus);
         NMLFogModifiers.FOG_MODIFIERS.register(bus);
         NMLMobVariants.FROG_VARIANTS.register(bus);
         NMLEffects.MOB_EFFECTS.register(bus);

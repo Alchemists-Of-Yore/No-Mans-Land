@@ -2,6 +2,9 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
+import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.block.moonlight.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
@@ -15,6 +18,7 @@ import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
+import com.farcr.nomansland.common.registry.NMLDialogueConditions;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -24,6 +28,8 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,6 +58,7 @@ import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.ArrayList;
 
@@ -91,14 +98,23 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.BOULDER_DECORATOR_TYPE);
         event.register(NMLRegistries.FALLEN_TREE_DECORATOR_TYPE);
         event.register(NMLRegistries.FOG_MODIFIERS);
-
         event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
+        event.register(NMLRegistries.DIALOGUE_CONDITIONAL_TYPE);
     }
 
     @SubscribeEvent
     public static void registerDatapackRegistries(final DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(NMLRegistries.TAP_INTERACTION_KEY, TapInteraction.CODEC, TapInteraction.CODEC);
         event.dataPackRegistry(NMLRegistries.POT_VARIANT_KEY, PotVariant.CODEC, PotVariant.CODEC);
+
+        /* Moonlight Dialogue Registry */
+        /*  TODO: remove client? since they should not be going to the client
+            the server can handle that when it sends it to the client AFTER dialogue is chosen
+        */
+        event.dataPackRegistry(NMLRegistries.PASSIVE_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.NEGATIVE_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.OFFERING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
     }
 
     @SubscribeEvent
