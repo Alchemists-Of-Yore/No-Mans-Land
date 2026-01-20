@@ -20,23 +20,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
 public class MoonlightOfferingConditions {
-    public enum OfferingType implements StringRepresentable {
-        ITEM("item"),
-        ENTITY("entity");
-
-        private final String name;
-        public static final Codec<OfferingType> CODEC = StringRepresentable.fromEnum(OfferingType::values);
-
-        OfferingType(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public @NotNull String getSerializedName() {
-            return name;
-        }
-    }
-
     public record ItemOfferingConditional(HolderSet<Item> items) implements DialogueRegistry.CompiledCondition<Item> {
         public static final MapCodec<ItemOfferingConditional> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
