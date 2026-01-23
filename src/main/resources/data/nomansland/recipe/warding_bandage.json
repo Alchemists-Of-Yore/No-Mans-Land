@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "nomansland:bandage"
+        },
+        {
+            "item": "nomansland:resin"
+        },
+        {
+            "item": "minecraft:gold_nugget"
+        },
+        {
+            "item": "minecraft:gold_nugget"
+        },
+        {
+            "item": "minecraft:gold_nugget"
+        },
+        {
+            "item": "minecraft:gold_nugget"
+        }
+    ],
+    "result": {
+        "id": "nomansland:warding_bandage",
+        "count": 1
+    },
+    "group": "bandages"
+}
