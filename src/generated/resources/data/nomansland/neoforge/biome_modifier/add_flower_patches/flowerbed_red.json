@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:dark_forest",
-  "features": "nomansland:flower_patches/flowerbed_red",
-  "step": "vegetal_decoration"
-}

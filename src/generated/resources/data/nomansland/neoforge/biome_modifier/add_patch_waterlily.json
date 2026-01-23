@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:cherry_grove",
-  "features": "minecraft:patch_waterlily",
-  "step": "vegetal_decoration"
-}

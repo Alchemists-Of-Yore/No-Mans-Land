@@ -1,9 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": [
-    "minecraft:forest",
-    "minecraft:plains"
-  ],
-  "features": "nomansland:flower_patches/flowerbed_white_and_yellow",
-  "step": "vegetal_decoration"
-}

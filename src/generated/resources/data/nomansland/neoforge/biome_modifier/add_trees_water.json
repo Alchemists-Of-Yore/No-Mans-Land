@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:snowy_beach",
-  "features": "minecraft:trees_water",
-  "step": "vegetal_decoration"
-}

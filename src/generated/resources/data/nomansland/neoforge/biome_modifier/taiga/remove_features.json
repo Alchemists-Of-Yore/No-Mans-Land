@@ -1,5 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:taiga",
-  "features": "minecraft:flower_default"
-}

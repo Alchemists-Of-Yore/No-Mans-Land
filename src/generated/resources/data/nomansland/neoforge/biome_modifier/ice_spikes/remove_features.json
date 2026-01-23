@@ -1,5 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:ice_spikes",
-  "features": "minecraft:flower_default"
-}

@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "#nomansland:feature_addition/has_icicles",
-  "features": "nomansland:patch_icicles",
-  "step": "vegetal_decoration"
-}

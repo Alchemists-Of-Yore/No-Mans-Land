@@ -1,5 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:warm_ocean",
-  "features": "minecraft:flower_default"
-}

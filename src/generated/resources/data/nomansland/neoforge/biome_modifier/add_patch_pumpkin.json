@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:swamp",
-  "features": "minecraft:patch_pumpkin",
-  "step": "vegetal_decoration"
-}

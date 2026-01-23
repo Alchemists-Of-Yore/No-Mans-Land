@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:sunflower_plains",
-  "features": "nomansland:flower_patches/flowers_sunflower_plains",
-  "step": "vegetal_decoration"
-}

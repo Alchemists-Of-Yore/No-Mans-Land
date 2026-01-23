@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "#nomansland:feature_addition/has_stone_boulder",
-  "features": "nomansland:stone_boulder",
-  "step": "local_modifications"
-}

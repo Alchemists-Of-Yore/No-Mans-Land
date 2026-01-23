@@ -1,9 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": [
-    "minecraft:birch_forest",
-    "minecraft:stony_peaks"
-  ],
-  "features": "nomansland:flower_patches/flowers_birch_forest",
-  "step": "vegetal_decoration"
-}

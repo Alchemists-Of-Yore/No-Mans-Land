@@ -1,9 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:old_growth_pine_taiga",
-  "features": [
-    "minecraft:flower_default",
-    "minecraft:patch_dead_bush",
-    "minecraft:forest_rock"
-  ]
-}

@@ -1,8 +1,0 @@
-{
-  "type": "neoforge:remove_spawns",
-  "biomes": "minecraft:eroded_badlands",
-  "entity_types": [
-    "minecraft:zombie",
-    "minecraft:zombie"
-  ]
-}

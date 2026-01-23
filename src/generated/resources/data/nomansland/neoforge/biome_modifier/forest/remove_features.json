@@ -1,8 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:forest",
-  "features": [
-    "minecraft:flower_default",
-    "minecraft:forest_flowers"
-  ]
-}

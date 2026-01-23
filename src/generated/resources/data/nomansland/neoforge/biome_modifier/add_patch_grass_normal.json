@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:river",
-  "features": "minecraft:patch_grass_normal",
-  "step": "vegetal_decoration"
-}

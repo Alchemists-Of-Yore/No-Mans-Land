@@ -1,8 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:grove",
-  "features": [
-    "minecraft:patch_pumpkin",
-    "minecraft:patch_sugar_cane"
-  ]
-}

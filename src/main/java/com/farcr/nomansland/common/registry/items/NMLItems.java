@@ -196,6 +196,10 @@ public class NMLItems {
     public static final ItemDefinition<BandageItem> BANDAGE = register("bandage",
             () -> new BandageItem(new Properties()));
 
+    public static final ItemDefinition<AntidoteBandageItem> ANTIDOTE_BANDAGE = register("antidote_bandage", () -> new AntidoteBandageItem(new Properties()));
+
+    public static final ItemDefinition<MedicinalBandageItem> MEDICINAL_BANDAGE = register("medicinal_bandage", () -> new MedicinalBandageItem(new Properties()));
+
     public static final ItemDefinition<BandageItem> WARDING_BANDAGE = register("warding_bandage", () -> new BandageItem(new Properties()
             .component(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), List.of(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1))))
     ));

@@ -1,9 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": [
-    "minecraft:birch_forest",
-    "minecraft:forest"
-  ],
-  "features": "nomansland:patch_peony_and_lilac",
-  "step": "vegetal_decoration"
-}

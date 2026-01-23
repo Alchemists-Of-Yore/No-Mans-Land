@@ -1,8 +1,0 @@
-{
-  "type": "neoforge:remove_spawns",
-  "biomes": "minecraft:snowy_taiga",
-  "entity_types": [
-    "minecraft:zombie",
-    "minecraft:zombie"
-  ]
-}

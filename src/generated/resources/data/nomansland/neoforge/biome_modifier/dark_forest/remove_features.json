@@ -1,9 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:dark_forest",
-  "features": [
-    "minecraft:flower_default",
-    "minecraft:forest_flowers",
-    "minecraft:brown_mushroom_normal"
-  ]
-}

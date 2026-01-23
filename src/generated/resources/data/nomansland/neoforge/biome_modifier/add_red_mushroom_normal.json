@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:meadow",
-  "features": "minecraft:red_mushroom_normal",
-  "step": "vegetal_decoration"
-}

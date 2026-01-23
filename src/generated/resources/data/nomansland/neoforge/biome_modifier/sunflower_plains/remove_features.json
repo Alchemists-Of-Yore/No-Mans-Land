@@ -1,8 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:sunflower_plains",
-  "features": [
-    "minecraft:trees_plains",
-    "minecraft:flower_plains"
-  ]
-}

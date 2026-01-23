@@ -1,5 +1,0 @@
-{
-  "type": "neoforge:remove_spawns",
-  "biomes": "minecraft:old_growth_pine_taiga",
-  "entity_types": "minecraft:zombie"
-}

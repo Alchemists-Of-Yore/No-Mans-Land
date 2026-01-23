@@ -1,5 +1,0 @@
-{
-  "type": "neoforge:remove_spawns",
-  "biomes": "minecraft:plains",
-  "entity_types": "minecraft:zombie"
-}

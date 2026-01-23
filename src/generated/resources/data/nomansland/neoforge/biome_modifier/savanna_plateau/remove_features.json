@@ -1,5 +1,0 @@
-{
-  "type": "neoforge:remove_features",
-  "biomes": "minecraft:savanna_plateau",
-  "features": "minecraft:flower_warm"
-}

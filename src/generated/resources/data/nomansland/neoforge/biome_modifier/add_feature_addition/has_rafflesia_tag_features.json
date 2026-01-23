@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "#nomansland:feature_addition/has_rafflesia",
-  "features": "nomansland:patch_rafflesia",
-  "step": "vegetal_decoration"
-}

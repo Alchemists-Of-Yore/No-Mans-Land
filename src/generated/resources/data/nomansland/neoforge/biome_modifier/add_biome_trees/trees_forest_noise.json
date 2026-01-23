@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:forest",
-  "features": "nomansland:biome_trees/trees_forest_noise",
-  "step": "vegetal_decoration"
-}

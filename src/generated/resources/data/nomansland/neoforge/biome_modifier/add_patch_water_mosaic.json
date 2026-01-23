@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:mangrove_swamp",
-  "features": "nomansland:patch_water_mosaic",
-  "step": "vegetal_decoration"
-}
