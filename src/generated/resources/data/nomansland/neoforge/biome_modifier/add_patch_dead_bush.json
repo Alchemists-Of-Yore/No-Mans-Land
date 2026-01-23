@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:mushroom_fields",
+  "features": "minecraft:patch_dead_bush",
+  "step": "vegetal_decoration"
+}

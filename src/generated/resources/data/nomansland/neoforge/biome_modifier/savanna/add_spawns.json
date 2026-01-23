@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:savanna",
+  "spawners": {
+    "type": "minecraft:wolf",
+    "maxCount": 8,
+    "minCount": 4,
+    "weight": 8
+  }
+}

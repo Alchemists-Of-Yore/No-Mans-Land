@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:stony_shore",
+  "features": "nomansland:pond_stony_shore",
+  "step": "local_modifications"
+}

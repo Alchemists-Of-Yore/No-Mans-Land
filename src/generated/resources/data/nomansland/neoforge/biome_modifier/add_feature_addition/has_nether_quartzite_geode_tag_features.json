@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_nether_quartzite_geode",
+  "features": "nomansland:underground/nether_quartzite_geode",
+  "step": "local_modifications"
+}

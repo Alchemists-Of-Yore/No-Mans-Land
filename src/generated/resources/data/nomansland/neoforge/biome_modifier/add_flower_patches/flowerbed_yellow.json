@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:old_growth_birch_forest",
+    "minecraft:sunflower_plains"
+  ],
+  "features": "nomansland:flower_patches/flowerbed_yellow",
+  "step": "vegetal_decoration"
+}

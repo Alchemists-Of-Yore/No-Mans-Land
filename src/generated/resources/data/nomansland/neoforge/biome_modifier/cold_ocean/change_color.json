@@ -1,0 +1,10 @@
+{
+  "type": "nomansland:change_colors",
+  "biomes": "minecraft:cold_ocean",
+  "fog_color": 12639487,
+  "foliage_color": 8960833,
+  "grass_color": 9680231,
+  "sky_color": 8431871,
+  "water_color": 3899064,
+  "water_fog_color": 2386591
+}

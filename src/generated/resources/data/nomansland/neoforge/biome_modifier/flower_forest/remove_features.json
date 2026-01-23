@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:flower_forest",
+  "features": [
+    "minecraft:flower_forest_flowers",
+    "minecraft:flower_flower_forest",
+    "minecraft:patch_pumpkin"
+  ]
+}

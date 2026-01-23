@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:flower_forest",
+  "features": "nomansland:patch_peony",
+  "step": "vegetal_decoration"
+}

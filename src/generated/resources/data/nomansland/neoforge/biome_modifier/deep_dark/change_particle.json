@@ -1,0 +1,10 @@
+{
+  "type": "nomansland:change_particle",
+  "biomes": "minecraft:deep_dark",
+  "particle": {
+    "options": {
+      "type": "nomansland:sculk_ambience"
+    },
+    "probability": 0.005
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:forest",
+  "spawners": {
+    "type": "minecraft:rabbit",
+    "maxCount": 6,
+    "minCount": 3,
+    "weight": 8
+  }
+}

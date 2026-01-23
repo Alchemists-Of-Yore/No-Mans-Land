@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_fern_patch",
+  "features": "nomansland:patch_fern_forest",
+  "step": "vegetal_decoration"
+}

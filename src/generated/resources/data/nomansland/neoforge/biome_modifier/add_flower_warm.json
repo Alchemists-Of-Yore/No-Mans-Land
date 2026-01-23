@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:warm_ocean",
+  "features": "minecraft:flower_warm",
+  "step": "vegetal_decoration"
+}

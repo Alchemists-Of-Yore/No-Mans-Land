@@ -1,0 +1,10 @@
+{
+  "type": "nomansland:change_colors",
+  "biomes": "minecraft:lush_caves",
+  "fog_color": 11071699,
+  "foliage_color": 11851346,
+  "grass_color": 11851346,
+  "sky_color": 8103167,
+  "water_color": 5536348,
+  "water_fog_color": 2897190
+}

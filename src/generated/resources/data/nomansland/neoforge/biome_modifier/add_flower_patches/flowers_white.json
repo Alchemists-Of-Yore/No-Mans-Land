@@ -1,0 +1,22 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:cold_ocean",
+    "minecraft:deep_cold_ocean",
+    "minecraft:deep_frozen_ocean",
+    "minecraft:deep_lukewarm_ocean",
+    "minecraft:deep_ocean",
+    "minecraft:frozen_ocean",
+    "minecraft:frozen_river",
+    "minecraft:grove",
+    "minecraft:ice_spikes",
+    "minecraft:lukewarm_ocean",
+    "minecraft:ocean",
+    "minecraft:river",
+    "minecraft:snowy_beach",
+    "minecraft:snowy_taiga",
+    "minecraft:stony_shore"
+  ],
+  "features": "nomansland:flower_patches/flowers_white",
+  "step": "vegetal_decoration"
+}

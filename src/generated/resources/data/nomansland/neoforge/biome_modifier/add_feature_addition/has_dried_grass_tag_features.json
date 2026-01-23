@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_dried_grass",
+  "features": "nomansland:patch_dried_grass",
+  "step": "vegetal_decoration"
+}

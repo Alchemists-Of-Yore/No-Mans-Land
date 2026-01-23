@@ -1,0 +1,5 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:birch_forest",
+  "features": "minecraft:forest_flowers"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:jungle",
+  "features": "minecraft:patch_large_fern",
+  "step": "vegetal_decoration"
+}

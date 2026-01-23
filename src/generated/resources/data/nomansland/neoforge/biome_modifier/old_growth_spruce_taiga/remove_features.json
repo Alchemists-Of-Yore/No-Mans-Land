@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:old_growth_spruce_taiga",
+  "features": [
+    "minecraft:flower_default",
+    "minecraft:forest_rock"
+  ]
+}

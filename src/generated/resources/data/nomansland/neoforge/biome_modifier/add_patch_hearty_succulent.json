@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:bamboo_jungle",
+    "minecraft:jungle",
+    "minecraft:sparse_jungle"
+  ],
+  "features": "nomansland:patch_hearty_succulent",
+  "step": "vegetal_decoration"
+}

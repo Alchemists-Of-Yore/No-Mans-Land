@@ -1,0 +1,10 @@
+{
+  "type": "nomansland:change_colors",
+  "biomes": "minecraft:mushroom_fields",
+  "fog_color": 15132415,
+  "foliage_color": 10583946,
+  "grass_color": 11772555,
+  "sky_color": 8898024,
+  "water_color": 8616598,
+  "water_fog_color": 5921653
+}

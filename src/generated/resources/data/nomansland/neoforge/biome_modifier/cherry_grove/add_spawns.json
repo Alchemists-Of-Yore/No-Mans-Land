@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:cherry_grove",
+  "spawners": {
+    "type": "minecraft:chicken",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 4
+  }
+}

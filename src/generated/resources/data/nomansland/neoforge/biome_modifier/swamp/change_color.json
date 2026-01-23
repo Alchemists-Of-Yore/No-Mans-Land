@@ -1,0 +1,9 @@
+{
+  "type": "nomansland:change_colors",
+  "biomes": "minecraft:swamp",
+  "fog_color": 10996903,
+  "foliage_color": 6975545,
+  "sky_color": 7715315,
+  "water_color": 5536348,
+  "water_fog_color": 2897190
+}

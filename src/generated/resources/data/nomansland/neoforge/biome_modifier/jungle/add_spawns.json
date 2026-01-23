@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:jungle",
+  "spawners": {
+    "type": "minecraft:frog",
+    "maxCount": 5,
+    "minCount": 3,
+    "weight": 8
+  }
+}

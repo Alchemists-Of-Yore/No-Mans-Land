@@ -1,0 +1,5 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:stony_shore",
+  "features": "minecraft:flower_default"
+}

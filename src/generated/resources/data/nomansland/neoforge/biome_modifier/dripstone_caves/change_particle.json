@@ -1,0 +1,10 @@
+{
+  "type": "nomansland:change_particle",
+  "biomes": "minecraft:dripstone_caves",
+  "particle": {
+    "options": {
+      "type": "nomansland:cave_dust"
+    },
+    "probability": 0.01
+  }
+}

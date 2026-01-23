@@ -1,0 +1,24 @@
+{
+  "type": "nomansland:change_spawn",
+  "biomes": "minecraft:windswept_savanna",
+  "spawners": [
+    {
+      "type": "minecraft:pig",
+      "maxCount": 4,
+      "minCount": 4,
+      "weight": 8
+    },
+    {
+      "type": "minecraft:chicken",
+      "maxCount": 4,
+      "minCount": 4,
+      "weight": 12
+    },
+    {
+      "type": "minecraft:cow",
+      "maxCount": 4,
+      "minCount": 4,
+      "weight": 5
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "type": "nomansland:change_colors",
+  "biomes": "minecraft:bamboo_jungle",
+  "fog_color": 11071699,
+  "foliage_color": 6203171,
+  "grass_color": 6798649,
+  "sky_color": 7194319,
+  "water_color": 2403207,
+  "water_fog_color": 1479552
+}

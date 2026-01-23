@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:jungle",
+    "minecraft:mushroom_fields"
+  ],
+  "features": "nomansland:patch_duckweed_sparse",
+  "step": "vegetal_decoration"
+}

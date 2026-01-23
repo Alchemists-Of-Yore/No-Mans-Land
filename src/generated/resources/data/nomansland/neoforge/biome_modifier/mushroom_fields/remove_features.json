@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:mushroom_fields",
+  "features": [
+    "minecraft:disk_sand",
+    "minecraft:disk_gravel",
+    "minecraft:patch_sugar_cane",
+    "minecraft:patch_pumpkin"
+  ]
+}

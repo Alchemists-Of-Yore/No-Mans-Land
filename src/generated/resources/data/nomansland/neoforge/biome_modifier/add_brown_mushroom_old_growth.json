@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:dark_forest",
+  "features": "minecraft:brown_mushroom_old_growth",
+  "step": "vegetal_decoration"
+}

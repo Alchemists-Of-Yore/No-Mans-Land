@@ -1,0 +1,5 @@
+{
+  "type": "neoforge:remove_spawns",
+  "biomes": "minecraft:savanna_plateau",
+  "entity_types": "minecraft:zombie"
+}

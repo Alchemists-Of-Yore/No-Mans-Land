@@ -1,0 +1,20 @@
+{
+  "values": [
+    "nomansland:mundane_tile_stairs",
+    "nomansland:earthen_tile_stairs",
+    "nomansland:dross_tile_stairs",
+    "nomansland:silt_brick_stairs",
+    "nomansland:polished_stone_stairs",
+    "nomansland:cobblestone_brick_stairs",
+    "nomansland:mossy_cobblestone_brick_stairs",
+    "nomansland:polished_siltstone_stairs",
+    "nomansland:siltstone_brick_stairs",
+    "nomansland:cobbled_deepslate_brick_stairs",
+    "nomansland:coarse_brick_stairs",
+    "nomansland:mossy_coarse_brick_stairs",
+    "nomansland:pine_stairs",
+    "nomansland:maple_stairs",
+    "nomansland:walnut_stairs",
+    "nomansland:willow_stairs"
+  ]
+}

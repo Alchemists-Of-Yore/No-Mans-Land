@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_overworld_foliage",
+  "features": [
+    "nomansland:patch_grass_sprouts_normal",
+    "nomansland:patch_roots",
+    "nomansland:patch_cattail",
+    "nomansland:patch_reeds",
+    "nomansland:patch_waterlily_common"
+  ],
+  "step": "vegetal_decoration"
+}

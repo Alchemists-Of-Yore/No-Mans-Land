@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:deep_cold_ocean",
+  "features": [
+    "minecraft:flower_default",
+    "minecraft:patch_pumpkin",
+    "minecraft:patch_sugar_cane"
+  ]
+}

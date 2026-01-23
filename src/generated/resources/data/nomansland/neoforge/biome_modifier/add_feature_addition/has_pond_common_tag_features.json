@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_pond_common",
+  "features": "nomansland:pond_common",
+  "step": "local_modifications"
+}

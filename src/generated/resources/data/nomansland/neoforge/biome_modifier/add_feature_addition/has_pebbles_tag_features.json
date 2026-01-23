@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_pebbles",
+  "features": "nomansland:pebbles",
+  "step": "local_modifications"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:mushroom_fields",
+  "features": "nomansland:patch_dried_grass_mycelium",
+  "step": "vegetal_decoration"
+}

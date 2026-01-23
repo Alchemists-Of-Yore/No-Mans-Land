@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#nomansland:feature_addition/has_regular_tortoise_burrows",
+  "features": "nomansland:underground/tortoise_burrows/tortoise_burrow",
+  "step": "top_layer_modification"
+}

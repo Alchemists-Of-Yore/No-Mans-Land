@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:meadow",
+  "features": "nomansland:field_mushroom_circle_meadow",
+  "step": "vegetal_decoration"
+}

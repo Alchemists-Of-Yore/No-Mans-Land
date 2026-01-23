@@ -1,0 +1,18 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:badlands",
+  "spawners": [
+    {
+      "type": "minecraft:rabbit",
+      "maxCount": 8,
+      "minCount": 2,
+      "weight": 15
+    },
+    {
+      "type": "minecraft:husk",
+      "maxCount": 4,
+      "minCount": 4,
+      "weight": 100
+    }
+  ]
+}

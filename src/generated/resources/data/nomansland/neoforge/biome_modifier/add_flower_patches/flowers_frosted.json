@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:snowy_plains",
+  "features": "nomansland:flower_patches/flowers_frosted",
+  "step": "vegetal_decoration"
+}

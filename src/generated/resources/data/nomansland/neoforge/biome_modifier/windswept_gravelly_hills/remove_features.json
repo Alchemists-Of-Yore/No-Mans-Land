@@ -1,0 +1,5 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:windswept_gravelly_hills",
+  "features": "minecraft:flower_default"
+}

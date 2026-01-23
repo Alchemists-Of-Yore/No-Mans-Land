@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:snowy_taiga",
+  "features": "nomansland:patch_grass_snowy",
+  "step": "vegetal_decoration"
+}

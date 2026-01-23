@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:windswept_savanna",
+  "features": [
+    "minecraft:trees_windswept_savanna",
+    "minecraft:flower_default",
+    "minecraft:patch_grass_normal"
+  ]
+}

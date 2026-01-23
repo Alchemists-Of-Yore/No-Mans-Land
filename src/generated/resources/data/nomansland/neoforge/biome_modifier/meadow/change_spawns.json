@@ -1,0 +1,12 @@
+{
+  "type": "nomansland:change_spawn",
+  "biomes": "minecraft:meadow",
+  "spawners": [
+    {
+      "type": "minecraft:donkey",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 1
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:snowy_taiga",
+  "spawners": {
+    "type": "minecraft:polar_bear",
+    "maxCount": 3,
+    "minCount": 1,
+    "weight": 2
+  }
+}

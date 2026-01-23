@@ -1,0 +1,5 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": "minecraft:snowy_beach",
+  "features": "minecraft:flower_default"
+}

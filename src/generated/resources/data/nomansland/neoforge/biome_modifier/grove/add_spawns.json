@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:grove",
+  "spawners": {
+    "type": "minecraft:polar_bear",
+    "maxCount": 2,
+    "minCount": 1,
+    "weight": 1
+  }
+}

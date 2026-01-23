@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:snowy_taiga",
+  "features": "minecraft:patch_berry_common",
+  "step": "vegetal_decoration"
+}
