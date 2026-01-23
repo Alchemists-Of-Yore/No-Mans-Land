@@ -197,7 +197,7 @@ public class NMLItems {
             () -> new BandageItem(new Properties()));
 
     public static final ItemDefinition<BandageItem> WARDING_BANDAGE = register("warding_bandage", () -> new BandageItem(new Properties()
-            .component(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), List.of(new MobEffectInstance(MobEffects.ABSORPTION, 2400))))
+            .component(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), List.of(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1))))
     ));
 
     public static <T extends Item> ItemDefinition<T> registerWithoutTab(String name, Supplier<T> item, boolean customLang) {
