@@ -10,6 +10,7 @@
     "BaseSpawnerMixin",
     "BiomeMixin",
     "BlockBehaviourMixin",
+    "BrewingStandBlockEntityMixin",
     "CactusBlockMixin",
     "ChunkGeneratorStructureStateMixin",
     "EntityMixin",

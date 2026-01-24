@@ -2,8 +2,11 @@ package com.farcr.nomansland.client.color;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.GrassColor;
 import net.neoforged.api.distmarker.Dist;
@@ -23,6 +26,17 @@ public class ColorHandler {
 
         event.register((state, tintIndex) -> tintIndex == 0 ? GrassColor.get(0.5D, 1) : 0xFFFFFF,
                 NMLBlocks.OAT_GRASS.get());
+
+        event.register((stack, tintIndex) -> {
+            if (tintIndex == 1) {
+                PotionContents potionContents = stack.get(DataComponents.POTION_CONTENTS);
+                if (potionContents != null && potionContents.getAllEffects().iterator().hasNext()) {
+                    return potionContents.getColor();
+                }
+                return -1;
+            }
+            return -1;
+        }, NMLItems.BANDAGE.get());
 
 //        event.register((state, tintIndex) -> {
 //            int grassColorPacked = GrassColor.get(0.5D, 1);

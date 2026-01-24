@@ -71,7 +71,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("painting.nomansland.sun.title", "Sun");
         add("painting.nomansland.sun.author", "Farcr");
         add("painting.nomansland.white_eyes.title", "White Eyes");
-        add("painting.nomansland.sun.author", "Probleyes");
+        add("painting.nomansland.white_eyes.author", "Probleyes");
         add("nomansland.subtitles.entity.player.drink_milk", "Player drinks milk");
         add("nomansland.subtitles.entity.generic.sticky_cauldron_slide", "Sliding in a sticky cauldron");
         add("nomansland.subtitles.item.generic.consumed", "Item consumed");
