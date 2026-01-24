@@ -45,6 +45,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("item.nomansland.pine_furnace_boat", "Pine Boat with Furnace");
         add("item.nomansland.walnut_furnace_boat", "Walnut Boat with Furnace");
         add("item.nomansland.willow_furnace_boat", "Willow Boat with Furnace");
+        add("item.nomansland.music_disc_guidance", "Music Disc");
+        add("jukebox_song.nomansland.guidance", "Samuel Organ - Guidance");
         add("itemGroup.nomansland", "No Man's Land");
         add("entity.nomansland.buried", "Buried");
         add("entity.nomansland.cave_carp", "Cave Carp");
@@ -124,6 +126,12 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.advancements.find_ancient_city.description", "Find an Ancient City");
         add("nomansland.advancements.find_mineshaft.title", "To Blisters and Bedrock");
         add("nomansland.advancements.find_mineshaft.description", "Find a Mineshaft");
+        add("nomansland.advancements.dream_friend_moon.title", "First Contact");
+        add("nomansland.advancements.dream_friend_moon.description", "Dream of a cosmic presence");
+        add("nomansland.advancements.meet_friend_moon.title", "Friendship");
+        add("nomansland.advancements.meet_friend_moon.description", "Meet the Friend Moon");
+        add("nomansland.advancements.buddy_ascension.title", "Friend of my Friend");
+        add("nomansland.advancements.buddy_ascension.description", "“Find some company for the Friend Moon");
         add("block.nomansland.resin_cauldron", "Cauldron Filled with Resin");
         add("block.nomansland.honey_cauldron", "Cauldron Filled with Honey");
         add("block.nomansland.maple_syrup_cauldron", "Cauldron Filled with Maple Syrup");

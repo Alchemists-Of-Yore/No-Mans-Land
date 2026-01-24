@@ -1,0 +1,8 @@
+{
+  "comparator_output": 3,
+  "description": {
+    "translate": "jukebox_song.nomansland.guidance"
+  },
+  "length_in_seconds": 222.0,
+  "sound_event": "nomansland:music_disc.guidance"
+}

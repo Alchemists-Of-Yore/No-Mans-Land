@@ -118,6 +118,9 @@ public class NMLItems {
                     .component(NMLDataComponents.PUNCH_COUNT, 0))
     );
 
+    public static final ItemDefinition<Item> MUSIC_DISC_GUIDANCE = register("music_disc_guidance",
+            () -> new Item(new Properties().stacksTo(1).rarity(Rarity.RARE).jukeboxPlayable(NMLDiscs.GUIDANCE)), true);
+
     public static final ItemDefinition<Item> WOODEN_SCAFFOLDING = register("wooden_scaffolding",
             () -> new ScaffoldingBlockItem(NMLBlocks.WOODEN_SCAFFOLDING.get(), new Properties()));
 

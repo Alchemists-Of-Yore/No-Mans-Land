@@ -384,6 +384,14 @@ public class CreativeModeTabHandler {
             insertAfter(SALMON_BUCKET, BILLHOOK_BASS_BUCKET);
             insertAfter(ELYTRA, NMLItems.WARDING_EFFIGY);
             insertAfter(ELYTRA, LIVING_URN);
+            insertAfter(MUSIC_DISC_5, MUSIC_DISC_GUIDANCE);
+
+            insertAfter(TNT_MINECART, BANDAGE);
+            insertAfter(TNT_MINECART, ANTIDOTE_BANDAGE);
+            insertAfter(TNT_MINECART, MEDICINAL_BANDAGE);
+            insertAfter(TNT_MINECART, WARDING_BANDAGE);
+        //    insertAfter(TNT_MINECART, BANDAGE but potion);
+
 //            insertAfter(TROPICAL_FISH_BUCKET, CAVE_CARP_BUCKET);
             if (!event.getFlags().contains(FeatureFlags.BUNDLE)) event.insertBefore(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }

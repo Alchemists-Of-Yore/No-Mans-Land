@@ -1144,5 +1144,13 @@
       }
     ],
     "subtitle": "nomansland.subtitles.particle.droplet.fall"
+  },
+  "music_disc.guidance": {
+    "sounds": [
+      {
+        "name": "nomansland:records/guidance",
+        "stream": true
+      }
+    ]
   }
 }
