@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "nomansland:bandage"
+    ]
+  }
+}

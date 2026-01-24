@@ -5,23 +5,14 @@
             "item": "nomansland:bandage"
         },
         {
-            "item": "minecraft:slimeball"
+            "item": "nomansland:maple_syrup_bottle"
         },
         {
-            "item": "minecraft:gold_nugget"
-        },
-        {
-            "item": "minecraft:gold_nugget"
-        },
-        {
-            "item": "minecraft:gold_nugget"
-        },
-        {
-            "item": "minecraft:gold_nugget"
+            "item": "nomansland:sulfur"
         }
     ],
     "result": {
-        "id": "nomansland:warding_bandage",
+        "id": "nomansland:medicinal_bandage",
         "count": 1
     },
     "group": "bandages"

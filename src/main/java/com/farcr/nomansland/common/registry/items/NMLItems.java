@@ -79,6 +79,8 @@ public class NMLItems {
             () -> new Item(new Properties()));
     public static final ItemDefinition<Item> STURDY_SCUTE = register("sturdy_scute",
             () -> new Item(new Properties()));
+    public static final ItemDefinition<Item> SULFUR = register("sulfur",
+            () -> new Item(new Properties()));
 
     public static final ItemDefinition<Item> RESIN_OIL_BOTTLE = register("resin_oil_bottle",
             () -> new ResinOilBottleItem(new Properties()
@@ -194,16 +196,16 @@ public class NMLItems {
             () -> new BlockItem(NMLBlocks.WARDING_EFFIGY.get(), new Properties().rarity(Rarity.UNCOMMON)));
 
     public static final ItemDefinition<BandageItem> BANDAGE = register("bandage",
-            () -> new BandageItem(new Properties()));
+            () -> new BandageItem(new Properties().stacksTo(16)));
 
     public static final ItemDefinition<CuringBandageItem> ANTIDOTE_BANDAGE = register("antidote_bandage",
-            () -> new CuringBandageItem(List.of(
+            () -> new CuringBandageItem(new Properties().stacksTo(16), List.of(
                     MobEffects.POISON
                     // Add Corrosion & Decay when they're implemented
             )));
 
     public static final ItemDefinition<CuringBandageItem> MEDICINAL_BANDAGE = register("medicinal_bandage",
-            () -> new CuringBandageItem(List.of(
+            () -> new CuringBandageItem(new Properties().stacksTo(16), List.of(
                     MobEffects.MOVEMENT_SLOWDOWN,
                     MobEffects.DIG_SLOWDOWN,
                     MobEffects.CONFUSION,
@@ -218,6 +220,7 @@ public class NMLItems {
             )));
 
     public static final ItemDefinition<BandageItem> WARDING_BANDAGE = register("warding_bandage", () -> new BandageItem(new Properties()
+            .stacksTo(16)
             .component(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), List.of(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1))))
     ));
 

@@ -2,5 +2,13 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "nomansland:item/bandage"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "nomansland:has_potion": 1
+      },
+      "model": "nomansland:item/bandage_with_potion"
+    }
+  ]
 }

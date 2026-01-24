@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "nomansland:item/bandage",
+    "layer1": "nomansland:item/bandage_overlay"
+  }
+}
