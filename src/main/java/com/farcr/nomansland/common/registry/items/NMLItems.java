@@ -79,8 +79,8 @@ public class NMLItems {
             () -> new Item(new Properties()));
     public static final ItemDefinition<Item> STURDY_SCUTE = register("sturdy_scute",
             () -> new Item(new Properties()));
-    public static final ItemDefinition<Item> SULFUR = register("sulfur",
-            () -> new Item(new Properties()));
+//    public static final ItemDefinition<Item> SULFUR = register("sulfur",
+//            () -> new Item(new Properties()));
 
     public static final ItemDefinition<Item> RESIN_OIL_BOTTLE = register("resin_oil_bottle",
             () -> new ResinOilBottleItem(new Properties()
