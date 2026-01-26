@@ -26,6 +26,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -59,8 +60,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public static final byte EAT_EVENT = 7;
     public static final byte REJECT_FOOD_EVENT = 6;
 
+    public static final int STOMP_DURATION = 15;
     public static final int STOMP_COOLDOWN = 100;
-    public static final int STOMP_EFFECT_DELAY = 15;
+    public static final int STOMP_FEAR_DURATION = 100;
     public static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
     public static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
 
@@ -71,9 +73,13 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public AnimationState stompAnimationState = new AnimationState();
     public AnimationState attackAnimationState = new AnimationState();
 
+    public MooseTargetManagementMemory targetMemory = new MooseTargetManagementMemory();
+
     public int antlerTimer;
-    public boolean isInStompState;
-    public int stompStateTimer;
+    public boolean isStomping;
+    public int stompTimer;
+    public int stompFearDuration;
+    public int stompCooldown;
     public int saddleShakeOffTimer;
 
     private int pacificationStage;
@@ -94,8 +100,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         saveAntlerData(compound);
-        compound.putBoolean("IsInStompState", isInStompState);
-        compound.putInt("StompStateTimer", stompStateTimer);
+
+        compound.put("targetMemory", targetMemory.serializeNBT());
+        compound.putBoolean("IsInStompState", isStomping);
+        compound.putInt("StompTimer", stompTimer);
+        compound.putInt("StompFearDuration", stompFearDuration);
+        compound.putInt("StompCooldown", stompCooldown);
         compound.putInt("SaddleShakeOffTimer", saddleShakeOffTimer);
 
         compound.putInt("PacificationStage", getPacificationStage());
@@ -106,8 +116,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         readAntlerData(compound);
-        isInStompState = compound.getBoolean("IsInStompState");
-        stompStateTimer = compound.getInt("StompStateTimer");
+
+        targetMemory.deserializeNBT(compound.getCompound("targetMemory"));
+        isStomping = compound.getBoolean("IsInStompState");
+        stompTimer = compound.getInt("StompTimer");
+        stompFearDuration = compound.getInt("StompFearDuration");
+        stompCooldown = compound.getInt("StompCooldown");
         saddleShakeOffTimer = compound.getInt("SaddleShakeOffTimer");
 
         setPacificationStage(compound.getInt("PacificationStage"));
@@ -131,21 +145,24 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
         if (otherMob instanceof Monster monster) {
             monster.goalSelector.addGoal(0,
-                    new AvoidEntityGoal<>(monster, Moose.class, Moose::shouldHostilesAvoid,12.0F, 1.1, 1.1, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
+                    new AvoidEntityGoal<>(monster, Moose.class, Moose::shouldHostilesAvoid, 12.0F, 1.1, 1.1, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
         }
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
+
+        targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, e -> targetMemory.isUpsetAt(e)));
+
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(0, new PanicGoal(this, 1.75));
-        goalSelector.addGoal(1, new MooseStompGoal(this, 0.5f, 2));
-        goalSelector.addGoal(2, new ShedAntlersGoal(this));
-        goalSelector.addGoal(3, new MooseIntrovertedBehaviorGoal(this, 1.25f, 6));
-        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 14));
-        goalSelector.addGoal(5, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(1, new MooseMeleeAttackGoal(this, 1.75f));
+        goalSelector.addGoal(2, new MooseStompGoal(this,3));
+        goalSelector.addGoal(3, new ShedAntlersGoal(this));
+        goalSelector.addGoal(4, new MooseIntrovertedBehaviorGoal(this, 1.25f, 8));
+        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
+        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 14));
+        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
 
         //        goalSelector.addGoal(2, new BreedGoal(this, 1.25));
@@ -190,20 +207,32 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     @Override
     protected void customServerAiStep() {
+        targetMemory.tick();
+        tickStompState();
+        tickSaddleState();
         if (!isBaby()) {
             regrowLostAntlers(this);
         }
-        if (isInStompState) {
-            stompStateTimer++;
-            if (stompStateTimer == STOMP_EFFECT_DELAY) {
-                playSound(NMLSounds.MOOSE_STOMPS.get(), 1.5f, 1 + random.nextFloat() * 0.3f);
-                level().broadcastEntityEvent(this, Moose.ADD_STOMP_FEEDBACK_EVENT);
-            }
-            if (stompStateTimer > STOMP_COOLDOWN) {
-                isInStompState = false;
-                stompStateTimer = 0;
+        super.customServerAiStep();
+    }
+
+    protected void tickStompState() {
+        if (stompFearDuration > 0) {
+            stompFearDuration--;
+        }
+        if (stompCooldown > 0) {
+            stompCooldown--;
+            return;
+        }
+        if (isStomping) {
+            stompTimer++;
+            if (stompTimer == STOMP_DURATION) {
+                finalizeStomp();
             }
         }
+    }
+
+    public void tickSaddleState() {
         if (isSaddled() && !isPacified()) {
             saddleShakeOffTimer++;
             if (saddleShakeOffTimer == SADDLE_SHAKEOFF_DELAY) {
@@ -211,8 +240,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
                 saddleShakeOffTimer = 0;
             }
         }
-
-        super.customServerAiStep();
     }
 
     /**
@@ -245,6 +272,23 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         }
     }
 
+
+    /**
+     * All the logic tied to the Moose taking damage to others
+     */
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        boolean hurt = super.hurt(source, amount);
+        var attacker = source.getEntity();
+        if (attacker instanceof LivingEntity living) {
+            if (isPacified() && living instanceof Player) {
+                return hurt;
+            }
+            targetMemory.addTarget(living);
+        }
+        return hurt;
+    }
+
     /**
      * All the logic tied to the Moose hurting anything through any means is handled here.
      */
@@ -257,6 +301,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
             double knockbackResistance = target instanceof LivingEntity living ? living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 0;
             target.setDeltaMovement(target.getDeltaMovement().add(0, 0.4F * Math.max(0, 1 - knockbackResistance), 0));
             if (target instanceof ServerPlayer player) {
+                targetMemory.clearAggression(player);
                 player.connection.send(new ClientboundSetEntityMotionPacket(player));
             }
             if (level() instanceof ServerLevel serverLevel) {
@@ -342,6 +387,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         if (isPacified()) {
             return Optional.empty();
         }
+        if (targetMemory.isUpsetAt(player)) {
+            return Optional.empty();
+        }
         var level = level();
         boolean isMooseFood = stack.is(NMLTags.MOOSE_FOOD);
         if (getTarget() != null || (!isMooseFood && stack.getFoodProperties(player) != null)) {
@@ -379,10 +427,10 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     }
 
     public float getStompAdjustedMovementSpeed(float speed) {
-        if (canStomp()) {
+        if (canStartStomp()) {
             return speed;
         }
-        if (stompStateTimer <= STOMP_EFFECT_DELAY) {
+        if (isStomping) {
             //Actively stomping
             return speed * ACTIVE_STOMP_SPEED_MULTIPLIER;
         } else {
@@ -391,12 +439,30 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         }
     }
 
-    public boolean canStomp() {
-        return !isInStompState && stompStateTimer == 0;
+    public void startStomping() {
+        level().broadcastEntityEvent(this, Moose.START_STOMP_EVENT);
+        isStomping = true;
+    }
+
+    public boolean canStartStomp() {
+        return !isStomping && stompCooldown == 0;
+    }
+
+    public void finalizeStomp() {
+        playSound(NMLSounds.MOOSE_STOMPS.get(), 1.5f, 1 + random.nextFloat() * 0.3f);
+        level().broadcastEntityEvent(this, Moose.ADD_STOMP_FEEDBACK_EVENT);
+        isStomping = false;
+        stompTimer = 0;
+        setStompCooldown();
+        stompFearDuration = STOMP_FEAR_DURATION;
+    }
+
+    public void setStompCooldown() {
+        stompCooldown = STOMP_COOLDOWN;
     }
 
     public boolean shouldScareOffMonsters() {
-        return stompStateTimer > STOMP_EFFECT_DELAY;
+        return stompFearDuration > 0;
     }
 
     /**

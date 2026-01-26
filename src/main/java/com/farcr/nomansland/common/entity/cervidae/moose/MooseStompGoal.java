@@ -4,12 +4,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.*;
 import net.minecraft.world.entity.ai.targeting.*;
-import net.minecraft.world.entity.ai.util.*;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.*;
-import net.minecraft.world.level.*;
 import net.minecraft.world.level.pathfinder.*;
-import net.minecraft.world.phys.*;
 
 import javax.annotation.*;
 import java.util.*;
@@ -21,27 +18,23 @@ import java.util.*;
  */
 public class MooseStompGoal extends Goal {
 
-    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+    private static final TargetingConditions STOMP_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
 
     protected final Moose moose;
-    protected final double speedModifier;
     protected final float stompDistance;
-    protected final PathNavigation pathNav;
 
     @Nullable
-    protected Path path;
-    @Nullable
-    protected LivingEntity avoidedTarget;
+    protected LivingEntity stompTarget;
 
-    public MooseStompGoal(Moose moose, double speedModifier, float stompDistance) {
+    public MooseStompGoal(Moose moose, float stompDistance) {
         this.moose = moose;
-        this.speedModifier = speedModifier;
         this.stompDistance = stompDistance;
-        this.pathNav = moose.getNavigation();
-        setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP));
     }
 
     public boolean shouldStomp(Entity entity) {
+        if (moose.targetMemory.isUpsetAt(entity)) {
+            return false;
+        }
         if (!moose.isPacified()) {
             if (entity instanceof Player) {
                 return true;
@@ -52,7 +45,7 @@ public class MooseStompGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (!moose.canStomp()) {
+        if (!moose.canStartStomp()) {
             return false;
         }
         var level = moose.level();
@@ -61,45 +54,28 @@ public class MooseStompGoal extends Goal {
                 .getEntitiesOfClass(LivingEntity.class, stompArea,
                         EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldStomp));
 
-        avoidedTarget = level.getNearestEntity(
-                stompOnSight, INTROVERT_TARGETING,
+        stompTarget = level.getNearestEntity(
+                stompOnSight, STOMP_TARGETING,
                 moose, moose.getX(), moose.getY(), moose.getZ());
 
-        if (avoidedTarget == null) {
+        if (stompTarget == null) {
             return false;
         }
-        if (moose.distanceTo(avoidedTarget) > stompDistance) {
-            return false;
-        }
-        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, 4, 2, avoidedTarget.position());
-        if (escapePos == null) {
-            return false;
-        }
-        path = pathNav.createPath(escapePos.x, escapePos.y, escapePos.z, 0);
-        return path != null;
+        return (moose.distanceTo(stompTarget) < stompDistance);
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !pathNav.isDone() || moose.stompStateTimer > 0;
+        return moose.isStomping;
     }
 
     @Override
     public void start() {
-        pathNav.moveTo(path, speedModifier);
-        if (avoidedTarget != null) {
-            moose.level().broadcastEntityEvent(moose, Moose.START_STOMP_EVENT);
-            moose.isInStompState = true;
-        }
+        moose.startStomping();
     }
 
     @Override
     public void stop() {
-        avoidedTarget = null;
-    }
-
-    @Override
-    public void tick() {
-        moose.getNavigation().setSpeedModifier(moose.getStompAdjustedMovementSpeed((float) speedModifier));
+        stompTarget = null;
     }
 }

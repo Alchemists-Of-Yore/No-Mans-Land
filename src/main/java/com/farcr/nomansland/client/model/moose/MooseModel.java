@@ -261,6 +261,7 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
             right_ear.xRot += earXRot;
         }
         animate(moose.stompAnimationState, MooseAnimations.STOMPING, ageInTicks);
+        animate(moose.attackAnimationState, MooseAnimations.ATTACK, ageInTicks);
 
     }
 }
