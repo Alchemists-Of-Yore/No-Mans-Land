@@ -133,7 +133,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
                 .add(Attributes.MAX_HEALTH, 40.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.15D)
                 .add(Attributes.FOLLOW_RANGE, 20.0D)
-                .add(Attributes.ATTACK_DAMAGE, 5.0D)
+                .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.STEP_HEIGHT, 1);
     }
@@ -294,10 +294,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
      */
     @Override
     public boolean doHurtTarget(Entity target) {
-        float baseDamage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float damageDealt = baseDamage > 0 ? baseDamage / 2 + random.nextInt((int) baseDamage) : baseDamage;
+        float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE);
         var damagesource = damageSources().mobAttack(this);
-        if (target.hurt(damagesource, damageDealt)) {
+        if (target.hurt(damagesource, damage)) {
             double knockbackResistance = target instanceof LivingEntity living ? living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 0;
             target.setDeltaMovement(target.getDeltaMovement().add(0, 0.4F * Math.max(0, 1 - knockbackResistance), 0));
             if (target instanceof ServerPlayer player) {

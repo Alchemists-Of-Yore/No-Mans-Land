@@ -87,7 +87,7 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
 
     @Override
     protected void resetAttackCooldown() {
-        this.ticksUntilNextAttack = this.adjustedTickDelay(80);
+        this.ticksUntilNextAttack = this.adjustedTickDelay(60);
     }
 
     protected boolean canDamageCachedTarget(LivingEntity cachedTarget) {
