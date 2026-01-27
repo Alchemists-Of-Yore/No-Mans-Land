@@ -82,7 +82,7 @@ public class NMLEntities {
             ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
                     .sized(1.5F, 2.5F)
                     .eyeHeight(2.0F)
-                    .passengerAttachments(new Vec3(0.0F, 2.2F, 0.0F))
+                    .passengerAttachments(new Vec3(0.0F, 2.05F, -0.5F))
                     .build("moose"));
 
     public static final Supplier<EntityType<Tortoise>> TORTOISE =
