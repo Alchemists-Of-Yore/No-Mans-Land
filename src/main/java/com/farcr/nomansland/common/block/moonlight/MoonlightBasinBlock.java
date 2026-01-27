@@ -1,7 +1,9 @@
 package com.farcr.nomansland.common.block.moonlight;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -13,11 +15,11 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -37,10 +39,24 @@ import java.util.List;
 /*
  * TODO: Implement some bulllsshiiit java consumer stuff to minimize the amount of rendundant for loops.
  *  Probably not important, but I'm going to write it down for the sake of my sanity.
+ *
+ *  with how much work I have to do this is no longer at all a priority lol please remind me in like 5 months
  */
 
-public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWaterloggedBlock
+public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
 {
+	public static final MapCodec<MoonlightBasinBlock> CODEC = simpleCodec(MoonlightBasinBlock::new);
+	@Override
+	protected MapCodec<? extends BaseEntityBlock> codec() {
+		return CODEC;
+	}
+
+	@javax.annotation.Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+		return createTickerHelper(blockEntityType, NMLBlockEntities.MOONLIGHT_BASIN.get(), MoonlightBasinBlockEntity::tick);
+	}
+
 	public static final VoxelShape BASIN_CENTER = Block.box(0, 4, 0, 16, 12, 16);
 	public static final VoxelShape BASIN_TOP = Block.box(0, 12, 0, 16, 16, 4);
 	public static final VoxelShape BASIN_BOTTOM = Block.box(0, 0, 4, 16, 4, 16);
@@ -79,9 +95,8 @@ public class MoonlightBasinBlock extends Block implements EntityBlock, SimpleWat
 			}
 
 			if (minX >= maxX || minZ >= maxZ || minY >= maxY)
-			{
 				continue;
-			}
+
 			rotatedShape = Shapes.or(rotatedShape, Shapes.box(minX, minY, minZ, maxX, maxY, maxZ));
 		}
 		return rotatedShape;
