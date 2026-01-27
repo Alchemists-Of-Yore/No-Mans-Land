@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.effect.FlammableEffect;
+import com.farcr.nomansland.common.effect.FriendshipEffect;
 import com.farcr.nomansland.common.effect.PacifiedEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
@@ -18,4 +19,7 @@ public class NMLEffects {
 
     public static final DeferredHolder<MobEffect, MobEffect> PACIFIED = MOB_EFFECTS.register("pacified",
             () -> new PacifiedEffect(MobEffectCategory.NEUTRAL));
+
+    public static final DeferredHolder<MobEffect, MobEffect> FRIENDSHIP = MOB_EFFECTS.register("friendship",
+        () -> new FriendshipEffect(MobEffectCategory.NEUTRAL, 7637070));
 }

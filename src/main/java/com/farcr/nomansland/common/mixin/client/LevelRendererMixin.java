@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -34,7 +35,6 @@ public class LevelRendererMixin {
         if (NMLConfig.MALEVOLENT_SPAWNER.get()) {
             return NMLParticleTypes.MALEVOLENT_FLAME.get();
         }
-
         return particle;
     }
 
@@ -43,35 +43,15 @@ public class LevelRendererMixin {
 
     @Inject(
         method = "renderSky",
-        at = @At(
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/vertex/BufferUploader;drawWithShader(Lcom/mojang/blaze3d/vertex/MeshData;)V",
-            ordinal = 1,
-            shift = At.Shift.AFTER
-        )
-    )
-    private void preRenderFriendMoon(
-        Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
-        Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
-    ) {
-        float[] shaderColor = RenderSystem.getShaderColor();
-        RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], shaderColor[3] * FriendMoonRenderer.getMoonOpacity());
-    }
-
-    @Inject(
-        method = "renderSky",
-        at = @At(
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/vertex/BufferUploader;drawWithShader(Lcom/mojang/blaze3d/vertex/MeshData;)V",
-            ordinal = 2,
-            shift = At.Shift.AFTER
-        )
+        at = @At(value = "TAIL")
     )
     private void renderFriendMoon(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
-        Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci,
-        @Local Tesselator tesselator, @Local PoseStack posestack
+        Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
-        FriendMoonRenderer.renderFriendMoon(tesselator, posestack, this.level.getMoonPhase());
+        // Breakout Condition add more stuff here later
+        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
+            return;
+        FriendMoonRenderer.renderFriendMoon(frustumMatrix, Tesselator.getInstance(), new PoseStack(), partialTick, this.level.getMoonPhase());
     }
 }

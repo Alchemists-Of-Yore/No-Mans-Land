@@ -112,6 +112,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.explosive", "Explosive");
         add("entity.nomansland.firebomb", "Firebomb");
         add("effect.nomansland.flammable", "Flammable");
+        add("effect.nomansland.friendship", "Friendship");
         add("nomansland.advancements.use_tap.title", "Tree Juice");
         add("nomansland.advancements.use_tap.description", "Collect Resin or Maple Syrup with a Tap and a Cauldron");
         add("nomansland.advancements.kill_anchored_mob.title", "Can't Even Die Right");
