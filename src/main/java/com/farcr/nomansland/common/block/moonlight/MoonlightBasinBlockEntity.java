@@ -4,13 +4,19 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.swing.*;
 import java.util.List;
 
 public class MoonlightBasinBlockEntity extends BlockEntity {
@@ -32,7 +38,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
     @Override
     public void onLoad() {
-        List<? extends DialoguePool> pool = getDialogueList(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY);
+        List<? extends DialoguePool> pool = getDialogueList(NMLRegistries.OFFERING_DIALOGUE_KEY);
         NoMansLand.LOGGER.info("loading dialogue list: " + pool.toString());
     }
 }

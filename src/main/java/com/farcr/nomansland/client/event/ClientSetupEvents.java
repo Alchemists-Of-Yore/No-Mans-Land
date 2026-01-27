@@ -217,5 +217,7 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.TRANSLUCENT_DUST.get(), sprites
                 -> (translucentDustParticleOptions, clientLevel, d, e, f, g, h, i)
                 -> new TranslucentDustParticle(clientLevel, d, e, f, g, h, i, translucentDustParticleOptions, sprites));
+        event.registerSpecial(NMLParticleTypes.MOONLIGHT_RAY.get(), (type, clientLevel, d, e, f, g, h, i)
+            -> new MoonlightRayParticle(clientLevel, d, e, f, g, h, i));
     }
 }
