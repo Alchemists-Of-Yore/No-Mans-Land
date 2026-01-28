@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -22,6 +23,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.function.Function;
@@ -81,5 +83,10 @@ public class ClientEvents {
             );
             stack.popPose();
         }
+    }
+
+    @SubscribeEvent
+    public static void onGuiRender(RenderGuiEvent.Post event) {
+        DialogueRenderer.render(event.getGuiGraphics(), event.getPartialTick());
     }
 }

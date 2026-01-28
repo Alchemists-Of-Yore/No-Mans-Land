@@ -17,6 +17,8 @@ import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
+import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.ServerboundFriendAwakenPacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -59,6 +61,8 @@ import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.jetbrains.annotations.NotNull;
@@ -249,6 +253,14 @@ public class CommonSetupEvents {
             result.set(DataComponents.POTION_CONTENTS, potionContents);
             return result;
         }
+    }
+
+    @SubscribeEvent
+    public static void registerPackets(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1");
+        // Dialogue Packet from Server
+        registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
+        registrar.playToServer(ServerboundFriendAwakenPacket.TYPE, ServerboundFriendAwakenPacket.STREAM_CODEC, ServerboundFriendAwakenPacket::handleData);
     }
 
     @SubscribeEvent
