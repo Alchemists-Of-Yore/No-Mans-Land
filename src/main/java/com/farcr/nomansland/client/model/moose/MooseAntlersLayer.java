@@ -11,6 +11,7 @@ import dev.tazer.mixed_litter.variants.Variant;
 import dev.tazer.mixed_litter.variants.VariantType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -45,8 +46,9 @@ public class MooseAntlersLayer extends RenderLayer<Moose, MooseModel<Moose>> {
 
             if (texture != null) {
                 getParentModel().prepareMobModel(moose, limbSwing, limbSwingAmount, partialTicks);
+                int overlay = LivingEntityRenderer.getOverlayCoords(moose, 0.0F);
                 VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
-                getParentModel().renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
+                getParentModel().renderToBuffer(poseStack, vertexconsumer, packedLight, overlay);
             }
         }
     }

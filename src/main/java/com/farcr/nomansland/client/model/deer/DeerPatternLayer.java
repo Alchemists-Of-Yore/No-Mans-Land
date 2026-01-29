@@ -11,6 +11,7 @@ import dev.tazer.mixed_litter.variants.Variant;
 import dev.tazer.mixed_litter.variants.VariantType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -43,9 +44,10 @@ public class DeerPatternLayer extends RenderLayer<Deer, DeerModel<Deer>> {
         }
 
         if (texture != null) {
+            int overlay = LivingEntityRenderer.getOverlayCoords(deer, 0.0F);
             getParentModel().prepareMobModel(deer, limbSwing, limbSwingAmount, partialTicks);
             VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
-            getParentModel().renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
+            getParentModel().renderToBuffer(poseStack, vertexconsumer, packedLight, overlay);
         }
     }
 }

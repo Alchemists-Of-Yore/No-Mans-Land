@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -29,8 +30,9 @@ public class MooseSaddleLayer extends RenderLayer<Moose, MooseModel<Moose>> {
             var mooseModel = getParentModel();
             mooseModel.setSaddleVisibility(true);
             var vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+            int overlay = LivingEntityRenderer.getOverlayCoords(moose, 0.0F);
             mooseModel.prepareMobModel(moose, limbSwing, limbSwingAmount, partialTicks);
-            mooseModel.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
+            mooseModel.renderToBuffer(poseStack, vertexconsumer, packedLight, overlay);
         }
     }
 }
