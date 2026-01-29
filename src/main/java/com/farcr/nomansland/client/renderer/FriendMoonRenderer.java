@@ -61,7 +61,7 @@ public class FriendMoonRenderer {
     }
 
     public static final float MOON_SIZE = 20f;
-    public static final float MOON_DISTANCE = 100f;
+    public static final float MOON_DISTANCE = 50f;
 
     public static FriendMoonAnimation MOON_ANIMATION = FriendMoonAnimation.TALKING;
 

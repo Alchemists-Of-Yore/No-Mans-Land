@@ -36,7 +36,8 @@ public class NMLRegistries {
     public static final ResourceKey<Registry<PotVariant>> POT_VARIANT_KEY = ResourceKey.createRegistryKey(NoMansLand.location("pots"));
 
     /* Moonlight Dialogue Pools */
-    public static final ResourceKey<Registry<MapCodec<? extends DialogueRegistry.DialogueCondition>>> DIALOGUE_CONDITIONAL_TYPE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/conditional"));
+    public static final ResourceKey<Registry<MapCodec<? extends DialogueRegistry.DialogueCondition>>> DIALOGUE_CONDITIONAL_TYPE_KEY
+        = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/conditional"));
     public static final Registry<MapCodec<? extends DialogueRegistry.DialogueCondition>> DIALOGUE_CONDITIONAL_TYPE =
         new RegistryBuilder<>(DIALOGUE_CONDITIONAL_TYPE_KEY).defaultKey(NoMansLand.location("none")).create();
 
