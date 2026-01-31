@@ -241,15 +241,15 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 		if (level.random.nextIntBetweenInclusive(0, 4) == 0)
 		{
 			Vec3 center = pos.getCenter();
-			level.addParticle(
-					NMLParticleTypes.MOONLIGHT_RAY.get(),
-					center.x + (level.random.nextFloat() * 8f - 4f),
-					center.y + 8,
-					center.z + (level.random.nextFloat() * 8f - 4f),
-					0,
-					0,
-					0
-			);
+//			level.addParticle(
+//					NMLParticleTypes.MOONLIGHT_RAY.get(),
+//					center.x + (level.random.nextFloat() * 8f - 4f),
+//					center.y + 8,
+//					center.z + (level.random.nextFloat() * 8f - 4f),
+//					0,
+//					0,
+//					0
+//			);
 		}
 	}
 }

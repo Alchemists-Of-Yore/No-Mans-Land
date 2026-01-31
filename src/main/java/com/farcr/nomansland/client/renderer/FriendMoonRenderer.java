@@ -1,14 +1,22 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.pots.PotSize;
+import com.farcr.nomansland.common.entity.goose.Goose;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -16,25 +24,32 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.joml.*;
+import org.lwjgl.opengl.GL14;
 
 import java.lang.Math;
+import java.util.function.IntFunction;
 
 public class FriendMoonRenderer {
-    public enum FriendMoonAnimation {
-        TALKING("talking", 1, 2),
-        SURPRISED("surprised", 1, 1),
-        HIDDEN("hidden", 1, 1),
-        HIDDEN_2("hidden_unfocused", 1, 1),
-        PHASES("phases", 6, 1);
+    public enum FriendMoonAnimation implements StringRepresentable {
+        TALKING(0, "talking", 1, 2),
+        SURPRISED(1, "surprised", 1, 1),
+        HIDDEN(2, "hidden", 1, 1),
+        HIDDEN_2(3, "hidden_unfocused", 1, 1),
+        PHASES(4, "phases", 6, 1);
 
         public static final String textureLocation = "textures/misc/friendmoon_";
         private final ResourceLocation location;
 
+        private final String name;
         private final int xFrames;
         private final int yFrames;
-        FriendMoonAnimation(String name, int xFrames, int yFrames) {
+        private final int id;
+
+        FriendMoonAnimation(int id, String name, int xFrames, int yFrames) {
             this.location = NoMansLand.location(textureLocation + name + ".png");
 
+            this.id = id;
+            this.name = name;
             this.xFrames = xFrames;
             this.yFrames = yFrames;
         }
@@ -49,9 +64,22 @@ public class FriendMoonRenderer {
             };
         }
 
-
         public ResourceLocation getLocation() {
             return location;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public static final Codec<FriendMoonAnimation> CODEC = StringRepresentable.fromEnum(FriendMoonAnimation::values);
+
+        public static final IntFunction<FriendMoonAnimation> BY_ID = ByIdMap.continuous(FriendMoonAnimation::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        public static final StreamCodec<ByteBuf, FriendMoonAnimation> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, FriendMoonAnimation::getId);
+
+        @Override
+        public String getSerializedName() {
+            return name;
         }
     }
 
@@ -64,6 +92,9 @@ public class FriendMoonRenderer {
     public static final float MOON_DISTANCE = 50f;
 
     public static FriendMoonAnimation MOON_ANIMATION = FriendMoonAnimation.TALKING;
+    public static void setFriendMoonState(FriendMoonAnimation newState) {
+        MOON_ANIMATION = newState;
+    }
 
     public static double getSkyAngle(Level level, float partialTick) {
         return -(level.getTimeOfDay(partialTick) * Math.TAU) - (Math.PI / 2f);
@@ -123,11 +154,28 @@ public class FriendMoonRenderer {
         }
     }
 
+    private static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1, FriendMoonAnimation moonAnimation, float opacity) {
+        float[] shaderColor = RenderSystem.getShaderColor();
+        RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], opacity);
+
+        RenderSystem.setShaderTexture(0, moonAnimation.getLocation());
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+        float[] uvPositions = moonAnimation.getUV(0);
+        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[0], uvPositions[3]);
+        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[2], uvPositions[3]);
+        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[2], uvPositions[1]);
+        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[0], uvPositions[1]);
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+    }
+
     public static void renderFriendMoon(Matrix4f frustumMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick, int moonPhase) {
         Minecraft mc = Minecraft.getInstance();
         assert mc.level != null;
 
         RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
 
         poseStack.mulPose(frustumMatrix);
         poseStack.pushPose();
@@ -164,23 +212,17 @@ public class FriendMoonRenderer {
         // Update moon rotation / position
         updateFriendMoonPosition(cameraEntity, originalPose, partialTick);
 
-        // Rendering moon
-        RenderSystem.setShaderTexture(0, MOON_ANIMATION.getLocation());
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        float[] uvPositions = MOON_ANIMATION.getUV(0);
-        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[0], uvPositions[3]);
-        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[2], uvPositions[3]);
-        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[2], uvPositions[1]);
-        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[0], uvPositions[1]);
-
-        float[] shaderColor = RenderSystem.getShaderColor();
-        RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], FriendMoonRenderer.getFriendMoonOpacity());
         RenderSystem.enableBlend();
-
         RenderSystem.disableCull();
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+        // Rendering moon
+        RenderSystem.blendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+        );
+        MOON_ANIMATION = FriendMoonAnimation.PHASES;
+        renderFriendMoonInternal(tesselator, matrix4f1, MOON_ANIMATION, getFriendMoonOpacity());
+
+
         RenderSystem.enableCull();
 
         RenderSystem.disableBlend();

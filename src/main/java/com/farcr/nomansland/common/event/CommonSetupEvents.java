@@ -18,6 +18,7 @@ import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.ClientboundFriendMoonStatePacket;
 import com.farcr.nomansland.common.networking.ServerboundFriendAwakenPacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -258,8 +259,11 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
+
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
+        registrar.playToClient(ClientboundFriendMoonStatePacket.TYPE, ClientboundFriendMoonStatePacket.STREAM_CODEC, ClientboundFriendMoonStatePacket::handleData);
+
         registrar.playToServer(ServerboundFriendAwakenPacket.TYPE, ServerboundFriendAwakenPacket.STREAM_CODEC, ServerboundFriendAwakenPacket::handleData);
     }
 

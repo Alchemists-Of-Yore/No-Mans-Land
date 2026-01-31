@@ -32,7 +32,7 @@ public class DialogueRenderer {
         }
 
         public double progress = 0d;
-        public static final List<String> DELIMITERS = List.of("/");
+        public static final List<String> DELIMITERS = List.of("/", "&PlayerName");
 
         private ArrayList<String> textList;
 
@@ -54,6 +54,7 @@ public class DialogueRenderer {
                     ));
                 }
             }
+
             // hacky fix lol avert your eyes
             for (int i = 0; i < finalList.size(); i++) {
                 if (finalList.get(i).contains("/")) {
@@ -76,6 +77,8 @@ public class DialogueRenderer {
                     if (progress < totalText)
                         break;
                     String subString = textList.get(i);
+                    if (subString.contains("&PlayerName"))
+                        subString = Minecraft.getInstance().getUser().getName();
                     if (!subString.contains("/"))
                         totalString += subString.substring(0, Math.min((int) (progress - totalText), subString.length()));
                     totalText += subString.length();
@@ -106,7 +109,7 @@ public class DialogueRenderer {
             Font font = mc.gui.getFont();
             guiGraphics.pose().pushPose();
 
-            float moveSpeed = 1f;
+            float moveSpeed = 0.5f;
             float t = (float) (1f - Math.exp(deltaTime * -moveSpeed));
 
             float moveTo = (mc.gui.overlayMessageTime > 0) ? (TEXT_HEIGHT * 2) : 0;

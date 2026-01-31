@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.moonlight.MoonlightBasinBlockEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -17,8 +18,6 @@ public record ServerboundFriendAwakenPacket() implements CustomPacketPayload {
     }
 
     public void handleData(final IPayloadContext context) {
-        context.enqueueWork(() -> {
-
-        });
+        context.enqueueWork(MoonlightBasinBlockEntity::wakeUpMoon);
     }
 }
