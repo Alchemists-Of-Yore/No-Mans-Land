@@ -1,14 +1,12 @@
 package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.dialogue.DialogueState;
-import com.farcr.nomansland.client.dialogue.DialogueUtil;
+import com.farcr.nomansland.common.dialogue.DialogueState;
+import com.farcr.nomansland.common.dialogue.DialogueUtil;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
-import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;

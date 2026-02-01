@@ -2,12 +2,13 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
+import com.farcr.nomansland.common.dialogue.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
@@ -55,6 +56,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -114,9 +116,6 @@ public class CommonSetupEvents {
         event.dataPackRegistry(NMLRegistries.POT_VARIANT_KEY, PotVariant.CODEC, PotVariant.CODEC);
 
         /* Moonlight Dialogue Registry */
-        /*  TODO: remove client? since they should not be going to the client
-            the server can handle that when it sends it to the client AFTER dialogue is chosen
-        */
         event.dataPackRegistry(NMLRegistries.PASSIVE_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.NEGATIVE_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.OFFERING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
@@ -262,5 +261,10 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundFriendMoonStatePacket.TYPE, ClientboundFriendMoonStatePacket.STREAM_CODEC, ClientboundFriendMoonStatePacket::handleData);
 
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
+    }
+
+    @SubscribeEvent
+    public static void onDataGather(AddReloadListenerEvent event) {
+        event.addListener(new DialogueConditionCompiler(event.getRegistryAccess()));
     }
 }

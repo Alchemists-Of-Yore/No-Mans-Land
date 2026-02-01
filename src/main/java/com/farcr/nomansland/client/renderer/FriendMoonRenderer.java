@@ -1,7 +1,7 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.dialogue.DialogueState;
+import com.farcr.nomansland.common.dialogue.DialogueState;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -23,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 
-import javax.annotation.Nullable;
 import java.lang.Math;
 import java.util.Optional;
 import java.util.function.IntFunction;

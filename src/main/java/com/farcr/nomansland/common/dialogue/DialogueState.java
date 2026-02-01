@@ -1,7 +1,5 @@
-package com.farcr.nomansland.client.dialogue;
+package com.farcr.nomansland.common.dialogue;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 

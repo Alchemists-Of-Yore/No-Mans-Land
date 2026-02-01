@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
-import com.farcr.nomansland.common.block.moonlight.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.dialogue.condition.MoonlightOfferingConditions;
 import com.mojang.serialization.MapCodec;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;

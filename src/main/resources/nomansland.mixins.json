@@ -27,6 +27,7 @@
     "NoiseRouterAccessModifier",
     "PatrolSpawnerMixin",
     "PlayerMixin",
+    "ItemStackMixin",
     "RailStateMixin",
     "RandomStrollGoalMixin",
     "RegistryFileCodecMixin",

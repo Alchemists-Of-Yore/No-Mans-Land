@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.dialogue;
+package com.farcr.nomansland.common.dialogue;
 
 import net.minecraft.client.Minecraft;
 

@@ -1,25 +1,12 @@
-package com.farcr.nomansland.common.block.moonlight;
+package com.farcr.nomansland.common.dialogue;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.moonlight.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.HolderSetCodec;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryBuilder;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 public class DialogueRegistry {
@@ -49,5 +36,13 @@ public class DialogueRegistry {
      */
     public interface CompiledCondition<T> extends DialogueCondition {
         public HolderSet<T> getValue();
+        public HashMap<T, ArrayList<DialoguePool>> getMap();
+        default void consume(DialoguePool dialoguePool){
+            getValue().forEach((holder) -> {
+                ArrayList<DialoguePool> poolList = getMap().getOrDefault(holder.value(), new ArrayList<>());
+                poolList.add(dialoguePool);
+                getMap().put(holder.value(), poolList);
+            });
+        };
     }
 }

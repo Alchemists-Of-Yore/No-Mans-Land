@@ -1,6 +1,5 @@
-package com.farcr.nomansland.client.dialogue;
+package com.farcr.nomansland.common.dialogue;
 
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;

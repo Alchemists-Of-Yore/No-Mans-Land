@@ -1,12 +1,12 @@
 package com.farcr.nomansland.common.blockentity;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.dialogue.DialogueContainer;
-import com.farcr.nomansland.client.dialogue.DialogueState;
-import com.farcr.nomansland.client.dialogue.DialogueUtil;
+import com.farcr.nomansland.common.dialogue.DialogueContainer;
+import com.farcr.nomansland.common.dialogue.DialogueState;
+import com.farcr.nomansland.common.dialogue.DialogueUtil;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.effect.FriendshipEffect;
 import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.ClientboundFriendMoonStatePacket;
 import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
@@ -46,8 +46,10 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         AWAKEN(0, (basin) -> {
             basin.moonAwake = true;
             basin.forFriendshipPlayers((player) -> {
-                NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
-                PacketDistributor.sendToPlayer(player, new ClientboundFriendMoonStatePacket(FriendMoonRenderer.FriendMoonAnimation.TALKING));
+                if (player.getEffect(NMLEffects.FRIENDSHIP) != null) {
+                    NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
+                    PacketDistributor.sendToPlayer(player, new ClientboundFriendMoonStatePacket(FriendMoonRenderer.FriendMoonAnimation.TALKING));
+                }
             }, false);
         });
 
@@ -192,11 +194,13 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         // calculate dialogue length in ticks
         Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
         DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
-        float deltaToTicks = ((60 / 20) / 2f); // not sure why this works but it does
+        float deltaToTicks = ((60 / 20f) / 2f); // not sure why this works but it does
         dialogueTicks = (int) ((dialogueContainer.getTextLength() * (DialogueState.DIALOGUE_SPEED) * deltaToTicks));
         dialogueTicks += (20) * level.getRandom().nextIntBetweenInclusive(5, 8);
     }
 
     @Override
-    public void onLoad() {}
+    public void onLoad() {
+
+    }
 }

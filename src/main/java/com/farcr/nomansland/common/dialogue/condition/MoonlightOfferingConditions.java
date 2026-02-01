@@ -1,23 +1,19 @@
-package com.farcr.nomansland.common.block.moonlight.condition;
+package com.farcr.nomansland.common.dialogue.condition;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
-import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialogueCondition;
-import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.mojang.serialization.Codec;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.dialogue.DialogueRegistry.DialogueCondition;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MoonlightOfferingConditions {
     public record ItemOfferingConditional(HolderSet<Item> items) implements DialogueRegistry.CompiledCondition<Item> {
@@ -28,6 +24,12 @@ public class MoonlightOfferingConditions {
                 ).fieldOf("items").forGetter(ItemOfferingConditional::items)
             ).apply(instance, ItemOfferingConditional::new)
         );
+
+        public static HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
+        @Override
+        public HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
+            return COMPILED_MAP;
+        }
 
         @Override
         public MapCodec<? extends DialogueCondition> codec() {
@@ -48,6 +50,12 @@ public class MoonlightOfferingConditions {
                 ).fieldOf("entity").forGetter(EntityOfferingConditional::entities)
             ).apply(instance, EntityOfferingConditional::new)
         );
+
+        public static HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
+        @Override
+        public HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
+            return COMPILED_MAP;
+        }
 
         @Override
         public MapCodec<? extends DialogueCondition> codec() {
