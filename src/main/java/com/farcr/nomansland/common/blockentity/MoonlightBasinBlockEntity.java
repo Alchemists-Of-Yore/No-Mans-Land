@@ -1,13 +1,18 @@
 package com.farcr.nomansland.common.blockentity;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.dialogue.DialogueContainer;
+import com.farcr.nomansland.client.dialogue.DialogueState;
+import com.farcr.nomansland.client.dialogue.DialogueUtil;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
 import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.ClientboundFriendMoonStatePacket;
 import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.*;
@@ -28,6 +33,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
@@ -92,6 +98,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         pulseUpdate();
     }
 
+    private int dialogueTicks = 10;
+
     public static boolean isNightTime(Level level) {
         return (level.getSkyDarken() >= 10);
     }
@@ -147,6 +155,9 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             if (isNightTime(level)) {
                 if (!blockEntity.hasResetValues)
                     blockEntity.resetValues();
+
+                if (blockEntity.moonAwake)
+                    blockEntity.moonTick();
             } else {
                 if (blockEntity.timeAllowed) {
                     blockEntity.timeAllowed = false;
@@ -159,9 +170,31 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }
     }
 
+    public void moonTick() {
+        // Passive Interaction
+        dialogueTicks = Math.max(dialogueTicks - 1, 0);
+        if (dialogueTicks <= 0)
+            sendRandomDialogue(NMLRegistries.PASSIVE_DIALOGUE_KEY);
+    }
+
+    public void sendRandomDialogue(ResourceKey<Registry<DialoguePool>> registryKey) {
+        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
+        Optional<Holder.Reference<DialoguePool>> optionalDialogue = dialogueRegistry.getRandom(level.getRandom());
+        optionalDialogue.ifPresent(dialogueReference -> sendDialogue(dialogueRegistry.getKey(dialogueReference.value()), registryKey));
+    }
+
     public void sendDialogue(ResourceLocation dialogueLocation, ResourceKey<Registry<DialoguePool>> registryKey) {
-        if (!this.level.isClientSide())
-            PacketDistributor.sendToAllPlayers(new ClientboundDialoguePacket(dialogueLocation, registryKey.location()));
+        // send packet to players
+        forFriendshipPlayers((serverPlayer) -> {
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(dialogueLocation, registryKey.location()));
+        }, false);
+
+        // calculate dialogue length in ticks
+        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
+        DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
+        float deltaToTicks = ((60 / 20) / 2f); // not sure why this works but it does
+        dialogueTicks = (int) ((dialogueContainer.getTextLength() * (DialogueState.DIALOGUE_SPEED) * deltaToTicks));
+        dialogueTicks += (20) * level.getRandom().nextIntBetweenInclusive(5, 8);
     }
 
     @Override

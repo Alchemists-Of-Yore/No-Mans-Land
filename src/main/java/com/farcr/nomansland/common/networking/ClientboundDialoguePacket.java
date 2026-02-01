@@ -1,6 +1,8 @@
 package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.dialogue.DialogueState;
+import com.farcr.nomansland.client.dialogue.DialogueUtil;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.block.moonlight.DialogueRegistry;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -34,19 +36,14 @@ public record ClientboundDialoguePacket(ResourceLocation resourceLocation, Resou
         context.enqueueWork(() -> {
             Player player = context.player();
             ResourceKey<Registry<DialogueRegistry.DialoguePool>> tempKey = ResourceKey.createRegistryKey(registryLocation);
-            try {
-                RegistryAccess registryAccess = player.level().registryAccess();
-                Registry<DialogueRegistry.DialoguePool> dialogueRegistry = registryAccess.registryOrThrow(tempKey);
-                DialogueRegistry.DialoguePool dialoguePool = dialogueRegistry.get(resourceLocation);
+            Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(player.level(), tempKey);
+            DialogueRegistry.DialoguePool dialoguePool = dialogueRegistry.get(resourceLocation);
 
-                // Set Dialogue
-                DialogueRenderer.setCurrentState(new DialogueRenderer.DialogueState(
-                    resourceLocation, dialoguePool
-                ));
-
-            } catch (IllegalStateException e) {
-                throw new RuntimeException("Error obtaining dialogue registry: " + e);
-            }
+            // Set Dialogue
+            assert dialoguePool != null;
+            DialogueRenderer.setCurrentState(new DialogueState(
+                resourceLocation, dialoguePool
+            ));
         });
     }
 }

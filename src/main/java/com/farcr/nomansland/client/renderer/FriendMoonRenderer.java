@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.dialogue.DialogueState;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -139,6 +140,8 @@ public class FriendMoonRenderer {
     }
 
     public static float animationProgress = 0;
+    public static float talkAnimationProgress = 0; // separated for smoothness in talking
+
     public static void updateFriendMoonPosition(Entity cameraEntity, Matrix4f moonViewMatrix, float partialTick) {
         // Temporary Wake Up Logic
         Minecraft mc = Minecraft.getInstance();
@@ -147,7 +150,7 @@ public class FriendMoonRenderer {
         boolean fadeOut = true;
         float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
         float fadeSpeed = deltaTime / 20f;
-        float animateSpeed = deltaTime / 5f;
+        float turnAnimateSpeed = deltaTime / (15f);
 
         if (clientBlockPos != null) {
             assert player != null;
@@ -163,7 +166,7 @@ public class FriendMoonRenderer {
                     if (!basin.moonAwake) {
                         // moon rotation
                         if (friendMoonOpacity >= 1) {
-                            animationProgress = Math.min(animationProgress + animateSpeed, getFriendMoonAnimation().getFrames());
+                            animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
                             if (animationProgress >= getFriendMoonAnimation().getFrames()) {
                                 PacketDistributor.sendToServer(new ServerboundFriendMoonUpdatePacket(
                                     clientBlockPos, MoonlightBasinBlockEntity.FriendMoonUpdatePacket.AWAKEN
@@ -171,11 +174,23 @@ public class FriendMoonRenderer {
                             }
                         } else
                             setFriendMoonAnimation(FriendMoonAnimation.PHASES);
-                    } else // Set default animation to emotion (server chosen)
+                    } else {
+                        // Set default animation to emotion (server chosen)
                         setFriendMoonAnimation(EMOTION);
+                        DialogueState currentState = DialogueRenderer.getCurrentState();
+                        if (currentState != null) {
+                            float talkSpeed = 1 / 3f;
+                            if (currentState.canSpeakCurrently() && !currentState.doneTalking) {
+                                talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
+                                animationProgress = talkAnimationProgress;
+                            } else {
+                                talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
+                                animationProgress = 0;
+                            }
+                        }
+                    }
                 }
             }
-
         }
         if (fadeOut) {
             friendMoonOpacity = Math.max(friendMoonOpacity - fadeSpeed, 0);
