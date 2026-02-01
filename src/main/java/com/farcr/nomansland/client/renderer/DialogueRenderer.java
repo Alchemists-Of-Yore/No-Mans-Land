@@ -103,7 +103,7 @@ public class DialogueRenderer {
 
             float gameWidth = guiGraphics.guiWidth();
             List<String> constructedText = currentState.constructText();
-            float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
+            float deltaTime = deltaTracker.getGameTimeDeltaTicks();
             currentState.progress += deltaTime * (DIALOGUE_SPEED * 45f);
 
             Font font = mc.gui.getFont();

@@ -1,0 +1,20 @@
+{
+  "display": {
+    "description": {
+      "translate": "nomansland.advancements.meet_friend_moon.description"
+    },
+    "icon": {
+      "id": "nomansland:moonlight_candle"
+    },
+    "title": {
+      "translate": "nomansland.advancements.meet_friend_moon.title"
+    },
+    "frame": "task"
+  },
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "meet_friend_moon_trigger": {
+      "trigger": "nomansland:meet_friend_moon_trigger"
+    }
+  }
+}

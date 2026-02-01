@@ -2,7 +2,6 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.particle.MoonlightRayParticle;
 import com.farcr.nomansland.common.block.moonlight.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
@@ -19,7 +18,8 @@ import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.ClientboundFriendMoonStatePacket;
-import com.farcr.nomansland.common.networking.ServerboundFriendAwakenPacket;
+import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
+import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -29,8 +29,6 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
@@ -55,7 +53,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
@@ -68,7 +65,6 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -262,20 +258,9 @@ public class CommonSetupEvents {
 
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
+        registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToClient(ClientboundFriendMoonStatePacket.TYPE, ClientboundFriendMoonStatePacket.STREAM_CODEC, ClientboundFriendMoonStatePacket::handleData);
 
-        registrar.playToServer(ServerboundFriendAwakenPacket.TYPE, ServerboundFriendAwakenPacket.STREAM_CODEC, ServerboundFriendAwakenPacket::handleData);
-    }
-
-    @SubscribeEvent
-    public static void registerShaders(RegisterShadersEvent event) throws IOException {
-        event.registerShader(
-            new ShaderInstance(
-                event.getResourceProvider(),
-                NoMansLand.location("rendertype_moonlight"),
-                DefaultVertexFormat.NEW_ENTITY
-            ),
-            shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
-        );
+        registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
     }
 }
