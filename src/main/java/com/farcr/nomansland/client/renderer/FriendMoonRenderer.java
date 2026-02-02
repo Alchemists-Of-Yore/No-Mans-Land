@@ -1,8 +1,8 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.dialogue.DialogueState;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
+import com.farcr.nomansland.common.dialogue.DialogueState;
 import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -18,12 +18,16 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import java.lang.Math;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
@@ -103,6 +107,10 @@ public class FriendMoonRenderer {
 
     public static float friendMoonPitchAngle = 0f;
     public static float friendMoonYawAngle = 0f;
+    public static float friendMoonPitchDirection = 0f;
+    public static float friendMoonYawDirection = 0f;
+    public static float friendMoonPitchStep = 0;
+    public static float friendMoonYawStep = 0;
 
     public static boolean moonOnScreen(Minecraft mc, Matrix4f moonViewMatrix, float partialTick) {
         Camera camera = mc.gameRenderer.getMainCamera();
@@ -196,6 +204,60 @@ public class FriendMoonRenderer {
             if (friendMoonOpacity <= 0)
                 animationProgress = 0;
         }
+
+        RandomSource random = cameraEntity.getRandom();
+        float pitch = cameraEntity.getViewXRot(partialTick) + 90;
+        float yaw = -cameraEntity.getViewYRot(partialTick);
+        float speed = deltaTime / 30;
+
+        float minX = pitch - 20;
+        float minY = yaw - 30;
+        float maxX = pitch + 20;
+        float maxY = yaw + 30;
+
+        float desiredPitchStep = friendMoonPitchDirection;
+        float desiredYawStep = friendMoonYawDirection;
+
+        friendMoonPitchStep = Mth.lerp(speed, friendMoonPitchStep, desiredPitchStep);
+        friendMoonYawStep = Mth.lerp(speed, friendMoonYawStep, desiredYawStep);
+
+        float targetPitch = friendMoonPitchAngle + friendMoonPitchStep;
+        float targetYaw = friendMoonYawAngle + friendMoonYawStep;
+
+        if (targetPitch < minX || targetPitch > maxX) {
+            friendMoonPitchDirection = friendMoonPitchDirection == 1 ? -1 : 1;
+            if (random.nextFloat() < 0.1) friendMoonYawDirection = friendMoonYawDirection == 1 ? -1 : 1;
+        }
+
+        if (targetYaw < minY || targetYaw > maxY) {
+            friendMoonYawDirection = friendMoonYawDirection == 1 ? -1 : 1;
+            if (random.nextFloat() < 0.1) friendMoonPitchDirection = friendMoonPitchDirection == 1 ? -1 : 1;
+        }
+
+        float repelX = pitch;
+        float repelY = yaw;
+        float repelRadius = 10;
+
+        float dx = targetPitch - repelX;
+        float dy = targetYaw - repelY;
+        float distanceSq = dx * dx + dy * dy;
+
+        if (distanceSq < repelRadius * repelRadius) {
+            float distance = Mth.sqrt(distanceSq);
+            float pushStrength = (repelRadius - distance) / repelRadius * 8;
+            if (distance != 0) {
+                targetPitch += dx / distance * pushStrength;
+                targetYaw += dy / distance * pushStrength;
+            }
+        }
+
+
+        friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, targetPitch);
+        friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, targetYaw);
+
+        friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, Mth.clamp(friendMoonPitchAngle, minX, maxX));
+        friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, Mth.clamp(friendMoonYawAngle, minY, maxY));
+
 //        Vector3f cameraPitchYaw = euler(cameraEntity.getForward().toVector3f());
 //
 //        Vector3f moonPosition = moonViewMatrix.transformPosition(0f, MOON_DISTANCE, 0f, new Vector3f());
@@ -227,10 +289,10 @@ public class FriendMoonRenderer {
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         float[] uvPositions = moonAnimation.getUV(animationFrame);
-        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[0], uvPositions[3]);
-        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[2], uvPositions[3]);
-        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[2], uvPositions[1]);
-        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[0], uvPositions[1]);
+        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[0], uvPositions[3]);
+        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, -MOON_SIZE).setUv(uvPositions[2], uvPositions[3]);
+        buffer.addVertex(matrix4f1, MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[2], uvPositions[1]);
+        buffer.addVertex(matrix4f1, -MOON_SIZE, MOON_DISTANCE, MOON_SIZE).setUv(uvPositions[0], uvPositions[1]);
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], 1f);
@@ -256,24 +318,24 @@ public class FriendMoonRenderer {
 
         Entity cameraEntity = mc.getCameraEntity();
 
-        Vector3f cameraForward = cameraEntity.getForward().toVector3f()
-            .mul(new Vector3f(-1f, 0f, 1f)).normalize();
-
-        Vector3f cameraUp = cameraEntity.getUpVector(partialTick).toVector3f()
-            .mul(new Vector3f(-1f, 1f, 1f));
-
-        if (Math.abs(cameraForward.dot(cameraUp)) > 0.999f)
-            cameraUp = new Vector3f(0f, 0.1f, 0f);
-
-        Vector3f right = new Vector3f(cameraUp).cross(new Vector3f(cameraForward).negate()).normalize();
-        Vector3f up = new Vector3f(cameraForward).negate().cross(right);
-
-        matrix4f1.mul(new Matrix4f(
-            right.x, up.x, -cameraForward.x, 0f,
-            right.y, up.y, -cameraForward.y, 0f,
-            right.z, up.z, -cameraForward.z, 0f,
-            0f, 0f, 0f, 1f
-        ));
+//        Vector3f cameraForward = cameraEntity.getForward().toVector3f()
+//                .mul(new Vector3f(-1f, 0f, 1f)).normalize();
+//
+//        Vector3f cameraUp = cameraEntity.getUpVector(partialTick).toVector3f()
+//                .mul(new Vector3f(-1f, 1f, 1f));
+//
+//        if (Math.abs(cameraForward.dot(cameraUp)) > 0.999f)
+//            cameraUp = new Vector3f(0f, 0.1f, 0f);
+//
+//        Vector3f right = new Vector3f(cameraUp).cross(new Vector3f(cameraForward).negate()).normalize();
+//        Vector3f up = new Vector3f(cameraForward).negate().cross(right);
+//
+//        matrix4f1.mul(new Matrix4f(
+//                right.x, up.x, -cameraForward.x, 0f,
+//                right.y, up.y, -cameraForward.y, 0f,
+//                right.z, up.z, -cameraForward.z, 0f,
+//                0f, 0f, 0f, 1f
+//        ));
 
         // Update moon rotation / position
         updateFriendMoonPosition(cameraEntity, originalPose, partialTick);
