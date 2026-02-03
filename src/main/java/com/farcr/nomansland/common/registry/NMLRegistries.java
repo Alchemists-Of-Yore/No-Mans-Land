@@ -2,8 +2,8 @@ package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.ambience.fogmodifiers.FogModifier;
-import com.farcr.nomansland.common.dialogue.DialogueRegistry;
-import com.farcr.nomansland.common.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;

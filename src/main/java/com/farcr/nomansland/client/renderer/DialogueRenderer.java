@@ -1,6 +1,8 @@
 package com.farcr.nomansland.client.renderer;
 
-import com.farcr.nomansland.common.dialogue.DialogueState;
+import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.friend.dialogue.DialogueState;
+import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -8,6 +10,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
@@ -22,8 +26,6 @@ public class DialogueRenderer {
 
     public static final int TEXT_HEIGHT = 9;
     public static float actionBarDisplacement = 0f;
-
-    public static final int FRIEND_MOON_TEXT_COLOR = 9276752;
 
     public static void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (currentState != null) {
@@ -67,7 +69,7 @@ public class DialogueRenderer {
                             FastColor.ARGB32.colorFromFloat((float) alpha, 0f, 0f, 0f)
                         );
                     }
-                    guiGraphics.drawString(font, text, leftPos, 0, FRIEND_MOON_TEXT_COLOR);
+                    guiGraphics.drawString(font, text, leftPos, 0, DialogueUtil.FRIEND_MOON_TEXT_COLOR);
                     guiGraphics.pose().translate(0, -(TEXT_HEIGHT + 4), 0);
                 }
             }

@@ -24,8 +24,10 @@ public record ClientboundMoonlightBasinTrackPacket(
     }
 
     public void handleData(final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            FriendMoonRenderer.clientBlockPos = pos();
-        });
+        if (context.flow().isClientbound()) {
+            context.enqueueWork(() -> {
+                FriendMoonRenderer.clientBlockPos = pos();
+            });
+        }
     }
 }

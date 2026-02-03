@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.dialogue;
+package com.farcr.nomansland.common.friend.dialogue;
 
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;

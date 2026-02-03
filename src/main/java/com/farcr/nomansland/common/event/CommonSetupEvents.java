@@ -2,13 +2,14 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
-import com.farcr.nomansland.common.dialogue.condition.DialogueConditionCompiler;
+import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
@@ -18,7 +19,6 @@ import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
-import com.farcr.nomansland.common.networking.ClientboundFriendMoonStatePacket;
 import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
@@ -35,6 +35,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -60,6 +61,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -252,19 +254,23 @@ public class CommonSetupEvents {
     }
 
     @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Pre event) {
+        ServerLevel level = event.getServer().overworld();
+        FriendMoon.getOrDefault(level).tick();
+    }
+
+    @SubscribeEvent
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
 
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
-        registrar.playToClient(ClientboundFriendMoonStatePacket.TYPE, ClientboundFriendMoonStatePacket.STREAM_CODEC, ClientboundFriendMoonStatePacket::handleData);
-
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
     }
 
     @SubscribeEvent
-    public static void onDataGather(AddReloadListenerEvent event) {
+    public static void onReload(AddReloadListenerEvent event) {
         event.addListener(new DialogueConditionCompiler(event.getRegistryAccess()));
     }
 }

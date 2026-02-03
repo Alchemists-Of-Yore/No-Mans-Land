@@ -1,12 +1,10 @@
-package com.farcr.nomansland.common.mixin;
+package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.renderer.DialogueRenderer;
-import com.farcr.nomansland.common.dialogue.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,9 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
@@ -33,7 +29,7 @@ public abstract class ItemStackMixin {
             return;
 
         List<Component> originalList = cir.getReturnValue();
-        originalList.add(1, Component.literal("*").withColor(DialogueRenderer.FRIEND_MOON_TEXT_COLOR));
+        originalList.add(1, Component.literal("*").withColor(DialogueUtil.FRIEND_MOON_TEXT_COLOR));
         cir.setReturnValue(originalList);
     }
 }

@@ -1,7 +1,7 @@
-package com.farcr.nomansland.common.dialogue.condition;
+package com.farcr.nomansland.common.friend.condition;
 
-import com.farcr.nomansland.common.dialogue.DialogueRegistry;
-import com.farcr.nomansland.common.dialogue.DialogueRegistry.DialogueCondition;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialogueCondition;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
@@ -13,7 +13,6 @@ import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MoonlightOfferingConditions {
     public record ItemOfferingConditional(HolderSet<Item> items) implements DialogueRegistry.CompiledCondition<Item> {

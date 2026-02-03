@@ -1,8 +1,10 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.friend.FriendMoonUpdate;
+import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
-import com.farcr.nomansland.common.dialogue.DialogueState;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -22,12 +24,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
@@ -42,7 +44,6 @@ public class FriendMoonRenderer {
         public static final String textureLocation = "textures/misc/friendmoon_";
         private final ResourceLocation location;
 
-        private final String name;
         private final int xFrames;
         private final int yFrames;
         private final int id;
@@ -51,7 +52,6 @@ public class FriendMoonRenderer {
             this.location = NoMansLand.location(textureLocation + name + ".png");
 
             this.id = id;
-            this.name = name;
             this.xFrames = xFrames;
             this.yFrames = yFrames;
         }
@@ -139,8 +139,6 @@ public class FriendMoonRenderer {
         return new Vector3f(Float.isNaN(pitch) ? 0f : pitch, Float.isNaN(yaw) ? 0f : yaw, 0f);
     }
 
-    public static BlockPos clientBlockPos;
-
     // Retrieve Animation Type Logic
     private static FriendMoonAnimation getFriendMoonAnimation() {
         return MOON_ANIMATION;
@@ -149,6 +147,7 @@ public class FriendMoonRenderer {
     public static float animationProgress = 0;
     public static float talkAnimationProgress = 0; // separated for smoothness in talking
 
+    public static BlockPos clientBlockPos;
     public static void updateFriendMoonPosition(Entity cameraEntity, Matrix4f moonViewMatrix, float partialTick) {
         // Temporary Wake Up Logic
         Minecraft mc = Minecraft.getInstance();
@@ -160,39 +159,37 @@ public class FriendMoonRenderer {
         float turnAnimateSpeed = deltaTime / (15f);
 
         if (clientBlockPos != null) {
-            assert player != null;
-            Optional<MoonlightBasinBlockEntity> basinEntity = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
-            // Can stare up at the moon and it'll show up
-            if (player.hasEffect(NMLEffects.FRIENDSHIP) && (basinEntity.isPresent() && basinEntity.get().timeAllowed)) {
-                MoonlightBasinBlockEntity basin = basinEntity.get();
-                // temporary just "moon on screen" i will replace with facing upwards
-                if (moonOnScreen(mc, moonViewMatrix, partialTick) || basin.moonAwake) {
-                    fadeOut = false;
-                    friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
-                    // moon awakening logic
-                    if (!basin.moonAwake) {
-                        // moon rotation
-                        if (friendMoonOpacity >= 1) {
-                            animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
-                            if (animationProgress >= getFriendMoonAnimation().getFrames()) {
-                                PacketDistributor.sendToServer(new ServerboundFriendMoonUpdatePacket(
-                                    clientBlockPos, MoonlightBasinBlockEntity.FriendMoonUpdatePacket.AWAKEN
-                                ));
-                            }
-                        } else
-                            setFriendMoonAnimation(FriendMoonAnimation.PHASES);
-                    } else {
-                        // Set default animation to emotion (server chosen)
-                        setFriendMoonAnimation(EMOTION);
-                        DialogueState currentState = DialogueRenderer.getCurrentState();
-                        if (currentState != null) {
-                            float talkSpeed = 1 / 3f;
-                            if (currentState.canSpeakCurrently() && !currentState.doneTalking) {
-                                talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
-                                animationProgress = talkAnimationProgress;
-                            } else {
-                                talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
-                                animationProgress = 0;
+            Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
+            if (optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null)) {
+                FriendMoon friendMoonInstance = optionalBasin.get().clientMoon;
+                // Can stare up at the moon and it'll show up
+                if (player.hasEffect(NMLEffects.FRIENDSHIP)) {
+                    // temporary just "moon on screen" i will replace with facing upwards
+                    if (moonOnScreen(mc, moonViewMatrix, partialTick) || friendMoonInstance.isAwake()) {
+                        fadeOut = false;
+                        friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
+                        // moon awakening logic
+                        if (!friendMoonInstance.isAwake()) {
+                            // moon rotation
+                            if (friendMoonOpacity >= 1) {
+                                animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
+                                if (animationProgress >= getFriendMoonAnimation().getFrames())
+                                    PacketDistributor.sendToServer(new ServerboundFriendMoonUpdatePacket(FriendMoonUpdate.AWAKEN));
+                            } else
+                                setFriendMoonAnimation(FriendMoonAnimation.PHASES);
+                        } else {
+                            // Set default animation to emotion (server chosen)
+                            setFriendMoonAnimation(EMOTION);
+                            DialogueState currentState = DialogueRenderer.getCurrentState();
+                            if (currentState != null) {
+                                float talkSpeed = 1 / 3f;
+                                if (currentState.canSpeakCurrently() && !currentState.doneTalking) {
+                                    talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
+                                    animationProgress = talkAnimationProgress;
+                                } else {
+                                    talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
+                                    animationProgress = 0;
+                                }
                             }
                         }
                     }
@@ -251,34 +248,11 @@ public class FriendMoonRenderer {
             }
         }
 
-
         friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, targetPitch);
         friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, targetYaw);
 
         friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, Mth.clamp(friendMoonPitchAngle, minX, maxX));
         friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, Mth.clamp(friendMoonYawAngle, minY, maxY));
-
-//        Vector3f cameraPitchYaw = euler(cameraEntity.getForward().toVector3f());
-//
-//        Vector3f moonPosition = moonViewMatrix.transformPosition(0f, MOON_DISTANCE, 0f, new Vector3f());
-//        Vector3f moonPitchYaw = euler(moonPosition.sub(cameraEntity.getPosition(partialTick).toVector3f()).normalize());
-//
-//        float moonRadius = 180f * ((float) Math.PI / 180f);
-//        Vector2f moonRotation = new Vector2f(
-//            (cameraPitchYaw.x - moonPitchYaw.x),
-//            (cameraPitchYaw.y - moonPitchYaw.y)
-//        );
-//        float distance = moonRotation.length();
-//        if (distance < moonRadius) {
-//            float t = Math.clamp(1f - (distance / moonRadius), 0f, 1f);
-//            float strength = 1f;
-//            moonRotation.mul(t * strength);
-//
-//            NoMansLand.LOGGER.info("in radius");
-//
-//            friendMoonYawAngle += moonRotation.x;
-//            friendMoonPitchAngle += moonRotation.y;
-//        }
     }
 
     private static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1, FriendMoonAnimation moonAnimation, float opacity, int animationFrame) {
@@ -316,29 +290,8 @@ public class FriendMoonRenderer {
         Matrix4f matrix4f1 = poseStack.last().pose();
         Matrix4f originalPose = new Matrix4f(matrix4f1);
 
-        Entity cameraEntity = mc.getCameraEntity();
-
-//        Vector3f cameraForward = cameraEntity.getForward().toVector3f()
-//                .mul(new Vector3f(-1f, 0f, 1f)).normalize();
-//
-//        Vector3f cameraUp = cameraEntity.getUpVector(partialTick).toVector3f()
-//                .mul(new Vector3f(-1f, 1f, 1f));
-//
-//        if (Math.abs(cameraForward.dot(cameraUp)) > 0.999f)
-//            cameraUp = new Vector3f(0f, 0.1f, 0f);
-//
-//        Vector3f right = new Vector3f(cameraUp).cross(new Vector3f(cameraForward).negate()).normalize();
-//        Vector3f up = new Vector3f(cameraForward).negate().cross(right);
-//
-//        matrix4f1.mul(new Matrix4f(
-//                right.x, up.x, -cameraForward.x, 0f,
-//                right.y, up.y, -cameraForward.y, 0f,
-//                right.z, up.z, -cameraForward.z, 0f,
-//                0f, 0f, 0f, 1f
-//        ));
-
         // Update moon rotation / position
-        updateFriendMoonPosition(cameraEntity, originalPose, partialTick);
+        updateFriendMoonPosition(mc.getCameraEntity(), originalPose, partialTick);
 
         RenderSystem.enableBlend();
         RenderSystem.disableCull();

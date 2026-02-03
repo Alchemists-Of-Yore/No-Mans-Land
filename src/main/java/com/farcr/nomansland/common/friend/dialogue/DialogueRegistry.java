@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.dialogue;
+package com.farcr.nomansland.common.friend.dialogue;
 
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;

@@ -2,6 +2,8 @@ package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
+import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.friend.FriendMoonUpdate;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
@@ -12,13 +14,10 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.Optional;
 
 public record ServerboundFriendMoonUpdatePacket(
-    BlockPos pos,
-    MoonlightBasinBlockEntity.FriendMoonUpdatePacket packetType
+    FriendMoonUpdate packetType
 ) implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ServerboundFriendMoonUpdatePacket> STREAM_CODEC  = StreamCodec.composite(
-        BlockPos.STREAM_CODEC,
-        ServerboundFriendMoonUpdatePacket::pos,
-        MoonlightBasinBlockEntity.FriendMoonUpdatePacket.STREAM_CODEC,
+        FriendMoonUpdate.STREAM_CODEC,
         ServerboundFriendMoonUpdatePacket::packetType,
         ServerboundFriendMoonUpdatePacket::new
     );
@@ -30,12 +29,12 @@ public record ServerboundFriendMoonUpdatePacket(
     }
 
     public void handleData(final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Optional<MoonlightBasinBlockEntity> optionalBasin = context.player().level().getBlockEntity(pos(), NMLBlockEntities.MOONLIGHT_BASIN.get());
-            if (optionalBasin.isPresent()) {
-                MoonlightBasinBlockEntity basinEntity = optionalBasin.get();
-                basinEntity.packetUpdateEvent(packetType());
-            }
-        });
+        if (context.flow().isServerbound()) {
+            context.enqueueWork(() -> {
+                FriendMoon friendMoon = FriendMoon.getOrDefault(context.player().getServer().overworld());
+                if (context.player().hasEffect(FriendMoon.FRIENDSHIP))
+                    friendMoon.packetUpdateEvent(packetType());
+            });
+        }
     }
 }

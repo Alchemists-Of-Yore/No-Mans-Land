@@ -34,13 +34,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/*
- * TODO: Implement some bulllsshiiit java consumer stuff to minimize the amount of rendundant for loops.
- *  Probably not important, but I'm going to write it down for the sake of my sanity.
- *
- *  with how much work I have to do this is no longer at all a priority lol please remind me in like 5 months
- */
-
 public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
 {
 	public static final MapCodec<MoonlightBasinBlock> CODEC = simpleCodec(MoonlightBasinBlock::new);
@@ -65,13 +58,11 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 	/*
 	 * Apologies for this UNHOLY code
 	 */
-	public static VoxelShape rotateBoundingBox(VoxelShape baseShape, int times)
-	{
+	public static VoxelShape rotateBoundingBox(VoxelShape baseShape, int times) {
 		List<AABB> boxes = baseShape.toAabbs();
 		VoxelShape rotatedShape = Shapes.empty();
 
-		for (AABB box : boxes)
-		{
+		for (AABB box : boxes) {
 			double minX = box.minX;
 			double minY = box.minY;
 			double minZ = box.minZ;
@@ -79,8 +70,7 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 			double maxY = box.maxY;
 			double maxZ = box.maxZ;
 
-			for (int i = 0; i < times; i++)
-			{
+			for (int i = 0; i < times; i++) {
 				double rMinX = 1.0 - maxZ;
 				double rMinZ = minX;
 				double rMaxX = 1.0 - minZ;
@@ -118,8 +108,7 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 	public static final IntegerProperty PART = IntegerProperty.create("part", 0, 8);
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	public MoonlightBasinBlock(Properties properties)
-	{
+	public MoonlightBasinBlock(Properties properties) {
 		super(properties);
 		this.registerDefaultState(
 				this.stateDefinition.any().setValue(PART, MULTIBLOCK_CENTER)
@@ -128,42 +117,32 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 	}
 
 	@Nullable
-	public BlockState getStateForPlacement(BlockPlaceContext context)
-	{
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos blockpos = context.getClickedPos();
 		Level level = context.getLevel();
-		for (int i = 0; i < MULTIBLOCK_SIZE; i++)
-		{
-			for (int j = 0; j < MULTIBLOCK_SIZE; j++)
-			{
+		for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+			for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
 				BlockPos newPosition = blockpos.offset(new Vec3i(i - 1, 0, j - 1));
 				if (!level.getBlockState(newPosition).canBeReplaced(context))
-				{
 					return null;
-				}
 			}
 		}
 		return this.defaultBlockState();
 	}
 
-	public static BlockPos calculateCenterPosition(BlockPos pos, BlockState state)
-	{
+	public static BlockPos calculateCenterPosition(BlockPos pos, BlockState state) {
 		int position = state.getValue(PART);
 		int i = (position % MULTIBLOCK_SIZE);
 		int j = (position / MULTIBLOCK_SIZE);
 		return pos.offset(new Vec3i(1 - i, 0, 1 - j));
 	}
 
-	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player)
-	{
+	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
 		BlockPos centerPosition = calculateCenterPosition(pos, state);
-		for (int i = 0; i < MULTIBLOCK_SIZE; i++)
-		{
-			for (int j = 0; j < MULTIBLOCK_SIZE; j++)
-			{
+		for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+			for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
 				BlockPos newPosition = centerPosition.offset(new Vec3i(i - 1, 0, j - 1));
-				if (!newPosition.equals(pos))
-				{
+				if (!newPosition.equals(pos)) {
 					level.setBlock(newPosition, level.getFluidState(newPosition).createLegacyBlock(), 35);
 					level.levelEvent(player, 2001, newPosition, Block.getId(state));
 				}
@@ -172,72 +151,53 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 		return super.playerWillDestroy(level, pos, state, player);
 	}
 
-	public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
-	{
-		for (int i = 0; i < MULTIBLOCK_SIZE; i++)
-		{
-			for (int j = 0; j < MULTIBLOCK_SIZE; j++)
-			{
+	public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+		for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+			for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
 				BlockPos newPosition = pos.offset(new Vec3i(i - 1, 0, j - 1));
 				if (!newPosition.equals(pos))
-				{
 					level.setBlock(newPosition, (BlockState) state.setValue(PART, ((j * 3) + i)), 3);
-				}
 			}
 		}
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-	{
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(WATERLOGGED).add(PART);
 	}
 
 	@Override
-	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
-	{
+	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return VOXEL_SHAPE_MAP[state.getOptionalValue(PART).orElse(MULTIBLOCK_CENTER)];
 	}
 
 	@Override
-	protected RenderShape getRenderShape(BlockState state)
-	{
+	protected RenderShape getRenderShape(BlockState state) {
 		if (state.getValue(PART) == MULTIBLOCK_CENTER)
-		{
 			return RenderShape.MODEL;
-		}
 		return RenderShape.INVISIBLE;
 	}
 
 	@Override
-	public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState)
-	{
+	public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
 		if (blockState.getValue(PART) == MULTIBLOCK_CENTER)
-		{
 			return new MoonlightBasinBlockEntity(blockPos, blockState);
-		}
 		return null;
 	}
 
-	protected FluidState getFluidState(BlockState state)
-	{
+	protected FluidState getFluidState(BlockState state) {
 		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
-	protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos)
-	{
+	protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
 		if (state.getValue(WATERLOGGED))
-		{
 			level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-		}
 		return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
 	}
 
 	@Override
-	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random)
-	{
-		if (level.random.nextIntBetweenInclusive(0, 4) == 0)
-		{
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+		if (level.random.nextIntBetweenInclusive(0, 4) == 0) {
 			Vec3 center = pos.getCenter();
 //			level.addParticle(
 //					NMLParticleTypes.MOONLIGHT_RAY.get(),

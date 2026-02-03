@@ -27,7 +27,6 @@
     "NoiseRouterAccessModifier",
     "PatrolSpawnerMixin",
     "PlayerMixin",
-    "ItemStackMixin",
     "RailStateMixin",
     "RandomStrollGoalMixin",
     "RegistryFileCodecMixin",
@@ -56,7 +55,8 @@
     "client.CapeRenderLayerMixin",
     "client.HumanoidModelMixin",
     "client.LevelRendererMixin",
-    "client.SkinManagerMixin"
+    "client.SkinManagerMixin",
+    "client.ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

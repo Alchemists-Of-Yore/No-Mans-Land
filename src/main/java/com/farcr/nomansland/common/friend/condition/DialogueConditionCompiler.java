@@ -1,7 +1,7 @@
-package com.farcr.nomansland.common.dialogue.condition;
+package com.farcr.nomansland.common.friend.condition;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
