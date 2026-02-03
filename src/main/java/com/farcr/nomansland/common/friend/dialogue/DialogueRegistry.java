@@ -1,10 +1,13 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 
 import java.util.*;
 import java.util.function.Function;
@@ -25,9 +28,20 @@ public class DialogueRegistry {
     }
 
     public interface DialogueCondition {
+        default boolean validate(ResourceKey<Registry<DialoguePool>> registrykey) { return true; }
         public MapCodec<? extends DialogueCondition> codec();
         public static final Codec<DialogueCondition> CODEC = NMLRegistries.DIALOGUE_CONDITIONAL_TYPE
             .byNameCodec().dispatch(DialogueCondition::codec, Function.identity());
+    }
+
+    /*
+    * Simple List Conditionals, for "hardcoded" conditions
+     */
+    public interface ListCondition extends DialogueCondition {
+        public ArrayList<DialoguePool> getList();
+        default void append(DialoguePool dialoguePool) {
+            getList().add(dialoguePool);
+        }
     }
 
     /*

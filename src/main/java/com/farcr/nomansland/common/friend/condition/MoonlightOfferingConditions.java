@@ -2,12 +2,15 @@ package com.farcr.nomansland.common.friend.condition;
 
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialogueCondition;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 
@@ -28,6 +31,11 @@ public class MoonlightOfferingConditions {
         @Override
         public HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
             return COMPILED_MAP;
+        }
+
+        @Override
+        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+            return resourceKey.equals(NMLRegistries.OFFERING_DIALOGUE_KEY);
         }
 
         @Override
@@ -54,6 +62,11 @@ public class MoonlightOfferingConditions {
         @Override
         public HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
             return COMPILED_MAP;
+        }
+
+        @Override
+        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+            return resourceKey.equals(NMLRegistries.OFFERING_DIALOGUE_KEY);
         }
 
         @Override

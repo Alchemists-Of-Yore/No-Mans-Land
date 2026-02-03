@@ -37,6 +37,7 @@ public class NMLRegistries {
     public static final Registry<MapCodec<? extends DialogueRegistry.DialogueCondition>> DIALOGUE_CONDITIONAL_TYPE =
         new RegistryBuilder<>(DIALOGUE_CONDITIONAL_TYPE_KEY).defaultKey(NoMansLand.location("none")).create();
 
+    public static final ResourceKey<Registry<DialoguePool>> GREETING_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/greeting"));
     public static final ResourceKey<Registry<DialoguePool>> PASSIVE_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/passive"));
     public static final ResourceKey<Registry<DialoguePool>> NEGATIVE_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/negative"));
     public static final ResourceKey<Registry<DialoguePool>> OFFERING_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/offering"));
