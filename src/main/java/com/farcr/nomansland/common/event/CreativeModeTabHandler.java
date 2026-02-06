@@ -7,14 +7,25 @@ import com.farcr.nomansland.common.integration.boatload.BoatloadIntegration;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.farcr.nomansland.common.registry.blocks.NMLBlocks.*;
 import static com.farcr.nomansland.common.registry.items.NMLItems.*;
@@ -34,6 +45,33 @@ public class CreativeModeTabHandler {
         ItemStack existingStack = existingEntry.getDefaultInstance();
         ItemStack newStack = newEntry.stack();
         event.insertAfter(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+    }
+
+            Item item,
+            FeatureFlagSet featureFlag) {
+        ItemStack wardingBandage = WARDING_BANDAGE.stack();
+        List<ItemStack> stacks = potions.listElements()
+            .filter(holder -> holder.value().isEnabled(featureFlag))
+            .filter(holder -> !holder.is(Potions.WATER) && !holder.is(Potions.AWKWARD))
+            .filter(holder -> !holder.is(Potions.HARMING) && !holder.is(Potions.STRONG_HARMING))
+            .filter(holder -> !holder.is(Potions.HEALING) && !holder.is(Potions.STRONG_HEALING))
+            .filter(holder -> !holder.is(Potions.TURTLE_MASTER) && !holder.is(Potions.LONG_TURTLE_MASTER) && !holder.is(Potions.STRONG_TURTLE_MASTER))
+            .filter(holder -> {
+                String path = holder.unwrapKey().map(k -> k.location().getPath()).orElse("");
+                return !path.startsWith("strong_") && !path.startsWith("long_");
+            })
+            .map(holder -> creatBandageEffectsStack(item, holder))
+            .toList();
+        // Inverted so insertAfter goes forward instead
+        for (int i = stacks.size() - 1; i >= 0; i--) {
+            output.insertAfter(wardingBandage, stacks.get(i), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
+    }
+
+    private static ItemStack creatBandageEffectsStack(Item item, Holder<Potion> potion) {
+        ItemStack stack = new ItemStack(item);
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.of(potion), Optional.empty(), List.of()));
+        return stack;
     }
 
     @SubscribeEvent
@@ -386,11 +424,19 @@ public class CreativeModeTabHandler {
             insertAfter(ELYTRA, LIVING_URN);
             insertAfter(MUSIC_DISC_5, MUSIC_DISC_GUIDANCE);
 
-            insertAfter(TNT_MINECART, BANDAGE);
-            insertAfter(TNT_MINECART, ANTIDOTE_BANDAGE);
-            insertAfter(TNT_MINECART, MEDICINAL_BANDAGE);
             insertAfter(TNT_MINECART, WARDING_BANDAGE);
-        //    insertAfter(TNT_MINECART, BANDAGE but potion);
+            insertAfter(TNT_MINECART, MEDICINAL_BANDAGE);
+            insertAfter(TNT_MINECART, ANTIDOTE_BANDAGE);
+            insertAfter(TNT_MINECART, BANDAGE);
+
+            event.getParameters().holders().lookup(Registries.POTION).ifPresent(
+                potionLookup -> generateBandageEffectTypes(
+                    event,
+                    potionLookup,
+                    NMLItems.BANDAGE.get(),
+                        event.getFlags()
+                )
+            );
 
 //            insertAfter(TROPICAL_FISH_BUCKET, CAVE_CARP_BUCKET);
             if (!event.getFlags().contains(FeatureFlags.BUNDLE)) event.insertBefore(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);

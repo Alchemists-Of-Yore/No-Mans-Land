@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.item;
 
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -65,7 +66,11 @@ public class BandageItem extends Item {
         if (player != null) {
             player.awardStat(Stats.ITEM_USED.get(this));
             stack.consume(1, player);
-            player.getCooldowns().addCooldown(this, 140);
+            int cooldownTicks = 140;
+            player.getCooldowns().addCooldown(NMLItems.BANDAGE.get(), cooldownTicks);
+            player.getCooldowns().addCooldown(NMLItems.ANTIDOTE_BANDAGE.get(), cooldownTicks);
+            player.getCooldowns().addCooldown(NMLItems.MEDICINAL_BANDAGE.get(), cooldownTicks);
+            player.getCooldowns().addCooldown(NMLItems.WARDING_BANDAGE.get(), cooldownTicks);
         }
 
         return stack;
@@ -112,6 +117,9 @@ public class BandageItem extends Item {
 
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
+        if (stack.is(NMLItems.WARDING_BANDAGE)) {
+            return Component.translatable(this.getDescriptionId(stack));
+        }
         PotionContents potionContents = stack.get(DataComponents.POTION_CONTENTS);
         if (potionContents != null) {
             for (var effect : potionContents.getAllEffects()) {
