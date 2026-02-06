@@ -47,12 +47,16 @@ public class CreativeModeTabHandler {
         event.insertAfter(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }
 
+    private static void generateBandageEffectTypes(
+            BuildCreativeModeTabContentsEvent output,
+            HolderLookup.RegistryLookup<Potion> potions,
             Item item,
             FeatureFlagSet featureFlag) {
         ItemStack wardingBandage = WARDING_BANDAGE.stack();
         List<ItemStack> stacks = potions.listElements()
             .filter(holder -> holder.value().isEnabled(featureFlag))
             .filter(holder -> !holder.is(Potions.WATER) && !holder.is(Potions.AWKWARD))
+            .filter(holder -> !holder.is(Potions.THICK) && !holder.is(Potions.MUNDANE))
             .filter(holder -> !holder.is(Potions.HARMING) && !holder.is(Potions.STRONG_HARMING))
             .filter(holder -> !holder.is(Potions.HEALING) && !holder.is(Potions.STRONG_HEALING))
             .filter(holder -> !holder.is(Potions.TURTLE_MASTER) && !holder.is(Potions.LONG_TURTLE_MASTER) && !holder.is(Potions.STRONG_TURTLE_MASTER))
