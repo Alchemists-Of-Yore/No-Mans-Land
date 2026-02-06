@@ -42,8 +42,7 @@
         "name": "block.spawner.fall",
         "type": "event"
       }
-    ],
-    "subtitle": "subtitles.block.generic.fall"
+    ]
   },
   "block.monster_anchor.hit": {
     "sounds": [
@@ -115,8 +114,7 @@
         "name": "nomansland:block.shelf_mushroom_block.step",
         "type": "event"
       }
-    ],
-    "subtitle": "subtitles.block.generic.fall"
+    ]
   },
   "block.mushroom_cap.hit": {
     "sounds": [
@@ -184,8 +182,7 @@
         "name": "block.lantern.fall",
         "type": "event"
       }
-    ],
-    "subtitle": "subtitles.block.generic.fall"
+    ]
   },
   "block.sconce_torch.hit": {
     "sounds": [
@@ -253,8 +250,7 @@
         "name": "nomansland:block.seashells.step",
         "type": "event"
       }
-    ],
-    "subtitle": "subtitles.block.generic.fall"
+    ]
   },
   "block.seashells.hit": {
     "sounds": [
