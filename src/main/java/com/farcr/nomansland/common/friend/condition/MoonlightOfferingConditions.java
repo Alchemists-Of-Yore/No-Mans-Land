@@ -11,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 
@@ -28,9 +29,14 @@ public class MoonlightOfferingConditions {
         );
 
         public static HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
+        public static HashMap<TagKey<Item>, ArrayList<DialogueRegistry.DialoguePool>> KEY_MAP = new HashMap<>();
         @Override
         public HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
             return COMPILED_MAP;
+        }
+        @Override
+        public HashMap<TagKey<Item>, ArrayList<DialogueRegistry.DialoguePool>> getTagMap() {
+            return KEY_MAP;
         }
 
         @Override
@@ -59,9 +65,14 @@ public class MoonlightOfferingConditions {
         );
 
         public static HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
+        public static HashMap<TagKey<EntityType<?>>, ArrayList<DialogueRegistry.DialoguePool>> KEY_MAP = new HashMap<>();
         @Override
         public HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
             return COMPILED_MAP;
+        }
+        @Override
+        public HashMap<TagKey<EntityType<?>>, ArrayList<DialogueRegistry.DialoguePool>> getTagMap() {
+            return KEY_MAP;
         }
 
         @Override

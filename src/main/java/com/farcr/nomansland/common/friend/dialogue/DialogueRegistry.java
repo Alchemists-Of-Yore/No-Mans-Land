@@ -7,13 +7,18 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.random.Weight;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.entity.ai.behavior.ShufflingList;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 
@@ -59,13 +64,22 @@ public class DialogueRegistry {
     * that need to be compiled to hashmaps at runtime.
      */
     public interface CompiledCondition<T> extends DialogueCondition {
-        public HolderSet<T> getValue();
-        public HashMap<T, ArrayList<DialoguePool>> getMap();
-        default void consume(DialoguePool dialoguePool){
+        HolderSet<T> getValue();
+        HashMap<T, ArrayList<DialoguePool>> getMap();
+        HashMap<TagKey<T>, ArrayList<DialoguePool>> getTagMap();
+
+        static <K> void applyMap(DialoguePool dialoguePool, HashMap<K, ArrayList<DialoguePool>> map, K key) {
+            ArrayList<DialoguePool> poolList = map.getOrDefault(key, new ArrayList<>());
+            poolList.add(dialoguePool);
+            map.put(key, poolList);
+        }
+        default void consume(DialoguePool dialoguePool) {
+            if (getValue() instanceof HolderSet.Named<T> namedTag) {
+                applyMap(dialoguePool, getTagMap(), namedTag.key());
+                return;
+            }
             getValue().forEach((holder) -> {
-                ArrayList<DialoguePool> poolList = getMap().getOrDefault(holder.value(), new ArrayList<>());
-                poolList.add(dialoguePool);
-                getMap().put(holder.value(), poolList);
+                applyMap(dialoguePool, getMap(), holder.value());
             });
         };
     }
