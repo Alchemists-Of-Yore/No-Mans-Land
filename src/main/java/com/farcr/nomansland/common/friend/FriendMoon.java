@@ -58,13 +58,15 @@ public class FriendMoon extends SavedData {
     }
 
     private FriendMoonState state = FriendMoonState.IDLE;
+    public FriendMoonState getState() { return this.state; }
     public void setState(FriendMoonState newState) {
         this.state = newState;
+        setDirty();
     }
 
     public void resetValues() {
         awake = false;
-        setDirty();
+        setState(FriendMoonState.IDLE);
     }
 
     public FriendMoon load(CompoundTag tag, HolderLookup.Provider provider) {
@@ -128,8 +130,10 @@ public class FriendMoon extends SavedData {
                 // Passive Dialogue
                 if (dialogueTicks >= 0) {
                     dialogueTicks = Math.max(dialogueTicks - 1, 0);
-                    if (dialogueTicks == 0)
+                    if (dialogueTicks == 0) {
+                        setState(FriendMoonState.IDLE);
                         sendRandomDialogue(NMLRegistries.PASSIVE_DIALOGUE_KEY);
+                    }
                 }
             }
         }

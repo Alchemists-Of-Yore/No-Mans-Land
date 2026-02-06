@@ -67,12 +67,19 @@ public abstract class EntityMixin implements EntityExtension {
     */
 
     @Unique private boolean NML$offering = false;
+    @Unique private boolean NML$previouslyInspected = false;
     public void NML$setInspectionState(boolean isInspecting) {
         NML$offering = isInspecting;
+        if (isInspecting)
+            NML$previouslyInspected = true;
     }
 
     public boolean NML$isBeingInspected() {
         return NML$offering;
+    }
+
+    public boolean NML$wasPreviouslyInspected() {
+        return NML$previouslyInspected;
     }
 
     @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true)

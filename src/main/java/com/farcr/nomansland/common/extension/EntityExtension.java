@@ -10,4 +10,7 @@ public interface EntityExtension {
     default boolean NML$isBeingInspected() throws NotImplementedException {
         throw new NotImplementedException();
     }
+    default boolean NML$wasPreviouslyInspected() throws NotImplementedException {
+        throw new NotImplementedException();
+    }
 }
