@@ -1,0 +1,35 @@
+{
+  "feature": "minecraft:ore_granite",
+  "placement": [
+    {
+      "type": "nomansland:density_function_based_count",
+      "noise_function": "nomansland:default",
+
+      "noise_scale": 1.63,
+
+      "noise_minimum": 0.77,                   
+      "noise_maximum": 0.87,  
+
+      "count_minimum": 0,          
+      "count_maximum": 32
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:uniform",
+        "max_inclusive": {
+          "absolute": 128
+        },
+        "min_inclusive": {
+          "absolute": 64
+        }
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}
