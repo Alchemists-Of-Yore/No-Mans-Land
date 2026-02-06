@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#minecraft:flowers"
+    },
+    "weight": 1,
+    "text": "flowerm"
+}

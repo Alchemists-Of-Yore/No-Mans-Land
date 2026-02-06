@@ -8,6 +8,7 @@ import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.core.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -61,13 +62,21 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             ArrayList<DialogueRegistry.DialoguePool> list = new ArrayList<>();
             // Item Offering List
             if (entity instanceof ItemEntity itemEntity) {
-                Item itemType = itemEntity.getItem().getItem();
-                if (MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP.containsKey(itemType))
-                    list = MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP.get(itemType);
+                Item itemType = itemEntity.getItem().getItem().asItem();
+                list = DialogueUtil.iterateTags(
+                    itemType, level.registryAccess(), Registries.ITEM,
+                    MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP,
+                    MoonlightOfferingConditions.ItemOfferingConditional.KEY_MAP,
+                    list
+                );
             }
             // Entity Offering List
-            if (MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP.containsKey(entity.getType()))
-                list = MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP.get(entity.getType());
+            list = DialogueUtil.iterateTags(
+                entity.getType(), level.registryAccess(), Registries.ENTITY_TYPE,
+                MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP,
+                MoonlightOfferingConditions.EntityOfferingConditional.KEY_MAP,
+                list
+            );
 
             if (!list.isEmpty()) {
                 DialogueRegistry.DialoguePool pool = DialogueUtil.getWeightedEntry(WeightedRandomList.create(list), level.getRandom());
@@ -79,7 +88,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         return null;
     }
 
-    private final float friendshipMaxRange = 5;
+    private final float friendshipMaxRange = 20;
 
     private OfferingContext inspectionContext;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
