@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -25,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.Set;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin {
+public abstract class EntityMixin implements EntityExtension {
 
     @Shadow public abstract void playSound(SoundEvent sound, float volume, float pitch);
 
@@ -34,7 +35,6 @@ public abstract class EntityMixin {
     @Shadow public abstract double getY(double scale);
 
     @Shadow public abstract double getZ();
-
 
     @Shadow public abstract double getX();
 
@@ -61,6 +61,25 @@ public abstract class EntityMixin {
     @Shadow public abstract boolean onGround();
 
     @Shadow public abstract boolean isInWater();
+
+    /*
+    * Offering Injection
+    */
+
+    @Unique private boolean NML$offering = false;
+    public void NML$setInspectionState(boolean isInspecting) {
+        NML$offering = isInspecting;
+    }
+
+    public boolean NML$isBeingInspected() {
+        return NML$offering;
+    }
+
+    @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true)
+    private void NML$getGravity(CallbackInfoReturnable<Double> cir) {
+        if (NML$isBeingInspected())
+            cir.setReturnValue(0.0d);
+    }
 
     @Unique @Nullable
     private Vec3 startingToFallPosition;

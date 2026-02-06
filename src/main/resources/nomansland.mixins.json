@@ -18,6 +18,7 @@
     "FeatureSorterMixin",
     "FlowerBlockMixin",
     "FrogMixin",
+    "ItemEntityMixin",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LivingEntityMixin",

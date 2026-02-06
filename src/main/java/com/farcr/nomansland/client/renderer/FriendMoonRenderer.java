@@ -190,7 +190,8 @@ public class FriendMoonRenderer {
                                     talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
                                     animationProgress = 0;
                                 }
-                            }
+                            } else
+                                animationProgress = 0;
                         }
                     }
                 }
@@ -207,7 +208,9 @@ public class FriendMoonRenderer {
         float yaw = -cameraEntity.getViewYRot(partialTick);
         float speed = deltaTime / 30;
 
-        float minX = pitch - 20;
+        float pitchClamp = 90;
+
+        float minX = Math.min(pitch - 20, pitchClamp);
         float minY = yaw - 30;
         float maxX = pitch + 20;
         float maxY = yaw + 30;
@@ -231,28 +234,30 @@ public class FriendMoonRenderer {
             if (random.nextFloat() < 0.1) friendMoonPitchDirection = friendMoonPitchDirection == 1 ? -1 : 1;
         }
 
-        float repelX = pitch;
-        float repelY = yaw;
-        float repelRadius = 10;
-
-        float dx = targetPitch - repelX;
-        float dy = targetYaw - repelY;
-        float distanceSq = dx * dx + dy * dy;
-
-        if (distanceSq < repelRadius * repelRadius) {
-            float distance = Mth.sqrt(distanceSq);
-            float pushStrength = (repelRadius - distance) / repelRadius * 8;
-            if (distance != 0) {
-                targetPitch += dx / distance * pushStrength;
-                targetYaw += dy / distance * pushStrength;
-            }
-        }
+//        float repelX = pitch;
+//        float repelY = yaw;
+//        float repelRadius = 10;
+//
+//        float dx = targetPitch - repelX;
+//        float dy = targetYaw - repelY;
+//        float distanceSq = dx * dx + dy * dy;
+//
+//        if (distanceSq < repelRadius * repelRadius) {
+//            float distance = Mth.sqrt(distanceSq);
+//            float pushStrength = (repelRadius - distance) / repelRadius * 8;
+//            if (distance != 0) {
+//                targetPitch += dx / distance * pushStrength;
+//                targetYaw += dy / distance * pushStrength;
+//            }
+//        }
 
         friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, targetPitch);
         friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, targetYaw);
 
         friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, Mth.clamp(friendMoonPitchAngle, minX, maxX));
         friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, Mth.clamp(friendMoonYawAngle, minY, maxY));
+
+        friendMoonPitchAngle = Math.min(friendMoonPitchAngle, pitchClamp - 15f);
     }
 
     private static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1, FriendMoonAnimation moonAnimation, float opacity, int animationFrame) {

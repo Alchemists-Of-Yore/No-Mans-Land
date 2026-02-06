@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.world.structure;
 
-import com.farcr.nomansland.common.mixinduck.ChunkGeneratorStructureStateDuck;
+import com.farcr.nomansland.common.extension.ChunkGeneratorStructureStateExtension;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructurePlacements;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -32,7 +32,7 @@ public class MeetingPointStructurePlacement extends StructurePlacement {
 
     @Override
     protected boolean isPlacementChunk(ChunkGeneratorStructureState state, int x, int z) {
-        ChunkPos meetingPoint = ((ChunkGeneratorStructureStateDuck) state).meetingPointPosition();
+        ChunkPos meetingPoint = state.meetingPointPosition();
         return meetingPoint != null && meetingPoint.x == x && meetingPoint.z == z;
     }
 

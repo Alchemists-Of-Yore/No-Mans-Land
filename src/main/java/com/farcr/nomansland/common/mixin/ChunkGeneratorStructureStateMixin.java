@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.mixinduck.ChunkGeneratorStructureStateDuck;
+import com.farcr.nomansland.common.extension.ChunkGeneratorStructureStateExtension;
 import com.farcr.nomansland.common.world.structure.MeetingPointStructurePlacement;
 import com.google.common.base.Stopwatch;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Mixin(ChunkGeneratorStructureState.class)
-public abstract class ChunkGeneratorStructureStateMixin implements ChunkGeneratorStructureStateDuck {
+public abstract class ChunkGeneratorStructureStateMixin implements ChunkGeneratorStructureStateExtension {
     @Shadow
     @Final
     private long levelSeed;

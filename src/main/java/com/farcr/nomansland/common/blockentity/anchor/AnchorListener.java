@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.blockentity.anchor;
 
-import com.farcr.nomansland.common.mixinduck.LivingEntityDuck;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLTags;
@@ -121,7 +121,7 @@ public class AnchorListener implements GameEventListener {
 
                         // Stop the mob from dropping experience and loot
                         monster.skipDropExperience();
-                        ((LivingEntityDuck) monster).nml$skipDroppingDeathLoot();
+                        monster.nml$skipDroppingDeathLoot();
 
                         // Surround the bounding box of the monster with embers
                         AABB boundingBox = monster.getBoundingBox();

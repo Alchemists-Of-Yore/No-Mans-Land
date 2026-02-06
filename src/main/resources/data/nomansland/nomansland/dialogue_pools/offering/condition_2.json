@@ -3,6 +3,6 @@
         "type": "nomansland:entity_conditional",
         "entity": "minecraft:zombie"
     },
-    "weight": 1.0,
+    "weight": 1,
     "text": "nasty ahh blud"
 }

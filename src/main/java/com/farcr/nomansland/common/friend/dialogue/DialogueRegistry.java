@@ -8,6 +8,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.random.Weight;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.WeightedRandomList;
+import net.minecraft.world.entity.ai.behavior.ShufflingList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
@@ -15,16 +20,21 @@ import java.util.function.Function;
 public class DialogueRegistry {
     public record DialoguePool(
         Optional<DialogueCondition> condition,
-        float weight,
+        Weight weight,
         String text
-    ) {
+    ) implements WeightedEntry {
         public static final Codec<DialoguePool> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                 DialogueCondition.CODEC.optionalFieldOf("condition").forGetter(DialoguePool::condition),
-                Codec.FLOAT.fieldOf("weight").forGetter(DialoguePool::weight),
+                Weight.CODEC.fieldOf("weight").forGetter(DialoguePool::getWeight),
                 Codec.STRING.fieldOf("text").forGetter(DialoguePool::text)
             ).apply(instance, DialoguePool::new)
         );
+
+        @Override
+        public @NotNull Weight getWeight() {
+            return weight;
+        }
     }
 
     public interface DialogueCondition {

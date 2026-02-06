@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.mixinduck.LivingEntityDuck;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends EntityMixin implements LivingEntityDuck {
+public abstract class LivingEntityMixin extends EntityMixin implements LivingEntityExtension {
 
     @Shadow public abstract boolean hasEffect(Holder<MobEffect> effect);
 

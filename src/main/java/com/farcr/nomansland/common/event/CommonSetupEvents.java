@@ -19,6 +19,7 @@ import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.networking.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
@@ -266,6 +267,7 @@ public class CommonSetupEvents {
 
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
+        registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
     }

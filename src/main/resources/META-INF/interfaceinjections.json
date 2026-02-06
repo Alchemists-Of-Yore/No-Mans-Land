@@ -1,0 +1,11 @@
+{
+    "net/minecraft/world/level/chunk/ChunkGeneratorStructureState": [
+        "com/farcr/nomansland/common/extension/ChunkGeneratorStructureStateExtension"
+    ],
+    "net/minecraft/world/entity/LivingEntity": [
+        "com/farcr/nomansland/common/extension/LivingEntityExtension"
+    ],
+    "net/minecraft/world/entity/Entity": [
+        "com/farcr/nomansland/common/extension/EntityExtension"
+    ]
+}
