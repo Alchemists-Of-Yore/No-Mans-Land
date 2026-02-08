@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
@@ -31,6 +32,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -51,22 +53,38 @@ public class FriendMoon extends SavedData {
     }
 
     public boolean awake = false;
-    private int dialogueTicks = 10;
-    public int getDialogueTicks() { return dialogueTicks; }
     public boolean isAwake() {
         return awake;
+    }
+
+    public boolean isActive() {
+        return isAwake() && (getState() != FriendMoonState.UPSET);
+    }
+
+    private int dialogueTicks = 10;
+    public int getDialogueTicks() { return dialogueTicks; }
+
+    private int candleTimer = 0;
+    public int getCandleTime() { return candleTimer; }
+    public void setCandleTime(int candleTime) {
+        this.candleTimer = candleTime;
     }
 
     private FriendMoonState state = FriendMoonState.IDLE;
     public FriendMoonState getState() { return this.state; }
     public void setState(FriendMoonState newState) {
-        this.state = newState;
-        setDirty();
+        if (newState != state) {
+            this.state = newState;
+            setDirty();
+        }
     }
 
     public void resetValues() {
         awake = false;
-        setState(FriendMoonState.IDLE);
+        setState(FriendMoonState.GREETING);
+        setCandleTime(-1);
+
+        setDirty();
     }
 
     public FriendMoon load(CompoundTag tag, HolderLookup.Provider provider) {
@@ -93,8 +111,8 @@ public class FriendMoon extends SavedData {
     }
 
     public static final DeferredHolder<MobEffect, MobEffect> FRIENDSHIP = NMLEffects.FRIENDSHIP;
-    public static void grantPlayerFriendship(ServerPlayer serverPlayer, BlockPos pos) {
-        if (!cannotObtainFriendship(serverPlayer)) {
+    public static void grantPlayerFriendship(FriendMoon friendMoon, ServerPlayer serverPlayer, BlockPos pos) {
+        if (!cannotObtainFriendship(serverPlayer) && (friendMoon.getState() != FriendMoonState.UPSET)) {
             serverPlayer.addEffect(new MobEffectInstance(FRIENDSHIP, 30, 0, true, false));
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
         }
@@ -124,6 +142,7 @@ public class FriendMoon extends SavedData {
                 NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
                 playerTracker.getAndIncrement();
             });
+
             // Ensure players are listening to the Moon
             int totalPlayers = playerTracker.get();
             if (totalPlayers > 0) {
@@ -131,12 +150,22 @@ public class FriendMoon extends SavedData {
                 if (dialogueTicks >= 0) {
                     dialogueTicks = Math.max(dialogueTicks - 1, 0);
                     if (dialogueTicks == 0) {
-                        setState(FriendMoonState.IDLE);
-                        sendRandomDialogue(NMLRegistries.PASSIVE_DIALOGUE_KEY);
+                        getState().getMoonConsumer().accept(this);
+                        sendRandomDialogue(getState().getDialoguePoolType());
                     }
                 }
             }
         }
+    }
+
+    int NEGATIVE_TIME = 40;
+    public void negative() {
+        setCandleTime(3);
+        setState(FriendMoonState.NEGATIVE);
+
+        // Dialogue Reset
+        resetDialogue(false);
+        dialogueTicks = NEGATIVE_TIME;
     }
 
     public void packetUpdateEvent(FriendMoonUpdate packetType) {
@@ -145,13 +174,16 @@ public class FriendMoon extends SavedData {
     }
 
     public void sendRandomDialogue(ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey) {
+        if (registryKey == null)
+            return;
         Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
         WeightedRandomList<DialogueRegistry.DialoguePool> weightedList = WeightedRandomList.create(dialogueRegistry.stream().toList());
         sendDialogue(dialogueRegistry.getKey(DialogueUtil.getWeightedEntry(weightedList, level.getRandom())), registryKey);
     }
 
-    public void resetDialogue() {
-        forFriendshipPlayers((serverPlayer) -> {PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialogueResetPacket());});
+    public void resetDialogue(boolean clientSide) {
+        if (!clientSide)
+           forFriendshipPlayers((serverPlayer) -> {PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialogueResetPacket());});
         dialogueTicks = -1;
     }
 

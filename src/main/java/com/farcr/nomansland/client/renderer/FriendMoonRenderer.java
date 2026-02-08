@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.FriendMoonUpdate;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
@@ -30,6 +31,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
@@ -96,9 +98,11 @@ public class FriendMoonRenderer {
             animationProgress = 0;
         MOON_ANIMATION = newAnimation;
     }
-    public static FriendMoonAnimation EMOTION = FriendMoonAnimation.TALKING;
-    public static void setFriendMoonEmotion(FriendMoonAnimation newState) {
-        EMOTION = newState;
+    public static FriendMoonAnimation getFriendMoonEmotion(FriendMoon friendMoon) {
+        if (friendMoon.getState() == FriendMoonState.NEGATIVE
+        || friendMoon.getState() == FriendMoonState.UPSET)
+            return FriendMoonAnimation.SURPRISED;
+        return FriendMoonAnimation.TALKING;
     }
 
     public static double getSkyAngle(Level level, float partialTick) {
@@ -179,7 +183,7 @@ public class FriendMoonRenderer {
                                 setFriendMoonAnimation(FriendMoonAnimation.PHASES);
                         } else {
                             // Set default animation to emotion (server chosen)
-                            setFriendMoonAnimation(EMOTION);
+                            setFriendMoonAnimation(getFriendMoonEmotion(friendMoonInstance));
                             DialogueState currentState = DialogueRenderer.getCurrentState();
                             if (currentState != null) {
                                 float talkSpeed = 1 / 3f;

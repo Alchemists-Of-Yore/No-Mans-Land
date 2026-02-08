@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:wither_rose"
+    },
+    "weight": 1,
+    "text": "?"
+}

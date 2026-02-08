@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.blockentity;
 
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
@@ -7,6 +9,7 @@ import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -18,10 +21,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -51,7 +56,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         Block.box(-8d, 11d, -8d, 24d, 24d, 24d)
             .toAabbs().getFirst();
 
-    public record OfferingContext(Entity entity, ResourceLocation dialogueLocation){};
+    public record OfferingContext(Entity entity, ResourceLocation dialogueLocation){
+        public boolean isValid() {
+            if (entity instanceof ItemEntity itemEntity) {
+                if (itemEntity.getItem().getItem() == Items.AIR)
+                    return false;
+            }
+            return entity != null && entity.isAlive();
+        }
+    };
 
     public static OfferingContext getOfferingAbove(BlockPos pos, Level level) {
         AABB aabb = BASIN_BOUNDING_BOX.move(pos);
@@ -88,7 +101,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         return null;
     }
 
-    private final float friendshipMaxRange = 20;
+    private final float friendshipMaxRange = 9;
 
     private OfferingContext inspectionContext;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
@@ -105,20 +118,81 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             friendMoon.setState(FriendMoonState.OFFERING);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, MoonlightBasinBlockEntity blockEntity) {
-        @Nullable FriendMoon friendMoon = (!level.isClientSide() ? FriendMoon.getOrDefault(level.getServer().overworld()) : null);
-        if (!level.isClientSide() && FriendMoon.isNightTime(level)) {
-            AABB aabb = new AABB(pos).inflate(blockEntity.friendshipMaxRange);
-            for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, aabb))
-                FriendMoon.grantPlayerFriendship(serverPlayer, pos);
+    public static final int BLOCK_Y_REACH = 3;
+    public static final int BLOCK_EXTEND_REACH = 10;
 
-            assert friendMoon != null;
-            if (friendMoon.isDirty())
-                blockEntity.pulseUpdate();
+    public static ArrayList<BlockPos> getCandles(Level level, BlockPos basinPosition) {
+        ArrayList<BlockPos> candles = new ArrayList<>();
+
+        int rotation = 270;
+        int travelAlong = 0;
+        int segmentLength = 1;
+        int segmentProgress = 0;
+        Vec3i vectorOffset = new Vec3i(0, 0, 0);
+        for (int i = 1; i <= (BLOCK_EXTEND_REACH * BLOCK_EXTEND_REACH); i++) {
+            for (int j = -BLOCK_Y_REACH; j < BLOCK_Y_REACH; j++) {
+                BlockPos elevatedPosition = basinPosition.offset(vectorOffset).offset(0, j, 0);
+                BlockState potentialCandle = level.getBlockState(elevatedPosition);
+                if (potentialCandle.is(NMLBlocks.MOONLIGHT_CANDLE))
+                    candles.add(new BlockPos(elevatedPosition));
+            }
+            double radians = rotation * (Math.PI / 180.0);
+            vectorOffset = vectorOffset.offset((int) Math.round(Math.sin(radians)), 0, (int) Math.round(Math.cos(radians)));
+
+            travelAlong++;
+            if (travelAlong >= segmentLength) {
+                travelAlong = 0;
+                rotation += 90;
+                if (rotation >= 360)
+                    rotation -= 360;
+
+                segmentProgress++;
+                if (segmentProgress % 2 == 0)
+                    segmentLength++;
+            }
+        }
+        return candles;
+    }
+
+    private int trackedCandles = -1;
+    private boolean queryNegativeInteraction(ArrayList<BlockPos> candleList) {
+        int litCandles = queryLitCandles(candleList);
+        boolean returnValue = (litCandles < trackedCandles);
+        trackedCandles = litCandles;
+        return returnValue;
+    }
+
+    private int queryLitCandles(ArrayList<BlockPos> candleList) {
+        int litCandles = 0;
+        for (BlockPos candlePos : candleList) {
+            assert level != null;
+            if (level.getBlockState(candlePos).getValue(MoonlightCandleBlock.CANDLE_LIT))
+                litCandles++;
+        }
+        return litCandles;
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState state, MoonlightBasinBlockEntity blockEntity) {
+        @Nullable FriendMoon friendMoon = (!level.isClientSide() ? FriendMoon.getOrDefault(level.getServer().overworld()) : blockEntity.clientMoon);
+        if (friendMoon == null)
+            return;
+
+        if (!level.isClientSide()) {
+            if (FriendMoon.isNightTime(level)) {
+                AABB aabb = new AABB(pos).inflate(blockEntity.friendshipMaxRange);
+                for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, aabb))
+                    FriendMoon.grantPlayerFriendship(friendMoon, serverPlayer, pos);
+                if (friendMoon.isDirty())
+                    blockEntity.pulseUpdate();
+            } else
+                blockEntity.trackedCandles = 0;
         }
 
+        if (!friendMoon.isActive())
+            return;
+
         OfferingContext inspectionContext = blockEntity.inspectionContext;
-        if (inspectionContext == null) {
+        if (inspectionContext == null || !inspectionContext.isValid()) {
             // Query items above
             OfferingContext context = getOfferingAbove(pos, level);
             if (context != null && context.entity().onGround()) {
@@ -136,13 +210,10 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                         blockEntity.setInspectionContext(context, friendMoon);
                     }
                 }
-                if (friendMoon != null)
-                    friendMoon.resetDialogue();
+                friendMoon.resetDialogue(level.isClientSide());
             }
         } else {
-            FriendMoon forcedMoon = level.isClientSide() ? blockEntity.clientMoon : friendMoon;
-            assert forcedMoon != null;
-            if (forcedMoon.getState() == FriendMoonState.OFFERING) {
+            if (friendMoon.getState() == FriendMoonState.OFFERING) {
                 // Inspecting Entity behavior
                 Entity inspect = inspectionContext.entity();
 
@@ -153,10 +224,26 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     dist.multiply(new Vec3(new Vector3f(speed)))
                 );
 
-                if (friendMoon != null && friendMoon.getDialogueTicks() < 0)
+                if (!level.isClientSide() && friendMoon.getDialogueTicks() < 0)
                     friendMoon.sendDialogue(inspectionContext.dialogueLocation(), NMLRegistries.OFFERING_DIALOGUE_KEY);
             } else
                 blockEntity.setInspectionContext(null, friendMoon);
+        }
+
+        if (!level.isClientSide()) {
+            // Check Candles at the end
+            ArrayList<BlockPos> candleList = getCandles(level, pos);
+            if (blockEntity.queryNegativeInteraction(candleList)) {
+                friendMoon.negative();
+                if (blockEntity.trackedCandles <= 0)
+                    friendMoon.setState(FriendMoonState.UPSET);
+            } else if (friendMoon.getCandleTime() <= 0) {
+                candleList.forEach((blockPos) -> {
+                    BlockState blockState = level.getBlockState(blockPos);
+                    if (!blockState.getValue(MoonlightCandleBlock.CANDLE_LIT))
+                        level.setBlock(blockPos, blockState.setValue(MoonlightCandleBlock.CANDLE_LIT, true), 3);
+                });
+            }
         }
     }
 
