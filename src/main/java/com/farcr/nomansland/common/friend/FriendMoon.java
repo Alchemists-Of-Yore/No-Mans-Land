@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
+import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
@@ -12,6 +13,8 @@ import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPack
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -33,6 +36,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -56,7 +60,6 @@ public class FriendMoon extends SavedData {
     public boolean isAwake() {
         return awake;
     }
-
     public boolean isActive() {
         return isAwake() && (getState() != FriendMoonState.UPSET);
     }
@@ -139,13 +142,15 @@ public class FriendMoon extends SavedData {
             // Grant players advancement if they do not have it
             AtomicInteger playerTracker = new AtomicInteger();
             forFriendshipPlayers((player) -> {
-                NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
                 playerTracker.getAndIncrement();
             });
 
             // Ensure players are listening to the Moon
             int totalPlayers = playerTracker.get();
             if (totalPlayers > 0) {
+                if (getState() == FriendMoonState.GREETING)
+                    sendGreetingDialogue();
+
                 // Passive Dialogue
                 if (dialogueTicks >= 0) {
                     dialogueTicks = Math.max(dialogueTicks - 1, 0);
@@ -173,6 +178,39 @@ public class FriendMoon extends SavedData {
         this.setDirty();
     }
 
+    private final ResourceLocation MEET_MOON_ADVANCEMENT = NoMansLand.location("main/meet_friend_moon");
+    public void sendGreetingDialogue() {
+        assert level != null;
+        AtomicInteger highestTicks = new AtomicInteger();
+        forFriendshipPlayers((serverPlayer) -> {
+            Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, NMLRegistries.GREETING_DIALOGUE_KEY);
+            List<DialogueRegistry.DialoguePool> filteredDialogue = dialogueRegistry.stream().filter(
+                (dialoguePool) -> (dialoguePool.condition().isEmpty())
+            ).toList();
+
+            // Query individual dialogue based on if the player has met the moon before or not
+            AdvancementHolder meetAdvancement = level.getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
+            if (meetAdvancement != null && !serverPlayer.getAdvancements().getOrStartProgress(meetAdvancement).isDone())
+                filteredDialogue = MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY;
+
+            DialogueRegistry.DialoguePool poolSelection = DialogueUtil.getWeightedEntry(WeightedRandomList.create(filteredDialogue), level.getRandom());
+            ResourceLocation dialogueLocation = dialogueRegistry.getKey(poolSelection);
+
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(dialogueLocation, NMLRegistries.GREETING_DIALOGUE_KEY.location()));
+            DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
+
+            // Because we are querying individual dialogues, the moon will wait for the longest one to run its course before sending another
+            int localDialogueTicks = getDialogueTicks(dialogueContainer.getTextLength());
+            if (highestTicks.get() < localDialogueTicks)
+                highestTicks.set(localDialogueTicks);
+
+            // Grant Advancement
+            NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
+        });
+        dialogueTicks = highestTicks.get();
+        getState().getMoonConsumer().accept(this);
+    }
+
     public void sendRandomDialogue(ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey) {
         if (registryKey == null)
             return;
@@ -187,6 +225,14 @@ public class FriendMoon extends SavedData {
         dialogueTicks = -1;
     }
 
+    // not sure why this works but it does
+    float DELTA_TO_TICKS = ((60 / 20f) / 2f);
+
+    public int getDialogueTicks(int textLength) {
+        return (int) ((textLength * (DialogueState.DIALOGUE_SPEED) * DELTA_TO_TICKS))
+            + ((20) * level.getRandom().nextIntBetweenInclusive(5, 8));
+    }
+
     public void sendDialogue(ResourceLocation dialogueLocation, ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey) {
         forFriendshipPlayers((serverPlayer) -> {
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(dialogueLocation, registryKey.location()));
@@ -196,9 +242,6 @@ public class FriendMoon extends SavedData {
         Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
         DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
 
-        // not sure why this works but it does
-        float deltaToTicks = ((60 / 20f) / 2f);
-        dialogueTicks = (int) ((dialogueContainer.getTextLength() * (DialogueState.DIALOGUE_SPEED) * deltaToTicks));
-        dialogueTicks += (20) * level.getRandom().nextIntBetweenInclusive(5, 8);
+        dialogueTicks += getDialogueTicks(dialogueContainer.getTextLength());
     }
 }
