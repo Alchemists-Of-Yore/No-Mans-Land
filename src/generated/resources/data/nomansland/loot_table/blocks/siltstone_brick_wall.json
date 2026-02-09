@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "nomansland:silstone_brick_wall"
+          "name": "nomansland:siltstone_brick_wall"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "nomansland:blocks/silstone_brick_wall"
+  "random_sequence": "nomansland:blocks/siltstone_brick_wall"
 }

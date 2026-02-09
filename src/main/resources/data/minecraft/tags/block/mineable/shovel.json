@@ -7,6 +7,9 @@
     "minecraft:mud_brick_wall",
     "#nomansland:paths",
     "nomansland:silt",
-    "nomansland:coarse_silt"
+    "nomansland:coarse_silt",
+    "nomansland:silt_bricks",
+    "nomansland:silt_brick_stairs",
+    "nomansland:silt_brick_slab"
   ]
 }
