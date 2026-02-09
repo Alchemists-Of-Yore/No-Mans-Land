@@ -1,0 +1,46 @@
+{
+  "variants": {
+    "type=bottom": [
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_0"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_1"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_2"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_3"
+      }
+    ],
+    "type=double": [
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_bricks_0"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_bricks_1"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_bricks_2"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_bricks_3"
+      }
+    ],
+    "type=top": [
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_top_0"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_top_1"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_top_2"
+      },
+      {
+        "model": "nomansland:block/underground/siltstone_bricks/silstone_brick_slab_top_3"
+      }
+    ]
+  }
+}

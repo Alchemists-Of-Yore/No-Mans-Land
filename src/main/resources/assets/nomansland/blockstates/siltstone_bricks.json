@@ -12,18 +12,6 @@
       },
       {
         "model": "nomansland:block/underground/siltstone_bricks/siltstone_bricks_3"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_bricks_4"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_bricks_5"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_bricks_6"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_bricks_7"
       }
     ]
   }

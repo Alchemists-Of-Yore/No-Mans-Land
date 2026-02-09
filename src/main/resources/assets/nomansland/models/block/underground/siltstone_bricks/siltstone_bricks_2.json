@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "nomansland:block/underground/siltstone_bricks_2"
+    "all": "nomansland:block/underground/silstone_bricks_2"
   }
 }
