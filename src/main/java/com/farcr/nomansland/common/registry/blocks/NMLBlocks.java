@@ -377,7 +377,7 @@ public class NMLBlocks {
             () -> new StairBlock(SILTSTONE_BRICKS.get().defaultBlockState(), ofFullCopy(NMLBlocks.SILTSTONE_BRICKS.get())), BlockProperties.stoneLikeStairs());
     public static final BlockDefinition<SlabBlock> SILTSTONE_BRICK_SLAB = register("siltstone_brick_slab",
             () -> new SlabBlock(ofFullCopy(NMLBlocks.SILTSTONE_BRICKS.get())), BlockProperties.stoneLikeSlab());
-    public static final BlockDefinition<WallBlock> SILTSTONE_BRICK_WALL = register("silstone_brick_wall",
+    public static final BlockDefinition<WallBlock> SILTSTONE_BRICK_WALL = register("siltstone_brick_wall",
             () -> new WallBlock(ofFullCopy(Blocks.STONE_BRICK_WALL)), BlockProperties.stoneLikeWall());
     public static final BlockDefinition<Block> CHISELED_SILTSTONE = register("chiseled_siltstone",
             () -> new Block(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLike());
