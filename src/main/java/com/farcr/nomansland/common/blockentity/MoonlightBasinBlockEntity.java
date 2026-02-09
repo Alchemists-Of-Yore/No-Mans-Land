@@ -182,7 +182,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 AABB aabb = new AABB(pos).inflate(blockEntity.friendshipMaxRange);
                 for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, aabb))
                     FriendMoon.grantPlayerFriendship(friendMoon, serverPlayer, pos);
-                if (friendMoon.isDirty())
+                if (friendMoon.shouldPulseUpdate())
                     blockEntity.pulseUpdate();
             } else
                 blockEntity.trackedCandles = 0;

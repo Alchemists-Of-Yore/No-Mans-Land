@@ -43,15 +43,21 @@ public class LevelRendererMixin {
 
     @Inject(
         method = "renderSky",
-        at = @At(value = "TAIL")
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/vertex/BufferUploader;drawWithShader(Lcom/mojang/blaze3d/vertex/MeshData;)V",
+            ordinal = 2,
+            shift = At.Shift.AFTER
+        )
     )
     private void renderFriendMoon(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
         Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
-        // Breakout Condition add more stuff here later
-        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
-            return;
-        FriendMoonRenderer.renderFriendMoon(frustumMatrix, Tesselator.getInstance(), new PoseStack(), partialTick, this.level.getMoonPhase());
+//        // Breakout Condition add more stuff here later
+//        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
+//            return;
+        FriendMoonRenderer.renderFriendShadow(frustumMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        FriendMoonRenderer.renderFriendMoon(frustumMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
     }
 }

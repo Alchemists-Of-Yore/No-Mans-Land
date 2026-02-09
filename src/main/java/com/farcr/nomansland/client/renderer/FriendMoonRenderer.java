@@ -24,11 +24,14 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
+import org.lwjgl.opengl.GL14;
 
 import java.lang.Math;
 import java.util.Objects;
@@ -261,7 +264,7 @@ public class FriendMoonRenderer {
         friendMoonPitchAngle = Mth.lerp(speed, friendMoonPitchAngle, Mth.clamp(friendMoonPitchAngle, minX, maxX));
         friendMoonYawAngle = Mth.lerp(speed, friendMoonYawAngle, Mth.clamp(friendMoonYawAngle, minY, maxY));
 
-        friendMoonPitchAngle = Math.min(friendMoonPitchAngle, pitchClamp - 15f);
+        friendMoonPitchAngle = Math.min(friendMoonPitchAngle, pitchClamp - 25f);
     }
 
     private static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1, FriendMoonAnimation moonAnimation, float opacity, int animationFrame) {
@@ -281,12 +284,44 @@ public class FriendMoonRenderer {
         RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], 1f);
     }
 
-    public static void renderFriendMoon(Matrix4f frustumMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick, int moonPhase) {
+    public static void renderFriendShadow(Matrix4f frustumMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
+//        poseStack.mulPose(frustumMatrix);
+//        poseStack.pushPose();
+//
+//        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(0));
+//        poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(65));
+
+//        RenderSystem.enableBlend();
+//        RenderSystem.depthMask(false);
+
+//        RenderSystem.blendFuncSeparate(
+//            GlStateManager.SourceFactor.DST_COLOR,
+//            GlStateManager.DestFactor.ZERO,
+//            GlStateManager.SourceFactor.ONE,
+//            GlStateManager.DestFactor.ZERO
+//        );
+
+
+
+//        ChunkPos meetingPointChunk = mc.level.getServer().overworld().getLevel().getChunkSource().getGeneratorState().meetingPointPosition();
+//        NoMansLand.LOGGER.info(meetingPointChunk);
+
+//        RenderSystem.clearStencil(0);
+//        RenderSystem.stencilFunc(GL14.GL_NOTEQUAL, 1, 0xFF);
+//        RenderSystem.stencilOp(GL14.GL_ZERO, GL14.GL_ZERO, GL14.GL_REPLACE);
+//        RenderSystem.stencilMask(0xFF);
+//
+//        renderFriendMoonInternal(tesselator, poseStack.last().pose(), FriendMoonAnimation.HIDDEN_2, 1f, 0);
+//
+//        RenderSystem.stencilFunc(GL14.GL_EQUAL, 1, 0xFF);
+//        RenderSystem.stencilMask(0x00);
+//
+//        poseStack.popPose();
+    }
+
+    public static void renderFriendMoon(Matrix4f frustumMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         assert mc.level != null;
-
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
 
         poseStack.mulPose(frustumMatrix);
         poseStack.pushPose();
@@ -302,6 +337,10 @@ public class FriendMoonRenderer {
         // Update moon rotation / position
         updateFriendMoonPosition(mc.getCameraEntity(), originalPose, partialTick);
 
+        if (getFriendMoonOpacity() <= 0)
+            return;
+
+        RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
 
@@ -317,6 +356,6 @@ public class FriendMoonRenderer {
         RenderSystem.defaultBlendFunc();
 
         poseStack.popPose();
-        RenderSystem.depthMask(true);
+//        RenderSystem.depthMask(true);
     }
 }

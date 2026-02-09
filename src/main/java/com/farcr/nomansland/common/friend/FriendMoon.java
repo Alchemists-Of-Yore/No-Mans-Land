@@ -90,6 +90,19 @@ public class FriendMoon extends SavedData {
         setDirty();
     }
 
+    boolean pulseUpdate = false;
+    @Override public void setDirty() {
+        pulseUpdate = true;
+        super.setDirty();
+    }
+    public boolean shouldPulseUpdate() {
+        if (pulseUpdate) {
+            pulseUpdate = false;
+            return true;
+        }
+        return false;
+    }
+
     public FriendMoon load(CompoundTag tag, HolderLookup.Provider provider) {
         awake = tag.getBoolean("IsAwake");
         setState(FriendMoonState.CODEC.byName(tag.getString("State"), FriendMoonState.IDLE));
@@ -185,8 +198,7 @@ public class FriendMoon extends SavedData {
         forFriendshipPlayers((serverPlayer) -> {
             Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, NMLRegistries.GREETING_DIALOGUE_KEY);
             List<DialogueRegistry.DialoguePool> filteredDialogue = dialogueRegistry.stream().filter(
-                (dialoguePool) -> (dialoguePool.condition().isEmpty())
-            ).toList();
+                (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
 
             // Query individual dialogue based on if the player has met the moon before or not
             AdvancementHolder meetAdvancement = level.getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
