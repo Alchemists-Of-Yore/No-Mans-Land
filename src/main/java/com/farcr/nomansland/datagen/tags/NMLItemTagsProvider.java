@@ -88,6 +88,13 @@ public class NMLItemTagsProvider extends ItemTagsProvider {
                 NMLBlocks.WARPED_BOOKSHELF.item()
         );
 
+        tag(ItemTags.HEAD_ARMOR).add(NMLItems.ANCIENT_BRONZE_MASK.get());
+        tag(ItemTags.HEAD_ARMOR_ENCHANTABLE).add(NMLItems.ANCIENT_BRONZE_MASK.get());
+        tag(ItemTags.EQUIPPABLE_ENCHANTABLE).add(NMLItems.ANCIENT_BRONZE_MASK.get(),
+                                                (NMLItems.TORTOISE_SHELL.get()));
+        tag(ItemTags.CHEST_ARMOR).add(NMLItems.TORTOISE_SHELL.get());
+        tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(NMLItems.TORTOISE_SHELL.get());
+
         addToTags(NMLTags.BOOKSHELVES.itemTag(), Tags.Items.BOOKSHELVES, BlueprintIntegration.woodenBookshelves().itemTag());
         tag(ItemTags.PLANKS).addTag(NMLTags.TRIMMED_PLANKS.itemTag());
         tag(ItemTags.LOGS_THAT_BURN).addTags(NMLTags.MAPLE_LOGS.itemTag(), NMLTags.PINE_LOGS.itemTag(), NMLTags.WALNUT_LOGS.itemTag(), NMLTags.WILLOW_LOGS.itemTag());

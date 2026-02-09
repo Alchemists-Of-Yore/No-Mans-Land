@@ -33,7 +33,7 @@ import java.util.function.ToIntFunction;
 public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBlock {
 
     public static final BooleanProperty CANDLE_LIT = AbstractCandleBlock.LIT;
-    public static final int LIGHT_LEVEL = 4;
+    public static final int LIGHT_LEVEL = 12;
 
     public static final ToIntFunction<BlockState> LIGHT_EMISSION = (blockState) -> (blockState.getValue(CANDLE_LIT) ? LIGHT_LEVEL : 0);
 

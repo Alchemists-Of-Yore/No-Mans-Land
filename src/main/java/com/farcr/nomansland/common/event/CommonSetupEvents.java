@@ -31,6 +31,7 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
+import com.farcr.nomansland.common.world.orevein.OreVein;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
@@ -117,6 +118,7 @@ public class CommonSetupEvents {
     public static void registerDatapackRegistries(final DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(NMLRegistries.TAP_INTERACTION_KEY, TapInteraction.CODEC, TapInteraction.CODEC);
         event.dataPackRegistry(NMLRegistries.POT_VARIANT_KEY, PotVariant.CODEC, PotVariant.CODEC);
+        event.dataPackRegistry(NMLRegistries.ORE_VEIN_KEY, OreVein.CODEC, null);
 
         /* Moonlight Dialogue Registry */
         event.dataPackRegistry(NMLRegistries.GREETING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
