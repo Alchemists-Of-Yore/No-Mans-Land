@@ -1,0 +1,9 @@
+{
+  "type": "nomansland:siltstonecutting",
+  "ingredient": {
+    "item": "nomansland:polished_siltstone"
+  },
+  "result": {
+    "id": "nomansland:polished_siltstone_stairs"
+  }
+}

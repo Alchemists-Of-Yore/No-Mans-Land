@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#A",
+    "A#"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:andesite"
+    },
+    "A": {
+      "item": "nomansland:limestone"
+    }
+  },
+  "result": {
+    "id": "nomansland:siltstone",
+    "count": 3
+  }
+}
