@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_wall_post",
   "textures": {
-    "wall": "nomansland:block/underground/silstone_bricks_0"
+    "wall": "nomansland:block/underground/siltstone_bricks_0"
   }
 }
