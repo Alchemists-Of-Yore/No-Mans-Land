@@ -223,7 +223,6 @@ public class NMLSurfaceRules {
                 SurfaceRules.ifTrue(
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
-                                rocky_cliffs,
                                 // deeper layer biome modifiers - sand, beaches...
                                 SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, downfall_isle, desert_river, mud_beach, tropical_beach),
                                 // top layer biome modifiers - grasses, etc.
