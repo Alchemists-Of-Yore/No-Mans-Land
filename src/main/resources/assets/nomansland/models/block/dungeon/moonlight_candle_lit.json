@@ -6,7 +6,7 @@
 	"textures": {
 		"0": "nomansland:block/dungeon/moonlight_candle_lit",
 		"1": "nomansland:block/dungeon/moonlight_candle_flame",
-		"particle": "nomansland:block/dungeon/moonlight_candle"
+		"particle": "nomansland:block/no_particle"
 	},
 	"elements": [
 		{

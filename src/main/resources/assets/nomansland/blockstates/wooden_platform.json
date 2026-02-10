@@ -1,0 +1,20 @@
+{
+  
+  "variants": 
+  {
+    "axis=x,up=true": {
+      "model": "nomansland:block/building/wooden_platform_top"
+    },
+    "axis=z,up=true": {
+      "model": "nomansland:block/building/wooden_platform_top",
+      "y": 90
+    },
+    "axis=x,up=false": {
+      "model": "nomansland:block/building/wooden_platform_bottom"
+    },
+    "axis=z,up=false": {
+      "model": "nomansland:block/building/wooden_platform_bottom",
+      "y": 90
+    }
+  }
+}
