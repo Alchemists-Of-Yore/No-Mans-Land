@@ -1,10 +1,14 @@
 package com.farcr.nomansland.common.block.moonlight;
 
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.definitions.BlockProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +31,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.function.ToIntFunction;
 
@@ -48,10 +54,46 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
         );
     }
 
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (level.isClientSide() && state.getValue(CANDLE_LIT)) {
+            Vec3 offset = pos.getCenter().add(state.getOffset(level, pos));
+            float f = random.nextFloat();
+            if (f < 0.4F) {
+                Quaternionf rotationQuaternion = com.mojang.math.Axis.YP.rotationDegrees(FriendMoonRenderer.friendMoonYawAngle)
+                    .mul(com.mojang.math.Axis.XP.rotationDegrees(FriendMoonRenderer.friendMoonPitchAngle));
+
+                Vector3f worldPosition = new Vector3f(0f, FriendMoonRenderer.MOON_DISTANCE, 0f).rotate(rotationQuaternion);
+                Vec3 directionCandle = new Vec3(worldPosition.normalize().mul(0.1f * FriendMoonRenderer.getFriendMoonOpacity()));
+
+                level.addParticle(
+                    ParticleTypes.SMOKE,
+                    offset.x, offset.y + 0.75f, offset.z,
+                    directionCandle.x, directionCandle.y, directionCandle.z
+                );
+                if (f < 0.125F) {
+                    level.playLocalSound(offset.x + 0.5F, offset.y + 0.5F, offset.z + 0.5F,
+                        SoundEvents.CANDLE_AMBIENT, SoundSource.BLOCKS,
+                        1.0F + random.nextFloat(), (random.nextFloat() * 0.7F) + 0.3F, false);
+                }
+            }
+        }
+    }
+
     public void extinguish(Player player, BlockState state, Level level, BlockPos pos) {
         level.setBlock(pos, state.setValue(CANDLE_LIT, false), 11);
         level.playSound(null, pos, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+        if (level.isClientSide()) {
+            for (int i = 0; i < 7; i++) {
+                Vec3 offset = pos.getCenter().add(state.getOffset(level, pos));
+                level.addParticle(
+                    ParticleTypes.SMOKE,
+                    offset.x, offset.y + 0.25f, offset.z,
+                    0F, 0F, 0F
+                );
+            }
+        }
     }
 
     @Override

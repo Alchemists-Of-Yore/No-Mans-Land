@@ -250,18 +250,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     public FriendMoon clientMoon;
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (getLevel().isClientSide()) {
-            if (clientMoon == null)
-                clientMoon = new FriendMoon(null);
-            clientMoon.load(tag, registries);
-        }
+        if (clientMoon == null)
+            clientMoon = new FriendMoon(null);
+        clientMoon.load(tag, registries);
     }
 
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         // Store Friend Moon information in BlockEntity
-        assert level != null;
-        if (!level.isClientSide()) {
+        if (level != null && !level.isClientSide()) {
             FriendMoon friendMoon = FriendMoon.getOrDefault(level.getServer().overworld());
             friendMoon.save(tag, registries);
         }

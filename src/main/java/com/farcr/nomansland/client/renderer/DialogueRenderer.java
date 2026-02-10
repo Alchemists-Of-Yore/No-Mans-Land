@@ -56,7 +56,7 @@ public class DialogueRenderer {
 
             int yShift = Math.max(mc.gui.leftHeight, mc.gui.rightHeight);
             guiGraphics.pose().translate(0, (float)(guiGraphics.guiHeight() - Math.max(yShift, 72)) - actionBarDisplacement, 100.0F);
-            for (int i = (constructedText.size() - 1); i >= 0; i--) {
+            for (int i = (constructedText.size() - 1); i >= Math.max(0, constructedText.size() - 3); i--) {
                 String text = constructedText.get(i);
                 if (!text.isEmpty()) {
                     int leftPos = (int) ((gameWidth / 2f) - (font.width(text) / 2f));

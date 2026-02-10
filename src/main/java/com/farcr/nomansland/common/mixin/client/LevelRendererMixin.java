@@ -21,6 +21,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -41,6 +42,9 @@ public class LevelRendererMixin {
     @Shadow
     private ClientLevel level;
 
+    @Unique
+    private static boolean FRIEND_RENDER_CONTEXT = false;
+
     @Inject(
         method = "renderSky",
         at = @At(
@@ -57,7 +61,22 @@ public class LevelRendererMixin {
 //        // Breakout Condition add more stuff here later
 //        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
 //            return;
-        FriendMoonRenderer.renderFriendShadow(frustumMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
-        FriendMoonRenderer.renderFriendMoon(frustumMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        FRIEND_RENDER_CONTEXT = true;
+        FriendMoonRenderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        FriendMoonRenderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+    }
+
+    @Inject(
+        method = "renderSky",
+        at = @At(value = "TAIL")
+    )
+    private void renderFinalize(
+        Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
+        Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
+    ) {
+        if (FRIEND_RENDER_CONTEXT) {
+            FriendMoonRenderer.renderFinalize(frustumMatrix, projectionMatrix, Tesselator.getInstance(), partialTick);
+            FRIEND_RENDER_CONTEXT = false;
+        }
     }
 }
