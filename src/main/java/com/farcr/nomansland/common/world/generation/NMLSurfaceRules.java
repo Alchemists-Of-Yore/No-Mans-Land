@@ -69,9 +69,6 @@ public class NMLSurfaceRules {
                 SurfaceRules.isBiome(Biomes.JUNGLE),
                 SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), COARSE_DIRT)
         );
-        SurfaceRules.RuleSource rocky_cliffs = SurfaceRules.sequence(
-                SurfaceRules.ifTrue(SurfaceRules.steep(), STONE)
-        );
 
         SurfaceRules.RuleSource darkForest = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(Biomes.DARK_FOREST),
