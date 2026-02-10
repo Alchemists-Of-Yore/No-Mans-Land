@@ -25,6 +25,7 @@
     "MinecraftServerMixin",
     "MobInvoker",
     "MobMixin",
+    "NoiseBasedChunkGeneratorMixin",
     "NoiseRouterAccessModifier",
     "PatrolSpawnerMixin",
     "PlayerMixin",

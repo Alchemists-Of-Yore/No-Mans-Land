@@ -32,7 +32,7 @@ public class NMLRegistries {
     public static final ResourceKey<Registry<TapInteraction>> TAP_INTERACTION_KEY = ResourceKey.createRegistryKey(NoMansLand.location("tapping"));
     public static final ResourceKey<Registry<PotVariant>> POT_VARIANT_KEY = ResourceKey.createRegistryKey(NoMansLand.location("pots"));
 
-    public static final ResourceKey<Registry<OreVein>> ORE_VEIN_KEY = ResourceKey.createRegistryKey(NoMansLand.location("worldgen/orevein"));
+    public static final ResourceKey<Registry<OreVein>> ORE_VEIN_KEY = ResourceKey.createRegistryKey(NoMansLand.location("worldgen/ore_vein"));
 
     /* Moonlight Dialogue Pools */
     public static final ResourceKey<Registry<MapCodec<? extends DialogueRegistry.DialogueCondition>>> DIALOGUE_CONDITIONAL_TYPE_KEY

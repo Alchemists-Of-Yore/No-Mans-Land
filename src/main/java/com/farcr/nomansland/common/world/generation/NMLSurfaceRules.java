@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.world.surfacerule.AndConditionSource;
 import com.farcr.nomansland.common.world.surfacerule.BelowOrEqualToYConditionSource;
 import com.farcr.nomansland.common.world.surfacerule.BiomeTagConditionSource;
+import com.farcr.nomansland.common.world.surfacerule.OrConditionSource;
 import com.terraformersmc.biolith.api.surface.SurfaceGeneration;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
@@ -28,6 +29,7 @@ public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource SNOW_BLOCK = makeStateRule(Blocks.SNOW_BLOCK);
     private static final SurfaceRules.RuleSource PACKED_ICE = makeStateRule(Blocks.PACKED_ICE);
     private static final SurfaceRules.RuleSource ICE = makeStateRule(Blocks.ICE);
+    private static final SurfaceRules.RuleSource STONE = makeStateRule(Blocks.STONE);
     private static final SurfaceRules.RuleSource SANDSTONE_UNDER_SAND = SurfaceRules.sequence(
             SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SAND),
             SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.SANDSTONE.defaultBlockState()))
@@ -66,6 +68,9 @@ public class NMLSurfaceRules {
         SurfaceRules.RuleSource jungle = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(Biomes.JUNGLE),
                 SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), COARSE_DIRT)
+        );
+        SurfaceRules.RuleSource rocky_cliffs = SurfaceRules.sequence(
+                SurfaceRules.ifTrue(SurfaceRules.steep(), STONE)
         );
 
         SurfaceRules.RuleSource darkForest = SurfaceRules.ifTrue(
@@ -218,6 +223,7 @@ public class NMLSurfaceRules {
                 SurfaceRules.ifTrue(
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
+                                rocky_cliffs,
                                 // deeper layer biome modifiers - sand, beaches...
                                 SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, downfall_isle, desert_river, mud_beach, tropical_beach),
                                 // top layer biome modifiers - grasses, etc.
@@ -237,5 +243,9 @@ public class NMLSurfaceRules {
 
     private static SurfaceRules.ConditionSource surfaceNoiseAbove(double value) {
         return SurfaceRules.noiseCondition(Noises.SURFACE, value / 8.25, Double.MAX_VALUE);
+    }
+
+    private static SurfaceRules.ConditionSource or(SurfaceRules.ConditionSource a, SurfaceRules.ConditionSource b) {
+        return new OrConditionSource(a, b);
     }
 }
