@@ -1,0 +1,39 @@
+    {
+
+      "spacing": 256,
+
+      "separation": 32,
+
+      "probability": 1.0,
+
+      "radius": {
+        "type": "uniform",
+        "min_inclusive": 32,
+        "max_inclusive": 128
+      },
+
+      "min_height": {
+        "type": "constant",
+        "value": {
+          "above_bottom": 65
+        }
+      },
+      "max_height": {
+        "type": "constant",
+        "value": {
+          "above_bottom": 100
+        }
+      },
+      "filler": {
+        "ore": { "Name": "nomansland:siltstone" },
+        "deepslate_ore": { "Name": "nomansland:siltstone" }
+      },
+      "ore": {
+        "ore": { "Name": "minecraft:coal_ore" },
+        "deepslate_ore": { "Name": "minecraft:deepslate_coal_ore" }
+      },
+      "raw": {
+        "ore": { "Name": "minecraft:coal_block" },
+        "deepslate_ore": { "Name": "minecraft:coal_block" }
+      }
+    }
