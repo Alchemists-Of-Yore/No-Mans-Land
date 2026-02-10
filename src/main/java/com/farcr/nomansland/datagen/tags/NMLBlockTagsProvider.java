@@ -100,10 +100,25 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 BlockTags.LUSH_GROUND_REPLACEABLE,
                 BlockTags.MOSS_REPLACEABLE,
                 BlockTags.SCULK_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
                 BlockTags.CONVERTABLE_TO_MUD,
                 BlockTags.DEAD_BUSH_MAY_PLACE_ON,
                 BlockTags.BIG_DRIPLEAF_PLACEABLE,
                 BlockTags.BAMBOO_PLANTABLE_ON
+        );
+
+        addToTags(NMLBlocks.SILTSTONE.block(),
+                BlockTags.OVERWORLD_CARVER_REPLACEABLES,
+                BlockTags.LUSH_GROUND_REPLACEABLE,
+                BlockTags.MOSS_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
+                BlockTags.SNAPS_GOAT_HORN,
+                BlockTags.BASE_STONE_OVERWORLD,
+                BlockTags.GOATS_SPAWNABLE_ON,
+                BlockTags.AZALEA_ROOT_REPLACEABLE,
+                BlockTags.STONE_ORE_REPLACEABLES,
+                BlockTags.DRIPSTONE_REPLACEABLE
         );
 
         addToTags(NMLBlocks.CUT_VINE.get(), BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH, BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH);
