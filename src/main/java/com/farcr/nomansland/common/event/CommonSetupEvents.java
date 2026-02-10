@@ -170,15 +170,10 @@ public class CommonSetupEvents {
         return contents == null || !contents.getAllEffects().iterator().hasNext();
     }
 
-    private static boolean isLevel1Potion(ItemStack stack) {
+    private static boolean isPotionWithEffects(ItemStack stack) {
         if (!stack.is(Items.POTION)) return false;
         PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-        boolean hasEffects = false;
-        for (MobEffectInstance effect : contents.getAllEffects()) {
-            hasEffects = true;
-            if (effect.getAmplifier() > 0) return false;
-        }
-        return hasEffects;
+        return contents.getAllEffects().iterator().hasNext();
     }
 
     private static boolean isUpgradedPotion(PotionContents contents) {
@@ -241,7 +236,7 @@ public class CommonSetupEvents {
 
         @Override
         public boolean isIngredient(@NotNull ItemStack stack) {
-            return isLevel1Potion(stack);
+            return isPotionWithEffects(stack);
         }
 
         @Override

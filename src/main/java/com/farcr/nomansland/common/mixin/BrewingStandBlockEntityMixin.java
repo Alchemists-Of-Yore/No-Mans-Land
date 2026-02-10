@@ -2,11 +2,15 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -47,11 +51,7 @@ public class BrewingStandBlockEntityMixin {
     private static boolean nml$skipBandages(ItemStack stack) {
         if (!stack.is(Items.POTION)) return true;
         PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-        boolean hasEffects = false;
-        for (MobEffectInstance effect : contents.getAllEffects()) {
-            hasEffects = true;
-            if (effect.getAmplifier() > 0) return true;
-        }
+        boolean hasEffects = contents.getAllEffects().iterator().hasNext();
         return !hasEffects;
     }
 
@@ -63,6 +63,20 @@ public class BrewingStandBlockEntityMixin {
             String path = Objects.requireNonNull(holder.getKey()).location().getPath();
             return path.startsWith("strong_") || path.startsWith("long_");
         }).orElse(false);
+    }
+
+    @Unique
+    private static Optional<Holder<Potion>> nml$getBasePotion(PotionContents contents) {
+        return contents.potion().flatMap(holder -> {
+            String path = Objects.requireNonNull(holder.getKey()).location().getPath();
+            if (path.startsWith("strong_")) {
+                return BuiltInRegistries.POTION.getHolder(ResourceLocation.withDefaultNamespace(path.substring("strong_".length())));
+            }
+            if (path.startsWith("long_")) {
+                return BuiltInRegistries.POTION.getHolder(ResourceLocation.withDefaultNamespace(path.substring("long_".length())));
+            }
+            return Optional.of(holder);
+        });
     }
 
     @Unique
@@ -121,17 +135,31 @@ public class BrewingStandBlockEntityMixin {
         PotionContents potionContents = ingredient.get(DataComponents.POTION_CONTENTS);
         if (potionContents == null) return;
 
-        int bandageCount = nml$emptyBandages.size();
         ArrayList<MobEffectInstance> effects = new ArrayList<>();
-        for (MobEffectInstance effect : potionContents.getAllEffects()) {
-            effects.add(new MobEffectInstance(
-                    effect.getEffect(),
-                    effect.getDuration() / bandageCount,
-                    effect.getAmplifier(),
-                    effect.isAmbient(),
-                    effect.isVisible(),
-                    effect.showIcon()
-            ));
+        Optional<Holder<Potion>> basePotion = nml$getBasePotion(potionContents);
+        if (basePotion.isPresent()) {
+            Potion base = basePotion.get().value();
+            for (MobEffectInstance effect : base.getEffects()) {
+                effects.add(new MobEffectInstance(
+                        effect.getEffect(),
+                        effect.getDuration() / 3,
+                        0,
+                        effect.isAmbient(),
+                        effect.isVisible(),
+                        effect.showIcon()
+                ));
+            }
+        } else {
+            for (MobEffectInstance effect : potionContents.getAllEffects()) {
+                effects.add(new MobEffectInstance(
+                        effect.getEffect(),
+                        effect.getDuration() / 3,
+                        0,
+                        effect.isAmbient(),
+                        effect.isVisible(),
+                        effect.showIcon()
+                ));
+            }
         }
 
         nml$cachedEffect = effects;
