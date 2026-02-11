@@ -1,6 +1,7 @@
 {
-  	"parent": "block/block",
+	"format_version": "1.21.11",
 	"credit": "Made by Farcr",
+	"parent": "block/block",
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "nomansland:block/building/wooden_platform",
@@ -15,7 +16,7 @@
 				"east": {"uv": [8, 8, 16, 10], "texture": "#0"},
 				"south": {"uv": [16, 12, 8, 14], "texture": "#0"},
 				"west": {"uv": [8, 8, 16, 10], "texture": "#0"},
-				"up": {"uv": [8, 0, 0, 8], "texture": "#0"},
+				"up": {"uv": [0, 0, 8, 8], "texture": "#0"},
 				"down": {"uv": [16, 0, 8, 8], "texture": "#0"}
 			}
 		},

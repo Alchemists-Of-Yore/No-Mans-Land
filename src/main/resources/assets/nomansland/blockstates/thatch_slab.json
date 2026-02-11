@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "nomansland:block/building/thatch_slab"
+    },
+    "type=double": {
+      "model": "nomansland:block/building/thatch"
+    },
+    "type=top": {
+      "model": "nomansland:block/building/thatch_slab_top"
+    }
+  }
+}

@@ -26,11 +26,12 @@ public class PlatformStairsBlock extends Block implements SimpleWaterloggedBlock
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty UNSTABLE = BlockStateProperties.UNSTABLE;
-
+    //TODO: ADD UNSTABLE BLOCKSTATE, BREAKS WHEN STEPPED ON, NO DROPS
     protected static final VoxelShape BOTTOM_SHAPE_X = Block.box(0.0D, 4.0D, 0.0D, 16.0D, 8.0D, 8.0D);
     protected static final VoxelShape TOP_SHAPE_X = Block.box(0.0D, 12.0D, 8.0D, 16.0D, 16.0D, 16.0D);
     protected static final VoxelShape BOTTOM_SHAPE_Z = Block.box(8.0D, 4.0D, 0.0D, 16.0D, 8.0D, 16.0D);
     protected static final VoxelShape TOP_SHAPE_Z = Block.box(0.0D, 12.0D, 0.0D, 8.0D, 16.0D, 16.0D);
+    //TODO: MAKE THIS ROTATE BASED ON DIRECTION
     protected static final VoxelShape SHAPE = Shapes.or(TOP_SHAPE_X, BOTTOM_SHAPE_X);
 
     public PlatformStairsBlock(Properties properties) {
