@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "nomansland:block/building/thatch_top",
+    "side": "nomansland:block/building/thatch_side",
+    "top": "nomansland:block/building/thatch_top"
+  }
+}

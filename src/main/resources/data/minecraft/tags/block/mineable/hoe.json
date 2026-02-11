@@ -2,6 +2,9 @@
   "values": [
     "#nomansland:mushroom_blocks",
     "#minecraft:wool",
-    "#minecraft:leaves"
+    "#minecraft:leaves",
+    "nomansland:thatch",
+    "nomansland:thatch_stairs",
+    "nomansland:thatch_slab"
   ]
 }

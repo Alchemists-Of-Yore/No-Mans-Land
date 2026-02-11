@@ -524,7 +524,13 @@ public class NMLBlocks {
             () -> new Block(ofFullCopy(Blocks.BARREL)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<Block> PEAR_CRATE = register("pear_crate",
             () -> new Block(ofFullCopy(Blocks.BARREL)), new BlockProperties(new SelfBlockLootType(), false));
-
+    //Thatch
+    public static final BlockDefinition<Block> THATCH = register("thatch",
+            () -> new Block(ofFullCopy(Blocks.HAY_BLOCK)), new BlockProperties(new SelfBlockLootType(), false));
+    public static final BlockDefinition<StairBlock> THATCH_STAIRS = register("thatch_stairs",
+            () -> new StairBlock(THATCH.get().defaultBlockState(), ofFullCopy(NMLBlocks.THATCH.get())), new BlockProperties(new SelfBlockLootType(), false));
+    public static final BlockDefinition<SlabBlock> THATCH_SLAB = register("thatch_slab",
+            () -> new SlabBlock(ofFullCopy(NMLBlocks.THATCH.get())), new BlockProperties(new SelfBlockLootType(), false));
     //Mushrooms
     public static final BlockDefinition<SurfaceMushroomBlock> FIELD_MUSHROOM = registerNoItem("field_mushroom",
             () -> new SurfaceMushroomBlock((NMLFeatures.HUGE_FIELD_MUSHROOM), (ofFullCopy(Blocks.RED_MUSHROOM).sound(NMLSounds.MUSHROOM_CAP).mapColor(MapColor.TERRACOTTA_WHITE))), new BlockProperties(new SelfBlockLootType(), false));

@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "building",
-  "group": "wooden_slab",
+  "group": "stone_slab",
   "key": {
     "#": {
       "item": "nomansland:polished_stone"

@@ -1,10 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "building",
-  "group": "stone_stairs",
   "key": {
     "#": {
-      "item": "nomansland:polished_stone"
+      "item": "nomansland:thatch"
     }
   },
   "pattern": [
@@ -14,7 +13,7 @@
   ],
   "result": {
     "count": 4,
-    "id": "nomansland:polished_stone_stairs"
+    "id": "nomansland:thatch_stairs"
   },
   "show_notification": true
 }
