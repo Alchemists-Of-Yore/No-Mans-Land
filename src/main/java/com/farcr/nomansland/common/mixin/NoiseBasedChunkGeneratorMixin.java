@@ -7,6 +7,7 @@ import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +24,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
     @Unique OreVeinSystem nml$oreVeinSystem;
     @Unique
     OreVeinSystem nml$getOreVeinSystem(WorldGenLevel level) {
-        if (nml$oreVeinSystem == null) nml$oreVeinSystem = new OreVeinSystem(level);
+        if (nml$oreVeinSystem == null) nml$oreVeinSystem = new OreVeinSystem(level, (ChunkGenerator)(Object)this);
         return nml$oreVeinSystem;
     }
 
@@ -36,6 +37,6 @@ public abstract class NoiseBasedChunkGeneratorMixin {
     )
     void nml$buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState random, ChunkAccess chunk, CallbackInfo ci, @Local WorldGenerationContext context) {
         OreVeinSystem system = nml$getOreVeinSystem(level);
-        system.buildVeins(chunk, context, random, this.settings.value().defaultBlock());
+        system.buildVeins(level, chunk, context, random, this.settings.value().defaultBlock());
     }
 }

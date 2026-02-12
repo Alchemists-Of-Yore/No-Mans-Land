@@ -3,80 +3,160 @@ package com.farcr.nomansland.common.world.orevein;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.world.InterpolatedNoiseField;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.core.BlockPos;
+import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.QuartPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
+import net.neoforged.fml.loading.FMLLoader;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class OreVeinSystem {
     private static final ResourceLocation ORE_VEIN_RANDOM = NMLRegistries.ORE_VEIN_KEY.location();
+    private static final int CACHE_SIZE = 512;
 
-    final Set<Holder<OreVein>> oreVeinTypes;
-    final ThreadLocal<ObjectArrayList<OreVeinInstance>> instances;
+    final Set<Holder<OreVeinType>> oreVeinTypes;
+    final Object2ObjectArrayMap<Holder<OreVeinType>, Long2ObjectLinkedOpenHashMap<Optional<OreVeinInstance>>> instanceCacheByType;
+    final ThreadLocal<ObjectOpenHashSet<OreVeinInstance>> instances;
 
-    public OreVeinSystem(WorldGenLevel level) {
-        Registry<OreVein> registry = level.registryAccess().registryOrThrow(NMLRegistries.ORE_VEIN_KEY);
-        this.oreVeinTypes = registry.asLookup().listElements().collect(Collectors.toUnmodifiableSet());
-        this.instances = ThreadLocal.withInitial(() -> new ObjectArrayList<>(this.oreVeinTypes.size()));
+    public OreVeinSystem(WorldGenLevel level, ChunkGenerator chunkGenerator) {
+        Registry<OreVeinType> registry = level.registryAccess().registryOrThrow(NMLRegistries.ORE_VEIN_KEY);
+        Set<Holder<Biome>> possibleBiomes = chunkGenerator.getBiomeSource().possibleBiomes();
+        this.oreVeinTypes = registry.asLookup()
+                .listElements()
+                .filter(holder -> holder.value().biomes()
+                        .map(allowed -> allowed.stream().anyMatch(possibleBiomes::contains))
+                        .orElse(true)
+                ).collect(Collectors.toUnmodifiableSet());
+        this.instanceCacheByType = new Object2ObjectArrayMap<>(this.oreVeinTypes.size());
+        for (Holder<OreVeinType> oreVeinType : this.oreVeinTypes) {
+            this.instanceCacheByType.put(oreVeinType, new Long2ObjectLinkedOpenHashMap<>(CACHE_SIZE + 1));
+        }
+        this.instances = ThreadLocal.withInitial(() -> new ObjectOpenHashSet<>(this.oreVeinTypes.size()));
     }
 
-    public void buildVeins(ChunkAccess chunk, WorldGenerationContext context, RandomState random, BlockState defaultBlock) {
-        ObjectArrayList<OreVeinInstance> oreVeinsInChunk = this.collectVeinsInChunk(chunk, context, random);
+    public void buildVeins(WorldGenRegion level, ChunkAccess chunk, WorldGenerationContext context, RandomState random, BlockState defaultBlock) {
+        // todo: specify dimension in vein type
+        // if (level.getLevel().dimension() != Level.OVERWORLD) return;
+
+        ObjectOpenHashSet<OreVeinInstance> oreVeinsInChunk = this.collectVeinsInChunk(level, chunk, context, random);
         if (oreVeinsInChunk.isEmpty()) return;
-        this.fill(oreVeinsInChunk, chunk, random, defaultBlock);
+        // sort by manhattan distance to 0, 0
+        // not a great way of doing it, but just need SOME kind of deterministic sorting so there's no chunk borders.
+        List<OreVeinInstance> sortedOreVeinsInChunk = oreVeinsInChunk
+                .stream()
+                .sorted(Comparator.comparingInt((instance) -> Math.abs(instance.x) + Math.abs(instance.z)))
+                .toList();
+        this.fill(sortedOreVeinsInChunk, chunk, random, defaultBlock);
     }
 
-    private ObjectArrayList<OreVeinInstance> collectVeinsInChunk(ChunkAccess chunk, WorldGenerationContext context, RandomState random) {
-        ObjectArrayList<OreVeinInstance> oreVeinsInChunk = this.instances.get();
+    private Optional<OreVeinInstance> getOrCreateOreVein(Holder<OreVeinType> typeHolder, OreVeinType type, int cellX, int cellZ, WorldGenRegion level, WorldGenerationContext context, RandomState random) {
+        long key = ChunkPos.asLong(cellX, cellZ);
+        Optional<OreVeinInstance> instance = null;
+        Long2ObjectLinkedOpenHashMap<Optional<OreVeinInstance>> instanceCache = instanceCacheByType.get(typeHolder);
+
+        synchronized (instanceCache) {
+            instance = instanceCache.getOrDefault(key, null);
+        }
+
+        if (instance == null) {
+            instance = createOreVein(typeHolder, type, cellX, cellZ, level, context, random);
+            synchronized (instanceCache) {
+                if (!instanceCache.containsKey(key)) {
+                    instanceCache.putAndMoveToFirst(key, instance);
+                    if (instanceCache.size() > CACHE_SIZE) instanceCache.removeLast();
+                }
+            }
+        }
+
+        return instance;
+    }
+
+    private Optional<OreVeinInstance> createOreVein(Holder<OreVeinType> typeHolder, OreVeinType type, int cellX, int cellZ, WorldGenRegion level, WorldGenerationContext context, RandomState random) {
+        RandomSource veinRandom = random.getOrCreateRandomFactory(typeHolder.getKey().location()).at(cellX, 0, cellZ);
+
+        if (veinRandom.nextFloat() > type.probability()) return Optional.empty();
+
+        int minY = type.minHeight().sample(veinRandom, context),
+            maxY = type.maxHeight().sample(veinRandom, context);
+        if (minY > maxY) return Optional.empty();
+
+        int centerY = (minY + maxY) / 2;
+
+        int minX = cellX * type.spacing(),
+            minZ = cellZ * type.spacing();
+        int maxX = minX + (type.spacing() - type.separation()),
+            maxZ = minZ + (type.spacing() - type.separation());
+        int centerX = veinRandom.nextInt(minX, maxX),
+            centerZ = veinRandom.nextInt(minZ, maxZ);
+
+        if (type.biomes().isPresent()) {
+            HolderSet<Biome> allowedBiomes = type.biomes().get();
+            if (!allowedBiomes.contains(level.getUncachedNoiseBiome(
+                    QuartPos.fromBlock(centerX),
+                    QuartPos.fromBlock(centerY),
+                    QuartPos.fromBlock(centerZ)
+            ))) return Optional.empty();
+        }
+
+        int radius = type.radius().sample(veinRandom);
+        if (radius <= 0) return Optional.empty();
+
+        float veinRadius = type.veinRadius().sample(veinRandom);
+        if (veinRadius <= 0) return Optional.empty();
+
+        // log vein position if in dev mode
+        if (!FMLLoader.isProduction())
+            NoMansLand.LOGGER.info("Generated ore vein of type {} at {} {} {}", typeHolder.getKey().location(), centerX, centerY, centerZ);
+
+        return Optional.of(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, veinRadius));
+    }
+
+    private ObjectOpenHashSet<OreVeinInstance> collectVeinsInChunk(WorldGenRegion level, ChunkAccess chunk, WorldGenerationContext context, RandomState random) {
+        ObjectOpenHashSet<OreVeinInstance> oreVeinsInChunk = this.instances.get();
         oreVeinsInChunk.clear();
         int chunkMinX = chunk.getPos().getMinBlockX(),
             chunkMinZ = chunk.getPos().getMinBlockZ();
-        for (Holder<OreVein> oreVeinHolder : oreVeinTypes) {
-            OreVein oreVein = oreVeinHolder.value();
-            int centerCellX = Math.floorDiv(chunkMinX, oreVein.spacing()),
-                centerCellZ = Math.floorDiv(chunkMinZ, oreVein.spacing());
+        for (Holder<OreVeinType> holder : oreVeinTypes) {
+            OreVeinType type = holder.value();
+            int centerCellX = Math.floorDiv(chunkMinX, type.spacing()),
+                centerCellZ = Math.floorDiv(chunkMinZ, type.spacing());
 
             // collect veins from all neighboring cells
             for (int cellXOffset = -1; cellXOffset <= 1; cellXOffset++) {
                 for (int cellZOffset = -1; cellZOffset <= 1; cellZOffset++) {
                     int cellX = centerCellX + cellXOffset, cellZ = centerCellZ + cellZOffset;
 
-                    RandomSource veinRandom =
-                            random.getOrCreateRandomFactory(oreVeinHolder.getKey().location())
-                                    .at(cellX, 0, cellZ);
+                    Optional<OreVeinInstance> maybeInstance = getOrCreateOreVein(holder, type, cellX, cellZ, level, context, random);
 
-                    if (veinRandom.nextFloat() > oreVein.probability()) continue;
+                    if (maybeInstance.isEmpty()) continue;
 
-                    int minY = oreVein.minHeight().sample(veinRandom, context),
-                        maxY = oreVein.maxHeight().sample(veinRandom, context);
-                    if (minY > maxY) continue;
+                    OreVeinInstance instance = maybeInstance.get();
+                    if (Mth.length(chunkMinX - instance.x, chunkMinZ - instance.z) > instance.radius + 24) continue;
 
-                    int minX = cellX * oreVein.spacing(),
-                        minZ = cellX * oreVein.spacing();
-                    int maxX = minX + (oreVein.spacing() - oreVein.separation()),
-                        maxZ = minZ + (oreVein.spacing() - oreVein.separation());
-                    int centerX = veinRandom.nextInt(minX, maxX),
-                        centerZ = veinRandom.nextInt(minZ, maxZ);
-
-                    int radius = oreVein.radius().sample(veinRandom);
-
-                    if (Mth.length(chunkMinX - centerX, chunkMinZ - centerZ) < radius + 24)
-                        oreVeinsInChunk.add(new OreVeinInstance(oreVein, centerX, centerZ, minY, maxY, radius));
+                    oreVeinsInChunk.add(instance);
                 }
             }
         }
@@ -84,7 +164,13 @@ public class OreVeinSystem {
         return oreVeinsInChunk;
     }
 
-    private void fill(ObjectArrayList<OreVeinInstance> oreVeinsInChunk, ChunkAccess chunk, RandomState randomState, BlockState defaultBlock) {
+    private void fill(List<OreVeinInstance> oreVeinsInChunk, ChunkAccess chunk, RandomState randomState, BlockState defaultBlock) {
+        ChunkPos chunkpos = chunk.getPos();
+        int chunkMinX = chunkpos.getMinBlockX(),
+                chunkMinZ = chunkpos.getMinBlockZ();
+        int chunkHeight = chunk.getHeight(),
+                chunkMinY = chunk.getMinBuildHeight();
+
         // find the maximum possible y for any ore vein
         int maxY = Integer.MIN_VALUE, minY = Integer.MAX_VALUE;
         for (OreVeinInstance oreVeinInstance : oreVeinsInChunk) {
@@ -97,13 +183,8 @@ public class OreVeinSystem {
                 maxHeight = Math.max(chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x, z), maxHeight);
             }
         }
-        //maxY = Math.max(maxY, maxHeight);
-
-        ChunkPos chunkpos = chunk.getPos();
-        int chunkMinX = chunkpos.getMinBlockX(),
-            chunkMinZ = chunkpos.getMinBlockZ();
-        int chunkHeight = chunk.getHeight(),
-            chunkMinY = chunk.getMinBuildHeight();
+        maxY = Math.min(maxY, maxHeight);
+        minY = Math.max(minY, chunkMinY);
 
         RandomSource fillRandom = randomState.getOrCreateRandomFactory(ORE_VEIN_RANDOM).at(chunkMinX, 0, chunkMinZ);
 
@@ -141,7 +222,7 @@ public class OreVeinSystem {
                     double veinANoise = oreVeinAField.retrieve(x, localY, z),
                            veinBNoise = oreVeinBField.retrieve(x, localY, z),
                            veinGapNoise = oreGapField.retrieve(x, localY, z);
-                    double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise)) - 0.08;
+                    double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise));
 
                     for (OreVeinInstance vein : oreVeinsInChunk) {
                         BlockState veinState = getVeinState(worldX, y, worldZ, veinRidgeNoise, veinGapNoise, fillRandom, vein);
@@ -157,22 +238,24 @@ public class OreVeinSystem {
 
     @Nullable
     private BlockState getVeinState(int x, int y, int z, double veinRidgeNoise, double veinGapNoise, RandomSource random, OreVeinInstance vein) {
-
         int maxYDist = vein.maxY - y, minYDist = y - vein.minY;
         if (maxYDist < 0 || minYDist < 0) return null;
         int yDist = Math.min(maxYDist, minYDist);
-
+        int yDiff = vein.maxY - vein.minY;
         if (random.nextFloat() > 0.7F) return null;
 
         double xzDist = Mth.length(x - vein.x, z - vein.z);
         if (xzDist > vein.radius) return null;
 
-        veinRidgeNoise += Mth.clampedMap(yDist, 0, 4, 0.08, 0);
-        veinRidgeNoise += Mth.clampedMap(xzDist, vein.radius * 0.5, vein.radius, 0, 0.08);
+        if (vein.type().invert()) veinRidgeNoise = 1 - veinRidgeNoise;
+        float veinRadius = vein.veinRadius();
+        veinRadius = (float) Mth.clampedMap(yDist, 0, yDiff * 0.5F, 0, veinRadius);
+        veinRadius = (float) Mth.clampedMap(xzDist, vein.radius * 0.75F, vein.radius, veinRadius, 0);
 
+        veinRidgeNoise = veinRidgeNoise * 64 - veinRadius;
         if (veinRidgeNoise >= 0.0) return null;
 
-        if (veinGapNoise > -0.3F && random.nextFloat() < 0.2F) {
+        if (veinGapNoise > -0.3F && random.nextFloat() < 0.2F && veinRidgeNoise <= -2.0F) {
             return random.nextFloat() < 0.02F ?
                     vein.type.raw().resolve(y) :
                     vein.type.ore().resolve(y);
@@ -181,5 +264,5 @@ public class OreVeinSystem {
         }
     }
 
-    private record OreVeinInstance(OreVein type, int x, int z, int minY, int maxY, int radius) {}
+    private record OreVeinInstance(OreVeinType type, int x, int z, int minY, int maxY, int radius, float veinRadius) {}
 }
