@@ -249,7 +249,7 @@ public class OreVeinSystem {
 
         if (vein.type().invert()) veinRidgeNoise = 1 - veinRidgeNoise;
         float veinRadius = vein.veinRadius();
-        veinRadius = (float) Mth.clampedMap(yDist, 0, yDiff * 0.5F, 0, veinRadius);
+        veinRadius = (float) Mth.clampedMap(yDist, 0, yDiff * 0.25F, 0, veinRadius);
         veinRadius = (float) Mth.clampedMap(xzDist, vein.radius * 0.75F, vein.radius, veinRadius, 0);
 
         veinRidgeNoise = veinRidgeNoise * 64 - veinRadius;
