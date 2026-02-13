@@ -1,16 +1,15 @@
 {
   "variants": 
   {
-    "facing=east": {
-      "model": "nomansland:block/building/wooden_platform_stairs",
-      "y": 270
-    },
     "facing=north": {
-      "model": "nomansland:block/building/wooden_platform_stairs",
-      "y": 180
+      "model": "nomansland:block/building/wooden_platform_stairs_flipped"
     },
     "facing=south": {
       "model": "nomansland:block/building/wooden_platform_stairs"
+    },
+    "facing=east": {
+      "model": "nomansland:block/building/wooden_platform_stairs_flipped",
+      "y": 90
     },
     "facing=west": {
       "model": "nomansland:block/building/wooden_platform_stairs",
