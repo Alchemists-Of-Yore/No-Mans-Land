@@ -16,7 +16,7 @@ public record ClientboundMoonlightBasinTrackPacket(
         ClientboundMoonlightBasinTrackPacket::pos,
         ClientboundMoonlightBasinTrackPacket::new
     );
-    public static final Type<ClientboundMoonlightBasinTrackPacket> TYPE = new Type<>(NoMansLand.location("client/moon_basin_update"));
+    public static final Type<ClientboundMoonlightBasinTrackPacket> TYPE = new Type<>(NoMansLand.location("client/friend_moon/moon_basin_update"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

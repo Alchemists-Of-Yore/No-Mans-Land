@@ -109,6 +109,7 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.BOULDER_DECORATOR_TYPE);
         event.register(NMLRegistries.FALLEN_TREE_DECORATOR_TYPE);
         event.register(NMLRegistries.FOG_MODIFIERS);
+        event.register(NMLRegistries.CONTEXTUAL_MUSIC);
         event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
         event.register(NMLRegistries.DIALOGUE_CONDITIONAL_TYPE);
     }

@@ -169,8 +169,10 @@ public class FriendMoonRenderer {
 
     public static BlockPos clientBlockPos;
     public static void updateFriendMoonPosition(Entity cameraEntity, Quaternionf moonRotation, Matrix4f moonViewMatrix, float partialTick) {
-        // Temporary Wake Up Logic
         Minecraft mc = Minecraft.getInstance();
+        if (mc.isPaused())
+            return;
+
         LocalPlayer player = mc.player;
 
         boolean fadeOut = true;

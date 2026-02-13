@@ -23,7 +23,7 @@ public record ClientboundDialoguePacket(ResourceLocation resourceLocation, Resou
         ClientboundDialoguePacket::new
     );
 
-    public static final CustomPacketPayload.Type<ClientboundDialoguePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("client/dialogue"));
+    public static final CustomPacketPayload.Type<ClientboundDialoguePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("client/friend_moon/dialogue"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

@@ -11,6 +11,7 @@ import com.farcr.nomansland.client.model.goose.GooseModel;
 import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
+import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;
 import com.farcr.nomansland.common.integration.Mods;
@@ -56,6 +57,7 @@ public class ClientSetupEvents {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         AmbienceHandler.FOG_MODIFIER_HANDLER.fillFogModifiers();
+        ContextualMusicHandler.buildMusicContext();
 
         event.enqueueWork(() -> {
             ItemProperties.register(NMLItems.BANDAGE.get(), NoMansLand.location("has_potion"),

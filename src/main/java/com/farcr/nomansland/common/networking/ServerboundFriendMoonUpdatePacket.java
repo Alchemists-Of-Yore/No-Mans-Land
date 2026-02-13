@@ -21,7 +21,7 @@ public record ServerboundFriendMoonUpdatePacket(
         ServerboundFriendMoonUpdatePacket::packetType,
         ServerboundFriendMoonUpdatePacket::new
     );
-    public static final CustomPacketPayload.Type<ServerboundFriendMoonUpdatePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("server/moon_awake"));
+    public static final CustomPacketPayload.Type<ServerboundFriendMoonUpdatePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("server/friend_moon/moon_awake"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.ambience.fogmodifiers.FogModifier;
+import com.farcr.nomansland.client.music.condition.MusicCondition;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.block.pots.PotVariant;
@@ -28,6 +29,9 @@ public class NMLRegistries {
 
     public static final ResourceKey<Registry<FogModifier>> FOG_MODIFIER_TYPE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("client/fogmodifier"));
     public static final Registry<FogModifier> FOG_MODIFIERS = new RegistryBuilder<>(FOG_MODIFIER_TYPE_KEY).create();
+
+    public static final ResourceKey<Registry<MusicCondition>> CONTEXTUAL_MUSIC_TYPE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("client/contextual_music"));
+    public static final Registry<MusicCondition> CONTEXTUAL_MUSIC = new RegistryBuilder<>(CONTEXTUAL_MUSIC_TYPE_KEY).create();
 
     public static final ResourceKey<Registry<TapInteraction>> TAP_INTERACTION_KEY = ResourceKey.createRegistryKey(NoMansLand.location("tapping"));
     public static final ResourceKey<Registry<PotVariant>> POT_VARIANT_KEY = ResourceKey.createRegistryKey(NoMansLand.location("pots"));

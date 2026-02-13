@@ -73,7 +73,7 @@ public class FriendMoon extends SavedData {
         this.candleTimer = candleTime;
     }
 
-    private FriendMoonState state = FriendMoonState.IDLE;
+    private FriendMoonState state = FriendMoonState.GREETING;
     public FriendMoonState getState() { return this.state; }
     public void setState(FriendMoonState newState) {
         if (newState != state) {
@@ -156,13 +156,17 @@ public class FriendMoon extends SavedData {
             AtomicInteger playerTracker = new AtomicInteger();
             forFriendshipPlayers((player) -> {
                 playerTracker.getAndIncrement();
+                if (getState() != FriendMoonState.GREETING)
+                    NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
             });
 
             // Ensure players are listening to the Moon
             int totalPlayers = playerTracker.get();
             if (totalPlayers > 0) {
-                if (getState() == FriendMoonState.GREETING)
+                if (getState() == FriendMoonState.GREETING) {
                     sendGreetingDialogue();
+                    return;
+                }
 
                 // Passive Dialogue
                 if (dialogueTicks >= 0) {

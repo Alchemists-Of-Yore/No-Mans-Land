@@ -32,7 +32,6 @@ public class DialogueRenderer {
             Minecraft mc = Minecraft.getInstance();
 
             float gameWidth = guiGraphics.guiWidth();
-
             float[] shaderColor = RenderSystem.getShaderColor();
             RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], FriendMoonRenderer.getFriendMoonOpacity());
 
@@ -43,6 +42,9 @@ public class DialogueRenderer {
             }
 
             float deltaTime = deltaTracker.getGameTimeDeltaTicks();
+            if (mc.isPaused())
+                deltaTime = 0f;
+
             List<String> constructedText = currentState.progressText(deltaTime);
 
             Font font = mc.gui.getFont();

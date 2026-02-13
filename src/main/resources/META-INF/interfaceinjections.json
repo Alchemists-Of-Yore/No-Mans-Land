@@ -7,5 +7,8 @@
     ],
     "net/minecraft/world/entity/Entity": [
         "com/farcr/nomansland/common/extension/EntityExtension"
+    ],
+    "net/minecraft/client/resources/sounds/SoundInstance": [
+        "com/farcr/nomansland/common/extension/SoundInstanceExtension"
     ]
 }

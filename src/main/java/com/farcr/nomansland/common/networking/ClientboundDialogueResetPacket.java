@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record ClientboundDialogueResetPacket() implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundDialogueResetPacket> STREAM_CODEC = StreamCodec.unit(new ClientboundDialogueResetPacket());
 
-    public static final Type<ClientboundDialogueResetPacket> TYPE = new Type<>(NoMansLand.location("client/dialogue_reset"));
+    public static final Type<ClientboundDialogueResetPacket> TYPE = new Type<>(NoMansLand.location("client/friend_moon/dialogue_reset"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
