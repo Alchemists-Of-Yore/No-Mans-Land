@@ -2,6 +2,8 @@
   "type": "neoforge:remove_features",
   "biomes": "#minecraft:is_overworld",
   "features": [
-    "minecraft:ore_dirt"
+    "minecraft:ore_dirt",
+    "minecraft:ore_granite_upper",
+    "minecraft:ore_granite_lower"
   ]
 }

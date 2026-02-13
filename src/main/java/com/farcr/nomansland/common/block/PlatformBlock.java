@@ -46,7 +46,7 @@ public class PlatformBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
-        if (itemAbility == ItemAbilities.AXE_STRIP && !state.getValue(UNSTABLE)) {
+        if (itemAbility == ItemAbilities.SHEARS_CARVE && !state.getValue(UNSTABLE)) {
             return state.setValue(UNSTABLE, true);
         }
         return null;
