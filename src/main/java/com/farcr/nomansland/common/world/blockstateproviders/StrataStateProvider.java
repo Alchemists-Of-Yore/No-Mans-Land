@@ -13,23 +13,29 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvi
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
+import java.util.Collections;
 import java.util.List;
 
 public class StrataStateProvider extends BlockStateProvider {
     public static final MapCodec<StrataStateProvider> CODEC = RecordCodecBuilder.mapCodec(
             codec -> codec.group(
-                            BlockStateProvider.CODEC.fieldOf("above_state").forGetter(provider -> provider.above),
-                            BlockStateProvider.CODEC.fieldOf("below_state").forGetter(provider -> provider.below),
-                            Codec.INT.fieldOf("gradient_top_height").forGetter(provider -> provider.topHeight),
-                            Codec.INT.fieldOf("gradient_end_height").forGetter(provider -> provider.bottomHeight)
-                    ).apply(codec, (BlockStateProvider layers, BlockStateProvider randomize, Integer randomize2, Integer randomize3) -> new StrataStateProvider(layers, randomize, , randomize2))
+                            Codec.list(StrataLayer.CODEC).fieldOf("layers").forGetter(provider -> provider.layers),
+                            Codec.FLOAT.fieldOf("noise_intensity").forGetter(provider -> provider.noiseIntensity),
+                            Codec.BOOL.fieldOf("randomize").orElse(false).forGetter(provider -> provider.randomize)
+                    ).apply(codec, StrataStateProvider::new)
     );
 
-    final BlockStateProvider[] byHeight;
+    final List<StrataLayer> layers;
     final float noiseIntensity;
+    final boolean randomize;
+
+    final BlockStateProvider[] byHeight;
     final NormalNoise noise;
 
-    StrataStateProvider(List<StrataLayer> layers, boolean randomize, float noiseIntensity) {
+    StrataStateProvider(List<StrataLayer> layers, float noiseIntensity, boolean randomize) {
+        this.layers = Collections.unmodifiableList(layers);
+        this.randomize = randomize;
+
         this.noiseIntensity = noiseIntensity;
         int totalHeight = 0;
         for (StrataLayer layer : layers) totalHeight += layer.height();
