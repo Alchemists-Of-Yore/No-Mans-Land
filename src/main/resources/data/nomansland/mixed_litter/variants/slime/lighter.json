@@ -1,0 +1,7 @@
+{
+  "type": "mixed_litter:simple_texture",
+  "group": "nomansland:slime",
+  "arguments": {
+    "texture": "nomansland:entity/mob_variants/slime/slime_lighter"
+  }
+}
