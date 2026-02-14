@@ -60,7 +60,7 @@
         }
       ]
     },
-    "probability": 0.2,
+    "probability": 0.5,
     "incoherence": 0.5
   }
 }
