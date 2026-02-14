@@ -14,7 +14,11 @@ public class MooseTargetManagementMemory {
     public final Object2IntOpenHashMap<UUID> upsetDurations = new Object2IntOpenHashMap<>();
 
     public void addTarget(Entity target) {
-        upsetDurations.put(target.getUUID(), UPSET_DURATION);
+        addTarget(target, UPSET_DURATION);
+    }
+
+    public void addTarget(Entity target, int duration) {
+        upsetDurations.put(target.getUUID(), duration);
     }
 
     public void clearAggression(Entity target) {

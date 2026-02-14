@@ -45,23 +45,23 @@ public class MooseStompGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        var level = moose.level();
         if (!moose.canStartStomp()) {
             return false;
         }
-        var level = moose.level();
         var stompArea = moose.getBoundingBox().inflate(stompDistance, 3.0, stompDistance);
-        var stompOnSight = level
+        var stompTargets = level
                 .getEntitiesOfClass(LivingEntity.class, stompArea,
                         EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldStomp));
 
         stompTarget = level.getNearestEntity(
-                stompOnSight, STOMP_TARGETING,
+                stompTargets, STOMP_TARGETING,
                 moose, moose.getX(), moose.getY(), moose.getZ());
 
         if (stompTarget == null) {
             return false;
         }
-        return (moose.distanceTo(stompTarget) < stompDistance);
+        return moose.distanceTo(stompTarget) < stompDistance;
     }
 
     @Override

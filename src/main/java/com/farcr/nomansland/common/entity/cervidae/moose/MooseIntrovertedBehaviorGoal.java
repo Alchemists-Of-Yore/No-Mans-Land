@@ -19,7 +19,7 @@ import java.util.EnumSet;
 
 /**
  * Behavior similar to {@link net.minecraft.world.entity.ai.goal.AvoidEntityGoal}
- * Avoids specified entities from a certain radius. Occasionally Stomps if any are found within a certain radius.
+ * Avoids specified entities from a certain radius. Moves faster after stomping.
  */
 public class MooseIntrovertedBehaviorGoal extends Goal {
 
