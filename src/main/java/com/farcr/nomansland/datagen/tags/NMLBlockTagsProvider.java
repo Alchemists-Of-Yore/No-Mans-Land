@@ -123,6 +123,8 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
 
         addToTags(NMLBlocks.CUT_VINE.get(), BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH, BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH);
         addToTags(NMLBlocks.SEASHELLS.get(), BlockTags.COMBINATION_STEP_SOUND_BLOCKS);
+
+        tag(NMLTags.ORE_VEIN_REPLACEABLE).add(Blocks.STONE, Blocks.DEEPSLATE);
     }
 
     @SafeVarargs

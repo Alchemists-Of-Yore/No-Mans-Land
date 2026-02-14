@@ -68,7 +68,7 @@ public class OreVeinSystem {
                 .stream()
                 .sorted(Comparator.comparingInt((instance) -> Math.abs(instance.x) + Math.abs(instance.z)))
                 .toList();
-        this.fill(sortedOreVeinsInChunk, chunk, random, defaultBlock);
+        this.fill(sortedOreVeinsInChunk, level, chunk, random, defaultBlock);
     }
 
     private Optional<OreVeinInstance> getOrCreateOreVein(Holder<OreVeinType> typeHolder, OreVeinType type, int cellX, int cellZ, WorldGenRegion level, WorldGenerationContext context, RandomState random) {
@@ -167,7 +167,7 @@ public class OreVeinSystem {
         return oreVeinsInChunk;
     }
 
-    private void fill(List<OreVeinInstance> oreVeinsInChunk, ChunkAccess chunk, RandomState randomState, BlockState defaultBlock) {
+    private void fill(List<OreVeinInstance> oreVeinsInChunk, WorldGenLevel level, ChunkAccess chunk, RandomState randomState, BlockState defaultBlock) {
         ChunkPos chunkpos = chunk.getPos();
         int chunkMinX = chunkpos.getMinBlockX(),
                 chunkMinZ = chunkpos.getMinBlockZ();
@@ -224,7 +224,7 @@ public class OreVeinSystem {
                     mPos.setY(y);
 
                     BlockState currentState = chunkSection.getBlockState(x, sectionY, z);
-                    if (currentState != defaultBlock) continue;
+                    if (!currentState.canOcclude()) continue;
 
                     double veinANoise = oreVeinAField.retrieve(x, localY, z),
                            veinBNoise = oreVeinBField.retrieve(x, localY, z),
@@ -232,11 +232,14 @@ public class OreVeinSystem {
                     double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise));
 
                     for (OreVeinInstance vein : oreVeinsInChunk) {
-                        BlockState veinState = getVeinState(worldX, y, worldZ, veinRidgeNoise, veinGapNoise, mPos, fillRandom, vein);
-                        if (veinState != null) {
-                            chunkSection.setBlockState(x, sectionY, z, veinState, false);
-                            break;
+                        if (vein.type().targetCondition().test(level, mPos)) {
+                            BlockState veinState = getVeinState(worldX, y, worldZ, veinRidgeNoise, veinGapNoise, mPos, fillRandom, vein);
+                            if (veinState != null) {
+                                chunkSection.setBlockState(x, sectionY, z, veinState, false);
+                                break;
+                            }
                         }
+
                     }
                 }
             }
