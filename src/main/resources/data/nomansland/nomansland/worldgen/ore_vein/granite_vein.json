@@ -1,8 +1,6 @@
 {
-
   "spacing": 256,
   "separation": 32,
-
   "probability": 1.0,
 
   "radius": {
@@ -10,7 +8,6 @@
     "min_inclusive": 8,
     "max_inclusive": 32
   },
-
   "min_height": {
     "type": "constant",
     "value": {
@@ -31,15 +28,19 @@
   "inverted": true,
 
   "filler": {
-    "ore": { "Name": "minecraft:granite" },
-    "deepslate_ore": { "Name": "minecraft:deepslate" }
+    "state_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": { "Name": "minecraft:granite" }
+    },
+    "probability": 1.0,
+    "incoherence": 0.0
   },
-  "ore": {
-    "ore": { "Name": "minecraft:granite" },
-    "deepslate_ore": { "Name": "minecraft:deepslate" }
-  },
-  "raw": {
-    "ore": { "Name": "minecraft:granite" },
-    "deepslate_ore": { "Name": "minecraft:deepslate" }
+  "core": {
+    "state_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": { "Name": "minecraft:granite" }
+    },
+    "probability": 0.0,
+    "incoherence": 0.0
   }
 }

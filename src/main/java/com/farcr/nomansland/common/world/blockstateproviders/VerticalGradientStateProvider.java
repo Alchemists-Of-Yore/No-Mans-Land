@@ -16,7 +16,7 @@ public class VerticalGradientStateProvider extends BlockStateProvider {
                             BlockStateProvider.CODEC.fieldOf("above_state").forGetter(provider -> provider.above),
                             BlockStateProvider.CODEC.fieldOf("below_state").forGetter(provider -> provider.below),
                             Codec.INT.fieldOf("gradient_top_height").forGetter(provider -> provider.topHeight),
-                            Codec.INT.fieldOf("gradient_end_height").forGetter(provider -> provider.bottomHeight)
+                            Codec.INT.fieldOf("gradient_bottom_height").forGetter(provider -> provider.bottomHeight)
                     ).apply(codec, VerticalGradientStateProvider::new)
     );
 
@@ -43,6 +43,6 @@ public class VerticalGradientStateProvider extends BlockStateProvider {
 
     @Override
     protected BlockStateProviderType<?> type() {
-        return NMLBlockStateProviderTypes.VERTICAL_GRADIENT.get();
+        return NMLBlockStateProviderTypes.VERTICAL_GRADIENT_STATE_PROVIDER.get();
     }
 }

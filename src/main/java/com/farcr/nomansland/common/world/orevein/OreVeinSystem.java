@@ -6,18 +6,15 @@ import com.farcr.nomansland.common.world.InterpolatedNoiseField;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.QuartPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -40,6 +37,7 @@ public class OreVeinSystem {
     final Set<Holder<OreVeinType>> oreVeinTypes;
     final Object2ObjectArrayMap<Holder<OreVeinType>, Long2ObjectLinkedOpenHashMap<Optional<OreVeinInstance>>> instanceCacheByType;
     final ThreadLocal<ObjectOpenHashSet<OreVeinInstance>> instances;
+    final ChunkGenerator chunkGenerator;
 
     public OreVeinSystem(WorldGenLevel level, ChunkGenerator chunkGenerator) {
         Registry<OreVeinType> registry = level.registryAccess().registryOrThrow(NMLRegistries.ORE_VEIN_KEY);
@@ -55,6 +53,7 @@ public class OreVeinSystem {
             this.instanceCacheByType.put(oreVeinType, new Long2ObjectLinkedOpenHashMap<>(CACHE_SIZE + 1));
         }
         this.instances = ThreadLocal.withInitial(() -> new ObjectOpenHashSet<>(this.oreVeinTypes.size()));
+        this.chunkGenerator = chunkGenerator;
     }
 
     public void buildVeins(WorldGenRegion level, ChunkAccess chunk, WorldGenerationContext context, RandomState random, BlockState defaultBlock) {
@@ -114,9 +113,13 @@ public class OreVeinSystem {
 
         if (type.biomes().isPresent()) {
             HolderSet<Biome> allowedBiomes = type.biomes().get();
+            int sampleY = centerY;
+            if (type.sampleBiomeAtSurface()) {
+                sampleY = chunkGenerator.getBaseHeight(centerX, centerZ, Heightmap.Types.OCEAN_FLOOR, level, random);
+            }
             if (!allowedBiomes.contains(level.getUncachedNoiseBiome(
                     QuartPos.fromBlock(centerX),
-                    QuartPos.fromBlock(centerY),
+                    QuartPos.fromBlock(sampleY),
                     QuartPos.fromBlock(centerZ)
             ))) return Optional.empty();
         }
@@ -184,7 +187,7 @@ public class OreVeinSystem {
             }
         }
         maxY = Math.min(maxY, maxHeight);
-        minY = Math.max(minY, chunkMinY);
+        minY = Math.max(minY, chunkMinY + 1);
 
         RandomSource fillRandom = randomState.getOrCreateRandomFactory(ORE_VEIN_RANDOM).at(chunkMinX, 0, chunkMinZ);
 
@@ -201,10 +204,13 @@ public class OreVeinSystem {
         oreVeinBField.fill(fieldStartY, fieldEndY, chunkMinX, chunkMinY, chunkMinZ, (x, y, z) -> oreVeinB.getValue(x * 4, y * 4, z * 4));
         oreGapField.fill(fieldStartY, fieldEndY, chunkMinX, chunkMinY, chunkMinZ, oreGap::getValue);
 
+        BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
             int worldX = x + chunkMinX;
+            mPos.setX(worldX);
             for (int z = 0; z < 16; z++) {
                 int worldZ = z + chunkMinZ;
+                mPos.setZ(worldZ);
 
                 LevelChunkSection chunkSection;
 
@@ -215,6 +221,7 @@ public class OreVeinSystem {
                     int sectionY = y & 15;
                     int sectionIndex = chunk.getSectionIndex(y);
                     chunkSection = chunk.getSection(sectionIndex);
+                    mPos.setY(y);
 
                     BlockState currentState = chunkSection.getBlockState(x, sectionY, z);
                     if (currentState != defaultBlock) continue;
@@ -225,7 +232,7 @@ public class OreVeinSystem {
                     double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise));
 
                     for (OreVeinInstance vein : oreVeinsInChunk) {
-                        BlockState veinState = getVeinState(worldX, y, worldZ, veinRidgeNoise, veinGapNoise, fillRandom, vein);
+                        BlockState veinState = getVeinState(worldX, y, worldZ, veinRidgeNoise, veinGapNoise, mPos, fillRandom, vein);
                         if (veinState != null) {
                             chunkSection.setBlockState(x, sectionY, z, veinState, false);
                             break;
@@ -237,12 +244,13 @@ public class OreVeinSystem {
     }
 
     @Nullable
-    private BlockState getVeinState(int x, int y, int z, double veinRidgeNoise, double veinGapNoise, RandomSource random, OreVeinInstance vein) {
+    private BlockState getVeinState(int x, int y, int z, double veinRidgeNoise, double veinGapNoise, BlockPos pos, RandomSource random, OreVeinInstance vein) {
+        if (random.nextFloat() > vein.type().filler().probability()) return null;
+
         int maxYDist = vein.maxY - y, minYDist = y - vein.minY;
         if (maxYDist < 0 || minYDist < 0) return null;
         int yDist = Math.min(maxYDist, minYDist);
         int yDiff = vein.maxY - vein.minY;
-        if (random.nextFloat() > 0.7F) return null;
 
         double xzDist = Mth.length(x - vein.x, z - vein.z);
         if (xzDist > vein.radius) return null;
@@ -253,14 +261,14 @@ public class OreVeinSystem {
         veinRadius = (float) Mth.clampedMap(xzDist, vein.radius * 0.75F, vein.radius, veinRadius, 0);
 
         veinRidgeNoise = veinRidgeNoise * 64 - veinRadius;
-        if (veinRidgeNoise >= 0.0) return null;
+        if (veinRidgeNoise >= random.triangle(0.0, vein.type().filler().incoherence())) return null;
 
-        if (veinGapNoise > -0.3F && random.nextFloat() < 0.2F && veinRidgeNoise <= -2.0F) {
-            return random.nextFloat() < 0.02F ?
-                    vein.type.raw().resolve(y) :
-                    vein.type.ore().resolve(y);
+        if (veinGapNoise > -0.3F &&
+            random.nextFloat() <= vein.type().core().probability() &&
+            -veinRidgeNoise >= random.triangle(veinRadius * 0.5, vein.type().core().incoherence() * 0.5F)) {
+            return vein.type().core().resolve(random, pos);
         } else {
-            return vein.type.filler().resolve(y);
+            return vein.type().filler().resolve(random, pos);
         }
     }
 
