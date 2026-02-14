@@ -68,6 +68,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitles.block.witch_stew_cauldron.ambient", "Witch Stew Cauldron gurgles");
         add("nomansland.subtitles.block.witch_stew_cauldron.clean", "Witch Stew Cauldron is cleaned");
         add("nomansland.subtitles.block.witch_stew_cauldron.empty", "Witch Stew pours into bowl");
+        add("nomansland.subtitles.block.wooden_platform.crack", "Wooden Platform cracks");
+        add("nomansland.subtitles.block.wooden_platform.break", "Wooden Platform breaks");
         add("effect.nomansland.pacified", "Pacified");
         add("entity.nomansland.ink_cloud", "Ink Cloud");
         add("painting.nomansland.sun.title", "Sun");

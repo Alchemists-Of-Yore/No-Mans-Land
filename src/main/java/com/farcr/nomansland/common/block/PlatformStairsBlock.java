@@ -1,7 +1,9 @@
 package com.farcr.nomansland.common.block;
 
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -53,7 +55,8 @@ public class PlatformStairsBlock extends Block implements SimpleWaterloggedBlock
 
     @Override
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
-        if (itemAbility == ItemAbilities.AXE_STRIP && !state.getValue(UNSTABLE)) {
+        if (itemAbility.equals(ItemAbilities.SHEARS_TRIM) && !state.getValue(UNSTABLE)) {
+            context.getLevel().playSound(null, context.getClickedPos(), NMLSounds.WOODEN_PLATFORM_CRACKS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             return state.setValue(UNSTABLE, true);
         }
         return null;
@@ -80,6 +83,7 @@ public class PlatformStairsBlock extends Block implements SimpleWaterloggedBlock
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
         if (entity.onGround() && state.getValue(UNSTABLE)) {
             level.destroyBlock(pos, false, entity);
+            level.playSound(null, pos, NMLSounds.WOODEN_PLATFORM_BREAKS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 

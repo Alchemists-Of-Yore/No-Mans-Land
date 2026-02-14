@@ -455,6 +455,24 @@
     ],
     "subtitle": "nomansland.subtitles.block.witch_stew_cauldron.clean"
   },
+  "block.wooden_platform.crack": {
+    "sounds": [
+      {
+        "name": "minecraft:item.axe.strip",
+        "type": "event"
+      }
+    ],
+    "subtitle": "nomansland.subtitles.block.wooden_platform.crack"
+  },
+  "block.wooden_platform.break": {
+    "sounds": [
+      {
+        "name": "mob/zombie/woodbreak",
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "nomansland.subtitles.block.wooden_platform.break"
+  },
   "entity.billhook_bass.ambient": {
     "sounds": []
   },

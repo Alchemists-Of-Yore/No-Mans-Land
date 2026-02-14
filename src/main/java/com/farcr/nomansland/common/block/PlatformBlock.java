@@ -1,8 +1,12 @@
 package com.farcr.nomansland.common.block;
 
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -46,7 +50,12 @@ public class PlatformBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+<<<<<<< Updated upstream
         if (itemAbility == ItemAbilities.SHEARS_CARVE && !state.getValue(UNSTABLE)) {
+=======
+        if (itemAbility.equals(ItemAbilities.SHEARS_TRIM) && !state.getValue(UNSTABLE)) {
+            context.getLevel().playSound(null, context.getClickedPos(), NMLSounds.WOODEN_PLATFORM_CRACKS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+>>>>>>> Stashed changes
             return state.setValue(UNSTABLE, true);
         }
         return null;
@@ -74,6 +83,7 @@ public class PlatformBlock extends Block implements SimpleWaterloggedBlock {
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
         if (entity.onGround() && state.getValue(UNSTABLE)) {
             level.destroyBlock(pos, false, entity);
+            level.playSound(null, pos, NMLSounds.WOODEN_PLATFORM_BREAKS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
