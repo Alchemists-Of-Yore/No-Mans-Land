@@ -50,12 +50,8 @@ public class PlatformBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
-<<<<<<< Updated upstream
-        if (itemAbility == ItemAbilities.SHEARS_CARVE && !state.getValue(UNSTABLE)) {
-=======
         if (itemAbility.equals(ItemAbilities.SHEARS_TRIM) && !state.getValue(UNSTABLE)) {
             context.getLevel().playSound(null, context.getClickedPos(), NMLSounds.WOODEN_PLATFORM_CRACKS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
->>>>>>> Stashed changes
             return state.setValue(UNSTABLE, true);
         }
         return null;
