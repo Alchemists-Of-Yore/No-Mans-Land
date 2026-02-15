@@ -1,11 +1,7 @@
 package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
-import com.farcr.nomansland.common.blockentity.PotBlockEntity;
-import com.farcr.nomansland.common.blockentity.RemainsBlockEntity;
-import com.farcr.nomansland.common.blockentity.TapBlockEntity;
-import com.farcr.nomansland.common.blockentity.WardingEffigyBlockEntity;
+import com.farcr.nomansland.common.blockentity.*;
 import com.farcr.nomansland.common.blockentity.anchor.MonsterAnchorBlockEntity;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.registries.Registries;
@@ -37,7 +33,7 @@ public class NMLBlockEntities {
 
     public static final Supplier<BlockEntityType<PotBlockEntity>> POT =
             BLOCK_ENTITIES.register("pot", () ->
-                    BlockEntityType.Builder.of(PotBlockEntity::new, NMLBlocks.ANCIENT_POT.get()).build(null));
+                    BlockEntityType.Builder.of(PotBlockEntity::new, NMLBlocks.ANCIENT_POT.get(), NMLBlocks.LARGE_ANCIENT_POT.get()).build(null));
 
     public static final Supplier<BlockEntityType<MoonlightBasinBlockEntity>> MOONLIGHT_BASIN =
         BLOCK_ENTITIES.register("moonlight_basin", () ->
