@@ -5,8 +5,8 @@
 
   "radius": {
     "type": "uniform",
-    "min_inclusive": 50,
-    "max_inclusive": 200
+    "min_inclusive": 16,
+    "max_inclusive": 48
   },
   "min_height": {
     "type": "constant",
@@ -23,7 +23,7 @@
 
   "vein_radius": {
     "type": "constant",
-    "value": 60.0
+    "value": 80.0
   },
   "inverted": true,
 
@@ -36,7 +36,49 @@
             "type": "minecraft:simple_state_provider",
             "state": { "Name": "minecraft:granite" }
           },
-          "height": 5
+          "height": 3
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:diorite" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:granite" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:diorite" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:granite" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:diorite" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:granite" }
+          },
+          "height": 3
         },
         {
           "data": {
@@ -50,56 +92,14 @@
             "type": "minecraft:simple_state_provider",
             "state": { "Name": "minecraft:granite" }
           },
-          "height": 4
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
-          },
-          "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
-          },
-          "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
-          },
           "height": 3
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
-          },
-          "height": 6
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
             "state": { "Name": "minecraft:diorite" }
           },
-          "height": 3
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
-          },
-          "height": 4
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
-          },
-          "height": 1
+          "height": 2
         }
       ],
       "noise_intensity": 2.0,
