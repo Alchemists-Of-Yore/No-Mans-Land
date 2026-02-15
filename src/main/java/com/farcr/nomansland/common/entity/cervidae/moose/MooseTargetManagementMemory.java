@@ -1,11 +1,13 @@
 package com.farcr.nomansland.common.entity.cervidae.moose;
 
-import it.unimi.dsi.fastutil.objects.*;
-import net.minecraft.nbt.*;
-import net.minecraft.world.entity.*;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MooseTargetManagementMemory {
 

@@ -1,8 +1,6 @@
 package com.farcr.nomansland.common.block.moonlight;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
-import com.farcr.nomansland.common.definitions.BlockProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;

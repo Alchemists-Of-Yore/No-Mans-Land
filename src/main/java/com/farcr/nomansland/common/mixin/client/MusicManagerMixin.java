@@ -1,16 +1,9 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
-import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
-import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.MusicManager;
-import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.sounds.Music;
-import net.minecraft.sounds.SoundEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;

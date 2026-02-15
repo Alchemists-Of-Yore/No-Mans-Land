@@ -112,6 +112,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.PACIFIED_CLOUD.get(), NoopRenderer::new);
 
         event.registerBlockEntityRenderer(NMLBlockEntities.POT.get(), PotRenderer::new);
+        event.registerEntityRenderer(NMLEntities.LIVING_POT.get(), LivingPotRenderer::new);
     }
 
     @SubscribeEvent

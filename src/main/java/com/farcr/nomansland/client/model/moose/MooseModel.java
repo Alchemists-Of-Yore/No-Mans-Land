@@ -8,7 +8,7 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 
-import java.util.*;
+import java.util.List;
 
 public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
     private final ModelPart root;

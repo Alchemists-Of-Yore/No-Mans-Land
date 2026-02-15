@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.structure;
 
-import com.farcr.nomansland.common.extension.ChunkGeneratorStructureStateExtension;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructurePlacements;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

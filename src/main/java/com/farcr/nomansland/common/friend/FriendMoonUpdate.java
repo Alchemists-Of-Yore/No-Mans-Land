@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.friend;
 
-import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

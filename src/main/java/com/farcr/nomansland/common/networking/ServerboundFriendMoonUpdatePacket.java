@@ -1,17 +1,12 @@
 package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonUpdate;
-import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.Optional;
 
 public record ServerboundFriendMoonUpdatePacket(
     FriendMoonUpdate packetType

@@ -6,7 +6,6 @@ import com.farcr.nomansland.common.world.blockstateproviders.StrataStateProvider
 import com.farcr.nomansland.common.world.blockstateproviders.VerticalGradientStateProvider;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.worldgen.Carvers;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.neoforged.neoforge.registries.DeferredRegister;
