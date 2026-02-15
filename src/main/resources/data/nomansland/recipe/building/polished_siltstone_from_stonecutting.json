@@ -1,5 +1,5 @@
 {
-  "type": "nomansland:siltstonecutting",
+  "type": "minecraft:stonecutting",
   "ingredient": {
     "item": "nomansland:siltstone"
   },
