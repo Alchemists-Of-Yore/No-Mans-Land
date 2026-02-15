@@ -3,9 +3,12 @@ package com.farcr.nomansland.common.item;
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.pots.PotTrait;
 import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.entity.LivingPot;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -40,14 +43,15 @@ public class AncientPotItem extends BlockItem {
         PotVariant variant = variantRegistry.getOptional(stack.get(NMLDataComponents.POT_VARIANT.get())).orElse(variants.get(level.getRandom().nextInt(variants.size())).value());
 
         if (variant.traits().contains(PotTrait.LIVING)) {
-            // TODO: summon living pot
+            BlockPos pos = context.getClickedPos();
+            LivingPot livingPot = new LivingPot(level, pos.getX(), pos.getY(), pos.getZ(), variant.size() == PotSize.SMALL ? NMLBlocks.ANCIENT_POT.get().defaultBlockState() : NMLBlocks.LARGE_ANCIENT_POT.get().defaultBlockState());
+            level.addFreshEntity(livingPot);
             return InteractionResult.SUCCESS;
         }
 
         return super.useOn(context);
     }
 
-    // FIXME
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
@@ -64,7 +68,7 @@ public class AncientPotItem extends BlockItem {
         }
     }
 
-    // TODO: variant item model/texture?
+    // TODO: variant item model rendering
 
     // TODO: variant hitboxes
 }
