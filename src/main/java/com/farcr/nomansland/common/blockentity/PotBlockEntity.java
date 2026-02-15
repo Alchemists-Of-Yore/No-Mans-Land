@@ -7,17 +7,13 @@ import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.RandomizableContainer;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.SeededContainerLoot;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,17 +21,17 @@ import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.ticks.ContainerSingleItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.stream.IntStream;
 
-public class PotBlockEntity extends BlockEntity implements WorldlyContainer, RandomizableContainer {
+public class PotBlockEntity extends BlockEntity implements RandomizableContainer, ContainerSingleItem.BlockContainerSingleItem {
 
-    public PotVariant variant = null;
+    public PotVariant variant;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
-    private final NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+    private ItemStack item = ItemStack.EMPTY;
     protected @Nullable ResourceKey<LootTable> lootTable;
     protected long lootTableSeed = 0L;
 
@@ -50,8 +46,8 @@ public class PotBlockEntity extends BlockEntity implements WorldlyContainer, Ran
             tag.putString("Variant", key.toString());
         });
 
-        if (!this.trySaveLootTable(tag)) {
-            ContainerHelper.saveAllItems(tag, items, registries);
+        if (!this.trySaveLootTable(tag) && !item.isEmpty()) {
+            item.save(registries, tag);
         }
     }
 
@@ -63,7 +59,7 @@ public class PotBlockEntity extends BlockEntity implements WorldlyContainer, Ran
         }
 
         if (!this.tryLoadLootTable(tag)) {
-            ContainerHelper.loadAllItems(tag, items, registries);
+            item = ItemStack.parse(registries, tag).orElse(ItemStack.EMPTY);
         }
     }
 
@@ -136,128 +132,46 @@ public class PotBlockEntity extends BlockEntity implements WorldlyContainer, Ran
         }
     }
 
-    @Override
-    public int getContainerSize() {
-        return 64;
+
+    public ItemStack getTheItem() {
+        this.unpackLootTable(null);
+        return this.item;
     }
 
-    @Override
-    public boolean isEmpty() {
+    public ItemStack splitTheItem(int amount) {
         this.unpackLootTable(null);
-
-        for (ItemStack stack : items) {
-            if (!stack.isEmpty()) return false;
+        ItemStack itemstack = this.item.split(amount);
+        if (this.item.isEmpty()) {
+            this.item = ItemStack.EMPTY;
         }
-        return true;
+
+        return itemstack;
     }
 
-    @Override
-    public ItemStack getItem(int slot) {
+    public void setTheItem(ItemStack item) {
         this.unpackLootTable(null);
-
-        return items.get(slot);
+        this.item = item;
     }
 
-    @Override
-    public ItemStack removeItem(int slot, int amount) {
-        this.unpackLootTable(null);
-
-        for (int i = 63; i >= 0; i--) {
-            if (!items.get(i).isEmpty()) {
-                return ContainerHelper.removeItem(items, i, amount);
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public ItemStack removeItemNoUpdate(int slot) {
-        this.unpackLootTable(null);
-
-        for (int i = 63; i >= 0; i--) {
-            if (!items.get(i).isEmpty()) {
-                return ContainerHelper.takeItem(items, i);
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public void setItem(int slot, ItemStack stack) {
-        this.unpackLootTable(null);
-
-        items.set(slot, stack);
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return true;
-    }
-
-    @Override
-    public void clearContent() {
-        items.clear();
+    public BlockEntity getContainerBlockEntity() {
+        return this;
     }
 
     public boolean insert(ItemStack stack) {
         this.unpackLootTable(null);
 
-        for (int i = 0; i < 64; i++) {
-            if (items.get(i).isEmpty()) {
-                items.set(i, stack);
-                return true;
-            }
+        if (item.isEmpty() || (item.getMaxStackSize() > item.getCount() + stack.getCount() && ItemStack.isSameItemSameComponents(item, stack))) {
+            setTheItem(stack.copyWithCount(item.getCount() + stack.getCount()));
+            return true;
         }
 
         return false;
     }
 
-    public ItemStack extract() {
+    public float getFullness() {
         this.unpackLootTable(null);
 
-        for (int i = 63; i >= 0; i--) {
-            if (!items.get(i).isEmpty()) {
-                ItemStack stack = items.get(i);
-                items.set(i, ItemStack.EMPTY);
-                return stack;
-            }
-        }
-
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public int[] getSlotsForFace(Direction direction) {
-        return IntStream.range(0, 64).toArray();
-    }
-
-    @Override
-    public boolean canPlaceItemThroughFace(int i, ItemStack itemStack, @Nullable Direction direction) {
-        return direction != Direction.DOWN;
-    }
-
-    @Override
-    public boolean canTakeItemThroughFace(int i, ItemStack itemStack, Direction direction) {
-        return direction != Direction.UP;
-    }
-
-    public boolean isFull() {
-        this.unpackLootTable(null);
-
-        for (ItemStack stack : items) {
-            if (stack.isEmpty()) return false;
-        }
-        return true;
-    }
-
-    public int getItemCount() {
-        this.unpackLootTable(null);
-
-        int count = 0;
-        for (ItemStack stack : items) {
-            if (!stack.isEmpty()) count += stack.getCount();
-        }
-        return count;
+        return (float) item.getCount() / item.getMaxStackSize();
     }
 
     @Nullable

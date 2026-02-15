@@ -299,8 +299,9 @@ public class NMLBlocks {
     public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
 
-    public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
-    public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1.5F, 3.5F).sound(SoundType.DECORATED_POT)));
+    // TODO: make instabreak with pickaxe
+    public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(0.5F, 3.5F).sound(SoundType.DECORATED_POT)));
+    public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(0.5F, 3.5F).sound(SoundType.DECORATED_POT)));
 
     // Moonlight
     /* Farcr doesn't want these to show up in the Creative Tabs, so I'm just manually registering the items. */

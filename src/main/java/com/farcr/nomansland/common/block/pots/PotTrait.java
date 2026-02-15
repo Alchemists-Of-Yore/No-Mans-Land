@@ -8,6 +8,8 @@ public enum PotTrait implements StringRepresentable {
     DROPS_EXPERIENCE("drops_experience"),
     FLAMMABLE("flammable"),
     BRITTLE("brittle"),
+    INFESTED("infested"),
+    TRAPPED("trapped"),
     LIVING("living");
 
     private final String name;

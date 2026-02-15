@@ -16,10 +16,15 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.LingeringPotionItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -38,6 +43,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -45,7 +51,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, Fallable {
     public static final MapCodec<PotBlock> CODEC = RecordCodecBuilder.mapCodec(
             (instance) -> instance.group(
                     PotSize.CODEC.fieldOf("size").forGetter(p -> p.size),
@@ -55,13 +61,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
 
     private static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    private static final BooleanProperty BRITTLE = BooleanProperty.create("brittle");
 
     private final PotSize size;
 
     public PotBlock(PotSize size, Properties properties) {
         super(properties);
         this.size = size;
-        registerDefaultState(stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH).setValue(WATERLOGGED, false));
+        registerDefaultState(stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH).setValue(WATERLOGGED, false).setValue(BRITTLE, false));
     }
 
     public MapCodec<PotBlock> codec() {
@@ -88,6 +95,26 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
+        if (pot.variant.traits().contains(PotTrait.TRAPPED)) {
+            // TODO: button/observer block
+        }
+
+        if (pot.variant.traits().contains(PotTrait.INFESTED)) {
+            int amount = level.getRandom().nextInt(1, 4);
+            for (int i = 0; i < amount; i++) {
+                Silverfish silverfish = EntityType.SILVERFISH.create(level);
+                if (silverfish != null) {
+                    silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    level.addFreshEntity(silverfish);
+                    silverfish.spawnAnim();
+                }
+            }
+
+            level.destroyBlock(pos, true, player);
+
+            return ItemInteractionResult.SUCCESS;
+        }
+
         if (level.isClientSide) {
             return ItemInteractionResult.CONSUME;
         }
@@ -96,33 +123,26 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (!pot.isFull()) {
-
-            boolean inserted = pot.insert(stack.copyWithCount(1));
-            if (!inserted) {
-                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-            }
-
-            pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
-
-            player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-            stack.shrink(1);
-
-            float fullness = (float) pot.getItemCount() / 64f;
-
-            level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT, SoundSource.BLOCKS, 1, 0.7F + 0.5F * fullness);
-
-            if (level instanceof ServerLevel server) {
-                server.sendParticles(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 7, 0, 0, 0, 0);
-            }
-
-            pot.setChanged();
-            level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-
-            return ItemInteractionResult.SUCCESS;
+        boolean inserted = pot.insert(stack.copyWithCount(1));
+        if (!inserted) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
+
+        player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+        stack.shrink(1);
+
+        level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT, SoundSource.BLOCKS, 1, 0.7F + 0.5F * pot.getFullness());
+
+        if (level instanceof ServerLevel server) {
+            server.sendParticles(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 7, 0, 0, 0, 0);
+        }
+
+        pot.setChanged();
+        level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -136,28 +156,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
             return InteractionResult.SUCCESS;
         }
 
-        ItemStack extracted = pot.extract();
-
-        if (extracted.isEmpty()) {
-            level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT_FAIL, SoundSource.BLOCKS, 1, 1);
-
-            pot.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
-        } else {
-            if (!player.addItem(extracted)) {
-                player.drop(extracted, false);
-            }
-
-            float fullness = (float) pot.getItemCount() / 64f;
-            level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT, SoundSource.BLOCKS, 1, 1 - 0.3F * fullness);
-
-            pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
-            pot.setChanged();
-        }
-
-        level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+        level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT_FAIL, SoundSource.BLOCKS, 1, 1);
+        pot.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
         return InteractionResult.SUCCESS;
     }
-
 
     protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
@@ -169,7 +171,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(HORIZONTAL_FACING, WATERLOGGED);
+        builder.add(HORIZONTAL_FACING, BRITTLE, WATERLOGGED);
     }
 
     @Nullable
@@ -185,11 +187,42 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
                 List<Holder.Reference<PotVariant>> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).holders().filter(variant -> variant.value().size() == size).toList();
                 pot.variant = variants.get(level.getRandom().nextInt(variants.size())).value();
             }
+
+            if (state.getValue(BRITTLE) != pot.variant.traits().contains(PotTrait.BRITTLE)) state.setValue(BRITTLE, pot.variant.traits().contains(PotTrait.BRITTLE));
         }
     }
 
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        Containers.dropContentsOnDestroy(state, newState, level, pos);
+        if (!state.is(newState.getBlock())) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+                if (pot.getTheItem().getItem() instanceof LingeringPotionItem lingeringPotionItem) {
+                    level.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.LINGERING_POTION_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+                    if (!level.isClientSide) {
+                        Projectile projectile = lingeringPotionItem.asProjectile(level, new Vec3(pos.getX(), pos.getY(), pos.getZ()), pot.getTheItem(), Direction.UP);
+                        projectile.shoot(pos.getX(), pos.getY(), pos.getZ(), 0.5F, 1);
+                        level.addFreshEntity(projectile);
+                    }
+                } else Containers.dropContents(level, pos, pot);
+
+                if (pot.variant.traits().contains(PotTrait.INFESTED)) {
+                    int amount = level.getRandom().nextInt(1, 4);
+                    for (int i = 0; i < amount; i++) {
+                        Silverfish silverfish = EntityType.SILVERFISH.create(level);
+                        if (silverfish != null) {
+                            silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                            level.addFreshEntity(silverfish);
+                            silverfish.spawnAnim();
+                        }
+                    }
+                }
+
+                if (pot.variant.traits().contains(PotTrait.TRAPPED)) {
+                    // TODO: button/observer block somehow
+                }
+
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
+            }
+        }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
@@ -198,8 +231,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
     }
 
     protected SoundType getSoundType(BlockState state) {
-        // TODO: SoundType.DECORATED_POT_CRACKED when brittle
-        return SoundType.DECORATED_POT;
+        return state.getValue(BRITTLE) ? SoundType.DECORATED_POT_CRACKED : SoundType.DECORATED_POT;
     }
 
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
@@ -228,5 +260,19 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
 
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(HORIZONTAL_FACING)));
+    }
+
+    public void onLand(Level level, BlockPos pos, BlockState state, BlockState replaceableState, FallingBlockEntity fallingBlock) {
+        if (fallingBlock.getBlockState().getValue(BRITTLE) || fallingBlock.fallDistance > 4) {
+            level.destroyBlock(pos, true);
+        }
+    }
+
+    public int getExpDrop(BlockState state, LevelAccessor level, BlockPos pos, BlockEntity blockEntity, Entity breaker, ItemStack tool) {
+        if (blockEntity instanceof PotBlockEntity pot && pot.variant.traits().contains(PotTrait.DROPS_EXPERIENCE)) {
+            return level.getRandom().nextInt(2, 6);
+        }
+
+        return 0;
     }
 }
