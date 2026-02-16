@@ -14,12 +14,8 @@ public class AncientBronzeMaskModel extends LodestoneArmorModel {
 
     public static LayerDefinition createBodyLayer() {
         return createArmorModel((mesh, root, head, body, right_arm, left_arm, leggings, right_legging, left_legging, right_foot, left_foot) -> {
-            head.addOrReplaceChild("mask",
-                    CubeListBuilder.create()
-                            .texOffs(0, 0).addBox(-4, -8, -4, 8, 8, 8, new CubeDeformation(0.5F))
-                            .texOffs(32, 0).addBox(-4, -8, -4, 8, 8, 8, new CubeDeformation(0.8F)),
-                    PartPose.ZERO
-            );
+            head.addOrReplaceChild("mask", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.51F))
+                    .texOffs(32, 0).addBox(-4.0F, -8.0F, -3.8F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.8F)), PartPose.offset(0.0F, 0.0F, 0.0F));
             return LayerDefinition.create(mesh, 64, 64);
         });
     }

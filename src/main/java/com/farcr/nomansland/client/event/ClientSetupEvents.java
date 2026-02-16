@@ -1,54 +1,34 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.NMLModelLayers;
+import com.farcr.nomansland.client.*;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
-import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
-import com.farcr.nomansland.client.model.BillhookBassModel;
-import com.farcr.nomansland.client.model.BuriedModel;
-import com.farcr.nomansland.client.model.deer.DeerModel;
-import com.farcr.nomansland.client.model.goose.GooseModel;
-import com.farcr.nomansland.client.model.moose.MooseModel;
-import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
-import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
+import com.farcr.nomansland.client.extensions.*;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
-import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.Model;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -80,13 +60,14 @@ public class ClientSetupEvents {
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
 
         //Load all the pot models here otherwise you die
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_1")));
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_2")));
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_3")));
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_4")));
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_5")));
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_6")));
-        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_large_1")));
+        for (int i = 0; i < 6; i++) {
+            var path = "block/ancient_pots/ancient_pot_small_" + (i+1);
+            event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+        }
+        for (int i = 0; i < 1; i++) {
+            var path = "block/ancient_pots/ancient_pot_large_" + (i+1);
+            event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+        }
     }
 
     @SubscribeEvent
@@ -116,60 +97,18 @@ public class ClientSetupEvents {
     }
 
     @SubscribeEvent
-    public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(NMLModelLayers.MOOSE_LAYER, MooseModel::createBodyLayer);
-        event.registerLayerDefinition(NMLModelLayers.BURIED_LAYER, BuriedModel::createBodyLayer);
+    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        NMLModelLayers.registerLayers(event);
+    }
 
-        event.registerLayerDefinition(NMLModelLayers.BASS_LAYER, BillhookBassModel::createBodyLayer);
-
-        event.registerLayerDefinition(NMLModelLayers.DEER_LAYER, DeerModel::createBodyLayer);
-
-        event.registerLayerDefinition(NMLModelLayers.GOOSE_LAYER, GooseModel::createBodyLayer);
-        event.registerLayerDefinition(NMLModelLayers.TORTOISE_LAYER, TortoiseModel::createBodyLayer);
-        event.registerLayerDefinition(NMLModelLayers.TORTOISE_SHELL_LAYER, TortoiseShellModel::createBodyLayer);
-        event.registerLayerDefinition(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER, AncientBronzeMaskModel::createBodyLayer);
+    @SubscribeEvent
+    public static void addLayers(EntityRenderersEvent.AddLayers event) {
+        NMLArmorModels.addLayers(event);
     }
 
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        event.registerFluidType(new IClientFluidTypeExtensions() {
-            private static final ResourceLocation STILL_RESIN_OIL = NoMansLand.location("block/fluid/resin_oil");
-            private static final ResourceLocation FLOWING_RESIN_OIL = NoMansLand.location("block/fluid/flowing_resin_oil");
-
-            public ResourceLocation getStillTexture() {
-                return STILL_RESIN_OIL;
-            }
-
-            public ResourceLocation getFlowingTexture() {
-                return FLOWING_RESIN_OIL;
-            }
-        }, NMLFluids.RESIN_OIL_TYPE.get());
-
-        event.registerItem(new IClientItemExtensions() {
-            public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                return new TortoiseShellModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(NMLModelLayers.TORTOISE_SHELL_LAYER));
-            }
-
-            public void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-                TortoiseShellModel<?> tortoiseShellModel = (TortoiseShellModel<?>) model;
-                if (livingEntity.isCrouching()) {
-                    tortoiseShellModel.tortoiseShell.xRot = 0.5F;
-                    tortoiseShellModel.tortoiseShell.z = 10.5F;
-                }
-            }
-        }, NMLItems.TORTOISE_SHELL.get());
-
-        event.registerItem(new IClientItemExtensions() {
-            public @NotNull HumanoidModel<?> getHumanoidArmorModel(@NotNull LivingEntity entity, @NotNull ItemStack stack, @NotNull EquipmentSlot slot, @NotNull HumanoidModel<?> original) {
-                if (slot != EquipmentSlot.HEAD) return original;
-
-                ModelPart baked = Minecraft.getInstance().getEntityModels().bakeLayer(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER);
-                HumanoidModel<?> model = new AncientBronzeMaskModel<>(baked);
-
-                ClientHooks.copyModelProperties(original, model);
-                return model;
-            }
-        }, NMLItems.ANCIENT_BRONZE_MASK.get());
+        NMLClientExtensions.registerClientExtensions(event);
     }
 
     @SubscribeEvent

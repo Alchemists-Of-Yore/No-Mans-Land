@@ -1,0 +1,19 @@
+package com.farcr.nomansland.client;
+
+import com.farcr.nomansland.client.model.armor.*;
+import com.farcr.nomansland.client.model.tortoise.*;
+import net.neoforged.neoforge.client.event.*;
+
+public class NMLArmorModels {
+
+    public static AncientBronzeMaskModel ANCIENT_BRONZE_MASK;
+    public static TortoiseShellModel TORTOISE_SHELL;
+
+    /**
+     * This event is oddly named, we use it to bake some of the layers and pair them up with our model objects.
+     */
+    public static void addLayers(EntityRenderersEvent.AddLayers event) {
+        ANCIENT_BRONZE_MASK = new AncientBronzeMaskModel(event.getEntityModels().bakeLayer(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER));
+        TORTOISE_SHELL = new TortoiseShellModel(event.getEntityModels().bakeLayer(NMLModelLayers.TORTOISE_SHELL_LAYER));
+    }
+}

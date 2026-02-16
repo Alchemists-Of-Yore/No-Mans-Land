@@ -6,9 +6,9 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.*;
 
-public class TortoiseShellModel<T extends Entity> extends EntityModel<T> {
+public class TortoiseShellModel extends EntityModel<LivingEntity> {
     public final ModelPart tortoiseShell;
 
     public TortoiseShellModel(ModelPart root) {
@@ -27,7 +27,12 @@ public class TortoiseShellModel<T extends Entity> extends EntityModel<T> {
     }
 
     @Override
-    public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        tortoiseShell.resetPose();
+        if (entity.isCrouching()) {
+            tortoiseShell.xRot = 0.5F;
+            tortoiseShell.z = 10.5F;
+        }
     }
 
     @Override
