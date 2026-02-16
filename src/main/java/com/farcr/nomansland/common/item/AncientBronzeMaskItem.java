@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.player.*;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +18,11 @@ import org.jetbrains.annotations.Nullable;
 public class AncientBronzeMaskItem extends ArmorItem {
     public AncientBronzeMaskItem(Holder<ArmorMaterial> material, Type type, Properties properties) {
         super(material, type, properties);
+    }
+
+    @Override
+    public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
+        return true;
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.farcr.nomansland.client.event;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
-import com.farcr.nomansland.client.model.AncientBronzeMaskModel;
+import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
 import com.farcr.nomansland.client.model.BillhookBassModel;
 import com.farcr.nomansland.client.model.BuriedModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;
