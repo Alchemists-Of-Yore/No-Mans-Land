@@ -221,15 +221,35 @@ public class NMLSurfaceRules {
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
                                 // deeper layer biome modifiers - sand, beaches...
-                                SurfaceRules.sequence(gravel_shores, mud_shores, mushroom_fields, downfall_isle, desert_river, mud_beach, tropical_beach),
+                                SurfaceRules.sequence(
+                                        gravel_shores,
+                                        mud_shores,
+                                        mushroom_fields,
+                                        downfall_isle,
+                                        desert_river,
+                                        mud_beach,
+                                        tropical_beach),
                                 // top layer biome modifiers - grasses, etc.
                                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
-                                SurfaceRules.sequence(jungle, darkForest, autumnalForest, mapleForest, oldGrowthForest, frozenWoods, bog, bayou, darkSwamp, stonyShore, frozen_shore, lush_river, blackwater_river)
+                                    // todo: check if underwater and don't place grass if that's the case...
+                                    SurfaceRules.sequence(
+                                            jungle,
+                                            darkForest, autumnalForest,
+                                            mapleForest, oldGrowthForest,
+                                            frozenWoods,
+                                            bog,
+                                            bayou,
+                                            darkSwamp,
+                                            stonyShore,
+                                            frozen_shore,
+                                            lush_river,
+                                            blackwater_river)
                             )
                         )
-                ),
+                )
                 // Cave Biomes
-                SurfaceRules.sequence(caves, cave_depths)
+                // but, don't do anything, for now...
+                // SurfaceRules.sequence(caves, cave_depths)
         );
     }
 
