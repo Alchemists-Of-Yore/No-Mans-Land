@@ -47,6 +47,11 @@ public class NMLEntities {
             ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrn>of(LivingUrn::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
 
+    public static final Supplier<EntityType<LivingPot>> LIVING_POT =
+            ENTITIES.register("living_pot", () -> EntityType.Builder.<LivingPot>of(LivingPot::new, MobCategory.AMBIENT)
+                    .fireImmune().canSpawnFarFromPlayer().sized(0.8F, 0.8F).eyeHeight(0.5F).clientTrackingRange(10).build("living_pot"));
+
+
     public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =
             ENTITIES.register("incendiary_arrow", () -> EntityType.Builder.<IncendiaryArrow>of(IncendiaryArrow::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20).build("incendiary_arrow"));

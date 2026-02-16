@@ -34,7 +34,7 @@ public class MultiSpreadPatchFeature extends Feature<MultiSpreadPatchConfigurati
             int y = origin.getY() + random.nextInt(-ySpread, ySpread);
             pos.set(x, y, z);
 
-            if (Math.abs(x - origin.getX()) > 16 || Math.abs(z - origin.getZ()) > 16)
+            if (Math.abs(x - origin.getX()) > 32 || Math.abs(z - origin.getZ()) > 32)
                 break;
 
             float distanceFromOriginXZ = Mth.sqrt((x - origin.getX())*(x - origin.getX()) + (z - origin.getZ())*(z - origin.getZ()));

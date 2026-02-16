@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.world.orevein;
 
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,6 +15,7 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 
@@ -85,6 +87,13 @@ import java.util.Optional;
       "inverted": false,
 
         -- BLOCK CONTROLS --
+         * the condition in which the ore vein will place a block.
+         * an optional BlockPredicate. if not specified, the vein will only place blocks
+         * where the current block is #nomansland:ore_vein_replaceable
+       "target_condition": {
+         "type": "matching_block_tag",
+         "tag": "nomansland:ore_vein_replaceable"
+       }
         * the "filler" vein blockstate provider
       "filler": {
           * a block state provider, telling the vein what block to generate
@@ -93,13 +102,16 @@ import java.util.Optional;
           "state": { "Name": "minecraft:andesite" }
         },
           * the probability that this block will be randomly discarded
+          * an optional number from 0.0 to 1.0. defaults to 1.0
           * note: if the filler block is discarded, the core block will attempt generation.
         "probability": 1.0,
           * how strictly this block sticks to the noise's shape. think of it as dithering.
+          * an optional positive number. defaults to 0.0
         "incoherence": 0.5
       },
         * the "core" vein blockstate provider
         * follows the same conventions as the filler.
+        * optional. if not included, no core will generate.
       "core": {
         "state_provider": {
           "type": "nomansland:extended_weighted_state_provider",
@@ -140,12 +152,13 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
                           IntProvider radius,
                           HeightProvider minHeight, HeightProvider maxHeight,
                           FloatProvider veinRadius, boolean invert,
+                          BlockPredicate targetCondition,
                           OreBlockState filler,
                           OreBlockState core) {
     public static final Codec<OreVeinType> CODEC = RecordCodecBuilder.create(
             codec -> codec.group(
                     // placement controls
-                    Codec.BOOL.fieldOf("sample_biome_at_surface").orElse(false).forGetter(OreVeinType::sampleBiomeAtSurface),
+                    Codec.BOOL.optionalFieldOf("sample_biome_at_surface", false).forGetter(OreVeinType::sampleBiomeAtSurface),
                     RegistryCodecs.homogeneousList(Registries.BIOME).optionalFieldOf("biomes").forGetter(OreVeinType::biomes),
                     Codec.INT.fieldOf("spacing").validate(OreVeinType::validateSpacing).forGetter(OreVeinType::spacing),
                     Codec.INT.fieldOf("separation").validate(OreVeinType::validateSeparation).forGetter(OreVeinType::separation),
@@ -155,11 +168,12 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
                     HeightProvider.CODEC.fieldOf("min_height").forGetter(OreVeinType::minHeight),
                     HeightProvider.CODEC.fieldOf("max_height").forGetter(OreVeinType::maxHeight),
                     // shape controls
-                    FloatProvider.codec(0, 10000000.0F).fieldOf("vein_radius").orElse(ConstantFloat.of(5.12F)).forGetter(OreVeinType::veinRadius),
-                    Codec.BOOL.fieldOf("invert").orElse(false).forGetter(OreVeinType::invert),
+                    FloatProvider.codec(0, 100000000.0F).optionalFieldOf("vein_radius", ConstantFloat.of(5.12F)).forGetter(OreVeinType::veinRadius),
+                    Codec.BOOL.optionalFieldOf("invert", false).forGetter(OreVeinType::invert),
                     // block controls
+                    BlockPredicate.CODEC.optionalFieldOf("target_condition", BlockPredicate.matchesTag(NMLTags.ORE_VEIN_REPLACEABLE)).forGetter(OreVeinType::targetCondition),
                     OreBlockState.CODEC.fieldOf("filler").forGetter(OreVeinType::filler),
-                    OreBlockState.CODEC.fieldOf("core").forGetter(OreVeinType::core)
+                    OreBlockState.CODEC.optionalFieldOf("core", OreBlockState.EMPTY).forGetter(OreVeinType::core)
             ).apply(codec, OreVeinType::new)
     );
 
@@ -176,8 +190,8 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
         public static final Codec<OreBlockState> CODEC = RecordCodecBuilder.create(
                 codec -> codec.group(
                         BlockStateProvider.CODEC.fieldOf("state_provider").forGetter(OreBlockState::stateProvider),
-                        Codec.FLOAT.fieldOf("incoherence").orElse(0.0F).forGetter(OreBlockState::incoherence),
-                        Codec.FLOAT.fieldOf("probability").orElse(1.0F).forGetter(OreBlockState::probability)
+                        Codec.floatRange(0.0F, 100000000.0F).optionalFieldOf("incoherence", 0.0F).forGetter(OreBlockState::incoherence),
+                        Codec.floatRange(0.0F, 1.0F).optionalFieldOf("probability", 1.0F).forGetter(OreBlockState::probability)
                 ).apply(codec, OreBlockState::new)
         );
 

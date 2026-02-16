@@ -251,11 +251,11 @@ public class NMLConfig {
         ARMOR_VALUE = STARTUP_BUILDER
                 .defineInRange("armor", 4, Integer.MIN_VALUE, Integer.MAX_VALUE);
         ARMOR_TOUGHNESS_VALUE = STARTUP_BUILDER
-                .defineInRange("toughness", 3F, -999, 999);
+                .defineInRange("toughness", 3.0, -100, 100);
         SPEED_REDUCTION_VALUE = STARTUP_BUILDER
-                .defineInRange("speedReduction", -0.3F, -999, 999);
+                .defineInRange("speedReduction", -0.3, -100, 100);
         KNOCKBACK_RESISTANCE_VALUE = STARTUP_BUILDER
-                .defineInRange("knockbackResistance", 0.2F, -999, 999);
+                .defineInRange("knockbackResistance", 0.2, -100, 100);
         STARTUP_BUILDER.pop();
 
         STARTUP_CONFIG = STARTUP_BUILDER.build();

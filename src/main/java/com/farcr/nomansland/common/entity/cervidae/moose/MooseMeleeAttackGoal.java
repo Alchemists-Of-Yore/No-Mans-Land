@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.entity.cervidae.moose;
 
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 public class MooseMeleeAttackGoal extends MeleeAttackGoal {
 

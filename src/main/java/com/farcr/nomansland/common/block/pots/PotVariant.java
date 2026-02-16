@@ -15,7 +15,7 @@ public record PotVariant(PotSize size, ResourceLocation model, VoxelShape shape,
             list -> {
                 if (!(list.getFirst() > list.get(3)) && !(list.get(1) > list.get(4)) && !(list.get(2) > list.getLast())) {
                     return DataResult.success(list);
-                } else return DataResult.error(() -> "The min values need to be smaller or equals to the max values");
+                } else return DataResult.error(() -> "The minimum values need to be smaller or equal to the max values!");
             },
             box -> List.of(box.getFirst(), box.get(1), box.get(2), box.get(3), box.get(4), box.getLast())
     );

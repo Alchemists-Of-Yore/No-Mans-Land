@@ -25,6 +25,7 @@ public class NMLTags {
     public static final SharedTag BOOKSHELVES = createSharedTag("bookshelves");
     public static final SharedTag TRIMMED_PLANKS = createSharedTag("trimmed_planks");
 
+    public static final TagKey<Block> ORE_VEIN_REPLACEABLE = createBlockTag("ore_vein_replaceable");
     public static final TagKey<Block> MUSHROOM_BLOCKS = createBlockTag("mushroom_blocks");
     public static final TagKey<Block> BONEMEALABLE_FLOWERS = createBlockTag("bonemealable_flowers");
     public static final TagKey<Biome> HAS_DENSE_FOG = createBiomeTag("has_dense_fog");

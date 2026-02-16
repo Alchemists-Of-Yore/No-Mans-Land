@@ -1,18 +1,14 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
-import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandomList;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;

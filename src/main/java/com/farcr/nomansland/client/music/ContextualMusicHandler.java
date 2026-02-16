@@ -1,19 +1,14 @@
 package com.farcr.nomansland.client.music;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.ambience.fogmodifiers.FogModifierInstance;
 import com.farcr.nomansland.client.music.condition.MusicCondition;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.MusicManager;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.phys.Vec3;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.util.ArrayList;
 import java.util.List;

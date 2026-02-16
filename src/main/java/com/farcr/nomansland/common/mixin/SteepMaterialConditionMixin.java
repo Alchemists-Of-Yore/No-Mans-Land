@@ -1,9 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.world.surfacerule.NMLSteepMaterialCondition;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

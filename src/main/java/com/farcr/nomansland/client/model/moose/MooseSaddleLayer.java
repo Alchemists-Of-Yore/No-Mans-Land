@@ -3,8 +3,6 @@ package com.farcr.nomansland.client.model.moose;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.geom.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;

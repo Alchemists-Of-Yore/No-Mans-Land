@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
@@ -13,10 +12,8 @@ import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPack
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +21,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -35,9 +31,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 

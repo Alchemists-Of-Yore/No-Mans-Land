@@ -34,6 +34,9 @@ public class NMLLanguageProvider extends LanguageProvider {
             add(NMLBiomes.langKey(biome), NMLBiomes.langName(biome));
         }
 
+        add("itemGroup.nomansland", "No Man's Land");
+        add("itemGroup.nomansland.ancient_pots", "Ancient Pots");
+
         add("item.nomansland.billhook_bass_bucket", "Bucket of Billhook Bass");
         add("item.nomansland.billhook_bass", "Raw Billhook Bass");
         add("item.nomansland.no_mans_globe", "No Man's Globe");
@@ -47,7 +50,6 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("item.nomansland.willow_furnace_boat", "Willow Boat with Furnace");
         add("item.nomansland.music_disc_guidance", "Music Disc");
         add("jukebox_song.nomansland.guidance", "Samuel Organ - Guidance");
-        add("itemGroup.nomansland", "No Man's Land");
         add("entity.nomansland.buried", "Buried");
         add("entity.nomansland.cave_carp", "Cave Carp");
         add("entity.nomansland.billhook_bass", "Billhook Bass");

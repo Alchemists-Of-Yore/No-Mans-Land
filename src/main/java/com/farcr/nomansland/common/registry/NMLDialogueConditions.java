@@ -2,8 +2,8 @@ package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.mojang.serialization.MapCodec;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;

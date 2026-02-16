@@ -1,10 +1,10 @@
 package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.friend.dialogue.DialogueState;
-import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
+import com.farcr.nomansland.common.friend.dialogue.DialogueState;
+import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Registry;
 import net.minecraft.network.codec.StreamCodec;

@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.blockentity.anchor;
 
-import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLTags;

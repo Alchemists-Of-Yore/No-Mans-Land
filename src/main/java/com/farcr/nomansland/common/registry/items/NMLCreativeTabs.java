@@ -1,14 +1,23 @@
 package com.farcr.nomansland.common.registry.items;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.google.common.collect.Sets;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.Comparator;
 
 @SuppressWarnings("unused")
 public class NMLCreativeTabs {
@@ -22,5 +31,20 @@ public class NMLCreativeTabs {
                     .title(Component.translatable("itemGroup.nomansland"))
                     .icon(NMLItems.NO_MANS_GLOBE::stack)
                     .displayItems(CREATIVE_TAB_ITEMS)
+                    .build());
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ANCIENT_POTS = CREATIVE_TABS.register(NoMansLand.MODID + "_ancient_pots",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.nomansland.ancient_pots"))
+                    .icon(NMLItems.ANCIENT_POT::stack)
+                    .displayItems((parameters, output) ->
+                        parameters.holders().lookup(NMLRegistries.POT_VARIANT_KEY).ifPresent((lookup) -> {
+                            RegistryOps<Tag> registryops = parameters.holders().createSerializationContext(NbtOps.INSTANCE);
+                            lookup.listElements().sorted(Comparator.comparing(Holder::value, Comparator.comparingInt((pot) -> pot.size().ordinal()))).forEach((variant) -> {
+                                ItemStack itemstack = variant.value().size() == PotSize.SMALL ? NMLItems.ANCIENT_POT.stack() : NMLItems.LARGE_ANCIENT_POT.stack();
+                                itemstack.set(NMLDataComponents.POT_VARIANT, variant.key.location());
+                                output.accept(itemstack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                            });
+                        }))
                     .build());
 }

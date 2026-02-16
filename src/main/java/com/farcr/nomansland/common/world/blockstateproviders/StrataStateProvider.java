@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.blockstateproviders;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.worldgen.NMLBlockStateProviderTypes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -9,12 +8,10 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.GeodeFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
