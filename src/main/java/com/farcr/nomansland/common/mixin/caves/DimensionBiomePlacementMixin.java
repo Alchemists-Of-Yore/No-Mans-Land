@@ -22,7 +22,7 @@ public class DimensionBiomePlacementMixin {
         if ((DimensionBiomePlacement)(Object)this instanceof OverworldBiomePlacement) {
             if (NMLConfig.CAVES_BIOMES.get()) {
                 if (!biomeEntry.is(Tags.Biomes.IS_UNDERGROUND)) {
-                    if (noisePoint.depth() > 0.5F * 10000) {
+                    if (y < 0) {
                         cir.setReturnValue(NMLBiomes.CAVE_DEPTHS_HOLDER);
                     } else if (noisePoint.depth() > 0.1F * 10000) {
                         cir.setReturnValue(NMLBiomes.CAVES_HOLDER);
