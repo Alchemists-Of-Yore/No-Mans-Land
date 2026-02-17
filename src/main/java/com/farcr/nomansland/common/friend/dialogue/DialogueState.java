@@ -17,11 +17,14 @@ public class DialogueState {
     public DialogueContainer originalDialogue;
     public DialogueContainer translateDialogue;
 
-    public DialogueState(ResourceLocation location, DialogueRegistry.DialoguePool dialoguePool) {
+    public DialogueState(
+        ResourceLocation location,
+        DialogueRegistry.DialoguePool dialoguePool
+    ) {
         String defaultText = dialoguePool.text();
-
         originalDialogue = new DialogueContainer(defaultText);
-        translateDialogue = new DialogueContainer(Language.getInstance().getOrDefault(translate(location), defaultText));
+        translateDialogue = new DialogueContainer(Language.getInstance()
+                .getOrDefault(translate(location), defaultText));
     }
 
     public String currentLatest;

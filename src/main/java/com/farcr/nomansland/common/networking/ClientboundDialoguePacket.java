@@ -7,19 +7,33 @@ import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Registry;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record ClientboundDialoguePacket(ResourceLocation resourceLocation, ResourceLocation registryLocation) implements CustomPacketPayload {
+import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.UUID;
+
+public record ClientboundDialoguePacket(
+        ResourceLocation resourceLocation,
+        ResourceLocation registryLocation,
+        Optional<UUID> playerUUID
+) implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundDialoguePacket> STREAM_CODEC = StreamCodec.composite(
         ResourceLocation.STREAM_CODEC,
         ClientboundDialoguePacket::resourceLocation,
         ResourceLocation.STREAM_CODEC,
         ClientboundDialoguePacket::registryLocation,
+        ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC),
+        ClientboundDialoguePacket::playerUUID,
         ClientboundDialoguePacket::new
     );
 
@@ -34,8 +48,9 @@ public record ClientboundDialoguePacket(ResourceLocation resourceLocation, Resou
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
                 Player player = context.player();
+                Level level = player.level();
                 ResourceKey<Registry<DialogueRegistry.DialoguePool>> tempKey = ResourceKey.createRegistryKey(registryLocation);
-                Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(player.level(), tempKey);
+                Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, tempKey);
                 DialogueRegistry.DialoguePool dialoguePool = dialogueRegistry.get(resourceLocation);
 
                 // Set Dialogue
@@ -43,6 +58,12 @@ public record ClientboundDialoguePacket(ResourceLocation resourceLocation, Resou
                 DialogueRenderer.setCurrentState(new DialogueState(
                     resourceLocation, dialoguePool
                 ));
+                if (playerUUID.isPresent()) {
+                    Player targetPlayer = level.getPlayerByUUID(playerUUID.get());
+                    DialogueRenderer.getCurrentState().translateDialogue.setPlayerName(
+                        targetPlayer.getName().getString()
+                    );
+                }
             });
         }
     }

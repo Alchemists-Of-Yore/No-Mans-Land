@@ -1,0 +1,8 @@
+{
+    "condition": {
+      "type": "nomansland:effect_conditional",
+      "effects": "minecraft:jump_boost"
+    },
+    "weight": 1,
+    "text": "&PlayerName jumpy........."
+}

@@ -37,6 +37,10 @@ public class DialogueConditionCompiler implements PreparableReloadListener {
                 MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP.clear();
                 MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP.clear();
 
+                // Offering Conditions
+                MoonlightContextualConditions.EffectContextualCondition.COMPILED_MAP.clear();
+                MoonlightContextualConditions.EquipmentContextualConditional.COMPILED_MAP.clear();
+
                 // Greeting Conditions
                 MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY.clear();
             }, executor)

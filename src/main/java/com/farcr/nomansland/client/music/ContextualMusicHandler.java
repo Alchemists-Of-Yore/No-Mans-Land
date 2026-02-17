@@ -31,7 +31,6 @@ public class ContextualMusicHandler {
 
     public static void fadeSong(SoundInstance currentSong, SoundEngine soundEngine) {
         currentSong.NML$setContextualVolume(Math.max(currentSong.NML$getContextualVolume() - FADE_SPEED, 0f));
-        NoMansLand.LOGGER.info(currentSong.NML$getContextualVolume());
         soundEngine.updateCategoryVolume(SoundSource.MUSIC,
             Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC)
         );
