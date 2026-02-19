@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.SeededContainerLoot;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,6 +24,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.ticks.ContainerSingleItem;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 public class PotBlockEntity extends BlockEntity implements RandomizableContainer, ContainerSingleItem.BlockContainerSingleItem {
@@ -47,7 +48,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         });
 
         if (!this.trySaveLootTable(tag) && !item.isEmpty()) {
-            item.save(registries, tag);
+            tag.put("Item", item.save(registries));
         }
     }
 
@@ -59,7 +60,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         }
 
         if (!this.tryLoadLootTable(tag)) {
-            item = ItemStack.parse(registries, tag).orElse(ItemStack.EMPTY);
+            item = ItemStack.parseOptional(registries, tag.getCompound("Item"));
         }
     }
 
@@ -76,9 +77,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             components.set(NMLDataComponents.POT_VARIANT, key);
         });
 
-        if (this.lootTable != null) {
-            components.set(DataComponents.CONTAINER_LOOT, new SeededContainerLoot(this.lootTable, this.lootTableSeed));
-        }
+        components.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(this.item)));
     }
 
     @Override
@@ -88,20 +87,14 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             variant = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getOptional(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, key)).orElse(null);
         });
 
-        SeededContainerLoot seededcontainerloot = componentInput.get(DataComponents.CONTAINER_LOOT);
-        if (seededcontainerloot != null) {
-            this.lootTable = seededcontainerloot.lootTable();
-            this.lootTableSeed = seededcontainerloot.seed();
-        }
+        this.item = componentInput.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).copyOne();
     }
 
     @Override
     public void removeComponentsFromTag(CompoundTag tag) {
         super.removeComponentsFromTag(tag);
         tag.remove("Variant");
-
-        tag.remove("LootTable");
-        tag.remove("LootTableSeed");
+        tag.remove("Item");
     }
 
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
