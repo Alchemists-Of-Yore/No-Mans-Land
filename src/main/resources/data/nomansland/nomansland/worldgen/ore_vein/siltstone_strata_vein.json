@@ -1,7 +1,7 @@
 {
   "spacing": 128,
   "separation": 64,
-  "probability": 1.0,
+  "probability": 0.75,
 
   "radius": {
     "type": "uniform",

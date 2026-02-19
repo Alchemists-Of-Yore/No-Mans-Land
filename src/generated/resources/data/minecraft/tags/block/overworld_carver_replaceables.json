@@ -1,6 +1,10 @@
 {
   "values": [
     "nomansland:silt",
-    "nomansland:siltstone"
+    "nomansland:siltstone",
+    "minecraft:coal_block",
+    "minecraft:raw_gold_block",
+    "nomansland:siltstone",
+    "nomansland:quartzite"
   ]
 }
