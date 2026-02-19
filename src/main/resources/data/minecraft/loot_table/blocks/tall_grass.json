@@ -20,10 +20,8 @@
               ],
               "conditions": [
                 {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "items": "minecraft:shears"
-                  }
+                  "ability": "shears_dig",
+                  "condition": "neoforge:can_item_perform_ability"
                 }
               ]
             },
@@ -39,10 +37,8 @@
                   "chance": 0.3
                 },
                 {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "items": "#minecraft:hoes"
-                  }
+                  "ability": "hoe_till",
+                  "condition": "neoforge:can_item_perform_ability"
                 }
               ]
             }
@@ -92,10 +88,8 @@
               ],
               "conditions": [
                 {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "items": "minecraft:shears"
-                  }
+                  "ability": "shears_dig",
+                  "condition": "neoforge:can_item_perform_ability"
                 }
               ]
             },
@@ -111,10 +105,8 @@
                   "chance": 0.3
                 },
                 {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "items": "#minecraft:hoes"
-                  }
+                  "ability": "hoe_till",
+                  "condition": "neoforge:can_item_perform_ability"
                 }
               ]
             }

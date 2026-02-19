@@ -220,17 +220,17 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 entity.setDeltaMovement(new Vec3(0, 0, 0));
 
                 Vec3 approachSpeed = newPosition.subtract(
-                    entity.position()).multiply(new Vec3(new Vector3f(1 / 15f))
-                );
+                    entity.position()).multiply(new Vec3(new Vector3f(1 / 15f)));
+
                 entity.addDeltaMovement(approachSpeed);
                 if (approachSpeed.lengthSqr() <= 0.001f) {
                     // Levitate object
                     Vec3 raisedPosition = pos.above(2).getCenter();
                     Vec3 dist = raisedPosition.subtract(entity.position());
+
                     float speed = 1 / 20f;
                     entity.setDeltaMovement(
-                        dist.multiply(new Vec3(new Vector3f(speed)))
-                    );
+                        dist.multiply(new Vec3(new Vector3f(speed))));
 
                     if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0))
                         friendMoon.sendDialogue(inspectionContext.dialogueLocation(), NMLRegistries.OFFERING_DIALOGUE_KEY);

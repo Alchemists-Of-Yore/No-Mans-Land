@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public enum FriendMoonState implements StringRepresentable {
     GREETING("greeting", NMLRegistries.GREETING_DIALOGUE_KEY, FriendMoonState::defaultState),
-    IDLE("idle", NMLRegistries.PASSIVE_DIALOGUE_KEY, FriendMoonState::defaultState),
+    PASSIVE("passive", NMLRegistries.PASSIVE_DIALOGUE_KEY, FriendMoonState::defaultState),
     OFFERING("offering", NMLRegistries.OFFERING_DIALOGUE_KEY, FriendMoonState::defaultState),
 
     // Upset
@@ -35,7 +35,7 @@ public enum FriendMoonState implements StringRepresentable {
         this.moonConsumer = moonConsumer;
     }
 
-    public static void defaultStateNoCandleReset(FriendMoon moon) {moon.setState(FriendMoonState.IDLE);}
+    public static void defaultStateNoCandleReset(FriendMoon moon) {moon.setState(FriendMoonState.PASSIVE);}
     public static void defaultState(FriendMoon moon) {
         moon.setCandleTime(Math.max(moon.getCandleTime() - 1, 0));
         defaultStateNoCandleReset(moon);

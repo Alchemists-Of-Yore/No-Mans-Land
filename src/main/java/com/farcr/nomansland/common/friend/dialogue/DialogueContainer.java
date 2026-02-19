@@ -17,6 +17,11 @@ public class DialogueContainer {
 
     public static final List<String> DELIMITERS = List.of("/", "&PlayerName");
 
+    public String playerName;
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public DialogueContainer(String textString) {
         ArrayList<String> finalList = new ArrayList<>();
         finalList.add(textString);
@@ -71,8 +76,11 @@ public class DialogueContainer {
                 if (progress < totalText)
                     break;
                 String subString = textList.get(i);
-                if (subString.contains("&PlayerName"))
+                if (subString.contains("&PlayerName")) {
                     subString = Minecraft.getInstance().getUser().getName();
+                    if (playerName != null)
+                        subString = playerName;
+                }
                 if (!subString.contains("/"))
                     totalString += subString.substring(0, Math.min((int) (progress - totalText), subString.length()));
                 totalText += subString.length();
