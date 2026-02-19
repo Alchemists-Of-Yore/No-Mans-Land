@@ -83,6 +83,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     @Override
     protected void applyImplicitComponents(DataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
+
         Optional.ofNullable(componentInput.get(NMLDataComponents.POT_VARIANT)).ifPresent(key -> {
             variant = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getOptional(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, key)).orElse(null);
         });
@@ -144,6 +145,10 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     public void setTheItem(ItemStack item) {
         this.unpackLootTable(null);
         this.item = item;
+    }
+
+    public void setFromItem(ItemStack item) {
+        this.applyComponentsFromItemStack(item);
     }
 
     public BlockEntity getContainerBlockEntity() {

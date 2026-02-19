@@ -36,7 +36,12 @@ public class NMLCreativeTabs {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ANCIENT_POTS = CREATIVE_TABS.register(NoMansLand.MODID + "_ancient_pots",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.nomansland.ancient_pots"))
-                    .icon(NMLItems.ANCIENT_POT::stack)
+                    .icon(() -> {
+                        ItemStack stack = NMLItems.LARGE_ANCIENT_POT.stack();
+                        stack.set(NMLDataComponents.POT_VARIANT, NoMansLand.location("ancient_pot_small_1"));
+
+                        return stack;
+                    })
                     .displayItems((parameters, output) ->
                         parameters.holders().lookup(NMLRegistries.POT_VARIANT_KEY).ifPresent((lookup) -> {
                             RegistryOps<Tag> registryops = parameters.holders().createSerializationContext(NbtOps.INSTANCE);
