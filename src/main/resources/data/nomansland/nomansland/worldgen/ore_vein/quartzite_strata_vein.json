@@ -38,21 +38,14 @@
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "minecraft:diorite" }
           },
           "height": 3
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
-          },
-          "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "nomansland:quartzite" }
           },
           "height": 1
         },
@@ -66,23 +59,9 @@
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
-          },
-          "height": 2
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
+            "state": { "Name": "nomansland:quartzite" }
           },
           "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
-          },
-          "height": 3
         },
         {
           "data": {
@@ -94,14 +73,35 @@
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "nomansland:quartzite" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:calcite" }
           },
           "height": 3
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
+            "state": { "Name": "nomansland:quartzite" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
             "state": { "Name": "minecraft:diorite" }
+          },
+          "height": 3
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "nomansland:quartzite" }
           },
           "height": 2
         }

@@ -1,6 +1,6 @@
 {
-  "spacing": 48,
-  "separation": 32,
+  "spacing": 128,
+  "separation": 64,
   "probability": 1.0,
 
   "radius": {
