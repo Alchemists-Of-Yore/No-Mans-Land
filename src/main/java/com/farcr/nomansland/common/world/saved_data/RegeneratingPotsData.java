@@ -1,9 +1,13 @@
 package com.farcr.nomansland.common.world.saved_data;
 
 import com.farcr.nomansland.common.block.pots.PotData;
+import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -73,11 +77,11 @@ public class RegeneratingPotsData extends SavedData {
         for (Map.Entry<BlockPos, Pair<PotData, Integer>> entry : new HashSet<>(regeneratingPots.entrySet())) {
             if (entry.getValue().getSecond() < 0) {
                 if (level.getBlockState(entry.getKey()).isAir()) {
-//                    level.setBlockAndUpdate(entry.getKey(), entry.getValue().getFirst().state());
-//                    if (level.getBlockEntity(entry.getKey()) instanceof PotBlockEntity pot) {
-//                        Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-//                        pot.variant = variants.get(entry.getValue().getFirst().variant());
-//                    }
+                    level.setBlockAndUpdate(entry.getKey(), entry.getValue().getFirst().state());
+                    if (level.getBlockEntity(entry.getKey()) instanceof PotBlockEntity pot) {
+                        Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
+                        pot.variant = variants.get(entry.getValue().getFirst().variant());
+                    }
                 }
                 regeneratingPots.remove(entry.getKey());
             }
