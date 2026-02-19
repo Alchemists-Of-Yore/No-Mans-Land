@@ -40,35 +40,35 @@
             "type": "minecraft:simple_state_provider",
             "state": { "Name": "nomansland:siltstone" }
           },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:stone" }
+          },
+          "height": 3
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "nomansland:siltstone" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:stone" }
+          },
           "height": 4
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:stone" }
-          },
-          "height": 2
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
             "state": { "Name": "nomansland:siltstone" }
           },
-          "height": 3
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:stone" }
-          },
           "height": 2
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "nomansland:siltstone" }
-          },
-          "height": 3
         },
         {
           "data": {
@@ -82,7 +82,7 @@
             "type": "minecraft:simple_state_provider",
             "state": { "Name": "nomansland:siltstone" }
           },
-          "height": 4
+          "height": 2
         },
         {
           "data": {
@@ -96,7 +96,7 @@
             "type": "minecraft:simple_state_provider",
             "state": { "Name": "nomansland:siltstone" }
           },
-          "height": 4
+          "height": 1
         },
         {
           "data": {
