@@ -1,11 +1,12 @@
 package com.farcr.nomansland.client.extensions;
 
-import com.farcr.nomansland.*;
-import com.farcr.nomansland.client.*;
-import com.farcr.nomansland.common.registry.*;
-import com.farcr.nomansland.common.registry.items.*;
-import net.minecraft.resources.*;
-import net.neoforged.neoforge.client.extensions.common.*;
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.NMLArmorModels;
+import com.farcr.nomansland.common.registry.NMLFluids;
+import com.farcr.nomansland.common.registry.items.NMLItems;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 public class NMLClientExtensions {
 
@@ -25,5 +26,7 @@ public class NMLClientExtensions {
 
         event.registerItem(new LodestoneArmorClientItemExtensions(()->NMLArmorModels.ANCIENT_BRONZE_MASK), NMLItems.ANCIENT_BRONZE_MASK.get());
         event.registerItem(new LodestoneArmorClientItemExtensions(()->NMLArmorModels.TORTOISE_SHELL), NMLItems.TORTOISE_SHELL.get());
+        event.registerItem(new PotClientItemExtensions(), NMLItems.ANCIENT_POT.get());
+        event.registerItem(new PotClientItemExtensions(), NMLItems.LARGE_ANCIENT_POT.get());
     }
 }

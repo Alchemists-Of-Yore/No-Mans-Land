@@ -35,8 +35,8 @@ public class AncientPotItem extends BlockItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        ItemStack stack = context.getItemInHand();
         Level level = context.getLevel();
+        ItemStack stack = context.getItemInHand();
 
         Registry<PotVariant> variantRegistry = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
         List<Holder.Reference<PotVariant>> variants = variantRegistry.holders().filter(variant -> variant.value().size() == size).toList();
@@ -61,8 +61,13 @@ public class AncientPotItem extends BlockItem {
                 HolderLookup.RegistryLookup<PotVariant> variantRegistry = context.registries().lookupOrThrow(NMLRegistries.POT_VARIANT_KEY);
                 PotVariant variant = variantRegistry.get(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, variantLocation)).orElseThrow().value();
                 variant.traits().forEach(trait -> {
-                    String name = trait.getSerializedName().replace("_", " ");
-                    tooltipComponents.add(Component.literal(Character.toUpperCase(name.charAt(0)) + name.substring(1)).withStyle(ChatFormatting.DARK_GREEN));
+                    String[] words = trait.getSerializedName().split("_");
+                    for (int i = 0; i < words.length; i++) {
+                        String word = words[i];
+                        word = Character.toUpperCase(word.charAt(0)) + word.substring(1);
+                        words[i] = word;
+                    }
+                    tooltipComponents.add(Component.literal(String.join(" ", words)).withStyle(ChatFormatting.DARK_GREEN));
                 });
             } else tooltipComponents.add(Component.literal(variantLocation.toString()));
         }

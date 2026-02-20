@@ -4,6 +4,7 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.mixin.MobInvoker;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
@@ -18,6 +19,7 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
+import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import com.farcr.nomansland.common.world.saved_data.WardedSpacesData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -75,6 +77,7 @@ import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -564,6 +567,14 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onServerStop(ServerStoppingEvent event) {
         LazilyCachedDensityFunctionSeedifier.clearCache();
+    }
+
+    @SubscribeEvent
+    public static void onLevelTick(LevelTickEvent.Pre event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            FriendMoon.getOrDefault(serverLevel).tick();
+            RegeneratingPotsData.getOrDefault(serverLevel).tick();
+        }
     }
 
     public static void spawnItemParticles(int amount, RandomSource randomSource, Level level, ItemStack itemstack, LivingEntity entity) {

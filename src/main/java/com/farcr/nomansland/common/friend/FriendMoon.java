@@ -51,7 +51,6 @@ public class FriendMoon extends SavedData {
     public static final String NAME = "friend_moon";
     public FriendMoon(@Nullable ServerLevel level) {
         this.level = level;
-        setDirty();
     }
 
     public static FriendMoon getOrDefault(ServerLevel level) {

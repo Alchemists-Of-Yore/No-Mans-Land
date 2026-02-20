@@ -12,7 +12,6 @@ import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
-import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
 import com.farcr.nomansland.common.integration.Mods;
@@ -37,7 +36,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.camel.Camel;
@@ -58,7 +56,6 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -246,12 +243,6 @@ public class CommonSetupEvents {
             result.set(DataComponents.POTION_CONTENTS, potionContents);
             return result;
         }
-    }
-
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Pre event) {
-        ServerLevel level = event.getServer().overworld();
-        FriendMoon.getOrDefault(level).tick();
     }
 
     @SubscribeEvent

@@ -1,12 +1,12 @@
 {
-  "spacing": 256,
+  "spacing": 128,
   "separation": 64,
-  "probability": 1.0,
+  "probability": 0.5,
 
   "radius": {
     "type": "uniform",
-    "min_inclusive": 16,
-    "max_inclusive": 64
+    "min_inclusive": 32,
+    "max_inclusive": 128
   },
   "target_condition": {
          "type": "matching_block_tag",
@@ -21,13 +21,13 @@
   "max_height": {
     "type": "constant",
     "value": {
-      "below_top": 128
+      "below_top": 64
     }
   },
 
   "vein_radius": {
     "type": "constant",
-    "value": 80.0
+    "value": 40.0
   },
   "inverted": true,
 
@@ -38,70 +38,70 @@
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "nomansland:siltstone" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:stone" }
           },
           "height": 3
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
+            "state": { "Name": "nomansland:siltstone" }
           },
           "height": 1
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "minecraft:stone" }
           },
-          "height": 1
+          "height": 4
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
-          },
-          "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "nomansland:siltstone" }
           },
           "height": 2
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
+            "state": { "Name": "minecraft:stone" }
           },
           "height": 1
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
-          },
-          "height": 3
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
+            "state": { "Name": "nomansland:siltstone" }
           },
           "height": 2
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:granite" }
+            "state": { "Name": "minecraft:stone" }
           },
           "height": 3
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:diorite" }
+            "state": { "Name": "nomansland:siltstone" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:stone" }
           },
           "height": 2
         }
