@@ -26,7 +26,8 @@ public class ContextualMusicHandler {
 
     // From modern versions of Minecraft
     public static boolean soundIsMusic(final SoundInstance soundInstance, final Music music) {
-        return soundInstance != null && (music.getEvent().value()).getLocation().equals(soundInstance.getLocation());
+        return (soundInstance != null && (music.getEvent().value()).getLocation().equals(soundInstance.getLocation())
+                && Minecraft.getInstance().getSoundManager().isActive(soundInstance));
     }
 
     public static void fadeSong(SoundInstance currentSong, SoundEngine soundEngine) {
