@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -24,8 +25,7 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "getTooltipLines", at = {@At("RETURN")}, cancellable = true)
     public void nameAppend(Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag, CallbackInfoReturnable<List<Component>> cir) {
-        if (Minecraft.getInstance().player == null || !Minecraft.getInstance().player.hasEffect(NMLEffects.FRIENDSHIP)
-        || !MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP.containsKey(this.getItem()))
+        if (!MoonlightGlowRenderType.itemCanBeOffered(this.getItem()))
             return;
 
         List<Component> originalList = cir.getReturnValue();

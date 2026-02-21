@@ -7,6 +7,7 @@ import com.farcr.nomansland.client.extensions.*;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.*;
+import com.farcr.nomansland.client.renderer.rendertype.*;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -177,6 +178,14 @@ public class ClientSetupEvents {
                 DefaultVertexFormat.NEW_ENTITY
             ),
             shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
+        );
+        event.registerShader(
+            new ShaderInstance(
+                event.getResourceProvider(),
+                NoMansLand.location("rendertype_moonlight_glow"),
+                DefaultVertexFormat.POSITION_TEX
+            ),
+            shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
         );
     }
 }
