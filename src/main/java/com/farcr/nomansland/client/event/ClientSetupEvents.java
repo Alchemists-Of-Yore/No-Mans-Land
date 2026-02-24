@@ -1,7 +1,10 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.NMLArmorModels;
+import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
+import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.entity.*;
