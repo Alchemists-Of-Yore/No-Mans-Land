@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.renderer;
+package com.farcr.nomansland.client.renderer.entity;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;

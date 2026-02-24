@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.renderer;
+package com.farcr.nomansland.client.renderer.entity;
 //    TODO: BURIED
 //import com.farcr.nomansland.client.NMLModelLayers;
 //import com.farcr.nomansland.client.models.BuriedModel;

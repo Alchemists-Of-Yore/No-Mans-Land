@@ -1,12 +1,10 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.*;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
-import com.farcr.nomansland.client.extensions.*;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
-import com.farcr.nomansland.client.renderer.*;
+import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.rendertype.*;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;

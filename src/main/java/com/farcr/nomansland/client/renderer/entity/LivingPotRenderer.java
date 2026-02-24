@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.renderer;
+package com.farcr.nomansland.client.renderer.entity;
 
 import com.farcr.nomansland.common.entity.LivingPot;
 import com.mojang.blaze3d.vertex.PoseStack;

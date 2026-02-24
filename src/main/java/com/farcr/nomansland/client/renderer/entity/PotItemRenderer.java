@@ -1,4 +1,4 @@
-package com.farcr.nomansland.client.renderer;
+package com.farcr.nomansland.client.renderer.entity;
 
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
