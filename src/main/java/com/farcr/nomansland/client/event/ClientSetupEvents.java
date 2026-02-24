@@ -7,6 +7,7 @@ import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
+import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.rendertype.*;
 import com.farcr.nomansland.common.integration.Mods;
@@ -187,6 +188,14 @@ public class ClientSetupEvents {
                 DefaultVertexFormat.POSITION_TEX
             ),
             shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
+        );
+        event.registerShader(
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        NoMansLand.location("sun_dog"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                shader -> SunDogRenderer.SUN_DOG_SHADER = shader
         );
     }
 }
