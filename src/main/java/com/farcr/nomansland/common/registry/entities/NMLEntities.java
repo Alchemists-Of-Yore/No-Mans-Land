@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.bombs.Firebomb;
 import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
+import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
@@ -96,6 +97,10 @@ public class NMLEntities {
                     .eyeHeight(1.0F)
                     .passengerAttachments(new Vec3(0.0F, 1.15F, 0.0F))
                     .build("tortoise"));
+
+    public static final Supplier<EntityType<Buddy>> BUDDY =
+        ENTITIES.register("buddy", () -> EntityType.Builder.of(Buddy::new, MobCategory.CREATURE)
+            .build("buddy"));
 
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {
         return ENTITIES.register(name, () -> EntityType.Builder.of(entity, category).sized(width, height).build(name));

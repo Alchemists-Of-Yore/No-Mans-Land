@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.block.moonlight;
 
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -204,9 +205,9 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 			Vec3 center = pos.getCenter();
 //			level.addParticle(
 //					NMLParticleTypes.MOONLIGHT_RAY.get(),
-//					center.x + (level.random.nextFloat() * 8f - 4f),
-//					center.y + 8,
-//					center.z + (level.random.nextFloat() * 8f - 4f),
+//					center.x + (level.random.nextFloat() * 2f - 1f),
+//					center.y,
+//					center.z + (level.random.nextFloat() * 2f - 1f),
 //					0,
 //					0,
 //					0

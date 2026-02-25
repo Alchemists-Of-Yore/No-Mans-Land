@@ -21,6 +21,7 @@ public class NMLModelLayers {
     public static final ModelLayerLocation DEER_LAYER = new ModelLayerLocation(NoMansLand.location("deer"), "main");
     public static final ModelLayerLocation GOOSE_LAYER = new ModelLayerLocation(NoMansLand.location("goose"), "main");
     public static final ModelLayerLocation TORTOISE_LAYER = new ModelLayerLocation(NoMansLand.location("tortoise"), "main");
+    public static final ModelLayerLocation BUDDY_LAYER = new ModelLayerLocation(NoMansLand.location("buddy"), "main");
 
     //Armor
     public static final ModelLayerLocation ANCIENT_BRONZE_MASK_LAYER = new ModelLayerLocation(NoMansLand.location("ancient_bronze_mask"), "main");
@@ -33,6 +34,7 @@ public class NMLModelLayers {
         event.registerLayerDefinition(NMLModelLayers.DEER_LAYER, DeerModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.GOOSE_LAYER, GooseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.TORTOISE_LAYER, TortoiseModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.BUDDY_LAYER, BuddyModel::createBodyLayer);
 
         event.registerLayerDefinition(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER, AncientBronzeMaskModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.TORTOISE_SHELL_LAYER, TortoiseShellModel::createBodyLayer);
