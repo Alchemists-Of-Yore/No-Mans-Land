@@ -448,12 +448,6 @@
       },
       {
         "model": "nomansland:block/underground/siltstone_bricks/siltstone_brick_stairs_inner_3"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_brick_stairs_inner_4"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_brick_stairs_inner_5"
       }
     ],
     "facing=south,half=bottom,shape=inner_right": [
@@ -490,12 +484,6 @@
       },
       {
         "model": "nomansland:block/underground/siltstone_bricks/siltstone_brick_stairs_outer_3"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_brick_stairs_outer_4"
-      },
-      {
-        "model": "nomansland:block/underground/siltstone_bricks/siltstone_brick_stairs_outer_5"
       }
     ],
     "facing=south,half=bottom,shape=outer_right": [
