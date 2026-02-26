@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.Meshes;
+import com.farcr.nomansland.common.worldevent.SunDog;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,7 +29,7 @@ public class SunDogRenderer implements AutoCloseable {
 
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
-        if (true) return; // todo: spawning situation for sun dogs
+        //if (true) return; // todo: spawning situation for sun dogs
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
         INSTANCE.render(event.getPoseStack(), event.getProjectionMatrix(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
     }
@@ -38,6 +39,22 @@ public class SunDogRenderer implements AutoCloseable {
     public SunDogRenderer() {}
 
     public void render(PoseStack poseStack, Matrix4f projectionMatrix, float partialTick) {
+        if (Minecraft.getInstance().level == null) return;
+        float time = Minecraft.getInstance().level.getTimeOfDay(partialTick);
+        float brightness = 0.4F;
+        // fade it in
+        brightness *= SunDog.Client.INSTANCE.getOpacity(partialTick);
+        // no sun dogs at night!
+        if (time > 0.5)
+            brightness *= Mth.clampedMap(time, 0.74F, 0.76F, 0.0F, 1.0F);
+        else
+            brightness *= Mth.clampedMap(time, 0.23F, 0.25F, 1.0F, 0.0F);
+        // nor during inclement weather
+        brightness *= 1 - Minecraft.getInstance().level.getRainLevel(partialTick);
+
+        if (brightness <= 0.0)
+            return;
+
         if (this.sunDogMesh == null)
             this.createHemisphereMesh();
 
@@ -48,14 +65,14 @@ public class SunDogRenderer implements AutoCloseable {
                 GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
                 GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
         );
-        float brightness = 0.4F;
+
         RenderSystem.setShaderColor(1, 1, 1, brightness);
 
         poseStack.pushPose();
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         poseStack.mulPose(camera.rotation().conjugate());
         poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(Minecraft.getInstance().level.getTimeOfDay(partialTick) * 360.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(time * 360.0F));
 
         float radius = 32.0F;
         float renderDistance = Minecraft.getInstance().options.renderDistance().get() * 16.0F;
