@@ -114,7 +114,7 @@ public class SunDogRenderer implements AutoCloseable {
 
         this.sunDogMesh = new VertexBuffer(VertexBuffer.Usage.STATIC);
         this.sunDogMesh.bind();
-        this.sunDogMesh.upload(Meshes.hemisphere(Tesselator.getInstance(), 12, 24, Mth.PI * 0.3F, 1));
+        this.sunDogMesh.upload(Meshes.hemisphere(Tesselator.getInstance(), 12, 24, Mth.PI * 0.34F, 1));
         VertexBuffer.unbind();
     }
 
