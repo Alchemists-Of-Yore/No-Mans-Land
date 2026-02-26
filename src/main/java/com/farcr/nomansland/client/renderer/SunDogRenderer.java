@@ -28,7 +28,6 @@ public class SunDogRenderer implements AutoCloseable {
 
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
-        //if (true) return;
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
         INSTANCE.render(event.getPoseStack(), event.getProjectionMatrix(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
     }
@@ -58,7 +57,10 @@ public class SunDogRenderer implements AutoCloseable {
         poseStack.mulPose(Axis.XP.rotationDegrees(Minecraft.getInstance().level.getTimeOfDay(partialTick) * 360.0F));
 
         float radius = 32.0F;
-        radius = Math.max(radius, Minecraft.getInstance().options.renderDistance().get() * 16.0F * 0.5F);
+        float renderDistance = Minecraft.getInstance().options.renderDistance().get() * 16.0F;
+        radius = Math.max(radius, renderDistance * 0.3F);
+
+        poseStack.pushPose();
         poseStack.scale(radius, radius, radius);
 
         RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
@@ -69,14 +71,24 @@ public class SunDogRenderer implements AutoCloseable {
 
         RenderSystem.setShaderTexture(0, SUN_DOG_FRONT_TEXTURE);
         this.sunDogMesh.drawWithShader(poseStack.last().pose(), projectionMatrix, SUN_DOG_SHADER);
+        poseStack.popPose();
 
-        poseStack.scale(2, 2, 2);
+        poseStack.pushPose();
+
+        poseStack.scale(renderDistance + 16.0F, renderDistance + 16.0F, renderDistance + 16.0F);
         RenderSystem.setShaderColor(1, 1, 1, brightness);
         RenderSystem.setShaderTexture(0, SUN_DOG_BACK_TEXTURE);
         this.sunDogMesh.drawWithShader(poseStack.last().pose(), projectionMatrix, SUN_DOG_SHADER);
 
         VertexBuffer.unbind();
         poseStack.popPose();
+        poseStack.popPose();
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 
     private void createHemisphereMesh() {
