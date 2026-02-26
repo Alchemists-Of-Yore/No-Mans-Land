@@ -28,7 +28,7 @@
       "type": "minecraft:simple_state_provider",
       "state": { "Name": "minecraft:andesite" }
     },
-    "probability": 1.0,
+    "probability": 0.5,
     "incoherence": 0.5
   },
   "core": {
