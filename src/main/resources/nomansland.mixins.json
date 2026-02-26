@@ -57,6 +57,7 @@
     "client.AbstractSoundInstanceMixin",
     "client.BrewingStandScreenMixin",
     "client.CapeRenderLayerMixin",
+    "client.ClientLevelMixin",
     "client.HumanoidModelMixin",
     "client.ItemRendererMixin",
     "client.ItemStackMixin",
