@@ -6,7 +6,7 @@
 	"textures": {
 		"bottom": "nomansland:block/dungeon/ancient_pots/ancient_pot_base",
 		"front": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_1",
-		"side": "#front",
+		"side": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_1",
 		"particle": "nomansland:block/dungeon/ancient_pots/ancient_pot_particle"
 	},
 	"elements": [
