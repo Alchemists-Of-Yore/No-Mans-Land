@@ -28,6 +28,7 @@ public class SunDogRenderer implements AutoCloseable {
 
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
+        if (true) return; // todo: spawning situation for sun dogs
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
         INSTANCE.render(event.getPoseStack(), event.getProjectionMatrix(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
     }
