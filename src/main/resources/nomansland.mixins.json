@@ -21,6 +21,7 @@
     "ItemEntityMixin",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
+    "LevelChunkMixin",
     "LivingEntityMixin",
     "MinecraftServerMixin",
     "MobInvoker",

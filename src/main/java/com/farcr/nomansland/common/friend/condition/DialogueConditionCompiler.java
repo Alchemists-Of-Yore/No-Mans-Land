@@ -27,38 +27,42 @@ public class DialogueConditionCompiler implements PreparableReloadListener {
         NMLRegistries.CONTEXTUAL_DIALOGUE_KEY
     );
 
+    public void clearConditionMaps() {
+        // Offering Conditions
+        MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP.clear();
+        MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP.clear();
+
+        // Offering Conditions
+        MoonlightContextualConditions.EffectContextualCondition.COMPILED_MAP.clear();
+        MoonlightContextualConditions.EquipmentContextualConditional.COMPILED_MAP.clear();
+
+        // Greeting Conditions
+        MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY.clear();
+    }
+
+    public void compileConditionMaps(Void data) {
+        for (ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey : REGISTRIES) {
+            Registry<DialogueRegistry.DialoguePool> dialoguePools =
+                registryAccess.registryOrThrow(registryKey);
+            dialoguePools.forEach((dialoguePool) -> {
+                if (dialoguePool.condition().isPresent() && dialoguePool.condition().get().validate(registryKey)) {
+                    DialogueRegistry.DialogueCondition condition = dialoguePool.condition().get();
+                    if (condition instanceof DialogueRegistry.CompiledCondition<?> compiledCondition)
+                        compiledCondition.consume(dialoguePool);
+                    if (condition instanceof DialogueRegistry.ListCondition listCondition)
+                        listCondition.append(dialoguePool);
+                }
+            });
+        }
+    }
+
     @Override
     public CompletableFuture<Void> reload(
         PreparationBarrier preparationBarrier, ResourceManager resourceManager,
         ProfilerFiller profilerFiller, ProfilerFiller profilerFiller1, Executor executor, Executor executor1
     ) {
-        return CompletableFuture.runAsync(() -> {
-                // Offering Conditions
-                MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP.clear();
-                MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP.clear();
-
-                // Offering Conditions
-                MoonlightContextualConditions.EffectContextualCondition.COMPILED_MAP.clear();
-                MoonlightContextualConditions.EquipmentContextualConditional.COMPILED_MAP.clear();
-
-                // Greeting Conditions
-                MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY.clear();
-            }, executor)
+        return CompletableFuture.runAsync(this::clearConditionMaps, executor)
             .thenCompose(preparationBarrier::wait)
-            .thenAcceptAsync((data) -> {
-                for (ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey : REGISTRIES) {
-                    Registry<DialogueRegistry.DialoguePool> dialoguePools =
-                        registryAccess.registryOrThrow(registryKey);
-                    dialoguePools.forEach((dialoguePool) -> {
-                        if (dialoguePool.condition().isPresent() && dialoguePool.condition().get().validate(registryKey)) {
-                            DialogueRegistry.DialogueCondition condition = dialoguePool.condition().get();
-                            if (condition instanceof DialogueRegistry.CompiledCondition<?> compiledCondition)
-                                compiledCondition.consume(dialoguePool);
-                            if (condition instanceof DialogueRegistry.ListCondition listCondition)
-                                listCondition.append(dialoguePool);
-                        }
-                    });
-                }
-        }, executor1);
+            .thenAcceptAsync(this::compileConditionMaps, executor1);
     }
 }
