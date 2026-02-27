@@ -223,6 +223,22 @@ public class CreativeModeTabHandler {
             insertAfter(BAMBOO_MOSAIC_SLAB, BAMBOO_BOOKSHELF);
 
             insertBefore(AMETHYST_BLOCK, QUARTZITE);
+            insertBefore(STONE, WOODEN_PLATFORM_STAIRS);
+            insertBefore(STONE, WOODEN_PLATFORM);
+
+            insertAfter(CHISELED_TUFF_BRICKS, CHISELED_SILTSTONE);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_BRICK_WALL);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_BRICK_SLAB);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_BRICK_STAIRS);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_BRICKS);
+            insertAfter(CHISELED_TUFF_BRICKS, POLISHED_SILTSTONE_SLAB);
+            insertAfter(CHISELED_TUFF_BRICKS, POLISHED_SILTSTONE_STAIRS);
+            insertAfter(CHISELED_TUFF_BRICKS, POLISHED_SILTSTONE);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE);
+
+            insertAfter(MUD_BRICK_WALL, THATCH_SLAB);
+            insertAfter(MUD_BRICK_WALL, THATCH_STAIRS);
+            insertAfter(MUD_BRICK_WALL, THATCH);
         }
 
 //        if (tab == CreativeModeTabs.COLORED_BLOCKS) {
@@ -308,6 +324,10 @@ public class CreativeModeTabHandler {
             insertAfter(TURTLE_EGG, TORTOISE_EGGS);
 
             insertAfter(OCHRE_FROGLIGHT, VERMILION_FROGLIGHT);
+
+            insertAfter(ROSE_BUSH, ROSE_VINES);
+
+            insertAfter(TUFF, SILTSTONE);
 
 //            event.accept(REMAINS);
 
@@ -426,6 +446,7 @@ public class CreativeModeTabHandler {
             insertAfter(SALMON_BUCKET, BILLHOOK_BASS_BUCKET);
             insertAfter(ELYTRA, NMLItems.WARDING_EFFIGY);
             insertAfter(ELYTRA, LIVING_URN);
+            insertAfter(ELYTRA, ANCIENT_BRONZE_MASK);
             insertAfter(MUSIC_DISC_5, MUSIC_DISC_GUIDANCE);
 
             insertAfter(TNT_MINECART, WARDING_BANDAGE);
@@ -453,6 +474,7 @@ public class CreativeModeTabHandler {
             insertBefore(TNT, EXPLOSIVE);
             insertAfter(EGG, RESIN_OIL_BOTTLE);
             insertAfter(TURTLE_HELMET, TORTOISE_SHELL);
+            insertAfter(TURTLE_HELMET, ANCIENT_BRONZE_MASK);
             insertAfter(SPECTRAL_ARROW, INCENDIARY_ARROW);
         }
 
@@ -460,6 +482,7 @@ public class CreativeModeTabHandler {
             insertAfter(HONEYCOMB, RESIN);
             insertAfter(RESIN.asItem(), RESIN_OIL_BOTTLE);
             insertAfter(TURTLE_SCUTE, STURDY_SCUTE);
+            insertAfter(NETHER_WART, AWKWARD_RESIDUE);
         }
 
         if (tab == CreativeModeTabs.REDSTONE_BLOCKS) {

@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "building",
+    "ingredients": [
+        {
+            "item": "nomansland:dried_grass"
+        },
+        {
+            "item": "nomansland:dried_grass"
+        },
+        {
+            "item": "nomansland:dried_grass"
+        },
+        {
+            "item": "nomansland:dried_grass"
+        }
+    ],
+    "result": {
+        "id": "nomansland:thatch",
+        "count": 3
+    }
+}
