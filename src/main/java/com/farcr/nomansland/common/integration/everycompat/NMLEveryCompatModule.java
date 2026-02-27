@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.integration.everycompat;
 
 import com.farcr.nomansland.common.block.TrimmedPlankBlock;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.mehvahdjukaar.every_compat.EveryCompat;
 import net.mehvahdjukaar.every_compat.api.SimpleEntrySet;
 import net.mehvahdjukaar.every_compat.api.SimpleModule;
@@ -26,7 +27,7 @@ public class NMLEveryCompatModule extends SimpleModule {
         ResourceLocation tab = modRes(modId);
 
         trimmedPlanks = SimpleEntrySet.builder(WoodType.class, "planks", "trimmed",
-                        getModBlock("trimmed_oak_planks"), () -> VanillaWoodTypes.OAK,
+                        NMLBlocks.TRIMMED_OAK_PLANKS, () -> VanillaWoodTypes.OAK,
                         w -> new TrimmedPlankBlock(Utils.copyPropertySafe(w.planks)))
                 .addTexture(modRes("block/vanilla_woods/trimmed_oak_planks"))
                 .addTexture(modRes("block/vanilla_woods/trimmed_oak_planks_lower"))
@@ -41,7 +42,7 @@ public class NMLEveryCompatModule extends SimpleModule {
         this.addEntry(trimmedPlanks);
 
         bookshelf = SimpleEntrySet.builder(WoodType.class, "bookshelf",
-                        getModBlock("acacia_bookshelf"), () -> VanillaWoodTypes.ACACIA,
+                        NMLBlocks.ACACIA_BOOKSHELF, () -> VanillaWoodTypes.ACACIA,
                         w -> new Block(Utils.copyPropertySafe(w.planks).strength(1.5F)))
                 .addTexture(TextureInfo.of(EveryCompat.res("block/acacia_bookshelf"),
                         "block/vanilla_woods/acacia_bookshelf").mask(EveryCompat.res("block/acacia_bookshelf_m")))
