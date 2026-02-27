@@ -2,8 +2,6 @@
   "values": [
     "minecraft:torch",
     "minecraft:soul_torch",
-    "minecraft:flint_and_steel",
-    "minecraft:fire_charge",
     "nomansland:sconce_torch",
     "nomansland:sconce_soul_torch",
     "minecraft:blaze_rod",

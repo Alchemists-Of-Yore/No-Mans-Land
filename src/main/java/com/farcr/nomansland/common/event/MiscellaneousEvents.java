@@ -66,6 +66,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
@@ -100,8 +102,8 @@ public class MiscellaneousEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
 
-        boolean isExtinguishing = stack.is(ItemTags.SHOVELS) && NMLConfig.TORCH_EXTINGUISHING.get();
-        boolean isLighting = stack.is(NMLTags.FIRESTARTERS);
+        boolean isExtinguishing = stack.getItem().canPerformAction(stack, ItemAbilities.SHOVEL_DOUSE) && NMLConfig.TORCH_EXTINGUISHING.get();
+        boolean isLighting = stack.is(NMLTags.FIRESTARTERS) || stack.getItem().canPerformAction(stack, ItemAbilities.FIRESTARTER_LIGHT);
         if (!player.isSpectator() && (isExtinguishing || isLighting)) {
             for (ExtinguishableBlock holder : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
 
