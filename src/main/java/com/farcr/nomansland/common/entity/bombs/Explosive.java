@@ -3,6 +3,8 @@ package com.farcr.nomansland.common.entity.bombs;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -113,7 +115,15 @@ public class Explosive extends ThrowableBombEntity {
         super.onHitBlock(result);
         Vec3 pos = position();
         Vec3 resultPos = result.getLocation();
-        Vec3 dir = pos.vectorTo(resultPos).normalize();
+        Vec3 dir;
+
+        SubLevelAccess subLevel = SableCompanion.INSTANCE.getContaining(this.level(), result.getBlockPos());
+        if (subLevel != null) {
+            dir = subLevel.logicalPose().transformPositionInverse(pos).vectorTo(resultPos).normalize();
+        } else {
+            dir = pos.vectorTo(resultPos).normalize();
+        }
+
         setDeltaMovement(Vec3.ZERO);
         setPos(new Vec3(resultPos.x - dir.x * getBbWidth() * 0.01, resultPos.y - dir.y * getBbHeight() * 0.01, resultPos.z - dir.z * getBbWidth() * 0.01));
         setNoGravity(true);
