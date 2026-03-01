@@ -8,8 +8,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -95,18 +98,29 @@ public class BuddyChunkAnchor extends SavedData {
         return (int)((dayTime / 24000L) / 8L);
     }
 
+    public boolean tryRespawning(BuddyData existingBuddyData) {
+        return existingBuddyData.getShouldRespawn() && (getCurrentMoonCycle(level.getDayTime()) > existingBuddyData.getMoonCycle());
+    }
+
     public void queryBuddyStructure(StructureStart start) {
         BlockPos spawnBlock = start.getBoundingBox().getCenter();
         BuddyData existingBuddyData = buddyAnchors.get(spawnBlock);
-        boolean respawn = (existingBuddyData == null || existingBuddyData.tryRespawning());
 
+        boolean respawn = (existingBuddyData == null || tryRespawning(existingBuddyData));
         if (!respawn)
             return;
 
-        // Try respawning buddy !!!
+        // Try spawning the buddy !!!
         Buddy buddy = NMLEntities.BUDDY.get().create(level);
-        if (buddy != null) {
-            buddy.setPos(spawnBlock.above().getBottomCenter());
+        BlockPos heightmapSpawnPosition = level.getHeightmapPos(
+            Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(spawnBlock.getX(), 0, spawnBlock.getZ())
+        );
+
+        if (buddy != null && Buddy.checkBuddySpawnRules(
+            (EntityType<? extends Buddy>) buddy.getType(),
+            level, MobSpawnType.EVENT, heightmapSpawnPosition, level.getRandom())
+        ) {
+            buddy.setPos(heightmapSpawnPosition.above().getBottomCenter());
 
             // Prepare Buddy & Anchor
             buddy.prepareAnchor(spawnBlock);
@@ -115,12 +129,15 @@ public class BuddyChunkAnchor extends SavedData {
             if (existingBuddyData != null && existingBuddyData.getNBTData().isPresent()) {
                 // Save original buddy data as fallback
                 CompoundTag fallbackTag = new CompoundTag();
-                buddy.save(fallbackTag);
+                buddy.saveWithoutId(fallbackTag);
 
                 // Replace data with previously saved buddy data
                 CompoundTag replacementData = existingBuddyData.getNBTData().get();
+                NoMansLand.LOGGER.info(replacementData);
                 for (String key : replacementData.getAllKeys())
                     fallbackTag.put(key, Objects.requireNonNull(replacementData.get(key)));
+
+                NoMansLand.LOGGER.info(fallbackTag);
                 buddy.load(fallbackTag);
             }
 
@@ -145,7 +162,7 @@ public class BuddyChunkAnchor extends SavedData {
         buddyData.queryRespawn();
 
         CompoundTag buddySaveData = new CompoundTag();
-        buddy.save(buddySaveData);
+        buddy.saveWithoutId(buddySaveData);
 
         CompoundTag storedSaveData = new CompoundTag();
         for (String copiedKey : Buddy.COPY_ON_RESPAWN) {
@@ -153,6 +170,7 @@ public class BuddyChunkAnchor extends SavedData {
                 storedSaveData.put(copiedKey, Objects.requireNonNull(buddySaveData.get(copiedKey)));
         }
         buddyData.setNBTData(storedSaveData);
+
         // signal update to position
         updateAnchors(anchorPosition, buddyData);
     }

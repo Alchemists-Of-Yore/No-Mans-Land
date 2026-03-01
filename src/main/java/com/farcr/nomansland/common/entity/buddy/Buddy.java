@@ -1,12 +1,8 @@
 package com.farcr.nomansland.common.entity.buddy;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.entity.goose.Goose;
-import com.farcr.nomansland.common.entity.goose.GooseAI;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -30,6 +26,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.entity.EntityInLevelCallback;
+import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,6 +60,7 @@ public class Buddy extends PathfinderMob implements Npc {
 
     public void prepareAnchor(BlockPos anchorPosition) {
         this.anchorPosition = anchorPosition;
+        this.restrictTo(anchorPosition, 5);
     }
 
     @Override
@@ -85,8 +85,7 @@ public class Buddy extends PathfinderMob implements Npc {
     @Override
     public void tick() {
         if (this.isAlive())
-          setHealth(Math.min(getHealth() + (1f / 20f), getMaxHealth()));
-
+            setHealth(Math.min(getHealth() + (1f / 20f), getMaxHealth()));
         super.tick();
 
         if (level().isClientSide)
@@ -95,12 +94,9 @@ public class Buddy extends PathfinderMob implements Npc {
 
     @Override
     protected void customServerAiStep() {
-        ServerLevel level = (ServerLevel) level();
-
+        ServerLevel level = (ServerLevel) this.level();
         getBrain().tick(level, this);
         BuddyAI.updateActivity(this);
-        level.getProfiler().pop();
-
         super.customServerAiStep();
     }
 
@@ -169,6 +165,7 @@ public class Buddy extends PathfinderMob implements Npc {
         head.xRot = (float) Math.sin(time) * 0.8F;
         hat.yRot = head.yRot;
         hat.xRot = head.xRot;
+
         rightArm.xRot = (float) Math.sin(time * 0.6662D + Math.PI) * 2.0F;
         rightArm.zRot = (float) (Math.sin(time * 0.2312D) + 1.0D);
         leftArm.xRot = (float) Math.sin(time * 0.6662D) * 2.0F;
@@ -192,7 +189,11 @@ public class Buddy extends PathfinderMob implements Npc {
         return (Brain<Buddy>) super.getBrain();
     }
 
-    public static boolean checkBuddySpawnRules(EntityType<? extends Buddy> animal, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+    public static boolean checkBuddySpawnRules(
+        EntityType<? extends Buddy> buddy,
+        LevelAccessor level, MobSpawnType spawnType,
+        BlockPos pos, RandomSource random
+    ) {
         return level.getBlockState(pos.above()).isAir();
     }
 

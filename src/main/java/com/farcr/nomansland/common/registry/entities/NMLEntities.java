@@ -99,7 +99,8 @@ public class NMLEntities {
                     .build("tortoise"));
 
     public static final Supplier<EntityType<Buddy>> BUDDY =
-        ENTITIES.register("buddy", () -> EntityType.Builder.of(Buddy::new, MobCategory.CREATURE)
+        ENTITIES.register("buddy", () -> EntityType.Builder.of(Buddy::new, MobCategory.MISC)
+            .ridingOffset(-0.7F)
             .build("buddy"));
 
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {

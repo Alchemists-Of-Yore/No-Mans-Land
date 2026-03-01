@@ -35,10 +35,9 @@ public class BuddyData {
     }
 
     private boolean shouldRespawn = false;
-    private boolean getShouldRespawn() {
+    public boolean getShouldRespawn() {
         return shouldRespawn;
     }
-    public boolean tryRespawning() { return getShouldRespawn(); }
 
     private @Nullable CompoundTag nbtData;
     public Optional<CompoundTag> getNBTData() {
