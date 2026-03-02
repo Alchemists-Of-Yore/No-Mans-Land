@@ -1,0 +1,8 @@
+{
+  "type": "mixed_litter:mooshroom",
+  "group": "nomansland:buddy",
+  "arguments": {
+    "texture": "nomansland:entity/buddy/red",
+    "mushroom": "minecraft:red_mushroom"
+  }
+}
