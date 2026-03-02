@@ -1,12 +1,12 @@
 {
-  "spacing": 128,
-  "separation": 64,
+  "spacing": 64,
+  "separation": 48,
   "probability": 0.75,
 
   "radius": {
     "type": "uniform",
-    "min_inclusive": 16,
-    "max_inclusive": 64
+    "min_inclusive": 8,
+    "max_inclusive": 16
   },
   "target_condition": {
          "type": "matching_block_tag",
@@ -15,19 +15,19 @@
   "min_height": {
     "type": "constant",
     "value": {
-      "above_bottom": 5
+      "above_bottom": 75
     }
   },
   "max_height": {
     "type": "constant",
     "value": {
-      "above_bottom": 50
+      "below_top": 225
     }
   },
 
   "vein_radius": {
     "type": "constant",
-    "value": 40.0
+    "value": 120.0
   },
   "inverted": true,
 
@@ -40,28 +40,14 @@
             "type": "minecraft:simple_state_provider",
             "state": { "Name": "minecraft:tuff" }
           },
-          "height": 1
+          "height": 2
         },
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:deepslate" }
+            "state": { "Name": "minecraft:stone" }
           },
-          "height": 3
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:tuff" }
-          },
-          "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:deepslate" }
-          },
-          "height": 4
+          "height": 2
         },
         {
           "data": {
@@ -73,9 +59,37 @@
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:deepslate" }
+            "state": { "Name": "minecraft:stone" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:tuff" }
           },
           "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:stone" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:tuff" }
+          },
+          "height": 3
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:stone" }
+          },
+          "height": 3
         },
         {
           "data": {
@@ -87,21 +101,7 @@
         {
           "data": {
             "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:deepslate" }
-          },
-          "height": 3
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:tuff" }
-          },
-          "height": 1
-        },
-        {
-          "data": {
-            "type": "minecraft:simple_state_provider",
-            "state": { "Name": "minecraft:deepslate" }
+            "state": { "Name": "minecraft:stone" }
           },
           "height": 2
         }
