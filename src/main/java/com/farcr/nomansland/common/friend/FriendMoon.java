@@ -106,6 +106,7 @@ public class FriendMoon extends SavedData {
 
     public FriendMoon load(CompoundTag tag, HolderLookup.Provider provider) {
         awake = tag.getBoolean("IsAwake");
+        candleTimer = tag.getInt("CandleTimer");
         setState(FriendMoonState.CODEC.byName(tag.getString("State"), FriendMoonState.PASSIVE));
         return this;
     }
@@ -113,6 +114,7 @@ public class FriendMoon extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putBoolean("IsAwake", isAwake());
+        tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
         return tag;
     }
@@ -231,7 +233,6 @@ public class FriendMoon extends SavedData {
 
     public ServerPlayer getContextualPlayer() {
         for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);})) {
-            NoMansLand.LOGGER.info(level.getBlockState(serverPlayer.blockPosition()).getBlock());
             if (level.getBlockState(serverPlayer.blockPosition()).is(NMLBlocks.MOONLIGHT_BASIN))
                 return serverPlayer;
         }

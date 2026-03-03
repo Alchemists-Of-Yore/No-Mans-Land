@@ -55,6 +55,10 @@ public class NMLParticleTypes {
 
     public static final Supplier<SimpleParticleType> MOONLIGHT_RAY = register("moonlight_ray");
 
+    public static final Supplier<SimpleParticleType> MOONLIGHT_FLAME = register("moonlight_flame");
+
+    public static final Supplier<SimpleParticleType> MOONLIGHT_SPARK = register("moonlight_spark");
+
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
         return PARTICLE_TYPES.register(name, () -> new ParticleType<T>(overrideLimitter) {
             public MapCodec<T> codec() {
