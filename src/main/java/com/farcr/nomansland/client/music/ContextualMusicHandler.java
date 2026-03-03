@@ -1,6 +1,5 @@
 package com.farcr.nomansland.client.music;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.music.condition.MusicCondition;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.client.Minecraft;
