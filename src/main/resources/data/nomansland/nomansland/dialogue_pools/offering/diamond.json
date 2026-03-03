@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:diamond"
+    },
+    "weight": 1,
+    "text": "Proof of the world's constant, deep processes.\n Remarkable both in form and properties."
+}

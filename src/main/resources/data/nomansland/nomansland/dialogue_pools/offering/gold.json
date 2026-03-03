@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:gold_ingot","minecraft:gold_nugget","minecraft:raw_gold"]
+    },
+    "weight": 1,
+    "text": "A sun-soaked gift from the depths most apt to channel the arcane and to supplement vitality.\n Indeed, its properties recall its origin. \n Many would yearn for it, its value in ways unimaginable."
+}

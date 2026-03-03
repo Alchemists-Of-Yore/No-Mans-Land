@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "nomansland:ancient_bronze_mask"
+    },
+    "weight": 1,
+    "text": "I remember this one’s former owner.// They would be glad to see it in good hands."
+}

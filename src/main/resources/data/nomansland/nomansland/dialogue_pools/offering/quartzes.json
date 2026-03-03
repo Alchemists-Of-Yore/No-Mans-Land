@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:quartz","minecraft:amethyst"]
+    },
+    "weight": 1,
+    "text": "A mineral of incomprehensibly fine composition.\n A masterpiece we are not equipped to fully appreciate."
+}

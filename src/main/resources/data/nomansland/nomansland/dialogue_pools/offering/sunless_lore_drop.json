@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:enchanted_golden_apple"
+    },
+    "weight": 1,
+    "text": "…The/ allure/ of/ tales/ might,/ one/ day,/ spiral/ into/ obsession./ I// have been/ to blame for that,// in times past.\n Sharing stories to those/ most in need/ does not always soothe the ailing/ - it is when acts of love turn into a curse, that even the wisest bow down to the foolish."
+}

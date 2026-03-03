@@ -21,7 +21,7 @@
   "max_height": {
     "type": "constant",
     "value": {
-      "below_top": 225
+      "above_bottom": 105
     }
   },
 

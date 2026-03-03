@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:turtle_scute", "nomansland:tortoise_scute", "minecraft:armadillo_scute"]
+    },
+    "weight": 1,
+    "text": "A precious gift from a wise creature. It is a mark of respect."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:heavy_core"
+    },
+    "weight": 1,
+    "text": "A confusing creation… I really should keep up with the times."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:copper_ingot","minecraft:raw_copper"]
+    },
+    "weight": 1,
+    "text": "A wondrous channel between mundane and arcane, its red tinge a display of the world’s visceral ties, and its oxide a sedimentation of the inherent change therein.\n The arts often began in metalworking, and there is no better place to start than here."
+}

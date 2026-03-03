@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:golden_apple"]
+    },
+    "weight": 1,
+    "text": "Oh, radiant fruit. Picked from that gold-leafed tree, so intoxicatingly sweet.\n This one recalls a flavor of times, and friends, long past."
+}

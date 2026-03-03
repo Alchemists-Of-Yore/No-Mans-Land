@@ -125,7 +125,7 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
         addToTags(NMLBlocks.SEASHELLS.get(), BlockTags.COMBINATION_STEP_SOUND_BLOCKS);
 
         tag(NMLTags.ORE_VEIN_REPLACEABLE).add(Blocks.STONE, Blocks.DEEPSLATE);
-        tag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.COAL_BLOCK, Blocks.RAW_GOLD_BLOCK, NMLBlocks.SILTSTONE.get(), NMLBlocks.QUARTZITE.get(), Blocks.TUFF);
+        tag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.COAL_BLOCK, Blocks.RAW_GOLD_BLOCK, NMLBlocks.SILTSTONE.get(), NMLBlocks.QUARTZITE.get(), Blocks.TUFF, Blocks.COAL_ORE);
     }
 
     @SafeVarargs

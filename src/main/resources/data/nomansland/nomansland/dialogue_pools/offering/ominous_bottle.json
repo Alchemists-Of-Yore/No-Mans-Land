@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:ominous_bottle"
+    },
+    "weight": 1,
+    "text": "Those who hold no faith in themselves /can not forge a path forward. \n Those who hold no faith in others /must not forge a path forward."
+}
