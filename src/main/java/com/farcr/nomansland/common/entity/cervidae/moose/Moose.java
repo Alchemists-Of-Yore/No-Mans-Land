@@ -29,6 +29,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -60,21 +61,22 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public static final byte EAT_EVENT = 7;
     public static final byte REJECT_FOOD_EVENT = 6;
 
-    public static final int STOMP_DURATION = 15;
-    public static final int STOMP_COOLDOWN = 100;
-    public static final int STOMP_FEAR_DURATION = 200;
-    public static final int STOMP_AGGRESSION_DELAY = 40;
-    public static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
-    public static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
+    private static final int STOMP_DURATION = 15;
+    private static final int STOMP_COOLDOWN = 100;
+    private static final int STOMP_FEAR_DURATION = 200;
+    private static final int STOMP_AGGRESSION_DELAY = 40;
+    private static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
+    private static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
 
-    public static final float STOMP_DISTANCE = 5f;
-    public static final float INTROVERT_DISTANCE = 10f;
-    public static final float LOOK_DISTANCE = 15f;
+    private static final float STOMP_DISTANCE = 5f;
+    private static final float INTROVERT_DISTANCE = 10f;
+    private static final float LOOK_DISTANCE = 15f;
 
-    public static final int SADDLE_SHAKEOFF_DELAY = 10;
+    private static final int SADDLE_SHAKEOFF_DELAY = 10;
     private static final int MINIMUM_TAME_ATTEMPTS = 4;
     private static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
 
+    private static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
     public AnimationState stompAnimationState = new AnimationState();
     public AnimationState attackAnimationState = new AnimationState();
 
@@ -553,11 +555,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     }
 
     /**
-     * Matches behavior from {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
+     * Mostly Matches behavior from {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
      */
     @Override
     protected float getRiddenSpeed(@NotNull Player player) {
-        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
+        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED) * RIDDEN_SPEED_MULTIPLIER;
     }
 
     /**
