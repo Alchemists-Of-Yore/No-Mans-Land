@@ -54,7 +54,7 @@ public record ClientboundDialoguePacket(
                 // Set Dialogue
                 assert dialoguePool != null;
                 DialogueRenderer.setCurrentState(new DialogueState(
-                    resourceLocation, dialoguePool
+                    resourceLocation, tempKey.location().getPath().replace("/", "."), dialoguePool
                 ));
                 if (playerUUID.isPresent()) {
                     Player targetPlayer = level.getPlayerByUUID(playerUUID.get());
