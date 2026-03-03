@@ -303,11 +303,8 @@ public class FriendMoon extends SavedData {
         dialogueTicks = -1;
     }
 
-    // not sure why this works but it does
-    float DELTA_TO_TICKS = ((60 / 20f) / 2f);
-
     public int getDialogueTicks(int textLength) {
-        return (int) ((textLength * (DialogueState.DIALOGUE_SPEED) * DELTA_TO_TICKS))
+        return (int) (textLength / (DialogueState.DIALOGUE_SPEED))
             + ((20) * level.getRandom().nextIntBetweenInclusive(5, 8));
     }
 

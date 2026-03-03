@@ -123,6 +123,7 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
                 );
             }
         }
+        lightSparkAnimation(state, level, pos, level.random);
     }
 
     @Override

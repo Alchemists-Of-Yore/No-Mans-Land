@@ -208,13 +208,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
         if (!friendMoon.isActive()) {
             blockEntity.setInspectionContext(null, friendMoon);
-            ArrayList<BlockPos> candleList = getCandles(level, pos);
-            candleList.forEach((blockPos) -> {
-                BlockState blockState = level.getBlockState(blockPos);
-                if (blockState.getValue(MoonlightCandleBlock.CANDLE_LIT)
-                && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock)
-                    candleBlock.extinguish(null, blockState, level, blockPos);
-            });
+            if (!level.isClientSide()) {
+                ArrayList<BlockPos> candleList = getCandles(level, pos);
+                candleList.forEach((blockPos) -> {
+                    BlockState blockState = level.getBlockState(blockPos);
+                    if (blockState.getValue(MoonlightCandleBlock.CANDLE_LIT)
+                        && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock)
+                        candleBlock.extinguish(null, blockState, level, blockPos);
+                });
+            }
             return;
         }
 
