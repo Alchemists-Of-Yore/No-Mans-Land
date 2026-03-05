@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "#c:raw_materials/silver",
+      "required": false
+    },
+    {
+      "id": "#c:ingots/silver",
+      "required": false
+    },
+    {
+      "id": "#c:nuggets/silver",
+      "required": false
+    }
+  ]
+}
