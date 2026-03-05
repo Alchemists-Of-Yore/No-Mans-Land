@@ -1,7 +1,7 @@
 {
     "condition": {
         "type": "nomansland:item_conditional",
-        "items": ["?LEAD?"]
+        "items": ["#c:raw_materials/lead","#c:ingots/lead","#c:nuggets/lead"]
     },
     "weight": 1,
     "text": "The basest of metals. Dull, inert, and unpleasant. \n But do not be fooled, these properties are not to shrug off as worthless."

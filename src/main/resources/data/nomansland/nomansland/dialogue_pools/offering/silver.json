@@ -1,7 +1,7 @@
 {
     "condition": {
         "type": "nomansland:item_conditional",
-        "items": ["?SILVER?"]
+        "items": ["#c:raw_materials/silver","#c:ingots/silver","#c:nuggets/silver"]
     },
     "weight": 1,
     "text": "Beautiful, Wonderful, Absolutely perfect.\n Doesn’t its brilliance remind you of the moon?Oh, the moon… So pretty."
