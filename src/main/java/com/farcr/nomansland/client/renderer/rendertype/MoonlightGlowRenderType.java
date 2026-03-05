@@ -57,7 +57,7 @@ public class MoonlightGlowRenderType {
         if (instance.player != null && instance.player.hasEffect(NMLEffects.FRIENDSHIP)) {
             if (instance.level != null) {
                 ArrayList<DialogueRegistry.DialoguePool> list = new ArrayList<>();
-                list = DialogueUtil.iterateTags(
+                DialogueUtil.appendTags(
                     item, instance.level.registryAccess(), Registries.ITEM,
                     MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP,
                     MoonlightOfferingConditions.ItemOfferingConditional.KEY_MAP,

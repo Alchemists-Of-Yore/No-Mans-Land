@@ -34,6 +34,7 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -88,7 +89,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             // Item Offering List
             if (entity instanceof ItemEntity itemEntity) {
                 Item itemType = itemEntity.getItem().getItem().asItem();
-                list = DialogueUtil.iterateTags(
+                DialogueUtil.appendTags(
                     itemType, level.registryAccess(), Registries.ITEM,
                     MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP,
                     MoonlightOfferingConditions.ItemOfferingConditional.KEY_MAP,
@@ -96,7 +97,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 );
             }
             // Entity Offering List
-            list = DialogueUtil.iterateTags(
+            DialogueUtil.appendTags(
                 entity.getType(), level.registryAccess(), Registries.ENTITY_TYPE,
                 MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP,
                 MoonlightOfferingConditions.EntityOfferingConditional.KEY_MAP,
@@ -104,10 +105,9 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             );
 
             if (!list.isEmpty()) {
-                DialogueRegistry.DialoguePool pool = DialogueUtil.getWeightedEntry(WeightedRandomList.create(list), level.getRandom());
+                DialogueRegistry.DialoguePool pool = list.stream().max(Comparator.comparingInt(p -> p.getWeight().asInt())).get();
                 Optional<Registry<DialogueRegistry.DialoguePool>> optionalRegistry = level.registryAccess().registry(NMLRegistries.OFFERING_DIALOGUE_KEY);
-                if (optionalRegistry.isPresent())
-                    return new OfferingContext(entity, optionalRegistry.get().getKey(pool));
+                if (optionalRegistry.isPresent()) return new OfferingContext(entity, optionalRegistry.get().getKey(pool));
             }
             return null;
         }, level, pos);

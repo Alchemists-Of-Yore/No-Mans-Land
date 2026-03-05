@@ -3,6 +3,6 @@
         "type": "nomansland:item_conditional",
         "items": ["minecraft:pitcher_plant","minecraft:torchflower"]
     },
-    "weight": 1,
+    "weight": 2,
     "text": "A scent bringing back memories./ Thank you, my beloved Friend."
 }

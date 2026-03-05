@@ -28,38 +28,7 @@ public class DialogueUtil {
         Optional<DialogueRegistry.DialoguePool> optionalDialogue = list.getRandom(randomSource);
         return optionalDialogue.orElseGet(() -> getWeightedEntry(list, randomSource));
     }
-    public static <T> ArrayList<DialogueRegistry.DialoguePool> iterateTags(
-        T value, RegistryAccess registryAccess,
-        ResourceKey<Registry<T>> registry,
-        HashMap<T, ArrayList<DialogueRegistry.DialoguePool>> map,
-        HashMap<TagKey<T>, ArrayList<DialogueRegistry.DialoguePool>> tagMap,
-        ArrayList<DialogueRegistry.DialoguePool> emptyPool
-    ) {
-        // skip if the pool is already populated
-        if (!emptyPool.isEmpty())
-            return emptyPool;
 
-        // Direct item reference, no need to iterate tags
-        if (map.containsKey(value))
-            return map.get(value);
-
-        // I figure it's okay to iterate tags because it's only skimming the tags, not their actual contents
-        Optional<Registry<T>> optionalRegistry = registryAccess.registry(registry);
-        if (optionalRegistry.isPresent()) {
-            Registry<T> obtainedRegistry = optionalRegistry.get();
-            Optional<Holder.Reference<T>> holder =
-                obtainedRegistry.getHolder(obtainedRegistry.getKey(value));
-            if (holder.isPresent()) {
-                for (TagKey<T> tag : holder.get().tags().toList()) {
-                    if (tagMap.containsKey(tag))
-                        return tagMap.get(tag);
-                }
-            }
-        }
-        return emptyPool;
-    }
-
-    // very similar function but i would rather not convolute or condense them because they serve very different purposes
     public static <T> void appendTags(
             T value, RegistryAccess registryAccess,
             ResourceKey<Registry<T>> registry,
