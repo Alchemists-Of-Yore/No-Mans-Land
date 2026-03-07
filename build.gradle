@@ -148,7 +148,7 @@ dependencies {
     compileOnly "maven.modrinth:create:1.21.1-6.0.4"
     compileOnly "maven.modrinth:serene-seasons:SPj5bJoM"
     compileOnly "maven.modrinth:glitchcore:8wmCpbQ2"
-    compileOnly "maven.modrinth:supplementaries:neoforge_1.21-3.0.43-beta"
+    compileOnly "maven.modrinth:supplementaries:1.21-3.5.27-neoforge"
     compileOnly "maven.modrinth:vanity-core:5.0.2"
     compileOnly "maven.modrinth:snow-real-magic:12.1.2+neoforge"
 
