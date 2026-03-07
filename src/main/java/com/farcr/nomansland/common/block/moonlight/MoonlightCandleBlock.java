@@ -102,7 +102,7 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
             if (f < 0.5f) {
                 level.addParticle(
                     NMLParticleTypes.MOONLIGHT_FLAME.get(),
-                    offset.x, offset.y + .5f, offset.z,
+                    offset.x, offset.y + .275f, offset.z,
                     0f, 0f, 0f
                 );
             }
