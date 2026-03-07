@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:honeycomb"
+    },
+    "weight": 1,
+    "text": "A delicious gift from a fuzzy creature. It, too, is a mark of friendship."
+}

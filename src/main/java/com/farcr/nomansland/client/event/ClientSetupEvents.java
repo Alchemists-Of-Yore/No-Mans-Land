@@ -10,7 +10,7 @@ import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
-import com.farcr.nomansland.client.renderer.rendertype.*;
+import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -170,6 +171,12 @@ public class ClientSetupEvents {
                 -> new TranslucentDustParticle(clientLevel, d, e, f, g, h, i, translucentDustParticleOptions, sprites));
         event.registerSpecial(NMLParticleTypes.MOONLIGHT_RAY.get(), (type, clientLevel, d, e, f, g, h, i)
             -> new MoonlightRayParticle(clientLevel, d, e, f, g, h, i));
+        event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_FLAME.get(), sprites
+            -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+            -> new FlameParticle(clientLevel, d, e, f, g, h, i, sprites));
+        event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_SPARK.get(), sprites
+            -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+            -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));
     }
 
     @SubscribeEvent

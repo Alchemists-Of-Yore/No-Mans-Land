@@ -130,9 +130,10 @@ public class FriendMoonRenderer {
         Vector4f clip = new Vector4f(worldPosition, 1f).mul(
             mc.gameRenderer.getProjectionMatrix(mc.gameRenderer.getFov(camera, partialTick, true))
         );
+        float threshold = 0.5f;
         return (clip.w > 0.0f)
-            && ((Math.abs(clip.x / clip.w) <= 1)
-            && (Math.abs(clip.y / clip.w) <= 1));
+            && ((Math.abs(clip.x / clip.w) <= threshold)
+            && (Math.abs(clip.y / clip.w) <= threshold));
     }
 
     // Retrieve Animation Type Logic
@@ -170,9 +171,10 @@ public class FriendMoonRenderer {
 
         boolean fadeOut = true;
         float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
-        float fadeSpeed = deltaTime / 20f;
+        float fadeSpeed = deltaTime / 50f;
         float turnAnimateSpeed = deltaTime / (15f);
 
+        boolean isAwake = false;
         boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, partialTick);
         if (clientBlockPos != null) {
             Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
@@ -180,12 +182,12 @@ public class FriendMoonRenderer {
                 FriendMoon friendMoonInstance = optionalBasin.get().clientMoon;
                 // Can stare up at the moon and it'll show up
                 if (player.hasEffect(NMLEffects.FRIENDSHIP)) {
-                    // temporary just "moon on screen" i will replace with facing upwards
-                    if (moonIsVisible || friendMoonInstance.isAwake()) {
+                    isAwake = friendMoonInstance.isAwake();
+                    if (moonIsVisible || isAwake) {
                         fadeOut = false;
                         friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
                         // moon awakening logic
-                        if (!friendMoonInstance.isAwake()) {
+                        if (!isAwake) {
                             // moon rotation
                             if (friendMoonOpacity >= 1) {
                                 animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
@@ -223,6 +225,8 @@ public class FriendMoonRenderer {
         float pitch = cameraEntity.getViewXRot(partialTick) + 90;
         float yaw = -cameraEntity.getViewYRot(partialTick);
         float speed = deltaTime / 30;
+        if (!isAwake)
+            speed /= 4f;
 
         float pitchClamp = 90;
 

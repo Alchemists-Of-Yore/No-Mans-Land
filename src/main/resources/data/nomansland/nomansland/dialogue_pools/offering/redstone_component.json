@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:repeater","minecraft:comparator","minecraft:piston","minecraft:sticky_piston","minecraft:dispenser","minecraft:dropper","minecraft:daylight_detector","minecraft:crafter","minecraft:observer"]
+    },
+    "weight": 1,
+    "text": "An ingenious creation… Perhaps, one day, you might teach me how to understand it."
+}

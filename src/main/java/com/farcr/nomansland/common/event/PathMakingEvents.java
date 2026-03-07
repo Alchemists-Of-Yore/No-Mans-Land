@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;

@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
@@ -90,6 +91,8 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
 
+        level.scheduleTick(pos, this, this.getDelayAfterPlace());
+
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
@@ -104,6 +107,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         } else {
             level.setBlock(pos, state.setValue(POWERED, true), 2);
             level.scheduleTick(pos, this, 2);
+        }
+
+        if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
+            FallingBlockEntity.fall(level, pos, state);
         }
     }
 
@@ -223,13 +230,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        super.onPlace(state, level, pos, oldState, movedByPiston);
         if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
             if (pot.variant == null) {
                 List<Holder.Reference<PotVariant>> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).holders().filter(variant -> variant.value().size() == size).toList();
                 pot.variant = variants.get(level.getRandom().nextInt(variants.size())).value();
             } else if (state.getValue(BRITTLE) != pot.variant.traits().contains(PotTrait.BRITTLE)) state.setValue(BRITTLE, pot.variant.traits().contains(PotTrait.BRITTLE));
         }
+
+        level.scheduleTick(pos, this, this.getDelayAfterPlace());
     }
 
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
@@ -280,10 +288,29 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         return (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) || player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG) ? 1 : super.getDestroyProgress(state, player, level, pos);
     }
 
+    @Override
+    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+            pot.wakeUp(player);
+        }
+    }
+
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (!level.isClientSide && size == PotSize.SMALL && entity instanceof Player
+                && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+            pot.wakeUp(null);
+        }
+    }
+
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         BlockPos blockpos = hit.getBlockPos();
         if (!level.isClientSide && projectile.mayInteract(level, blockpos) && projectile.mayBreak(level)) {
-            level.destroyBlock(blockpos, true, projectile);
+            if (level.getBlockEntity(blockpos) instanceof PotBlockEntity pot && pot.isLiving()) {
+                pot.wakeUp(projectile.getOwner() instanceof net.minecraft.world.entity.LivingEntity living ? living : null);
+            } else {
+                level.destroyBlock(blockpos, true, projectile);
+            }
         }
     }
 
@@ -352,5 +379,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 level.addAlwaysVisibleParticle(particle, d0, d1, d2, 0, 0, 0);
             }
         }
+    }
+
+    protected int getDelayAfterPlace() {
+        return 2;
+    }
+
+    public static boolean isFree(BlockState state) {
+        return state.isAir() || state.is(BlockTags.FIRE) || state.liquid() || state.canBeReplaced();
     }
 }

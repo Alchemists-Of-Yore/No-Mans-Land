@@ -1,10 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
-import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;

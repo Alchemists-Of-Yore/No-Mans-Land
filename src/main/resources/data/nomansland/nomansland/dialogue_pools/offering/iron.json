@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:iron_ingot","minecraft:iron_nugget","minecraft:raw_iron"]
+    },
+    "weight": 1,
+    "text": "Among the basest of metals, yet unmatched in its reliability.\n Smithing is in itself a divine art, closely resembling every principle of creation.\n Every imperfection is a trace of your essence."
+}

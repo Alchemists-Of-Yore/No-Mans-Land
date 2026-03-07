@@ -1,8 +1,11 @@
 package com.farcr.nomansland.common.blockentity;
 
+import com.farcr.nomansland.common.block.pots.PotTrait;
 import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,6 +17,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -164,6 +169,38 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         }
 
         return false;
+    }
+
+    public boolean isLiving() {
+        return variant != null && variant.traits().contains(PotTrait.ALIVE);
+    }
+
+    public void wakeUp(@Nullable LivingEntity disturber) {
+        if (level == null || level.isClientSide) return;
+        BlockPos pos = getBlockPos();
+
+        LivingPot pot = new LivingPot(NMLEntities.LIVING_POT.get(), level);
+        pot.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        pot.setVariant(variant, getBlockState());
+        pot.setHomePos(pos);
+        if (this.lootTable != null) {
+            pot.setLootTable(this.lootTable);
+            pot.setLootTableSeed(this.lootTableSeed);
+        } else if (!item.isEmpty()) {
+            pot.setStoredItem(item);
+        }
+        if (disturber instanceof Player player) {
+            pot.startPersistentAngerTimer();
+            pot.setPersistentAngerTarget(player.getUUID());
+            pot.setTarget(player);
+        }
+        if (variant.traits().contains(PotTrait.TRAPPED)) {
+            BlockState currentState = level.getBlockState(pos);
+            level.setBlock(pos, currentState.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED, true), 2);
+            level.updateNeighborsAt(pos, currentState.getBlock());
+        }
+        level.addFreshEntity(pot);
+        level.removeBlock(pos, false);
     }
 
     public float getFullness() {

@@ -10,7 +10,7 @@ public enum PotTrait implements StringRepresentable {
     BRITTLE("brittle"),
     INFESTED("infested"),
     TRAPPED("trapped"),
-    LIVING("living");
+    ALIVE("alive");
 
     private final String name;
 

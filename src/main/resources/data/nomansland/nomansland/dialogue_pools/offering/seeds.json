@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#c:seeds"
+    },
+    "weight": 1,
+    "text": "All things were together, infinite both in number and in smallness; for the small too was infinite."
+}

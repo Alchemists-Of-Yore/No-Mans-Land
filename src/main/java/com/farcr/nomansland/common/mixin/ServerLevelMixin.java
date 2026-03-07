@@ -2,7 +2,6 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.worldevent.SunDog;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

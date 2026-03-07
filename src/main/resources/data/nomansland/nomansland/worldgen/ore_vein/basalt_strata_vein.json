@@ -1,0 +1,115 @@
+{
+  "spacing": 64,
+  "separation": 48,
+  "probability": 1.0,
+
+  "radius": {
+    "type": "uniform",
+    "min_inclusive": 8,
+    "max_inclusive": 32
+  },
+  "target_condition": {
+         "type": "matching_block_tag",
+         "tag": "nomansland:ore_vein_replaceable"
+  },
+  "min_height": {
+    "type": "constant",
+    "value": {
+      "above_bottom": 0
+    }
+  },
+  "max_height": {
+    "type": "constant",
+    "value": {
+      "above_bottom": 25
+    }
+  },
+
+  "vein_radius": {
+    "type": "constant",
+    "value": 120.0
+  },
+  "inverted": true,
+
+  "filler": {
+    "state_provider": {
+      "type": "nomansland:strata_state_provider",
+      "layers": [
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:smooth_basalt" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:deepslate" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:smooth_basalt" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:deepslate" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:smooth_basalt" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:deepslate" }
+          },
+          "height": 1
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:smooth_basalt" }
+          },
+          "height": 3
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:deepslate" }
+          },
+          "height": 3
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:smooth_basalt" }
+          },
+          "height": 2
+        },
+        {
+          "data": {
+            "type": "minecraft:simple_state_provider",
+            "state": { "Name": "minecraft:deepslate" }
+          },
+          "height": 2
+        }
+      ],
+      "noise_intensity": 2.0,
+      "randomize": false
+    },
+    "probability": 1.0,
+    "incoherence": 0.0
+  }
+}

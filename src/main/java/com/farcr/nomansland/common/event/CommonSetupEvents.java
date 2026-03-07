@@ -11,6 +11,7 @@ import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
@@ -125,6 +126,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
+        event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -249,6 +251,7 @@ public class CommonSetupEvents {
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
+        registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
 

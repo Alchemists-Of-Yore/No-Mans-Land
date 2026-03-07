@@ -1,16 +1,19 @@
 package com.farcr.nomansland.client.extensions;
 
-import com.farcr.nomansland.client.model.armor.*;
-import net.minecraft.client.*;
-import net.minecraft.client.model.*;
-import net.minecraft.util.*;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.item.*;
-import net.neoforged.neoforge.client.*;
-import net.neoforged.neoforge.client.extensions.common.*;
-import org.jetbrains.annotations.*;
+import com.farcr.nomansland.client.model.armor.LodestoneArmorModel;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.*;
+import java.util.function.Supplier;
 
 /**
  * @author SammySemicolon

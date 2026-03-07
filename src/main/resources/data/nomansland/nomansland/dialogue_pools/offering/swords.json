@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#minecraft:swords"
+    },
+    "weight": 1,
+    "text": "A sword is a tool made to harm others. You do not need this."
+}

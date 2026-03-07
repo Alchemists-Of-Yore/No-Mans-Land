@@ -11,6 +11,10 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    maven {
+        name = "RyanHCode Maven"
+        url = "https://maven.ryanhcode.dev/releases"
+    }
 }
 
 base {
@@ -130,6 +134,11 @@ dependencies {
                         module: "slf4j-api"
     })
 
+    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-${project.minecraft_version}:${project.sable_companion_version_range}")) {
+        version {
+            prefer project.sable_companion_version
+        }
+    }
 
 //MAKE SURE THESE ARE ALL "IMPLEMENTATION" WHEN RUNNING DATA! OTHERWISE DATA WILL BREAK!
     implementation "maven.modrinth:farmers-delight:1.21.1-1.2.7"

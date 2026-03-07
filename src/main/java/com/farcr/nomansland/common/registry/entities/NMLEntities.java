@@ -10,6 +10,7 @@ import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
@@ -48,8 +49,8 @@ public class NMLEntities {
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
 
     public static final Supplier<EntityType<LivingPot>> LIVING_POT =
-            ENTITIES.register("living_pot", () -> EntityType.Builder.<LivingPot>of(LivingPot::new, MobCategory.AMBIENT)
-                    .fireImmune().canSpawnFarFromPlayer().sized(0.8F, 0.8F).eyeHeight(0.5F).clientTrackingRange(10).build("living_pot"));
+            ENTITIES.register("living_pot", () -> EntityType.Builder.<LivingPot>of(LivingPot::new, MobCategory.MISC)
+                    .fireImmune().sized(0.7F, 0.8F).eyeHeight(0.5F).clientTrackingRange(10).build("living_pot"));
 
 
     public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =

@@ -443,5 +443,7 @@
   "nomansland.subtitles.item.bomb.primed": "Bomba preparada",
   "nomansland.subtitles.item.generic.consumed": "Objeto consumido",
   "nomansland.subtitles.particle.droplet.fall": "Caída de gotas",
-  "nomansland.tooltip.mask.regeneration": "Slowly regenerates health"
+  "nomansland.tooltip.mask.regeneration": "Slowly regenerates health",
+
+  "nomansland.friend_moon.dialogue_pools.offering.flint": "La marca de un comienzo dulce. Para muchos, su primera amistad. Confiable."
 }

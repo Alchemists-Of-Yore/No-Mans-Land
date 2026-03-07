@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:rotten_flesh"
+    },
+    "weight": 1,
+    "text": "Wretched, tainted matter."
+}

@@ -1,44 +1,29 @@
 package com.farcr.nomansland.client.renderer.entity;
 
-import com.farcr.nomansland.common.entity.LivingPot;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.NMLModelLayers;
+import com.farcr.nomansland.client.model.living_pot.LivingPotModel;
+import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
-public class LivingPotRenderer extends EntityRenderer<LivingPot> {
-    private final BlockRenderDispatcher blockRenderer;
+@OnlyIn(Dist.CLIENT)
+public class LivingPotRenderer extends MobRenderer<LivingPot, LivingPotModel<LivingPot>> {
+
+    // Fallback texture — swap out with variant-specific logic once textures are ready
+    private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/living_pot_legs.png");
 
     public LivingPotRenderer(EntityRendererProvider.Context context) {
-        super(context);
-        this.blockRenderer = context.getBlockRenderDispatcher();
+        super(context, new LivingPotModel<>(context.bakeLayer(NMLModelLayers.LIVING_POT_LAYER)), 0.4F);
+        addLayer(new LivingPotBodyLayer(this, context.getBlockRenderDispatcher()));
     }
 
     @Override
-    public ResourceLocation getTextureLocation(LivingPot livingPot) {
-        return null;
-    }
-
-    @Override
-    public void render(LivingPot pot, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        Level level = pot.level();
-
-        // TODO: everything else
-        if (pot.variant != null) {
-            ModelManager manager = this.blockRenderer.getBlockModelShaper().getModelManager();
-            ModelResourceLocation location = ModelResourceLocation.standalone(pot.variant.model().withPrefix("block/"));
-            BakedModel model = manager.getModel(location);
-            blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), pot.blockState, model, 1, 1, 1, packedLight, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
-        }
+    public @NotNull ResourceLocation getTextureLocation(LivingPot pot) {
+        return TEXTURE;
     }
 }

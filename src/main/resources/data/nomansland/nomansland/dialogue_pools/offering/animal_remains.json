@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#nomansland:animal_remains"
+    },
+    "weight": 1,
+    "text": "What was once living must be revered, do be sure to treat this with the utmost respect."
+}

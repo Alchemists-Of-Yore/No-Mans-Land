@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:lapis_lazuli"
+    },
+    "weight": 1,
+    "text": "Delicious pigment of arcane blue, and wondrous cosmic inductor."
+}

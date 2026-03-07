@@ -1,8 +1,8 @@
 package com.farcr.nomansland.client;
 
-import com.farcr.nomansland.client.model.armor.*;
-import com.farcr.nomansland.client.model.tortoise.*;
-import net.neoforged.neoforge.client.event.*;
+import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
+import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class NMLArmorModels {
 

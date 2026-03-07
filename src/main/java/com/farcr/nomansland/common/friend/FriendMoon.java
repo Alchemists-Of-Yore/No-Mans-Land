@@ -3,7 +3,6 @@ package com.farcr.nomansland.common.friend;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
-import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
@@ -12,7 +11,6 @@ import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import com.farcr.nomansland.common.registry.NMLDialogueConditions;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -36,7 +34,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -109,6 +106,7 @@ public class FriendMoon extends SavedData {
 
     public FriendMoon load(CompoundTag tag, HolderLookup.Provider provider) {
         awake = tag.getBoolean("IsAwake");
+        candleTimer = tag.getInt("CandleTimer");
         setState(FriendMoonState.CODEC.byName(tag.getString("State"), FriendMoonState.PASSIVE));
         return this;
     }
@@ -116,6 +114,7 @@ public class FriendMoon extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putBoolean("IsAwake", isAwake());
+        tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
         return tag;
     }
@@ -234,7 +233,6 @@ public class FriendMoon extends SavedData {
 
     public ServerPlayer getContextualPlayer() {
         for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);})) {
-            NoMansLand.LOGGER.info(level.getBlockState(serverPlayer.blockPosition()).getBlock());
             if (level.getBlockState(serverPlayer.blockPosition()).is(NMLBlocks.MOONLIGHT_BASIN))
                 return serverPlayer;
         }
@@ -305,11 +303,8 @@ public class FriendMoon extends SavedData {
         dialogueTicks = -1;
     }
 
-    // not sure why this works but it does
-    float DELTA_TO_TICKS = ((60 / 20f) / 2f);
-
     public int getDialogueTicks(int textLength) {
-        return (int) ((textLength * (DialogueState.DIALOGUE_SPEED) * DELTA_TO_TICKS))
+        return (int) (textLength / (DialogueState.DIALOGUE_SPEED))
             + ((20) * level.getRandom().nextIntBetweenInclusive(5, 8));
     }
 
