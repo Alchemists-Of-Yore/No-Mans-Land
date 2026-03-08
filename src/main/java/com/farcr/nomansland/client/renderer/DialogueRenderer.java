@@ -17,6 +17,7 @@ public class DialogueRenderer {
     public static DialogueState getCurrentState() {
         return currentState;
     }
+
     public static void setCurrentState(DialogueState newState) {
         currentState = newState;
     }
@@ -30,17 +31,23 @@ public class DialogueRenderer {
 
             float gameWidth = guiGraphics.guiWidth();
             float[] shaderColor = RenderSystem.getShaderColor();
-            RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], FriendMoonRenderer.getFriendMoonOpacity());
-
-            // Reset Text when the moon goes away
-            if (FriendMoonRenderer.getFriendMoonOpacity() <= 0) {
-                setCurrentState(null);
-                return;
-            }
 
             float deltaTime = deltaTracker.getGameTimeDeltaTicks();
             if (mc.isPaused())
                 deltaTime = 0f;
+
+            float totalOpacity = FriendMoonRenderer.getFriendMoonOpacity();
+            if (currentState.ticks != null) {
+                totalOpacity = Math.min(1, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
+                currentState.ticks -= deltaTime;
+            }
+            RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], totalOpacity);
+
+            // Reset Text when the moon goes away
+            if (totalOpacity <= 0) {
+                setCurrentState(null);
+                return;
+            }
 
             List<String> constructedText = currentState.progressText(deltaTime);
 
@@ -68,7 +75,9 @@ public class DialogueRenderer {
                             FastColor.ARGB32.colorFromFloat((float) alpha, 0f, 0f, 0f)
                         );
                     }
-                    guiGraphics.drawString(font, text, leftPos, 0, DialogueUtil.FRIEND_MOON_TEXT_COLOR);
+                    guiGraphics.drawString(font, text, leftPos, 0,
+                        (currentState.overrideColor != null) ? currentState.overrideColor : DialogueUtil.FRIEND_MOON_TEXT_COLOR
+                    );
                     guiGraphics.pose().translate(0, -(TEXT_HEIGHT + 4), 0);
                 }
             }

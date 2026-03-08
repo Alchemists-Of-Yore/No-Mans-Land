@@ -1,9 +1,12 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
-import com.farcr.nomansland.NoMansLand;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.List;
 
 public class DialogueState {
@@ -17,6 +20,17 @@ public class DialogueState {
     public boolean doneTalking = false;
     public DialogueContainer originalDialogue;
     public DialogueContainer translateDialogue;
+
+    public @Nullable Float ticks;
+    public static final int FADE_TICKS = 20;
+    public void setTicks(float newTicks) {
+        this.ticks = newTicks + originalDialogue.getTextLength();
+    }
+
+    public @Nullable Integer overrideColor;
+    public void setOverrideColor(int overrideColor) {
+        this.overrideColor = overrideColor;
+    }
 
     public DialogueState(
         ResourceLocation location,

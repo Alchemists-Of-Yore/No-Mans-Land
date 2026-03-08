@@ -28,7 +28,8 @@ public class DialogueConditionCompiler implements PreparableReloadListener {
         NMLRegistries.PASSIVE_DIALOGUE_KEY,
         NMLRegistries.OFFERING_DIALOGUE_KEY,
         NMLRegistries.NEGATIVE_DIALOGUE_KEY,
-        NMLRegistries.CONTEXTUAL_DIALOGUE_KEY
+        NMLRegistries.CONTEXTUAL_DIALOGUE_KEY,
+        NMLRegistries.SPECIAL_DIALOGUE_KEY
     );
 
     // blank dummy object to access getMap() methods

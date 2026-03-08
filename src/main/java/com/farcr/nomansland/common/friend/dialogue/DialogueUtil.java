@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class DialogueUtil {
     public static final int FRIEND_MOON_TEXT_COLOR = 9276752;
+    public static final int NOBODY_CAME_TEXT_COLOR = 16711696;
     public static Registry<DialogueRegistry.DialoguePool> getDialogueRegistry(Level level, ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
         try {
             return level.registryAccess().registryOrThrow(resourceKey);
