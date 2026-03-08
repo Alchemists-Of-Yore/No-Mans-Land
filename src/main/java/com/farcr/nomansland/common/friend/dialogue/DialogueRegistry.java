@@ -39,8 +39,8 @@ public class DialogueRegistry {
 
     public interface DialogueCondition {
         default boolean validate(ResourceKey<Registry<DialoguePool>> registrykey) { return true; }
-        public MapCodec<? extends DialogueCondition> codec();
-        public static final Codec<DialogueCondition> CODEC = NMLRegistries.DIALOGUE_CONDITIONAL_TYPE
+        MapCodec<? extends DialogueCondition> codec();
+        Codec<DialogueCondition> CODEC = NMLRegistries.DIALOGUE_CONDITIONAL_TYPE
             .byNameCodec().dispatch(DialogueCondition::codec, Function.identity());
     }
 
@@ -59,6 +59,7 @@ public class DialogueRegistry {
     * that need to be compiled to hashmaps at runtime.
      */
     public interface CompiledCondition<T> extends DialogueCondition {
+        static <T> CompiledCondition<T> getInstance() { return null; }
         HolderSet<T> getValue();
         HashMap<T, ArrayList<DialoguePool>> getMap();
         HashMap<TagKey<T>, ArrayList<DialoguePool>> getTagMap();

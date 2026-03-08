@@ -17,14 +17,15 @@ import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class MoonlightOfferingConditions {
-    public record ItemOfferingConditional(HolderSet<Item> items) implements DialogueRegistry.CompiledCondition<Item> {
+    public record ItemOfferingConditional(Optional<HolderSet<Item>> items) implements DialogueRegistry.CompiledCondition<Item> {
         public static final MapCodec<ItemOfferingConditional> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                 HolderSetCodec.create(
                     Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false
-                ).fieldOf("items").forGetter(ItemOfferingConditional::items)
+                ).optionalFieldOf("items").forGetter(ItemOfferingConditional::items)
             ).apply(instance, ItemOfferingConditional::new)
         );
 
@@ -51,16 +52,18 @@ public class MoonlightOfferingConditions {
 
         @Override
         public HolderSet<Item> getValue() {
-            return this.items();
+            if (this.items.isPresent())
+                return this.items().get();
+            return HolderSet.empty();
         }
     }
 
-    public record EntityOfferingConditional(HolderSet<EntityType<?>> entities) implements DialogueRegistry.CompiledCondition<EntityType<?>> {
+    public record EntityOfferingConditional(Optional<HolderSet<EntityType<?>>> entities) implements DialogueRegistry.CompiledCondition<EntityType<?>> {
         public static final MapCodec<EntityOfferingConditional> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                 HolderSetCodec.create(
                     Registries.ENTITY_TYPE, BuiltInRegistries.ENTITY_TYPE.holderByNameCodec(), false
-                ).fieldOf("entity").forGetter(EntityOfferingConditional::entities)
+                ).optionalFieldOf("entity").forGetter(EntityOfferingConditional::entities)
             ).apply(instance, EntityOfferingConditional::new)
         );
 
@@ -87,7 +90,9 @@ public class MoonlightOfferingConditions {
 
         @Override
         public HolderSet<EntityType<?>> getValue() {
-            return this.entities();
+            if (this.entities.isPresent())
+                return this.entities().get();
+            return HolderSet.empty();
         }
     }
 }

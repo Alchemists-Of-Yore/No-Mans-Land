@@ -51,10 +51,12 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -251,6 +253,7 @@ public class CommonSetupEvents {
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
+        registrar.playToClient(ClientboundDialogueRegistrySyncPacket.TYPE, ClientboundDialogueRegistrySyncPacket.STREAM_CODEC, ClientboundDialogueRegistrySyncPacket::handleData);
         registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
@@ -262,5 +265,11 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void onReload(AddReloadListenerEvent event) {
         event.addListener(new DialogueConditionCompiler(event.getRegistryAccess()));
+    }
+
+    @SubscribeEvent
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        event.getRelevantPlayers().forEach((player)
+            -> PacketDistributor.sendToPlayer(player, new ClientboundDialogueRegistrySyncPacket()));
     }
 }

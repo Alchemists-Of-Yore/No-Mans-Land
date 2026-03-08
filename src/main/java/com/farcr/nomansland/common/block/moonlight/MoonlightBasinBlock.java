@@ -1,7 +1,10 @@
 package com.farcr.nomansland.common.block.moonlight;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
+import com.mojang.math.Axis;
+import com.mojang.math.OctahedralGroup;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,10 +17,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,8 +33,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.List;
 
 public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
@@ -133,11 +136,15 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 		return this.defaultBlockState();
 	}
 
+    public static float calculateToCenter() {
+        return (MULTIBLOCK_SIZE - 1) / 2f;
+    }
+
 	public static BlockPos calculateCenterPosition(BlockPos pos, BlockState state) {
 		int position = state.getValue(PART);
 		int i = (position % MULTIBLOCK_SIZE);
 		int j = (position / MULTIBLOCK_SIZE);
-		return pos.offset(new Vec3i(1 - i, 0, 1 - j));
+		return pos.offset(new Vec3i((int) (calculateToCenter() - i), 0, (int) (calculateToCenter() - j)));
 	}
 
 	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
@@ -173,6 +180,66 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return VOXEL_SHAPE_MAP[state.getOptionalValue(PART).orElse(MULTIBLOCK_CENTER)];
 	}
+
+    /*
+    * Meant to use this as a generalized function for applying octahedrals but
+    * im probably doing something wrong because clockwise and counter clockwise 90 degree
+    * doesnt work and its pissing me off so I just threw together something similar to the
+    * way the bounding box rotates
+    */
+    public BlockState applyOctahedral(BlockState blockState, OctahedralGroup octahedralGroup) {
+        int position = blockState.getValue(PART);
+        int x = (position % MULTIBLOCK_SIZE);
+        int z = (position / MULTIBLOCK_SIZE);
+
+        float toCenter = calculateToCenter();
+        float centeredX = x - toCenter;
+        float centeredZ = z - toCenter;
+
+        Matrix3f transform = octahedralGroup.transformation();
+        Vector3f vec = new Vector3f(centeredX, 0f, centeredZ)
+            .mul(transform);
+        vec.add(toCenter, 0f, toCenter);
+
+        return blockState.setValue(PART, (int) (vec.z() * MULTIBLOCK_SIZE + vec.x()));
+    }
+
+    // see above, code pisses me off but it works, whatever
+    @Override
+    protected @NotNull BlockState rotate(BlockState state, Rotation rotation) {
+        int position = state.getValue(PART);
+        int x = (position % MULTIBLOCK_SIZE);
+        int z = (position / MULTIBLOCK_SIZE);
+
+        int toCenter = (int) calculateToCenter();
+        int centeredX = x - toCenter;
+        int centeredZ = z - toCenter;
+
+        int rotatedX = centeredX;
+        int rotatedZ = centeredZ;
+        switch (rotation) {
+            case CLOCKWISE_90 -> {
+                rotatedX = -centeredZ;
+                rotatedZ = centeredX;
+            }
+            case CLOCKWISE_180 -> {
+                rotatedX = -centeredX;
+                rotatedZ = -centeredZ;
+            }
+            case COUNTERCLOCKWISE_90 -> {
+                rotatedX = centeredZ;
+                rotatedZ = -centeredX;
+            }
+        }
+        rotatedX += toCenter;
+        rotatedZ += toCenter;
+        return state.setValue(PART, (rotatedZ * MULTIBLOCK_SIZE) + rotatedX);
+    }
+
+    @Override
+    protected @NotNull BlockState mirror(BlockState state, Mirror mirror) {
+        return applyOctahedral(state, mirror.rotation());
+    }
 
 	@Override
 	protected RenderShape getRenderShape(BlockState state) {

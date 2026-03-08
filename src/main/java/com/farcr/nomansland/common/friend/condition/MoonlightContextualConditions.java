@@ -16,14 +16,15 @@ import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class MoonlightContextualConditions {
-    public record EffectContextualCondition(HolderSet<MobEffect> effects) implements DialogueRegistry.CompiledCondition<MobEffect> {
+    public record EffectContextualCondition(Optional<HolderSet<MobEffect>> effects) implements DialogueRegistry.CompiledCondition<MobEffect> {
         public static final MapCodec<MoonlightContextualConditions.EffectContextualCondition> CODEC = RecordCodecBuilder.mapCodec(instance ->
                 instance.group(
                         HolderSetCodec.create(
                                 Registries.MOB_EFFECT, BuiltInRegistries.MOB_EFFECT.holderByNameCodec(), false
-                        ).fieldOf("effects").forGetter(MoonlightContextualConditions.EffectContextualCondition::effects)
+                        ).optionalFieldOf("effects").forGetter(MoonlightContextualConditions.EffectContextualCondition::effects)
                 ).apply(instance, MoonlightContextualConditions.EffectContextualCondition::new)
         );
 
@@ -50,16 +51,18 @@ public class MoonlightContextualConditions {
 
         @Override
         public HolderSet<MobEffect> getValue() {
-            return this.effects();
+            if (this.effects.isPresent())
+                return this.effects().get();
+            return HolderSet.empty();
         }
     }
 
-    public record EquipmentContextualConditional(HolderSet<Item> items) implements DialogueRegistry.CompiledCondition<Item> {
+    public record EquipmentContextualConditional(Optional<HolderSet<Item>> items) implements DialogueRegistry.CompiledCondition<Item> {
         public static final MapCodec<MoonlightContextualConditions.EquipmentContextualConditional> CODEC = RecordCodecBuilder.mapCodec(instance ->
                 instance.group(
                         HolderSetCodec.create(
                                 Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false
-                        ).fieldOf("items").forGetter(MoonlightContextualConditions.EquipmentContextualConditional::items)
+                        ).optionalFieldOf("items").forGetter(MoonlightContextualConditions.EquipmentContextualConditional::items)
                 ).apply(instance, MoonlightContextualConditions.EquipmentContextualConditional::new)
         );
 
@@ -86,7 +89,9 @@ public class MoonlightContextualConditions {
 
         @Override
         public HolderSet<Item> getValue() {
-            return this.items();
+            if (this.items.isPresent())
+                return this.items().get();
+            return HolderSet.empty();
         }
     }
 }
