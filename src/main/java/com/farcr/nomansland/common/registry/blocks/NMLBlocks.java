@@ -19,10 +19,7 @@ import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.registry.worldgen.NMLTreeGrowers;
-import com.farcr.nomansland.datagen.loot.OtherBlockLootType;
-import com.farcr.nomansland.datagen.loot.OtherShearsBlockLootType;
-import com.farcr.nomansland.datagen.loot.SelfBlockLootType;
-import com.farcr.nomansland.datagen.loot.ShearsBlockLootType;
+import com.farcr.nomansland.datagen.loot.*;
 import com.google.common.collect.Sets;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -30,9 +27,11 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -93,7 +92,8 @@ public class NMLBlocks {
             () -> new PlatformBlock(Block.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS).sound(SoundType.CHERRY_WOOD)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<PlatformStairsBlock> WOODEN_PLATFORM_STAIRS = register("wooden_platform_stairs",
             () -> new PlatformStairsBlock(Block.Properties.ofFullCopy(NMLBlocks.WOODEN_PLATFORM.get())), new BlockProperties(new SelfBlockLootType(), false));
-
+    public static final BlockDefinition<DoorBlock> CRUDE_DOOR = register("crude_door",
+            () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new DoorBlockLootType(), false));
     public static final BlockDefinition<ResinCauldron> RESIN_CAULDRON = registerNoItem("resin_cauldron", ResinCauldron::new, BlockProperties.custom(true));
 
     public static final BlockDefinition<ResinOilCauldron> RESIN_OIL_CAULDRON = registerNoItem("resin_oil_cauldron", ResinOilCauldron::new, BlockProperties.cauldron());
