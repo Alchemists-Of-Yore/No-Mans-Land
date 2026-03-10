@@ -49,6 +49,7 @@ public class NMLRegistries {
     public static final ResourceKey<Registry<DialoguePool>> NEGATIVE_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/negative"));
     public static final ResourceKey<Registry<DialoguePool>> OFFERING_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/offering"));
     public static final ResourceKey<Registry<DialoguePool>> CONTEXTUAL_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/contextual"));
+    public static final ResourceKey<Registry<DialoguePool>> LEAVING_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/leaving"));
     public static final ResourceKey<Registry<DialoguePool>> SPECIAL_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/special"));
 
     public static final ResourceKey<Registry<ExtinguishableBlock>> EXTINGUISHABLE_BLOCKS_KEY = ResourceKey.createRegistryKey(NoMansLand.location("extinguishable_blocks"));

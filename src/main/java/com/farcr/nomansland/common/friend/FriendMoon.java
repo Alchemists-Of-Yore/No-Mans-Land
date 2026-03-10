@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.friend;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
+import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
@@ -98,7 +99,6 @@ public class FriendMoon extends SavedData {
 
     public void resetValues() {
         awake = false;
-        upsetWith.clear();
         setState(FriendMoonState.GREETING);
         setCandleTime(-1);
 
@@ -185,6 +185,7 @@ public class FriendMoon extends SavedData {
         PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
     }
 
+    private final HashMap<ServerPlayer, Integer> lastFriendshipPlayers = new HashMap<>();
     public void forFriendshipPlayers(Consumer<ServerPlayer> consumer) {
         assert level != null;
         for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);}))
@@ -239,16 +240,34 @@ public class FriendMoon extends SavedData {
         assert level != null;
         updateMeetingPointInformation(level);
 
+        if (!isNightTime(level) && !upsetWith.isEmpty()) {
+            upsetWith.clear();
+            setDirty();
+        }
+
         if (isAwake()) {
             if (!isNightTime(level)) {
                 resetValues();
                 return;
             }
 
+            // query players that had friendship
+            for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
+                if (player != null && (!player.hasEffect(FRIENDSHIP) || player.isDeadOrDying())) {
+                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                        if (!cannotObtainFriendship(player))
+                           sendLeaveDialogue(player);
+                        lastFriendshipPlayers.remove(player);
+                    }
+                }
+            }
             // Grant players advancement if they do not have it
             AtomicInteger playerTracker = new AtomicInteger();
             forFriendshipPlayers((player) -> {
                 playerTracker.getAndIncrement();
+                // and store the player for later
+                lastFriendshipPlayers.put(player, 0);
                 if (getState() != FriendMoonState.GREETING)
                     NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
             });
@@ -327,6 +346,23 @@ public class FriendMoon extends SavedData {
                 return serverPlayer;
         }
         return null;
+    }
+
+    public void sendLeaveDialogue(ServerPlayer serverPlayer) {
+        ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey = NMLRegistries.LEAVING_DIALOGUE_KEY;
+        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
+        List<DialogueRegistry.DialoguePool> filteredDialogue = dialogueRegistry.stream().filter(
+            (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
+
+        if (serverPlayer.isDeadOrDying())
+            filteredDialogue = MoonlightLeavingConditions.OnDeathConditional.ON_DEATH_ARRAY;
+
+        DialogueRegistry.DialoguePool poolSelection = DialogueUtil.getWeightedEntry(WeightedRandomList.create(filteredDialogue), level.getRandom());
+        ResourceLocation dialogueLocation = dialogueRegistry.getKey(poolSelection);
+
+        PacketDistributor.sendToPlayer(serverPlayer,
+            ClientboundDialoguePacket.timedDialoguePacket(dialogueLocation, registryKey.location(), Optional.of(serverPlayer.getUUID()))
+        );
     }
 
     public boolean sendContextualDialogue(ServerPlayer serverPlayer) {

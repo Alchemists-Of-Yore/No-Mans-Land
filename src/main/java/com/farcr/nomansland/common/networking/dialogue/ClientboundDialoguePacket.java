@@ -46,8 +46,7 @@ public record ClientboundDialoguePacket(
     }
 
     public static ClientboundDialoguePacket timedDialoguePacket(
-        ResourceLocation resourceLocation, ResourceLocation registryLocation,
-        Optional<UUID> playerUUID
+        ResourceLocation resourceLocation, ResourceLocation registryLocation, Optional<UUID> playerUUID
     ) {
         return new ClientboundDialoguePacket(resourceLocation, registryLocation, playerUUID, Optional.of(true));
     }
@@ -71,9 +70,11 @@ public record ClientboundDialoguePacket(
         ));
         if (playerUUID.isPresent()) {
             Player targetPlayer = level.getPlayerByUUID(playerUUID.get());
-            DialogueRenderer.getCurrentState().translateDialogue.setPlayerName(
-                targetPlayer.getName().getString()
-            );
+            if (targetPlayer != null) {
+                DialogueRenderer.getCurrentState().translateDialogue.setPlayerName(
+                    targetPlayer.getName().getString()
+                );
+            }
         }
         timed.ifPresent((tickAmount) -> DialogueRenderer.getCurrentState().setTicks(
             FriendMoon.calculateDialogueTicks(DialogueRenderer.getCurrentState().originalDialogue.getTextLength(), player.getRandom())));

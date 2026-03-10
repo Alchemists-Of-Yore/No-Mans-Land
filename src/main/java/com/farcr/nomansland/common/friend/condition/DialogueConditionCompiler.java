@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 public class DialogueConditionCompiler implements PreparableReloadListener {
-    private RegistryAccess registryAccess;
+    private final RegistryAccess registryAccess;
     public DialogueConditionCompiler(RegistryAccess registryAccess) {
         this.registryAccess = registryAccess;
     }
@@ -29,6 +29,7 @@ public class DialogueConditionCompiler implements PreparableReloadListener {
         NMLRegistries.OFFERING_DIALOGUE_KEY,
         NMLRegistries.NEGATIVE_DIALOGUE_KEY,
         NMLRegistries.CONTEXTUAL_DIALOGUE_KEY,
+        NMLRegistries.LEAVING_DIALOGUE_KEY,
         NMLRegistries.SPECIAL_DIALOGUE_KEY
     );
 

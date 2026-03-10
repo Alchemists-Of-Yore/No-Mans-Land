@@ -1,0 +1,7 @@
+{
+    "condition": {
+      "type": "nomansland:on_death"
+    },
+    "weight": 1,
+    "text": "you died lol"
+}
