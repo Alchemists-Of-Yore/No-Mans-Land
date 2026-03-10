@@ -22,6 +22,7 @@
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LivingEntityMixin",
+    "LocateCommandMixin",
     "MinecraftServerMixin",
     "MobInvoker",
     "MobMixin",
