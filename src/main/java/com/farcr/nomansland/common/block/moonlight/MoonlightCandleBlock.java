@@ -59,6 +59,10 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
 
     public void lightSpark(BlockState state, Level level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(MoonlightCandleBlock.CANDLE_LIT, true), 3);
+        triggerSparkAnimation(state, level, pos, random);
+    }
+
+    public void triggerSparkAnimation(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (level.isClientSide)
             lightSparkAnimation(state, level, pos, random);
         else PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level, new ChunkPos(pos), new ClientboundCandleLightPacket(pos));
@@ -122,8 +126,8 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
                     0F, 0F, 0F
                 );
             }
+            lightSparkAnimation(state, level, pos, level.random);
         }
-        lightSparkAnimation(state, level, pos, level.random);
     }
 
     @Override

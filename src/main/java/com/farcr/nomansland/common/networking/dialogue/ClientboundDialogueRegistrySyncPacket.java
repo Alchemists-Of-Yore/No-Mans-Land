@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.networking;
+package com.farcr.nomansland.common.networking.dialogue;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record ClientboundDialogueRegistrySyncPacket() implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundDialogueRegistrySyncPacket> STREAM_CODEC = StreamCodec.unit(new ClientboundDialogueRegistrySyncPacket());
 
-    public static final Type<ClientboundDialogueRegistrySyncPacket> TYPE = new Type<>(NoMansLand.location("client/registry/sync_dialogue"));
+    public static final Type<ClientboundDialogueRegistrySyncPacket> TYPE = new Type<>(NoMansLand.location("client/dialogue/sync"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

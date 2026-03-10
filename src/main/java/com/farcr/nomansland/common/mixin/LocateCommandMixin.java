@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ResourceOrTagKeyArgument;
@@ -42,8 +43,9 @@ public class LocateCommandMixin {
         structure.unwrap().left().ifPresent((key) -> {
             if (key.location().equals(MEETING_POINT)) {
                 ServerLevel serverlevel = source.getLevel();
-                ChunkPos meetingPointChunk = serverlevel.getChunkSource().getGeneratorState().meetingPointPosition();
-                BlockPos blockPos = meetingPointChunk.getMiddleBlockPosition(0);
+                BlockPos blockPos = FriendMoon.getMeetingPointPosition(serverlevel);
+                if (blockPos == null)
+                    return;
 
                 BlockPos sourcePosition = BlockPos.containing(source.getPosition());
                 int i = Mth.floor(dist(sourcePosition.getX(), sourcePosition.getZ(), blockPos.getX(), blockPos.getZ()));

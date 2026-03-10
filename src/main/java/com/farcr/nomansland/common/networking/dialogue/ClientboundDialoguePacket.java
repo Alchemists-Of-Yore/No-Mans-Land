@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.networking;
+package com.farcr.nomansland.common.networking.dialogue;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
@@ -52,7 +52,7 @@ public record ClientboundDialoguePacket(
         return new ClientboundDialoguePacket(resourceLocation, registryLocation, playerUUID, Optional.of(true));
     }
 
-    public static final CustomPacketPayload.Type<ClientboundDialoguePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("client/friend_moon/dialogue"));
+    public static final CustomPacketPayload.Type<ClientboundDialoguePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("client/dialogue/update"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -76,8 +76,7 @@ public record ClientboundDialoguePacket(
             );
         }
         timed.ifPresent((tickAmount) -> DialogueRenderer.getCurrentState().setTicks(
-            FriendMoon.calculateDialogueTicks(DialogueRenderer.getCurrentState().originalDialogue.getTextLength(), player.getRandom())
-        ));
+            FriendMoon.calculateDialogueTicks(DialogueRenderer.getCurrentState().originalDialogue.getTextLength(), player.getRandom())));
     }
 
     public void handleData(final IPayloadContext context) {

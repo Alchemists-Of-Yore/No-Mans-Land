@@ -7,9 +7,10 @@ import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
-import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
-import com.farcr.nomansland.common.networking.ClientboundDialogueResetPacket;
-import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -18,6 +19,7 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,16 +37,14 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -123,11 +123,22 @@ public class FriendMoon extends SavedData {
         awake = tag.getBoolean("IsAwake");
         candleTimer = tag.getInt("CandleTimer");
         setState(FriendMoonState.CODEC.byName(tag.getString("State"), FriendMoonState.PASSIVE));
+        updatedShadow = tag.getBoolean("UpdatedShadow");
 
         upsetWith.clear();
         for (Tag uuidEntry : tag.getList("UpsetWith", 10))
             upsetWith.add(NbtUtils.loadUUID(uuidEntry));
 
+        // read player map
+        playerPositionMap.clear();
+        for (Tag storedTag : tag.getList("StoredPlayerPositions", 10)) {
+            if (storedTag instanceof CompoundTag dataTag) {
+                playerPositionMap.put(
+                    dataTag.getUUID("UUID"),
+                    NbtUtils.readBlockPos(dataTag, "pos").orElseThrow()
+                );
+            }
+        }
         return this;
     }
 
@@ -136,11 +147,22 @@ public class FriendMoon extends SavedData {
         tag.putBoolean("IsAwake", isAwake());
         tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
+        tag.putBoolean("UpdatedShadow", updatedShadow);
 
         ListTag listTag = new ListTag();
-        upsetWith.forEach((playerUUID) ->
-            listTag.add(NbtUtils.createUUID(playerUUID)));
+        upsetWith.forEach((playerUUID) -> listTag.add(NbtUtils.createUUID(playerUUID)));
         tag.put("UpsetWith", listTag);
+
+        // store player map
+        ListTag positionTag = new ListTag();
+        playerPositionMap.forEach((uuid, blockPos) -> {
+            CompoundTag playerTag = new CompoundTag();
+            playerTag.putUUID("UUID", uuid);
+            playerTag.put("pos", NbtUtils.writeBlockPos(blockPos));
+            positionTag.add(playerTag);
+        });
+        tag.put("StoredPlayerPositions", positionTag);
+
         return tag;
     }
 
@@ -173,9 +195,51 @@ public class FriendMoon extends SavedData {
         return (level.getSkyDarken() >= 10);
     }
 
+    public static boolean displayFriendShadow(Player player) {
+        return true; // TEMPORARY, eventually only display under the condition the player has seen the dream
+    }
+
+    private boolean updatedShadow = false;
+    private HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
+    public void updateMeetingPointInformation(Level level) {
+        if (isNightTime(level)) {
+            if (!updatedShadow) {
+                level.players().forEach((player) -> {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        if (displayFriendShadow(serverPlayer))
+                            playerPositionMap.put(serverPlayer.getUUID(), serverPlayer.blockPosition());
+                        setDirty();
+                        updatePlayerFriendShadow(serverPlayer);
+                    }
+                });
+                updatedShadow = true;
+            }
+        } else updatedShadow = false;
+    }
+
+    public static BlockPos getMeetingPointPosition(ServerLevel level) {
+        ChunkPos meetingPointChunk = level.getChunkSource().getGeneratorState().meetingPointPosition();
+        if (meetingPointChunk == null)
+            return null;
+        return meetingPointChunk.getMiddleBlockPosition(0);
+    }
+
+    public void updatePlayerFriendShadow(ServerPlayer player) {
+        assert level != null;
+        UUID playerUUID = player.getUUID();
+        if (playerPositionMap.containsKey(playerUUID)) {
+            Optional<BlockPos> lastPosition = Optional.ofNullable(playerPositionMap.get(playerUUID));
+            Optional<BlockPos> meetingPointPosition = Optional.ofNullable(getMeetingPointPosition(level));
+            PacketDistributor.sendToPlayer(player, new ClientboundMeetingPointPacket(lastPosition, meetingPointPosition));
+        }
+    }
+
     /* Behavior */
     public void tick() {
-        if (isAwake() && level != null) {
+        assert level != null;
+        updateMeetingPointInformation(level);
+
+        if (isAwake()) {
             if (!isNightTime(level)) {
                 resetValues();
                 return;

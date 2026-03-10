@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.networking;
+package com.farcr.nomansland.common.networking.friend;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.FriendMoon;

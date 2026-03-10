@@ -213,8 +213,10 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 candleList.forEach((blockPos) -> {
                     BlockState blockState = level.getBlockState(blockPos);
                     if (blockState.getValue(MoonlightCandleBlock.CANDLE_LIT)
-                        && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock)
+                    && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock) {
                         candleBlock.extinguish(null, blockState, level, blockPos);
+                        candleBlock.triggerSparkAnimation(blockState, level, blockPos, level.getRandom());
+                    }
                 });
             }
             return;

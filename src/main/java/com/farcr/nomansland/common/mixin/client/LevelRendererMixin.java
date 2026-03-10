@@ -58,8 +58,8 @@ public class LevelRendererMixin {
 //        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
 //            return;
         FRIEND_RENDER_CONTEXT = true;
-        FriendMoonRenderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
         FriendMoonRenderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        FriendMoonRenderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
     }
 
     @Inject(
