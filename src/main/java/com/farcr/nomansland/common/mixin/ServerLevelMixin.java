@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.entity.buddy.BuddyChunkAnchor;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.worldevent.SunDog;
 import com.moulberry.mixinconstraints.annotations.IfModAbsent;
@@ -8,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SnowyDirtBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import org.objectweb.asm.Opcodes;
@@ -26,6 +28,11 @@ import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
 public abstract class ServerLevelMixin {
 
     @Shadow public abstract ServerLevel getLevel();
+
+    @Inject(method = "tickChunk", at = @At(value = "TAIL"))
+    private void nml$tickChunk(LevelChunk chunk, int randomTickSpeed, CallbackInfo ci) {
+        BuddyChunkAnchor.getOrDefault(this.getLevel()).tickChunk(chunk);
+    }
 
     @Shadow @Final private ServerLevelData serverLevelData;
 

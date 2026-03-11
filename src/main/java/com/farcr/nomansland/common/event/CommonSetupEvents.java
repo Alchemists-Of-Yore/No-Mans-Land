@@ -8,6 +8,8 @@ import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
+import com.farcr.nomansland.common.entity.buddy.Buddy;
+import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
@@ -18,11 +20,8 @@ import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
-import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
-import com.farcr.nomansland.common.networking.ClientboundSunDogStatePacket;
-import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
-import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
-import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.*;
+import com.farcr.nomansland.common.networking.dialogue.*;
 import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -126,6 +125,8 @@ public class CommonSetupEvents {
         event.dataPackRegistry(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.LEAVING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.SPECIAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+
+        event.dataPackRegistry(NMLRegistries.BUDDY_FOOD_KEY, BuddyFood.CODEC, BuddyFood.CODEC);
     }
 
     @SubscribeEvent
@@ -136,6 +137,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
+        event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -264,9 +266,12 @@ public class CommonSetupEvents {
 
         // Friend Moon related packets
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
+
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToClient(ClientboundMeetingPointPacket.TYPE, ClientboundMeetingPointPacket.STREAM_CODEC, ClientboundMeetingPointPacket::handleData);
         registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
+
+        registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
 
         // sun dog update packet
         registrar.playToClient(ClientboundSunDogStatePacket.TYPE, ClientboundSunDogStatePacket.STREAM_CODEC, ClientboundSunDogStatePacket::handleData);
