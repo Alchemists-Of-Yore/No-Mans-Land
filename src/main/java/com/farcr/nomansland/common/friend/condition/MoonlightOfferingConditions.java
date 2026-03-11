@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.friend.condition;
 
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialogueCondition;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -29,19 +30,19 @@ public class MoonlightOfferingConditions {
             ).apply(instance, ItemOfferingConditional::new)
         );
 
-        public static HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
-        public static HashMap<TagKey<Item>, ArrayList<DialogueRegistry.DialoguePool>> KEY_MAP = new HashMap<>();
+        public static HashMap<Item, ArrayList<DialoguePool>> COMPILED_MAP = new HashMap<>();
+        public static HashMap<TagKey<Item>, ArrayList<DialoguePool>> KEY_MAP = new HashMap<>();
         @Override
-        public HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
+        public HashMap<Item, ArrayList<DialoguePool>> getMap() {
             return COMPILED_MAP;
         }
         @Override
-        public HashMap<TagKey<Item>, ArrayList<DialogueRegistry.DialoguePool>> getTagMap() {
+        public HashMap<TagKey<Item>, ArrayList<DialoguePool>> getTagMap() {
             return KEY_MAP;
         }
 
         @Override
-        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+        public boolean validate(ResourceKey<Registry<DialoguePool>> resourceKey) {
             return resourceKey.equals(NMLRegistries.OFFERING_DIALOGUE_KEY);
         }
 
@@ -67,19 +68,19 @@ public class MoonlightOfferingConditions {
             ).apply(instance, EntityOfferingConditional::new)
         );
 
-        public static HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
-        public static HashMap<TagKey<EntityType<?>>, ArrayList<DialogueRegistry.DialoguePool>> KEY_MAP = new HashMap<>();
+        public static HashMap<EntityType<?>, ArrayList<DialoguePool>> COMPILED_MAP = new HashMap<>();
+        public static HashMap<TagKey<EntityType<?>>, ArrayList<DialoguePool>> KEY_MAP = new HashMap<>();
         @Override
-        public HashMap<EntityType<?>, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
+        public HashMap<EntityType<?>, ArrayList<DialoguePool>> getMap() {
             return COMPILED_MAP;
         }
         @Override
-        public HashMap<TagKey<EntityType<?>>, ArrayList<DialogueRegistry.DialoguePool>> getTagMap() {
+        public HashMap<TagKey<EntityType<?>>, ArrayList<DialoguePool>> getTagMap() {
             return KEY_MAP;
         }
 
         @Override
-        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+        public boolean validate(ResourceKey<Registry<DialoguePool>> resourceKey) {
             return resourceKey.equals(NMLRegistries.OFFERING_DIALOGUE_KEY);
         }
 

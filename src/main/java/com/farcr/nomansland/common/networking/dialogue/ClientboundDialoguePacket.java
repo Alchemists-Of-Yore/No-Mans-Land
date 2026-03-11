@@ -3,9 +3,7 @@ package com.farcr.nomansland.common.networking.dialogue;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.friend.FriendMoon;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
-import com.farcr.nomansland.common.friend.dialogue.DialogueState;
-import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
+import com.farcr.nomansland.common.friend.dialogue.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
@@ -14,10 +12,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public record ClientboundDialoguePacket(
         ResourceLocation resourceLocation,
         ResourceLocation registryLocation,
         Optional<UUID> playerUUID,
-        Optional<Boolean> timed
+        Integer timing
 ) implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundDialoguePacket> STREAM_CODEC = StreamCodec.composite(
         ResourceLocation.STREAM_CODEC,
@@ -34,21 +34,28 @@ public record ClientboundDialoguePacket(
         ClientboundDialoguePacket::registryLocation,
         ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC),
         ClientboundDialoguePacket::playerUUID,
-        ByteBufCodecs.optional(ByteBufCodecs.BOOL),
-        ClientboundDialoguePacket::timed,
+        ByteBufCodecs.INT,
+        ClientboundDialoguePacket::timing,
         ClientboundDialoguePacket::new
     );
 
-    public static ClientboundDialoguePacket newDialoguePacket(
-        ResourceLocation resourceLocation, ResourceLocation registryLocation, Optional<UUID> playerUUID
+    private static final int MIN_TICKS = 100;
+    private static final int MAX_TICKS = 160;
+    public static ClientboundDialoguePacket timedDialoguePacket(
+        ResourceLocation resourceLocation, ResourceLocation registryLocation, Optional<UUID> playerUUID, RandomSource randomSource
     ) {
-        return new ClientboundDialoguePacket(resourceLocation, registryLocation, playerUUID, Optional.empty());
+        return new ClientboundDialoguePacket(
+            resourceLocation, registryLocation, playerUUID,
+            randomSource.nextInt(MIN_TICKS, MAX_TICKS)
+        );
     }
 
-    public static ClientboundDialoguePacket timedDialoguePacket(
-        ResourceLocation resourceLocation, ResourceLocation registryLocation, Optional<UUID> playerUUID
-    ) {
-        return new ClientboundDialoguePacket(resourceLocation, registryLocation, playerUUID, Optional.of(true));
+    // moved the dialogue length here because the packet needs to know how long the dialogue is now
+    public int getDialogueLengthTicks(Level level) {
+        ResourceKey<Registry<DialoguePool>> tempKey = ResourceKey.createRegistryKey(registryLocation);
+        Registry<DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, tempKey);
+        DialogueContainer dialogueContainer = new DialogueContainer(Objects.requireNonNull(dialogueRegistry.get(resourceLocation)).text());
+        return (int) (dialogueContainer.getTextLength() / (DialogueState.DIALOGUE_SPEED)) + timing;
     }
 
     public static final CustomPacketPayload.Type<ClientboundDialoguePacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("client/dialogue/update"));
@@ -59,15 +66,14 @@ public record ClientboundDialoguePacket(
     }
 
     public void applyPacket(Level level, Player player) {
-        ResourceKey<Registry<DialogueRegistry.DialoguePool>> tempKey = ResourceKey.createRegistryKey(registryLocation);
-        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, tempKey);
-        DialogueRegistry.DialoguePool dialoguePool = dialogueRegistry.get(resourceLocation);
+        ResourceKey<Registry<DialoguePool>> tempKey = ResourceKey.createRegistryKey(registryLocation);
+        Registry<DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, tempKey);
+        DialoguePool dialoguePool = dialogueRegistry.get(resourceLocation);
 
         // Set Dialogue
         assert dialoguePool != null;
         DialogueRenderer.setCurrentState(new DialogueState(
-            resourceLocation, tempKey.location().getPath().replace("/", "."), dialoguePool
-        ));
+            resourceLocation, tempKey.location().getPath().replace("/", "."), dialoguePool));
         if (playerUUID.isPresent()) {
             Player targetPlayer = level.getPlayerByUUID(playerUUID.get());
             if (targetPlayer != null) {
@@ -76,8 +82,7 @@ public record ClientboundDialoguePacket(
                 );
             }
         }
-        timed.ifPresent((tickAmount) -> DialogueRenderer.getCurrentState().setTicks(
-            FriendMoon.calculateDialogueTicks(DialogueRenderer.getCurrentState().originalDialogue.getTextLength(), player.getRandom())));
+        DialogueRenderer.getCurrentState().setTicks(getDialogueLengthTicks(level));
     }
 
     public void handleData(final IPayloadContext context) {

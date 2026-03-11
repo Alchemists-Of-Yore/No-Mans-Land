@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.networking.dialogue;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
+import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -20,7 +21,13 @@ public record ClientboundDialogueResetPacket() implements CustomPacketPayload {
     public void handleData(final IPayloadContext context) {
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
-                DialogueRenderer.setCurrentState(null);
+                DialogueState state = DialogueRenderer.getCurrentState();
+                if (state != null) {
+                    if (state.ticks == null || state.ticks > 0)
+                        state.setTicks(0);
+                    state.pause();
+                }
+                DialogueRenderer.setCurrentState(state);
             });
         }
     }

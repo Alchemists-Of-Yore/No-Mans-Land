@@ -18,25 +18,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class DialogueRegistry {
-    public record DialoguePool(
-        Optional<DialogueCondition> condition,
-        Weight weight,
-        String text
-    ) implements WeightedEntry {
-        public static final Codec<DialoguePool> CODEC = RecordCodecBuilder.create(instance ->
-            instance.group(
-                DialogueCondition.CODEC.optionalFieldOf("condition").forGetter(DialoguePool::condition),
-                Weight.CODEC.fieldOf("weight").forGetter(DialoguePool::getWeight),
-                Codec.STRING.fieldOf("text").forGetter(DialoguePool::text)
-            ).apply(instance, DialoguePool::new)
-        );
-
-        @Override
-        public @NotNull Weight getWeight() {
-            return weight;
-        }
-    }
-
     public interface DialogueCondition {
         default boolean validate(ResourceKey<Registry<DialoguePool>> registrykey) { return true; }
         MapCodec<? extends DialogueCondition> codec();
@@ -74,9 +55,8 @@ public class DialogueRegistry {
                 applyMap(dialoguePool, getTagMap(), namedTag.key());
                 return;
             }
-            getValue().forEach((holder) -> {
-                applyMap(dialoguePool, getMap(), holder.value());
-            });
+            getValue().forEach((holder) ->
+                applyMap(dialoguePool, getMap(), holder.value()));
         };
     }
 }

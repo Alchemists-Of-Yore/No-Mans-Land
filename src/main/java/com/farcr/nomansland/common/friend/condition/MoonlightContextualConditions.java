@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.friend.condition;
 
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.MapCodec;
@@ -28,19 +29,19 @@ public class MoonlightContextualConditions {
                 ).apply(instance, MoonlightContextualConditions.EffectContextualCondition::new)
         );
 
-        public static HashMap<MobEffect, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
-        public static HashMap<TagKey<MobEffect>, ArrayList<DialogueRegistry.DialoguePool>> KEY_MAP = new HashMap<>();
+        public static HashMap<MobEffect, ArrayList<DialoguePool>> COMPILED_MAP = new HashMap<>();
+        public static HashMap<TagKey<MobEffect>, ArrayList<DialoguePool>> KEY_MAP = new HashMap<>();
         @Override
-        public HashMap<MobEffect, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
+        public HashMap<MobEffect, ArrayList<DialoguePool>> getMap() {
             return COMPILED_MAP;
         }
         @Override
-        public HashMap<TagKey<MobEffect>, ArrayList<DialogueRegistry.DialoguePool>> getTagMap() {
+        public HashMap<TagKey<MobEffect>, ArrayList<DialoguePool>> getTagMap() {
             return KEY_MAP;
         }
 
         @Override
-        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+        public boolean validate(ResourceKey<Registry<DialoguePool>> resourceKey) {
             return resourceKey.equals(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY);
         }
 
@@ -66,19 +67,19 @@ public class MoonlightContextualConditions {
                 ).apply(instance, MoonlightContextualConditions.EquipmentContextualConditional::new)
         );
 
-        public static HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> COMPILED_MAP = new HashMap<>();
-        public static HashMap<TagKey<Item>, ArrayList<DialogueRegistry.DialoguePool>> KEY_MAP = new HashMap<>();
+        public static HashMap<Item, ArrayList<DialoguePool>> COMPILED_MAP = new HashMap<>();
+        public static HashMap<TagKey<Item>, ArrayList<DialoguePool>> KEY_MAP = new HashMap<>();
         @Override
-        public HashMap<Item, ArrayList<DialogueRegistry.DialoguePool>> getMap() {
+        public HashMap<Item, ArrayList<DialoguePool>> getMap() {
             return COMPILED_MAP;
         }
         @Override
-        public HashMap<TagKey<Item>, ArrayList<DialogueRegistry.DialoguePool>> getTagMap() {
+        public HashMap<TagKey<Item>, ArrayList<DialoguePool>> getTagMap() {
             return KEY_MAP;
         }
 
         @Override
-        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+        public boolean validate(ResourceKey<Registry<DialoguePool>> resourceKey) {
             return resourceKey.equals(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY);
         }
 

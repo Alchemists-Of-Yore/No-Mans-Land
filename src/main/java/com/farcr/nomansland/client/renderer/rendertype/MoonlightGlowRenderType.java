@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.renderer.rendertype;
 
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -56,7 +57,7 @@ public class MoonlightGlowRenderType {
         Minecraft instance = Minecraft.getInstance();
         if (instance.player != null && instance.player.hasEffect(NMLEffects.FRIENDSHIP)) {
             if (instance.level != null) {
-                ArrayList<DialogueRegistry.DialoguePool> list = new ArrayList<>();
+                ArrayList<DialoguePool> list = new ArrayList<>();
                 DialogueUtil.appendTags(
                     item, instance.level.registryAccess(), Registries.ITEM,
                     MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP,

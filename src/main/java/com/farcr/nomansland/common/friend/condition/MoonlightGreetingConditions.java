@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.friend.condition;
 
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.MapCodec;
@@ -18,15 +19,15 @@ public class MoonlightGreetingConditions {
             return CODEC;
         }
 
-        public static ArrayList<DialogueRegistry.DialoguePool> FIRST_TIME_ARRAY = new ArrayList<>();
+        public static ArrayList<DialoguePool> FIRST_TIME_ARRAY = new ArrayList<>();
 
         @Override
-        public boolean validate(ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+        public boolean validate(ResourceKey<Registry<DialoguePool>> resourceKey) {
             return resourceKey.equals(NMLRegistries.GREETING_DIALOGUE_KEY);
         }
 
         @Override
-        public ArrayList<DialogueRegistry.DialoguePool> getList() {
+        public ArrayList<DialoguePool> getList() {
             return FIRST_TIME_ARRAY;
         }
     }

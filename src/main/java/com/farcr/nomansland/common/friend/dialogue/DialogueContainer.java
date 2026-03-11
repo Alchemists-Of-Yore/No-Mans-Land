@@ -71,7 +71,7 @@ public class DialogueContainer {
         int i = 0;
         if (textList != null) {
             int totalText = 0;
-            String totalString = "";
+            StringBuilder totalString = new StringBuilder();
             while (i < textList.size()) {
                 if (progress < totalText)
                     break;
@@ -82,13 +82,13 @@ public class DialogueContainer {
                         subString = playerName;
                 }
                 if (!subString.contains("/"))
-                    totalString += subString.substring(0, Math.min((int) (progress - totalText), subString.length()));
+                    totalString.append(subString, 0, Math.min((int) (progress - totalText), subString.length()));
                 totalText += subString.length();
                 i++;
             }
             if (progress >= totalText)
                 flagDoneConstructed = true;
-            localText.addAll(Arrays.asList(totalString.split("\\n")));
+            localText.addAll(Arrays.asList(totalString.toString().split("\\n")));
         }
         return localText;
     }

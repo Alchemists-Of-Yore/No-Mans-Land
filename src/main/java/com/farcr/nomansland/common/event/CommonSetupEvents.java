@@ -14,7 +14,7 @@ import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;

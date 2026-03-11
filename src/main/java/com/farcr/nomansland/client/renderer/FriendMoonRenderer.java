@@ -238,7 +238,8 @@ public class FriendMoonRenderer {
                                     ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
                                         NoMansLand.location("nobody_came"),
                                         NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
-                                        Optional.of(player.getUUID())
+                                        Optional.of(player.getUUID()),
+                                        player.getRandom()
                                     );
                                     packet.applyPacket(player.level(), player);
                                     DialogueRenderer.getCurrentState()

@@ -7,7 +7,7 @@ import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.world.feature.decorator.BoulderDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.FallenTreeDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.PondDecoratorType;
