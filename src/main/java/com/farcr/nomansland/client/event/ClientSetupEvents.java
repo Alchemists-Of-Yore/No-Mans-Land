@@ -23,7 +23,6 @@ import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -62,6 +61,7 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.MODEL.id()));
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
 
         //Load all the pot models here otherwise you die
@@ -99,6 +99,8 @@ public class ClientSetupEvents {
 
         event.registerBlockEntityRenderer(NMLBlockEntities.POT.get(), PotRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_POT.get(), LivingPotRenderer::new);
+
+        event.registerBlockEntityRenderer(NMLBlockEntities.INVERTED_BELL.get(), InvertedBellRenderer::new);
     }
 
     @SubscribeEvent
