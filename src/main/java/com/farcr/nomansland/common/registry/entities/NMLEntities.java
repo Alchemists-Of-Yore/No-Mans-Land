@@ -101,6 +101,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<Buddy>> BUDDY =
         ENTITIES.register("buddy", () -> EntityType.Builder.of(Buddy::new, MobCategory.MISC)
+            .sized(.75f, 2.05f)
             .ridingOffset(-0.7F)
             .build("buddy"));
 
