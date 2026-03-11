@@ -1,6 +1,8 @@
 package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
+import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
@@ -13,10 +15,13 @@ import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -30,11 +35,13 @@ import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -192,6 +199,20 @@ public class FriendMoon extends SavedData {
         assert level != null;
         for (ServerPlayer serverPlayer : getFriendshipPlayers())
             consumer.accept(serverPlayer);
+    }
+
+    public static boolean isSpecialInteraction(MoonlightBasinBlockEntity.OfferingContext offeringContext) {
+        return (offeringContext.isValid() && offeringContext.entity().getType().equals(NMLEntities.BUDDY.get()));
+    }
+    public boolean specialInteraction(Level level, Entity entity) {
+        if (entity instanceof Buddy buddy) {
+            level.addParticle(
+                new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MYCELIUM.defaultBlockState()),
+                buddy.getX(), buddy.getY() + 1, buddy.getZ(), 0, 0, 0
+            );
+            return true;
+        }
+        return false;
     }
 
     public static boolean isNightTime(Level level) {

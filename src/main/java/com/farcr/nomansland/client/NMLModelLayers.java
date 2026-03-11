@@ -2,6 +2,7 @@ package com.farcr.nomansland.client;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.model.BillhookBassModel;
+import com.farcr.nomansland.client.model.BuddyModel;
 import com.farcr.nomansland.client.model.BuriedModel;
 import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;

@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.buddy;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.extension.LevelChunkExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -77,7 +78,8 @@ public class BuddyChunkAnchor extends SavedData {
 
     public static final ResourceKey<Structure> FAIRY_RING_KEY = ResourceKey.create(Registries.STRUCTURE, NoMansLand.location("buddy_fairy_ring"));
     public void tickChunk(LevelChunk chunk) {
-        if (!chunk.nml$shouldIgnoreBuddyAnchor()) {
+        LevelChunkExtension extensionChunk = (LevelChunkExtension) chunk;
+        if (!extensionChunk.nml$shouldIgnoreBuddyAnchor()) {
             int structuresFound = 0;
             Structure fairyRingStructure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(FAIRY_RING_KEY);
             if (fairyRingStructure != null) {
@@ -88,7 +90,7 @@ public class BuddyChunkAnchor extends SavedData {
                     structuresFound++;
                 }
                 if (structuresFound <= 0)
-                    chunk.nml$setIgnoreBuddyAnchor();
+                    extensionChunk.nml$setIgnoreBuddyAnchor();
             }
         }
     }
