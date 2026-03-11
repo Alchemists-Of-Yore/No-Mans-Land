@@ -24,7 +24,7 @@ const vec3 fixedColor = vec3(
 
 void main() {
     vec2 uv = texCoord0;
-    float alpha = abs(sin(ElapsedTime / 250.)) * GlintAlpha;
+    float alpha = min(.75, abs(sin(ElapsedTime / 250.)) * GlintAlpha);
     vec4 color = vec4((fixedColor.rgb * alpha), alpha);
 
     if (color.a < 0.1)

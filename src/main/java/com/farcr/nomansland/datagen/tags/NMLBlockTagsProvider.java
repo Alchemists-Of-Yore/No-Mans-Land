@@ -121,6 +121,10 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 BlockTags.DRIPSTONE_REPLACEABLE
         );
 
+        addToTags(NMLBlocks.CRUDE_DOOR.block(),
+                BlockTags.WOODEN_DOORS
+        );
+
         addToTags(NMLBlocks.CUT_VINE.get(), BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH, BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH);
         addToTags(NMLBlocks.SEASHELLS.get(), BlockTags.COMBINATION_STEP_SOUND_BLOCKS);
 

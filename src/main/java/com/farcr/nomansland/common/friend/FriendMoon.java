@@ -3,13 +3,15 @@ package com.farcr.nomansland.common.friend;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
+import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
-import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
-import com.farcr.nomansland.common.networking.ClientboundDialogueResetPacket;
-import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -18,28 +20,32 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -83,6 +89,14 @@ public class FriendMoon extends SavedData {
         }
     }
 
+    public List<UUID> upsetWith = new ArrayList<>();
+    public void setUpsetWith(UUID playerUUID) {
+        if (!upsetWith.contains(playerUUID)) {
+            upsetWith.add(playerUUID);
+            setDirty();
+        }
+    }
+
     public void resetValues() {
         awake = false;
         setState(FriendMoonState.GREETING);
@@ -96,6 +110,7 @@ public class FriendMoon extends SavedData {
         pulseUpdate = true;
         super.setDirty();
     }
+
     public boolean shouldPulseUpdate() {
         if (pulseUpdate) {
             pulseUpdate = false;
@@ -108,6 +123,22 @@ public class FriendMoon extends SavedData {
         awake = tag.getBoolean("IsAwake");
         candleTimer = tag.getInt("CandleTimer");
         setState(FriendMoonState.CODEC.byName(tag.getString("State"), FriendMoonState.PASSIVE));
+        updatedShadow = tag.getBoolean("UpdatedShadow");
+
+        upsetWith.clear();
+        for (Tag uuidEntry : tag.getList("UpsetWith", 10))
+            upsetWith.add(NbtUtils.loadUUID(uuidEntry));
+
+        // read player map
+        playerPositionMap.clear();
+        for (Tag storedTag : tag.getList("StoredPlayerPositions", 10)) {
+            if (storedTag instanceof CompoundTag dataTag) {
+                playerPositionMap.put(
+                    dataTag.getUUID("UUID"),
+                    NbtUtils.readBlockPos(dataTag, "pos").orElseThrow()
+                );
+            }
+        }
         return this;
     }
 
@@ -116,6 +147,22 @@ public class FriendMoon extends SavedData {
         tag.putBoolean("IsAwake", isAwake());
         tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
+        tag.putBoolean("UpdatedShadow", updatedShadow);
+
+        ListTag listTag = new ListTag();
+        upsetWith.forEach((playerUUID) -> listTag.add(NbtUtils.createUUID(playerUUID)));
+        tag.put("UpsetWith", listTag);
+
+        // store player map
+        ListTag positionTag = new ListTag();
+        playerPositionMap.forEach((uuid, blockPos) -> {
+            CompoundTag playerTag = new CompoundTag();
+            playerTag.putUUID("UUID", uuid);
+            playerTag.put("pos", NbtUtils.writeBlockPos(blockPos));
+            positionTag.add(playerTag);
+        });
+        tag.put("StoredPlayerPositions", positionTag);
+
         return tag;
     }
 
@@ -125,18 +172,20 @@ public class FriendMoon extends SavedData {
     }
 
     /* Friendship */
-    public static boolean cannotObtainFriendship(ServerPlayer serverPlayer) {
-        return (serverPlayer.getEffect(MobEffects.BAD_OMEN) != null);
+    public boolean cannotObtainFriendship(Player serverPlayer) {
+        return (serverPlayer.getEffect(MobEffects.BAD_OMEN) != null)
+            || upsetWith.contains(serverPlayer.getUUID());
     }
 
     public static final DeferredHolder<MobEffect, MobEffect> FRIENDSHIP = NMLEffects.FRIENDSHIP;
     public static void grantPlayerFriendship(FriendMoon friendMoon, ServerPlayer serverPlayer, BlockPos pos) {
-        if (!cannotObtainFriendship(serverPlayer) && (friendMoon.getState() != FriendMoonState.UPSET)) {
+        if (friendMoon.getState() != FriendMoonState.UPSET && !friendMoon.cannotObtainFriendship(serverPlayer))
             serverPlayer.addEffect(new MobEffectInstance(FRIENDSHIP, 30, 0, true, false));
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
-        }
+        else friendMoon.setUpsetWith(serverPlayer.getUUID());
+        PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
     }
 
+    private final HashMap<ServerPlayer, Integer> lastFriendshipPlayers = new HashMap<>();
     public void forFriendshipPlayers(Consumer<ServerPlayer> consumer) {
         assert level != null;
         for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);}))
@@ -147,18 +196,78 @@ public class FriendMoon extends SavedData {
         return (level.getSkyDarken() >= 10);
     }
 
+    public static boolean displayFriendShadow(Player player) {
+        return true; // TEMPORARY, eventually only display under the condition the player has seen the dream
+    }
+
+    private boolean updatedShadow = false;
+    private HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
+    public void updateMeetingPointInformation(Level level) {
+        if (isNightTime(level)) {
+            if (!updatedShadow) {
+                level.players().forEach((player) -> {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        if (displayFriendShadow(serverPlayer))
+                            playerPositionMap.put(serverPlayer.getUUID(), serverPlayer.blockPosition());
+                        setDirty();
+                        updatePlayerFriendShadow(serverPlayer);
+                    }
+                });
+                updatedShadow = true;
+            }
+        } else updatedShadow = false;
+    }
+
+    public static BlockPos getMeetingPointPosition(ServerLevel level) {
+        ChunkPos meetingPointChunk = level.getChunkSource().getGeneratorState().meetingPointPosition();
+        if (meetingPointChunk == null)
+            return null;
+        return meetingPointChunk.getMiddleBlockPosition(0);
+    }
+
+    public void updatePlayerFriendShadow(ServerPlayer player) {
+        assert level != null;
+        UUID playerUUID = player.getUUID();
+        if (playerPositionMap.containsKey(playerUUID)) {
+            Optional<BlockPos> lastPosition = Optional.ofNullable(playerPositionMap.get(playerUUID));
+            Optional<BlockPos> meetingPointPosition = Optional.ofNullable(getMeetingPointPosition(level));
+            PacketDistributor.sendToPlayer(player, new ClientboundMeetingPointPacket(lastPosition, meetingPointPosition));
+        }
+    }
+
     /* Behavior */
     public void tick() {
-        if (isAwake() && level != null) {
+        assert level != null;
+        updateMeetingPointInformation(level);
+
+        if (!isNightTime(level) && !upsetWith.isEmpty()) {
+            upsetWith.clear();
+            setDirty();
+        }
+
+        if (isAwake()) {
             if (!isNightTime(level)) {
                 resetValues();
                 return;
             }
 
+            // query players that had friendship
+            for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
+                if (player != null && (!player.hasEffect(FRIENDSHIP) || player.isDeadOrDying())) {
+                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                        if (!cannotObtainFriendship(player))
+                           sendLeaveDialogue(player);
+                        lastFriendshipPlayers.remove(player);
+                    }
+                }
+            }
             // Grant players advancement if they do not have it
             AtomicInteger playerTracker = new AtomicInteger();
             forFriendshipPlayers((player) -> {
                 playerTracker.getAndIncrement();
+                // and store the player for later
+                lastFriendshipPlayers.put(player, 0);
                 if (getState() != FriendMoonState.GREETING)
                     NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
             });
@@ -215,7 +324,7 @@ public class FriendMoon extends SavedData {
             DialogueRegistry.DialoguePool poolSelection = DialogueUtil.getWeightedEntry(WeightedRandomList.create(filteredDialogue), level.getRandom());
             ResourceLocation dialogueLocation = dialogueRegistry.getKey(poolSelection);
 
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(
+            PacketDistributor.sendToPlayer(serverPlayer, ClientboundDialoguePacket.newDialoguePacket(
                     dialogueLocation, NMLRegistries.GREETING_DIALOGUE_KEY.location(), Optional.empty()));
             DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
 
@@ -237,6 +346,23 @@ public class FriendMoon extends SavedData {
                 return serverPlayer;
         }
         return null;
+    }
+
+    public void sendLeaveDialogue(ServerPlayer serverPlayer) {
+        ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey = NMLRegistries.LEAVING_DIALOGUE_KEY;
+        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
+        List<DialogueRegistry.DialoguePool> filteredDialogue = dialogueRegistry.stream().filter(
+            (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
+
+        if (serverPlayer.isDeadOrDying())
+            filteredDialogue = MoonlightLeavingConditions.OnDeathConditional.ON_DEATH_ARRAY;
+
+        DialogueRegistry.DialoguePool poolSelection = DialogueUtil.getWeightedEntry(WeightedRandomList.create(filteredDialogue), level.getRandom());
+        ResourceLocation dialogueLocation = dialogueRegistry.getKey(poolSelection);
+
+        PacketDistributor.sendToPlayer(serverPlayer,
+            ClientboundDialoguePacket.timedDialoguePacket(dialogueLocation, registryKey.location(), Optional.of(serverPlayer.getUUID()))
+        );
     }
 
     public boolean sendContextualDialogue(ServerPlayer serverPlayer) {
@@ -304,8 +430,12 @@ public class FriendMoon extends SavedData {
     }
 
     public int getDialogueTicks(int textLength) {
+        return calculateDialogueTicks(textLength, level.getRandom());
+    }
+
+    public static int calculateDialogueTicks(int textLength, RandomSource randomSource) {
         return (int) (textLength / (DialogueState.DIALOGUE_SPEED))
-            + ((20) * level.getRandom().nextIntBetweenInclusive(5, 8));
+            + ((20) * randomSource.nextIntBetweenInclusive(5, 8));
     }
 
     public void sendDialogue(ResourceLocation dialogueLocation, ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey) {
@@ -314,7 +444,7 @@ public class FriendMoon extends SavedData {
 
     public void sendDialogue(ResourceLocation dialogueLocation, ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey, Optional<UUID> playerUUID) {
         forFriendshipPlayers((serverPlayer) -> {
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(dialogueLocation, registryKey.location(), playerUUID));
+            PacketDistributor.sendToPlayer(serverPlayer, ClientboundDialoguePacket.newDialoguePacket(dialogueLocation, registryKey.location(), playerUUID));
         });
 
         // calculate dialogue length in ticks

@@ -113,7 +113,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }, level, pos);
     }
 
-    private final float friendshipMaxRange = 9;
+    public static final float FRIENDSHIP_MAX_RANGE = 9;
 
     private OfferingContext inspectionContext;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
@@ -197,7 +197,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
         if (!level.isClientSide()) {
             if (FriendMoon.isNightTime(level)) {
-                AABB aabb = new AABB(pos).inflate(blockEntity.friendshipMaxRange);
+                AABB aabb = new AABB(pos).inflate(FRIENDSHIP_MAX_RANGE);
                 for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, aabb))
                     FriendMoon.grantPlayerFriendship(friendMoon, serverPlayer, pos);
                 if (friendMoon.shouldPulseUpdate())
@@ -213,8 +213,10 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 candleList.forEach((blockPos) -> {
                     BlockState blockState = level.getBlockState(blockPos);
                     if (blockState.getValue(MoonlightCandleBlock.CANDLE_LIT)
-                        && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock)
+                    && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock) {
                         candleBlock.extinguish(null, blockState, level, blockPos);
+                        candleBlock.triggerSparkAnimation(blockState, level, blockPos, level.getRandom());
+                    }
                 });
             }
             return;

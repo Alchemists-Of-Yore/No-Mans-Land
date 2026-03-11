@@ -223,6 +223,7 @@ public class CreativeModeTabHandler {
             insertAfter(BAMBOO_MOSAIC_SLAB, BAMBOO_BOOKSHELF);
 
             insertBefore(AMETHYST_BLOCK, QUARTZITE);
+            insertBefore(STONE, CRUDE_DOOR);
             insertBefore(STONE, WOODEN_PLATFORM_STAIRS);
             insertBefore(STONE, WOODEN_PLATFORM);
 

@@ -1,0 +1,42 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/moonlight_altar_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/moonlight_altar_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/moonlight_altar_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/moonlight_altar_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+
+  ]
+}

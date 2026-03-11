@@ -18,7 +18,12 @@ import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
-import com.farcr.nomansland.common.networking.*;
+import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
+import com.farcr.nomansland.common.networking.ClientboundSunDogStatePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -51,10 +56,12 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -117,6 +124,8 @@ public class CommonSetupEvents {
         event.dataPackRegistry(NMLRegistries.NEGATIVE_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.OFFERING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.LEAVING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.SPECIAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
     }
 
     @SubscribeEvent
@@ -251,9 +260,13 @@ public class CommonSetupEvents {
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
-        registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
-        registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
+        registrar.playToClient(ClientboundDialogueRegistrySyncPacket.TYPE, ClientboundDialogueRegistrySyncPacket.STREAM_CODEC, ClientboundDialogueRegistrySyncPacket::handleData);
+
+        // Friend Moon related packets
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
+        registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
+        registrar.playToClient(ClientboundMeetingPointPacket.TYPE, ClientboundMeetingPointPacket.STREAM_CODEC, ClientboundMeetingPointPacket::handleData);
+        registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
 
         // sun dog update packet
         registrar.playToClient(ClientboundSunDogStatePacket.TYPE, ClientboundSunDogStatePacket.STREAM_CODEC, ClientboundSunDogStatePacket::handleData);
@@ -262,5 +275,11 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void onReload(AddReloadListenerEvent event) {
         event.addListener(new DialogueConditionCompiler(event.getRegistryAccess()));
+    }
+
+    @SubscribeEvent
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        event.getRelevantPlayers().forEach((player)
+            -> PacketDistributor.sendToPlayer(player, new ClientboundDialogueRegistrySyncPacket()));
     }
 }
