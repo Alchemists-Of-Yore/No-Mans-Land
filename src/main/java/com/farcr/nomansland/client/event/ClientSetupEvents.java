@@ -1,13 +1,16 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.*;
+import com.farcr.nomansland.client.NMLArmorModels;
+import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
-import com.farcr.nomansland.client.extensions.*;
+import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
-import com.farcr.nomansland.client.renderer.*;
-import com.farcr.nomansland.client.renderer.rendertype.*;
+import com.farcr.nomansland.client.renderer.SunDogRenderer;
+import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
+import com.farcr.nomansland.client.renderer.entity.*;
+import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -20,6 +23,7 @@ import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -168,6 +172,12 @@ public class ClientSetupEvents {
                 -> new TranslucentDustParticle(clientLevel, d, e, f, g, h, i, translucentDustParticleOptions, sprites));
         event.registerSpecial(NMLParticleTypes.MOONLIGHT_RAY.get(), (type, clientLevel, d, e, f, g, h, i)
             -> new MoonlightRayParticle(clientLevel, d, e, f, g, h, i));
+        event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_FLAME.get(), sprites
+            -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+            -> new FlameParticle(clientLevel, d, e, f, g, h, i, sprites));
+        event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_SPARK.get(), sprites
+            -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+            -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));
     }
 
     @SubscribeEvent
@@ -187,6 +197,22 @@ public class ClientSetupEvents {
                 DefaultVertexFormat.POSITION_TEX
             ),
             shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
+        );
+        event.registerShader(
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        NoMansLand.location("sun_dog"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                shader -> SunDogRenderer.SUN_DOG_SHADER = shader
+        );
+        event.registerShader(
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        NoMansLand.location("upper_atmosphere"),
+                        DefaultVertexFormat.POSITION_COLOR
+                ),
+                shader -> UpperAtmosphericRenderer.UPPER_ATMOSPHERE_SHADER = shader
         );
     }
 }

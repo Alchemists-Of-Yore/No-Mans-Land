@@ -9,6 +9,7 @@
     "nomansland:cattail",
     "nomansland:reeds",
     "nomansland:warding_effigy",
+    "nomansland:crude_door",
     {
       "id": "nomansland:maple_cabinet",
       "required": false

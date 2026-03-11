@@ -2,13 +2,16 @@ package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -55,8 +58,8 @@ public class LevelRendererMixin {
 //        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
 //            return;
         FRIEND_RENDER_CONTEXT = true;
-        FriendMoonRenderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
         FriendMoonRenderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        FriendMoonRenderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
     }
 
     @Inject(
@@ -71,5 +74,19 @@ public class LevelRendererMixin {
             FriendMoonRenderer.renderFinalize(frustumMatrix, projectionMatrix, Tesselator.getInstance(), partialTick);
             FRIEND_RENDER_CONTEXT = false;
         }
+    }
+
+    @Inject(
+            method = "renderSky",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;getSunriseColor(FF)[F"
+            )
+    )
+    private void renderUpperAtmosphericSky(
+            Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
+            Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci,
+            @Local PoseStack poseStack, @Local Vec3 skyColor) {
+        UpperAtmosphericRenderer.INSTANCE.render(poseStack, projectionMatrix, (float) skyColor.x, (float) skyColor.y, (float) skyColor.z, partialTick);
     }
 }

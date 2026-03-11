@@ -35,9 +35,8 @@ public class ShelfMushroomBlock extends BaseCoralWallFanBlock implements Bonemea
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 
-    public static boolean isAcceptableNeighbour(BlockGetter blockReader, BlockPos neighborPos) {
-        BlockState blockstate = blockReader.getBlockState(neighborPos);
-        return blockstate.is(BlockTags.LOGS) || blockstate.is(NMLTags.MUSHROOM_BLOCKS);
+    public boolean canSurvivePublic(BlockState state, LevelReader level, BlockPos pos) {
+        return canSurvive(state, level, pos);
     }
 
     @Override
@@ -46,6 +45,8 @@ public class ShelfMushroomBlock extends BaseCoralWallFanBlock implements Bonemea
         BlockPos blockpos = pos.relative(direction.getOpposite());
         BlockState blockstate = level.getBlockState(blockpos);
         if (blockstate.hasProperty(SlabBlock.TYPE) && blockstate.getValue(SlabBlock.TYPE) != SlabType.DOUBLE)
+            return false;
+        if (!canSupportCenter(level, blockpos, direction))
             return false;
         return blockstate.is(BlockTags.LOGS) || blockstate.is(NMLTags.MUSHROOM_BLOCKS);
     }

@@ -1,7 +1,7 @@
 package com.farcr.nomansland.client.music;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.music.condition.MusicCondition;
+import com.farcr.nomansland.common.extension.SoundInstanceExtension;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -30,7 +30,7 @@ public class ContextualMusicHandler {
                 && Minecraft.getInstance().getSoundManager().isActive(soundInstance));
     }
 
-    public static void fadeSong(SoundInstance currentSong, SoundEngine soundEngine) {
+    public static void fadeSong(SoundInstanceExtension currentSong, SoundEngine soundEngine) {
         currentSong.NML$setContextualVolume(Math.max(currentSong.NML$getContextualVolume() - FADE_SPEED, 0f));
         soundEngine.updateCategoryVolume(SoundSource.MUSIC,
             Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC)
@@ -45,7 +45,7 @@ public class ContextualMusicHandler {
         for (MusicCondition.MusicConditionInstance conditionInstance : instanceList) {
             if (conditionInstance.canPlayMusic()) {
                 if (!soundIsMusic(currentSong, conditionInstance.getMusic())) {
-                    if (currentSong != null && currentSong.NML$getContextualVolume() > 0f)
+                    if (currentSong != null && ((SoundInstanceExtension) currentSong).NML$getContextualVolume() > 0f)
                         fadeSong(currentSong, soundEngine);
                     else {
                         musicManager.stopPlaying();
@@ -56,7 +56,7 @@ public class ContextualMusicHandler {
                 return true;
             } else if (soundIsMusic(currentSong, conditionInstance.getMusic())) {
                 fadeSong(currentSong, soundEngine);
-                if (currentSong.NML$getContextualVolume() <= 0f)
+                if (((SoundInstanceExtension) currentSong).NML$getContextualVolume() <= 0f)
                     musicManager.stopPlaying();
                 return true;
             }

@@ -6,6 +6,7 @@
 	"textures": {
 		"bottom": "nomansland:block/dungeon/ancient_pots/ancient_pot_base",
 		"front": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_1",
+		"side": "nomansland:block/dungeon/ancient_pots/ancient_pot_small_1",
 		"particle": "nomansland:block/dungeon/ancient_pots/ancient_pot_particle"
 	},
 	"elements": [
@@ -15,9 +16,9 @@
 			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0, 4]},
 			"faces": {
 				"north": {"uv": [1, 9.5, 7, 15], "texture": "#front"},
-				"east": {"uv": [1, 9.5, 7, 15], "texture": "#missing"},
-				"south": {"uv": [1, 9.5, 7, 15], "texture": "#missing"},
-				"west": {"uv": [1, 9.5, 7, 15], "texture": "#missing"},
+				"east": {"uv": [1, 9.5, 7, 15], "texture": "#side"},
+				"south": {"uv": [1, 9.5, 7, 15], "texture": "#side"},
+				"west": {"uv": [1, 9.5, 7, 15], "texture": "#side"},
 				"up": {"uv": [4.5, 4.5, 7.5, 7.5], "texture": "#bottom"},
 				"down": {"uv": [4.5, 8.5, 7.5, 11.5], "texture": "#bottom"}
 			}
@@ -28,9 +29,9 @@
 			"rotation": {"angle": 0, "axis": "y", "origin": [6, 13, 6]},
 			"faces": {
 				"north": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#front"},
-				"east": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#missing"},
-				"south": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#missing"},
-				"west": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#missing"}
+				"east": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#side"},
+				"south": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#side"},
+				"west": {"uv": [2.5, 9, 5.5, 9.5], "texture": "#side"}
 			}
 		},
 		{
@@ -39,11 +40,11 @@
 			"rotation": {"angle": 0, "axis": "y", "origin": [4, 14, 4]},
 			"faces": {
 				"north": {"uv": [2, 8, 6, 9], "texture": "#front"},
-				"east": {"uv": [2, 8, 6, 9], "texture": "#missing"},
-				"south": {"uv": [2, 8, 6, 9], "texture": "#missing"},
-				"west": {"uv": [2, 8, 6, 9], "texture": "#missing"},
-				"up": {"uv": [2, 2, 6, 6], "texture": "#missing"},
-				"down": {"uv": [10, 2, 14, 6], "texture": "#missing"}
+				"east": {"uv": [2, 8, 6, 9], "texture": "#side"},
+				"south": {"uv": [2, 8, 6, 9], "texture": "#side"},
+				"west": {"uv": [2, 8, 6, 9], "texture": "#side"},
+				"up": {"uv": [2, 2, 6, 6], "texture": "#side"},
+				"down": {"uv": [10, 2, 14, 6], "texture": "#side"}
 			}
 		},
 		{
@@ -52,10 +53,10 @@
 			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0, 4]},
 			"faces": {
 				"north": {"uv": [2, 15, 6, 16], "texture": "#front"},
-				"east": {"uv": [2, 15, 6, 16], "texture": "#missing"},
-				"south": {"uv": [2, 15, 6, 16], "texture": "#missing"},
-				"west": {"uv": [2, 15, 6, 16], "texture": "#missing"},
-				"up": {"uv": [0, 0, 4, 4], "texture": "#missing"},
+				"east": {"uv": [2, 15, 6, 16], "texture": "#side"},
+				"south": {"uv": [2, 15, 6, 16], "texture": "#side"},
+				"west": {"uv": [2, 15, 6, 16], "texture": "#side"},
+				"up": {"uv": [0, 0, 4, 4], "texture": "#side"},
 				"down": {"uv": [5, 9, 7, 11], "texture": "#bottom"}
 			}
 		}

@@ -3,16 +3,13 @@ package com.farcr.nomansland.common.friend;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
-import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
-import com.farcr.nomansland.common.friend.dialogue.DialogueContainer;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
-import com.farcr.nomansland.common.friend.dialogue.DialogueState;
-import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
-import com.farcr.nomansland.common.networking.ClientboundDialoguePacket;
-import com.farcr.nomansland.common.networking.ClientboundDialogueResetPacket;
-import com.farcr.nomansland.common.networking.ClientboundMoonlightBasinTrackPacket;
+import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
+import com.farcr.nomansland.common.friend.dialogue.*;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import com.farcr.nomansland.common.registry.NMLDialogueConditions;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -22,6 +19,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -31,20 +31,21 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class FriendMoon extends SavedData {
     @Nullable private final ServerLevel level;
@@ -86,6 +87,14 @@ public class FriendMoon extends SavedData {
         }
     }
 
+    public List<UUID> upsetWith = new ArrayList<>();
+    public void setUpsetWith(UUID playerUUID) {
+        if (!upsetWith.contains(playerUUID)) {
+            upsetWith.add(playerUUID);
+            setDirty();
+        }
+    }
+
     public void resetValues() {
         awake = false;
         setState(FriendMoonState.GREETING);
@@ -99,6 +108,7 @@ public class FriendMoon extends SavedData {
         pulseUpdate = true;
         super.setDirty();
     }
+
     public boolean shouldPulseUpdate() {
         if (pulseUpdate) {
             pulseUpdate = false;
@@ -109,14 +119,48 @@ public class FriendMoon extends SavedData {
 
     public FriendMoon load(CompoundTag tag, HolderLookup.Provider provider) {
         awake = tag.getBoolean("IsAwake");
+        candleTimer = tag.getInt("CandleTimer");
         setState(FriendMoonState.CODEC.byName(tag.getString("State"), FriendMoonState.PASSIVE));
+        updatedShadow = tag.getBoolean("UpdatedShadow");
+
+        upsetWith.clear();
+        for (Tag uuidEntry : tag.getList("UpsetWith", 10))
+            upsetWith.add(NbtUtils.loadUUID(uuidEntry));
+
+        // read player map
+        playerPositionMap.clear();
+        for (Tag storedTag : tag.getList("StoredPlayerPositions", 10)) {
+            if (storedTag instanceof CompoundTag dataTag) {
+                playerPositionMap.put(
+                    dataTag.getUUID("UUID"),
+                    NbtUtils.readBlockPos(dataTag, "pos").orElseThrow()
+                );
+            }
+        }
         return this;
     }
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putBoolean("IsAwake", isAwake());
+        tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
+        tag.putBoolean("UpdatedShadow", updatedShadow);
+
+        ListTag listTag = new ListTag();
+        upsetWith.forEach((playerUUID) -> listTag.add(NbtUtils.createUUID(playerUUID)));
+        tag.put("UpsetWith", listTag);
+
+        // store player map
+        ListTag positionTag = new ListTag();
+        playerPositionMap.forEach((uuid, blockPos) -> {
+            CompoundTag playerTag = new CompoundTag();
+            playerTag.putUUID("UUID", uuid);
+            playerTag.put("pos", NbtUtils.writeBlockPos(blockPos));
+            positionTag.add(playerTag);
+        });
+        tag.put("StoredPlayerPositions", positionTag);
+
         return tag;
     }
 
@@ -126,21 +170,27 @@ public class FriendMoon extends SavedData {
     }
 
     /* Friendship */
-    public static boolean cannotObtainFriendship(ServerPlayer serverPlayer) {
-        return (serverPlayer.getEffect(MobEffects.BAD_OMEN) != null);
+    public boolean cannotObtainFriendship(Player serverPlayer) {
+        return (serverPlayer.getEffect(MobEffects.BAD_OMEN) != null)
+            || upsetWith.contains(serverPlayer.getUUID());
     }
 
     public static final DeferredHolder<MobEffect, MobEffect> FRIENDSHIP = NMLEffects.FRIENDSHIP;
     public static void grantPlayerFriendship(FriendMoon friendMoon, ServerPlayer serverPlayer, BlockPos pos) {
-        if (!cannotObtainFriendship(serverPlayer) && (friendMoon.getState() != FriendMoonState.UPSET)) {
+        if (friendMoon.getState() != FriendMoonState.UPSET && !friendMoon.cannotObtainFriendship(serverPlayer))
             serverPlayer.addEffect(new MobEffectInstance(FRIENDSHIP, 30, 0, true, false));
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
-        }
+        else friendMoon.setUpsetWith(serverPlayer.getUUID());
+        PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
     }
 
+    public List<ServerPlayer> getFriendshipPlayers() {
+        return level.getPlayers((player) -> player.hasEffect(FRIENDSHIP));
+    }
+
+    private final HashMap<ServerPlayer, Integer> lastFriendshipPlayers = new HashMap<>();
     public void forFriendshipPlayers(Consumer<ServerPlayer> consumer) {
         assert level != null;
-        for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);}))
+        for (ServerPlayer serverPlayer : getFriendshipPlayers())
             consumer.accept(serverPlayer);
     }
 
@@ -148,18 +198,81 @@ public class FriendMoon extends SavedData {
         return (level.getSkyDarken() >= 10);
     }
 
+    public static boolean displayFriendShadow(Player player) {
+        return true; // TEMPORARY, eventually only display under the condition the player has seen the dream
+    }
+
+    private boolean updatedShadow = false;
+    private HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
+    public void updateMeetingPointInformation(Level level) {
+        if (isNightTime(level)) {
+            if (!updatedShadow) {
+                level.players().forEach((player) -> {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        if (displayFriendShadow(serverPlayer))
+                            playerPositionMap.put(serverPlayer.getUUID(), serverPlayer.blockPosition());
+                        setDirty();
+                        updatePlayerFriendShadow(serverPlayer);
+                    }
+                });
+                updatedShadow = true;
+            }
+        } else updatedShadow = false;
+    }
+
+    public static BlockPos getMeetingPointPosition(ServerLevel level) {
+        ChunkPos meetingPointChunk = level.getChunkSource().getGeneratorState().meetingPointPosition();
+        if (meetingPointChunk == null)
+            return null;
+        return meetingPointChunk.getMiddleBlockPosition(0);
+    }
+
+    public void updatePlayerFriendShadow(ServerPlayer player) {
+        assert level != null;
+        UUID playerUUID = player.getUUID();
+        if (playerPositionMap.containsKey(playerUUID)) {
+            Optional<BlockPos> lastPosition = Optional.ofNullable(playerPositionMap.get(playerUUID));
+            Optional<BlockPos> meetingPointPosition = Optional.ofNullable(getMeetingPointPosition(level));
+            PacketDistributor.sendToPlayer(player, new ClientboundMeetingPointPacket(lastPosition, meetingPointPosition));
+        }
+    }
+
     /* Behavior */
     public void tick() {
-        if (isAwake() && level != null) {
+        assert level != null;
+        updateMeetingPointInformation(level);
+
+        if (!isNightTime(level) && !upsetWith.isEmpty()) {
+            upsetWith.clear();
+            setDirty();
+        }
+
+        if (isAwake()) {
             if (!isNightTime(level)) {
                 resetValues();
                 return;
             }
 
+            // query players that had friendship
+            for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
+                if (player != null && (!player.hasEffect(FRIENDSHIP) || player.isDeadOrDying())) {
+                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                        if (!cannotObtainFriendship(player)) {
+                            getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
+                                (registry) -> leavingFilter(registry, player))
+                                    .dispatch(level, player);
+                        }
+                        lastFriendshipPlayers.remove(player);
+                    }
+                }
+            }
             // Grant players advancement if they do not have it
             AtomicInteger playerTracker = new AtomicInteger();
             forFriendshipPlayers((player) -> {
                 playerTracker.getAndIncrement();
+                // and store the player for later
+                lastFriendshipPlayers.put(player, 0);
                 if (getState() != FriendMoonState.GREETING)
                     NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
             });
@@ -168,7 +281,7 @@ public class FriendMoon extends SavedData {
             int totalPlayers = playerTracker.get();
             if (totalPlayers > 0) {
                 if (getState() == FriendMoonState.GREETING) {
-                    sendGreetingDialogue();
+                    queryUniqueDialogue(NMLRegistries.GREETING_DIALOGUE_KEY, this::greetingFilter);
                     return;
                 }
 
@@ -180,7 +293,8 @@ public class FriendMoon extends SavedData {
                         sendRandomDialogue(getState().getDialoguePoolType());
                     }
                 }
-            }
+            } else if (getState() == FriendMoonState.OFFERING)
+                setState(FriendMoonState.PASSIVE);
         }
     }
 
@@ -199,42 +313,101 @@ public class FriendMoon extends SavedData {
         this.setDirty();
     }
 
-    private final ResourceLocation MEET_MOON_ADVANCEMENT = NoMansLand.location("main/meet_friend_moon");
-    public void sendGreetingDialogue() {
+    private static final int DIALOGUE_PADDING = 100;
+    public void applyDialogueLength(int dialogueLength) {
+        if (dialogueLength > 0) {
+            dialogueTicks = (dialogueLength + DIALOGUE_PADDING);
+            setDirty();
+        }
+    }
+
+    private DialogueLocation getDialogueFromStream(
+        ResourceKey<Registry<DialoguePool>> registryKey,
+        Function<Registry<DialoguePool>, DialoguePool> consumer) {
+        Registry<DialoguePool> registry = DialogueUtil.getDialogueRegistry(level, registryKey);
+        DialoguePool resultingPool = consumer.apply(registry);
+        return new DialogueLocation(
+            (resultingPool != null ? registry.getKey(resultingPool) : null),
+            registryKey.location(),
+            level.getRandom()
+        );
+    }
+
+    public DialogueLocation getDialogueFromLocation(
+        ResourceKey<Registry<DialoguePool>> registryKey,
+        ResourceLocation dialogueLocation
+    ) {
+        return new DialogueLocation(
+            dialogueLocation,
+            registryKey.location(),
+            level.getRandom()
+        );
+    }
+
+    /*
+    * Queries possible unique dialogue per players
+    * and applies the highest delay possible
+    *
+    * technically this is wrong as it dispatches wholly unique dialogue to each player,
+    * but for now that's fine until I want to start messing with the passive dialogue
+    */
+    private void queryUniqueDialogue(
+        ResourceKey<Registry<DialoguePool>> registryKey,
+        BiFunction<Registry<DialoguePool>, ServerPlayer, DialoguePool> function
+    ) {
         assert level != null;
         AtomicInteger highestTicks = new AtomicInteger();
         forFriendshipPlayers((serverPlayer) -> {
-            Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, NMLRegistries.GREETING_DIALOGUE_KEY);
-            List<DialogueRegistry.DialoguePool> filteredDialogue = dialogueRegistry.stream().filter(
-                (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
-
-            // Query individual dialogue based on if the player has met the moon before or not
-            AdvancementHolder meetAdvancement = level.getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
-            if (meetAdvancement != null && !serverPlayer.getAdvancements().getOrStartProgress(meetAdvancement).isDone())
-                filteredDialogue = MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY;
-
-            DialogueRegistry.DialoguePool poolSelection = DialogueUtil.getWeightedEntry(WeightedRandomList.create(filteredDialogue), level.getRandom());
-            ResourceLocation dialogueLocation = dialogueRegistry.getKey(poolSelection);
-
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(
-                    dialogueLocation, NMLRegistries.GREETING_DIALOGUE_KEY.location(), Optional.empty()));
-            DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
-
-            // Because we are querying individual dialogues, the moon will wait for the longest one to run its course before sending another
-            int localDialogueTicks = getDialogueTicks(dialogueContainer.getTextLength());
+            int localDialogueTicks = getDialogueFromStream(registryKey,
+                (registry) -> function.apply(registry, serverPlayer))
+                .dispatch(level, serverPlayer);
             if (highestTicks.get() < localDialogueTicks)
                 highestTicks.set(localDialogueTicks);
 
-            // Grant Advancement
-            NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
         });
-        dialogueTicks = highestTicks.get();
+        applyDialogueLength(highestTicks.get());
         getState().getMoonConsumer().accept(this);
+    }
+
+    /*
+    * Dialogue Queries: Dialogue Queries provide different conditions for sending dialogue.
+    * The way I've set the system up is done in a way where you provide the query and it should
+    * allow you to sort through any kind of condition you wish to for dialogues and dispatch them automatically
+    * without having to write the same redundant code that gets the registry and resourcelocation
+    */
+    private final ResourceLocation MEET_MOON_ADVANCEMENT = NoMansLand.location("main/meet_friend_moon");
+    private DialoguePool greetingFilter(Registry<DialoguePool> registry, ServerPlayer serverPlayer) {
+        List<DialoguePool> filteredDialogue = registry.stream().filter(
+            (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
+
+        // Grant Advancement
+        AdvancementHolder meetAdvancement = level.getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
+        NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
+
+        if (meetAdvancement != null && !serverPlayer.getAdvancements().getOrStartProgress(meetAdvancement).isDone())
+            filteredDialogue = MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY;
+
+        return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
+    }
+
+
+    private DialoguePool leavingFilter(Registry<DialoguePool> registry, ServerPlayer serverPlayer) {
+        List<DialoguePool> filteredDialogue = registry.stream().filter(
+            (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
+
+        if (serverPlayer.isDeadOrDying())
+            filteredDialogue = MoonlightLeavingConditions.OnDeathConditional.ON_DEATH_ARRAY;
+
+        return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
+    }
+
+    // Simple dialogue filter used in most cases, just selects a random dialogue based on weight
+    private DialoguePool weightedFilter(Registry<DialoguePool> registry) {
+        return DialogueUtil.getWeightedEntry(registry.stream().toList(), level.getRandom());
     }
 
     public ServerPlayer getContextualPlayer() {
         for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);})) {
-            NoMansLand.LOGGER.info(level.getBlockState(serverPlayer.blockPosition()).getBlock());
             if (level.getBlockState(serverPlayer.blockPosition()).is(NMLBlocks.MOONLIGHT_BASIN))
                 return serverPlayer;
         }
@@ -242,90 +415,66 @@ public class FriendMoon extends SavedData {
     }
 
     public boolean sendContextualDialogue(ServerPlayer serverPlayer) {
-        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, NMLRegistries.CONTEXTUAL_DIALOGUE_KEY);
-        List<DialogueRegistry.DialoguePool> filteredDialogue = dialogueRegistry.stream().filter(
+        DialogueLocation dialogueLocation = getDialogueFromStream(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, (registry) -> {
+            List<DialoguePool> filteredDialogue = registry.stream().filter(
                 (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
 
-        // Talk about more interesting things if theyre available
-        ArrayList<DialogueRegistry.DialoguePool> conditionalDialogue = new ArrayList<>();
+            // Talk about more interesting things if theyre available
+            ArrayList<DialoguePool> conditionalDialogue = new ArrayList<>();
 
-        // Check Equipment
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack item = serverPlayer.getItemBySlot(slot);
-            if (!item.isEmpty()) {
+            // Check Equipment
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                ItemStack item = serverPlayer.getItemBySlot(slot);
+                if (!item.isEmpty()) {
+                    DialogueUtil.appendTags(
+                        item.getItem(), level.registryAccess(), Registries.ITEM,
+                        MoonlightContextualConditions.EquipmentContextualConditional.COMPILED_MAP,
+                        MoonlightContextualConditions.EquipmentContextualConditional.KEY_MAP,
+                        conditionalDialogue
+                    );
+                }
+            }
+
+            // Check Effects
+            serverPlayer.getActiveEffects().forEach((effect) -> {
                 DialogueUtil.appendTags(
-                    item.getItem(), level.registryAccess(), Registries.ITEM,
-                    MoonlightContextualConditions.EquipmentContextualConditional.COMPILED_MAP,
-                    MoonlightContextualConditions.EquipmentContextualConditional.KEY_MAP,
+                    effect.getEffect().value(), level.registryAccess(), Registries.MOB_EFFECT,
+                    MoonlightContextualConditions.EffectContextualCondition.COMPILED_MAP,
+                    MoonlightContextualConditions.EffectContextualCondition.KEY_MAP,
                     conditionalDialogue
                 );
-            }
-        }
+            });
 
-        // Check Effects
-        serverPlayer.getActiveEffects().forEach((effect) -> {
-            DialogueUtil.appendTags(
-                effect.getEffect().value(), level.registryAccess(), Registries.MOB_EFFECT,
-                MoonlightContextualConditions.EffectContextualCondition.COMPILED_MAP,
-                MoonlightContextualConditions.EffectContextualCondition.KEY_MAP,
-                conditionalDialogue
-            );
-        });
+            if (!conditionalDialogue.isEmpty())
+                filteredDialogue = conditionalDialogue;
 
-        if (!conditionalDialogue.isEmpty())
-            filteredDialogue = conditionalDialogue;
-
-        // Don't present contextual dialogue when there is none
-        if (filteredDialogue.isEmpty())
-            return false;
-
-        DialogueRegistry.DialoguePool poolSelection = DialogueUtil.getWeightedEntry(WeightedRandomList.create(filteredDialogue), level.getRandom());
-        ResourceLocation dialogueLocation = dialogueRegistry.getKey(poolSelection);
-
-        sendDialogue(dialogueLocation, NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, Optional.of(serverPlayer.getUUID()));
-        return true;
+            return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
+        }).setTargetPlayer(serverPlayer);
+        int dialogueLength = dialogueLocation.dispatch(level, getFriendshipPlayers());
+        applyDialogueLength(dialogueLength);
+        // if the dialogue length is greater than 0 it succeeded
+        return (dialogueLength > 0);
     }
 
-    public void sendRandomDialogue(ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey) {
+    public void sendRandomDialogue(ResourceKey<Registry<DialoguePool>> registryKey) {
         if (registryKey == null)
             return;
-        else if (registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY) {
+        // Contextual Dialogue
+        if (registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY) {
             ServerPlayer contextualPlayer = getContextualPlayer();
             if (contextualPlayer != null && sendContextualDialogue(contextualPlayer))
                 return;
         }
-        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
-        WeightedRandomList<DialogueRegistry.DialoguePool> weightedList = WeightedRandomList.create(dialogueRegistry.stream().toList());
-        sendDialogue(dialogueRegistry.getKey(DialogueUtil.getWeightedEntry(weightedList, level.getRandom())), registryKey);
+        // Passive / Otherwise
+        applyDialogueLength(
+            getDialogueFromStream(registryKey, this::weightedFilter)
+                .dispatch(level, getFriendshipPlayers())
+        );
     }
 
     public void resetDialogue(boolean clientSide) {
         if (!clientSide)
            forFriendshipPlayers((serverPlayer) -> {PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialogueResetPacket());});
         dialogueTicks = -1;
-    }
-
-    // not sure why this works but it does
-    float DELTA_TO_TICKS = ((60 / 20f) / 2f);
-
-    public int getDialogueTicks(int textLength) {
-        return (int) ((textLength * (DialogueState.DIALOGUE_SPEED) * DELTA_TO_TICKS))
-            + ((20) * level.getRandom().nextIntBetweenInclusive(5, 8));
-    }
-
-    public void sendDialogue(ResourceLocation dialogueLocation, ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey) {
-        this.sendDialogue(dialogueLocation, registryKey, Optional.empty());
-    }
-
-    public void sendDialogue(ResourceLocation dialogueLocation, ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey, Optional<UUID> playerUUID) {
-        forFriendshipPlayers((serverPlayer) -> {
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialoguePacket(dialogueLocation, registryKey.location(), playerUUID));
-        });
-
-        // calculate dialogue length in ticks
-        Registry<DialogueRegistry.DialoguePool> dialogueRegistry = DialogueUtil.getDialogueRegistry(level, registryKey);
-        DialogueContainer dialogueContainer = new DialogueContainer(dialogueRegistry.get(dialogueLocation).text());
-
-        dialogueTicks += getDialogueTicks(dialogueContainer.getTextLength());
     }
 }

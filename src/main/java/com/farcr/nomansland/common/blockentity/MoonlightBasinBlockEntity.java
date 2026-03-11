@@ -1,9 +1,11 @@
 package com.farcr.nomansland.common.blockentity;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -34,6 +36,7 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -84,11 +87,11 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             if (entity.NML$wasPreviouslyInspected())
                 return null;
 
-            ArrayList<DialogueRegistry.DialoguePool> list = new ArrayList<>();
+            ArrayList<DialoguePool> list = new ArrayList<>();
             // Item Offering List
             if (entity instanceof ItemEntity itemEntity) {
                 Item itemType = itemEntity.getItem().getItem().asItem();
-                list = DialogueUtil.iterateTags(
+                DialogueUtil.appendTags(
                     itemType, level.registryAccess(), Registries.ITEM,
                     MoonlightOfferingConditions.ItemOfferingConditional.COMPILED_MAP,
                     MoonlightOfferingConditions.ItemOfferingConditional.KEY_MAP,
@@ -96,7 +99,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 );
             }
             // Entity Offering List
-            list = DialogueUtil.iterateTags(
+            DialogueUtil.appendTags(
                 entity.getType(), level.registryAccess(), Registries.ENTITY_TYPE,
                 MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP,
                 MoonlightOfferingConditions.EntityOfferingConditional.KEY_MAP,
@@ -104,16 +107,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             );
 
             if (!list.isEmpty()) {
-                DialogueRegistry.DialoguePool pool = DialogueUtil.getWeightedEntry(WeightedRandomList.create(list), level.getRandom());
-                Optional<Registry<DialogueRegistry.DialoguePool>> optionalRegistry = level.registryAccess().registry(NMLRegistries.OFFERING_DIALOGUE_KEY);
-                if (optionalRegistry.isPresent())
-                    return new OfferingContext(entity, optionalRegistry.get().getKey(pool));
+                DialoguePool pool = list.stream().max(Comparator.comparingInt(p -> p.getWeight().asInt())).get();
+                Optional<Registry<DialoguePool>> optionalRegistry = level.registryAccess().registry(NMLRegistries.OFFERING_DIALOGUE_KEY);
+                if (optionalRegistry.isPresent()) return new OfferingContext(entity, optionalRegistry.get().getKey(pool));
             }
             return null;
         }, level, pos);
     }
 
-    private final float friendshipMaxRange = 9;
+    public static final float FRIENDSHIP_MAX_RANGE = 9;
 
     private OfferingContext inspectionContext;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
@@ -197,7 +199,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
         if (!level.isClientSide()) {
             if (FriendMoon.isNightTime(level)) {
-                AABB aabb = new AABB(pos).inflate(blockEntity.friendshipMaxRange);
+                AABB aabb = new AABB(pos).inflate(FRIENDSHIP_MAX_RANGE);
                 for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, aabb))
                     FriendMoon.grantPlayerFriendship(friendMoon, serverPlayer, pos);
                 if (friendMoon.shouldPulseUpdate())
@@ -208,6 +210,17 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
         if (!friendMoon.isActive()) {
             blockEntity.setInspectionContext(null, friendMoon);
+            if (!level.isClientSide()) {
+                ArrayList<BlockPos> candleList = getCandles(level, pos);
+                candleList.forEach((blockPos) -> {
+                    BlockState blockState = level.getBlockState(blockPos);
+                    if (blockState.getValue(MoonlightCandleBlock.CANDLE_LIT)
+                    && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock) {
+                        candleBlock.extinguish(null, blockState, level, blockPos);
+                        candleBlock.triggerSparkAnimation(blockState, level, blockPos, level.getRandom());
+                    }
+                });
+            }
             return;
         }
 
@@ -232,8 +245,11 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     entity.setDeltaMovement(
                         dist.multiply(new Vec3(new Vector3f(speed))));
 
-                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0))
-                        friendMoon.sendDialogue(inspectionContext.dialogueLocation(), NMLRegistries.OFFERING_DIALOGUE_KEY);
+                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0)) {
+                        int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
+                            .dispatch(level, friendMoon.getFriendshipPlayers());
+                        friendMoon.applyDialogueLength(dialogueLength - 80);
+                    }
                 }
             }
         } else
@@ -256,8 +272,9 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             } else if (friendMoon.getCandleTime() <= 0) {
                 candleList.forEach((blockPos) -> {
                     BlockState blockState = level.getBlockState(blockPos);
-                    if (!blockState.getValue(MoonlightCandleBlock.CANDLE_LIT))
-                        level.setBlock(blockPos, blockState.setValue(MoonlightCandleBlock.CANDLE_LIT, true), 3);
+                    if (!blockState.getValue(MoonlightCandleBlock.CANDLE_LIT)
+                    && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock)
+                        candleBlock.lightSpark(blockState, level, blockPos, level.getRandom());
                 });
             }
         }

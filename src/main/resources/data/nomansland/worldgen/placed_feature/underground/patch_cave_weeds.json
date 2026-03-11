@@ -2,42 +2,44 @@
     "feature": "nomansland:underground/patch_cave_weeds",
     "placement": [
       {
-        "type": "minecraft:count_on_every_layer",
-        "count": 1
-      },
-      {
-        "type": "minecraft:environment_scan",
-        "direction_of_search": "down",
-        "max_steps": 1,
-        "target_condition": {
-          "type": "minecraft:all_of",
-          "predicates": [
-            {
-              "type": "minecraft:matching_blocks",
-              "offset": [
-                0,
-                1,
-                0
-              ],
-              "blocks": [
-                "minecraft:air",
-                "minecraft:cave_air"
-              ]
-            },
-            {
-              "type": "minecraft:solid"
-            }
-          ]
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:count",
+      "count": 10
+    },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:uniform",
+        "max_inclusive": {
+          "absolute": 50
+        },
+        "min_inclusive": {
+          "absolute": -50
         }
-      },
-      {
-        "type": "minecraft:random_offset",
-        "xz_spread": 0,
-        "y_spread": 1
-      },
-      {
-        "type": "minecraft:biome"
       }
+    },
+    {
+      "type": "minecraft:environment_scan",
+      "allowed_search_condition": {
+        "type": "minecraft:matching_blocks",
+        "blocks": "minecraft:air"
+      },
+      "direction_of_search": "down",
+      "max_steps": 6,
+      "target_condition": {
+        "type": "minecraft:solid"
+      }
+    },
+    {
+      "type": "minecraft:random_offset",
+      "xz_spread": 0,
+      "y_spread": 1
+    },
+    {
+      "type": "minecraft:biome"
+    }
     ]
   }
   

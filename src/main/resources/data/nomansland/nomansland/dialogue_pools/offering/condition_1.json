@@ -1,8 +1,0 @@
-{
-    "condition": {
-        "type": "nomansland:item_conditional",
-        "items": "minecraft:diamond"
-    },
-    "weight": 1,
-    "text": "MOMNEY"
-}

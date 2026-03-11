@@ -49,6 +49,9 @@ public class NMLConfig {
     public static ModConfigSpec.IntValue MAX_LADDER_PLACEMENT_LENGTH;
     public static ModConfigSpec.IntValue MAX_RAIL_PLACMENT_LENGTH;
     public static ModConfigSpec.IntValue MAX_FLOATING_RAILS;
+    public static final String CATEGORY_MEETING_POINT = "meeting_point";
+    public static ModConfigSpec.IntValue MIN_MEETING_POINT_DISTANCE;
+    public static ModConfigSpec.IntValue MAX_MEETING_POINT_DISTANCE;
     public static final String CATEGORY_MISC = "miscellaneous";
     public static ModConfigSpec.DoubleValue BURIED_SPAWNING_CHANCE;
     public static ModConfigSpec.BooleanValue WALK_THROUGH_LEAVES;
@@ -207,6 +210,15 @@ public class NMLConfig {
         MAX_FLOATING_RAILS = COMMON_BUILDER
                 .comment("The maximum distance rails can be from a supported block before breaking.")
                 .defineInRange("maxFloatingRails", 5, 0, Integer.MAX_VALUE);
+        COMMON_BUILDER.pop();
+
+        COMMON_BUILDER.push(CATEGORY_MEETING_POINT);
+        MIN_MEETING_POINT_DISTANCE = COMMON_BUILDER
+            .comment("The minimum distance, from the center of the world, the Meeting Point should spawn at.")
+            .defineInRange("minMeetingPointDistance", 1000, 0, Integer.MAX_VALUE);
+        MAX_MEETING_POINT_DISTANCE = COMMON_BUILDER
+            .comment("The maximum distance, from the center of the world, the Meeting Point should spawn at.")
+            .defineInRange("maxMeetingPointDistance", 5000, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_MISC);

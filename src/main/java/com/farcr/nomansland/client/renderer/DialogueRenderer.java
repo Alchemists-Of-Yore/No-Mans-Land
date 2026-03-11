@@ -1,5 +1,6 @@
 package com.farcr.nomansland.client.renderer;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DialogueRenderer {
@@ -17,6 +19,7 @@ public class DialogueRenderer {
     public static DialogueState getCurrentState() {
         return currentState;
     }
+
     public static void setCurrentState(DialogueState newState) {
         currentState = newState;
     }
@@ -30,18 +33,28 @@ public class DialogueRenderer {
 
             float gameWidth = guiGraphics.guiWidth();
             float[] shaderColor = RenderSystem.getShaderColor();
-            RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], FriendMoonRenderer.getFriendMoonOpacity());
-
-            // Reset Text when the moon goes away
-            if (FriendMoonRenderer.getFriendMoonOpacity() <= 0) {
-                setCurrentState(null);
-                return;
-            }
 
             float deltaTime = deltaTracker.getGameTimeDeltaTicks();
             if (mc.isPaused())
                 deltaTime = 0f;
 
+            float totalOpacity = FriendMoonRenderer.getFriendMoonOpacity();
+            if (currentState.ticks != null) {
+                totalOpacity = Math.min(1, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
+                currentState.ticks -= deltaTime;
+            }
+
+            // Reset Text when the moon goes away
+            if (totalOpacity <= 0.1f) {
+                setCurrentState(null);
+                return;
+            }
+            float lastOpacity = shaderColor[3];
+            RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], totalOpacity);
+
+            // additional pause check to stop advancing dialogue on reset
+            if (currentState.isPaused())
+                deltaTime = 0f;
             List<String> constructedText = currentState.progressText(deltaTime);
 
             Font font = mc.gui.getFont();
@@ -55,25 +68,46 @@ public class DialogueRenderer {
 
             int yShift = Math.max(mc.gui.leftHeight, mc.gui.rightHeight);
             guiGraphics.pose().translate(0, (float)(guiGraphics.guiHeight() - Math.max(yShift, 72)) - actionBarDisplacement, 100.0F);
-            for (int i = (constructedText.size() - 1); i >= Math.max(0, constructedText.size() - 3); i--) {
+
+            float percentageUsable = .9f;
+            float center = (gameWidth / 2f);
+
+            ArrayList<String> totalStringSplits = new ArrayList<>();
+            for (int i = 0; i < constructedText.size(); i++) {
                 String text = constructedText.get(i);
                 if (!text.isEmpty()) {
-                    int leftPos = (int) ((gameWidth / 2f) - (font.width(text) / 2f));
-                    double alpha = mc.options.textBackgroundOpacity().get();
-                    if (alpha > 0) {
-                        int padding = 2;
-                        guiGraphics.fill(
-                            leftPos - padding, -padding,
-                            leftPos + font.width(text) + padding, TEXT_HEIGHT + padding,
-                            FastColor.ARGB32.colorFromFloat((float) alpha, 0f, 0f, 0f)
-                        );
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String[] splitText = text.split(" ");
+                    for (int j = 0; j < splitText.length; j++) {
+                        stringBuilder.append(splitText[j]).append(" ");
+                        float rightPos = center + font.width(stringBuilder.toString()) / 2f;
+                        if (rightPos > (gameWidth * percentageUsable) || (j >= splitText.length - 1)) {
+                            totalStringSplits.add(stringBuilder.toString());
+                            stringBuilder = new StringBuilder();
+                        }
                     }
-                    guiGraphics.drawString(font, text, leftPos, 0, DialogueUtil.FRIEND_MOON_TEXT_COLOR);
-                    guiGraphics.pose().translate(0, -(TEXT_HEIGHT + 4), 0);
                 }
             }
+            for (int i = (totalStringSplits.size() - 1); i >= Math.max(0, totalStringSplits.size() - 3); i--) {
+                String text = totalStringSplits.get(i);
+                int leftPos = (int) (center - (font.width(text) / 2f));
+
+                double alpha = mc.options.textBackgroundOpacity().get();
+                if (alpha > 0) {
+                    int padding = 2;
+                    guiGraphics.fill(
+                        leftPos - padding, -padding,
+                        leftPos + font.width(text) + padding, TEXT_HEIGHT + padding,
+                        FastColor.ARGB32.colorFromFloat((float) alpha, 0f, 0f, 0f)
+                    );
+                }
+
+                guiGraphics.drawString(font, text, leftPos, 0,
+                    (currentState.overrideColor != null) ? currentState.overrideColor : DialogueUtil.FRIEND_MOON_TEXT_COLOR);
+                guiGraphics.pose().translate(0, -(TEXT_HEIGHT + 4), 0);
+            }
             guiGraphics.pose().popPose();
-            RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], 1f);
+            RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], lastOpacity);
         }
     }
 }

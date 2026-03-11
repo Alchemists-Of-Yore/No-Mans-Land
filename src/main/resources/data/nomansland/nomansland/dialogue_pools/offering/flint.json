@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["minecraft:flint","nomansland:pebbles"]
+    },
+    "weight": 1,
+    "text": "The mark of sweet beginnings. To many, a first friend, reliable."
+}

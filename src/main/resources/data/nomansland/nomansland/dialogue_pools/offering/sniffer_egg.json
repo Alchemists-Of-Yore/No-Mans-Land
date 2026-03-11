@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:sniffer_egg"
+    },
+    "weight": 1,
+    "text": "Ancient Life dwells within - and with it, a connection with the past. \n Take good care of it."
+}

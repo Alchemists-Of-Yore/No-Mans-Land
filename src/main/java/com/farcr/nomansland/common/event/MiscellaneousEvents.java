@@ -21,6 +21,7 @@ import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.world.densityfunction.LazilyCachedDensityFunctionSeedifier;
 import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import com.farcr.nomansland.common.world.saved_data.WardedSpacesData;
+import com.farcr.nomansland.common.worldevent.SunDog;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -65,7 +66,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
@@ -97,8 +100,8 @@ public class MiscellaneousEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
 
-        boolean isExtinguishing = stack.is(ItemTags.SHOVELS) && NMLConfig.TORCH_EXTINGUISHING.get();
-        boolean isLighting = stack.is(NMLTags.FIRESTARTERS);
+        boolean isExtinguishing = stack.getItem().canPerformAction(stack, ItemAbilities.SHOVEL_DOUSE) && NMLConfig.TORCH_EXTINGUISHING.get();
+        boolean isLighting = stack.is(NMLTags.FIRESTARTERS) || stack.getItem().canPerformAction(stack, ItemAbilities.FIRESTARTER_LIGHT);
         if (!player.isSpectator() && (isExtinguishing || isLighting)) {
             for (ExtinguishableBlock holder : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
 
@@ -574,6 +577,17 @@ public class MiscellaneousEvents {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             FriendMoon.getOrDefault(serverLevel).tick();
             RegeneratingPotsData.getOrDefault(serverLevel).tick();
+            SunDog.getOrDefault(serverLevel).tick();
+        } else {
+            SunDog.Client.INSTANCE.tick();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);
+            FriendMoon.getOrDefault(serverPlayer.serverLevel()).updatePlayerFriendShadow(serverPlayer);
         }
     }
 

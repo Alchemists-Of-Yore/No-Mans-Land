@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#c:mushrooms"
+    },
+    "weight": 1,
+    "text": "A wise, tiny thing, perhaps witness to truths I am yet to grasp."
+}

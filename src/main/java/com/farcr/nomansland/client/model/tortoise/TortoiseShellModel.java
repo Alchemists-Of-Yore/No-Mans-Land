@@ -6,7 +6,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.LivingEntity;
 
 public class TortoiseShellModel extends EntityModel<LivingEntity> {
     public final ModelPart tortoiseShell;

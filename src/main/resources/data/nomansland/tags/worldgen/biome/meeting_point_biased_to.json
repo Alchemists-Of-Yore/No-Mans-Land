@@ -1,5 +1,7 @@
 {
   "values": [
-    "minecraft:plains"
+    "#c:is_plains",
+    "minecraft:meadow",
+    "nomansland:lavender_field"
   ]
 }

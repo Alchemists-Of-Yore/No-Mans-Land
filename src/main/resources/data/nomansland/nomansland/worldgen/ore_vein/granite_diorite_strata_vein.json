@@ -27,7 +27,7 @@
 
   "vein_radius": {
     "type": "constant",
-    "value": 80.0
+    "value": 40.0
   },
   "inverted": true,
 

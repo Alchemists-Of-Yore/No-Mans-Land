@@ -50,9 +50,6 @@ public class NMLTags {
     public static final TagKey<Biome> HAS_GRAVEL_SHORE = createBiomeTag("has_gravel_shore");
     public static final TagKey<Block> SUITABLE_TORTOISE_HOME = createBlockTag("tortoise_valid_home");
 
-    public static final TagKey<Item> MAKES_FARMLAND = createItemTag("makes_farmland");
-    public static final TagKey<Item> MAKES_PATHS = createItemTag("makes_paths");
-
     public static class FeatureAddition {
         // Broad brushes
         public static final TagKey<Biome> HAS_OVERWORLD_FOLIAGE = createBiomeTag("feature_addition/has_overworld_foliage");

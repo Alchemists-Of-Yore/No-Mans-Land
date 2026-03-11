@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#nomansland:alchemist_of_yore_origin"
+    },
+    "weight": 1,
+    "text": "You have found something I cherish deeply, what remains of those who came first - my former brothers in virtue. \n As always, I will be here to tell their tales."
+}

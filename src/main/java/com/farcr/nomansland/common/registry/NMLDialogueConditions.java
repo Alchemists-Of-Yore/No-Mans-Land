@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.registry;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
+import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.mojang.serialization.MapCodec;
@@ -25,4 +26,6 @@ public class NMLDialogueConditions {
 
     public static final DeferredHolder<MapCodec<? extends DialogueRegistry.DialogueCondition>, MapCodec<MoonlightGreetingConditions.FirstTimeGreetingConditional>> FIRST_TIME_GREETING_CONDITIONAL =
         DIALOGUE_CONDITION_REGISTRY.register("first_time", () -> MoonlightGreetingConditions.FirstTimeGreetingConditional.CODEC);
+    public static final DeferredHolder<MapCodec<? extends DialogueRegistry.DialogueCondition>, MapCodec<MoonlightLeavingConditions.OnDeathConditional>> ON_DEATH_LEAVING_CONDITIONAL =
+        DIALOGUE_CONDITION_REGISTRY.register("on_death", () -> MoonlightLeavingConditions.OnDeathConditional.CODEC);
 }

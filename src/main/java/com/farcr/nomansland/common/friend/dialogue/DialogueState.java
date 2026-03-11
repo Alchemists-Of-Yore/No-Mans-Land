@@ -3,13 +3,14 @@ package com.farcr.nomansland.common.friend.dialogue;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class DialogueState {
     public static final float DIALOGUE_SPEED = (1f / 60f) * 45f;
-    public static final String TRANSLATABLE_COMPONENT = ".friend_moon.dialogue.";
-    private static String translate(ResourceLocation location) {
-        return location.getNamespace() + TRANSLATABLE_COMPONENT + location.getPath();
+    public static final String TRANSLATABLE_COMPONENT = ".friend_moon.";
+    private static String translate(String registryName, ResourceLocation location) {
+        return location.getNamespace() + TRANSLATABLE_COMPONENT + registryName + "." + location.getPath();
     }
 
     public double progress = 0d;
@@ -17,14 +18,32 @@ public class DialogueState {
     public DialogueContainer originalDialogue;
     public DialogueContainer translateDialogue;
 
+    public @Nullable Float ticks;
+    public static final int FADE_TICKS = 20;
+    public void setTicks(float newTicks) {
+        this.ticks = newTicks;
+    }
+
+    private boolean paused = false;
+    public void pause() { paused = true; }
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public @Nullable Integer overrideColor;
+    public void setOverrideColor(int overrideColor) {
+        this.overrideColor = overrideColor;
+    }
+
     public DialogueState(
         ResourceLocation location,
-        DialogueRegistry.DialoguePool dialoguePool
+        String registryName,
+        DialoguePool dialoguePool
     ) {
         String defaultText = dialoguePool.text();
         originalDialogue = new DialogueContainer(defaultText);
         translateDialogue = new DialogueContainer(Language.getInstance()
-                .getOrDefault(translate(location), defaultText));
+                .getOrDefault(translate(registryName, location), defaultText));
     }
 
     public String currentLatest;

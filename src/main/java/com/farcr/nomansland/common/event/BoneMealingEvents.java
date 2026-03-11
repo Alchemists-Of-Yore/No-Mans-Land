@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.SpreadingSnowyDirtBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber(modid = NoMansLand.MODID)
@@ -32,7 +33,7 @@ public class BoneMealingEvents {
         ItemStack stack = event.getItemStack();
 
         //Sugarcane Cutting
-        if (event.getFace() != Direction.DOWN && stack.is(Items.SHEARS) && state.is(Blocks.SUGAR_CANE) && !player.isSpectator()) {
+        if (event.getFace() != Direction.DOWN && stack.getItem().canPerformAction(stack, ItemAbilities.SHEARS_TRIM) && state.is(Blocks.SUGAR_CANE) && !player.isSpectator()) {
             level.playSound(player, pos, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
             if (!level.isClientSide()) {
                 stack.hurtAndBreak(1, player, stack.getEquipmentSlot());
@@ -45,7 +46,7 @@ public class BoneMealingEvents {
         }
 
         //Vine Cutting
-        if (stack.is(Items.SHEARS) && state.is(Blocks.VINE) && !player.isSpectator()) {
+        if (stack.getItem().canPerformAction(stack, ItemAbilities.SHEARS_TRIM) && state.is(Blocks.VINE) && !player.isSpectator()) {
             level.playSound(player, pos, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
             if (!level.isClientSide()) {
                 stack.hurtAndBreak(1, player, stack.getEquipmentSlot());

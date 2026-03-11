@@ -1,9 +1,12 @@
 package com.farcr.nomansland.common.block.moonlight;
 
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -12,6 +15,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.AbstractCandleBlock;
@@ -28,6 +32,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -50,6 +55,28 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
             this.stateDefinition.any().setValue(CANDLE_LIT, false)
                 .setValue(WATERLOGGED, false)
         );
+    }
+
+    public void lightSpark(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        level.setBlock(pos, state.setValue(MoonlightCandleBlock.CANDLE_LIT, true), 3);
+        triggerSparkAnimation(state, level, pos, random);
+    }
+
+    public void triggerSparkAnimation(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (level.isClientSide)
+            lightSparkAnimation(state, level, pos, random);
+        else PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level, new ChunkPos(pos), new ClientboundCandleLightPacket(pos));
+    }
+
+    public void lightSparkAnimation(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        Vec3 offset = pos.getCenter().add(state.getOffset(level, pos));
+        for (int i = 0; i < random.nextInt(4, 8); i++) {
+            level.addParticle(
+                NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                offset.x, offset.y + 0.5f, offset.z,
+                0f, 0f, 0f
+            );
+        }
     }
 
     @Override
@@ -75,6 +102,14 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
                         1.0F + random.nextFloat(), (random.nextFloat() * 0.7F) + 0.3F, false);
                 }
             }
+            f = random.nextFloat();
+            if (f < 0.5f) {
+                level.addParticle(
+                    NMLParticleTypes.MOONLIGHT_FLAME.get(),
+                    offset.x, offset.y + .275f, offset.z,
+                    0f, 0f, 0f
+                );
+            }
         }
     }
 
@@ -91,6 +126,7 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
                     0F, 0F, 0F
                 );
             }
+            lightSparkAnimation(state, level, pos, level.random);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.extension.ChunkGeneratorStructureStateExtension;
 import com.farcr.nomansland.common.world.structure.MeetingPointStructurePlacement;
@@ -71,7 +72,7 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
                     int tries = 0;
                     while (closestBiome == null && tries < 10) {
                         double angle = random.nextDouble() * Math.PI * 2.0;
-                        double distance = random.nextInt(1000, 5000);
+                        double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
                         int x = (int) Math.round(Math.cos(angle) * distance);
                         int z = (int) Math.round(Math.sin(angle) * distance);
                         closestBiome = findBiome(x, z, preferredBiomes, biomeSearchGenerator);
@@ -80,7 +81,7 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
 
                     if (closestBiome == null) {
                         double angle = random.nextDouble() * Math.PI * 2.0;
-                        double distance = random.nextInt(1000, 5000);
+                        double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
                         int x = (int) Math.round(Math.cos(angle) * distance);
                         int z = (int) Math.round(Math.sin(angle) * distance);
                         return new ChunkPos(new BlockPos(x, 0, z));

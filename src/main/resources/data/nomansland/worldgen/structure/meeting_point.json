@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:jigsaw",
+  "start_pool": "nomansland:meeting_point/start",
+  "size": 10,
+  "max_distance_from_center": 64,
+  "biomes": "#nomansland:meeting_point_biased_to",
+  "step": "surface_structures",
+  "liquid_settings": "ignore_waterlogging",
+  "terrain_adaptation": "beard_thin",
+  "start_height": {
+    "absolute": 0
+  },
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "use_expansion_hack": false,
+  "spawn_overrides": {}
+}

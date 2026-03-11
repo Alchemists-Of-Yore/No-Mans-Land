@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#nomansland:admin_item"
+    },
+    "weight": 1,
+    "text": "You’re not supposed to have this. Is there something you need to tell me?"
+}

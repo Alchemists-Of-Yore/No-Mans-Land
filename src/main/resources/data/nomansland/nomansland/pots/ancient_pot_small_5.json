@@ -2,7 +2,8 @@
   "size": "small",
   "model": "nomansland:ancient_pots/ancient_pot_small_5",
   "shape": [
-    [1, 0, 1, 15, 16, 15]
+    [4, 0, 4, 12, 14, 12],
+    [6, 14, 6, 10, 16, 10]
   ],
   "traits": []
 }

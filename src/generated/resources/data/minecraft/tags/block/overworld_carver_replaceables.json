@@ -5,6 +5,8 @@
     "minecraft:coal_block",
     "minecraft:raw_gold_block",
     "nomansland:siltstone",
-    "nomansland:quartzite"
+    "nomansland:quartzite",
+    "minecraft:tuff",
+    "minecraft:coal_ore"
   ]
 }

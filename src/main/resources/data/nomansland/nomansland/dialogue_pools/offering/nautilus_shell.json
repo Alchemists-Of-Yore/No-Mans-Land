@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:nautilus_shell"
+    },
+    "weight": 1,
+    "text": "Once a mere home to some, but a prime example of nature’s perfection to me."
+}

@@ -9,8 +9,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public record PotVariant(PotSize size, ResourceLocation model, VoxelShape shape, List<PotTrait> traits) {
+public record PotVariant(PotSize size, ResourceLocation model, Optional<ResourceLocation> aliveModel, VoxelShape shape, List<PotTrait> traits) {
     public static final Codec<List<Double>> BOX_CODEC = Codec.DOUBLE.listOf(6, 6).comapFlatMap(
             list -> {
                 if (!(list.getFirst() > list.get(3)) && !(list.get(1) > list.get(4)) && !(list.get(2) > list.getLast())) {
@@ -36,6 +37,7 @@ public record PotVariant(PotSize size, ResourceLocation model, VoxelShape shape,
     public static final Codec<PotVariant> CODEC = RecordCodecBuilder.create(instance -> instance.group(
       PotSize.CODEC.fieldOf("size").forGetter(PotVariant::size),
       ResourceLocation.CODEC.fieldOf("model").forGetter(PotVariant::model),
+      ResourceLocation.CODEC.optionalFieldOf("alive_model").forGetter(PotVariant::aliveModel),
       VOXEL_SHAPE_CODEC.fieldOf("shape").forGetter(PotVariant::shape),
       PotTrait.CODEC.listOf().optionalFieldOf("traits", List.of()).forGetter(PotVariant::traits)
     ).apply(instance, PotVariant::new));

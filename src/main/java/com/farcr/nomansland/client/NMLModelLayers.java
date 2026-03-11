@@ -1,20 +1,22 @@
 package com.farcr.nomansland.client;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.model.*;
-import com.farcr.nomansland.client.model.armor.*;
-import com.farcr.nomansland.client.model.deer.*;
-import com.farcr.nomansland.client.model.goose.*;
-import com.farcr.nomansland.client.model.moose.*;
-import com.farcr.nomansland.client.model.tortoise.*;
+import com.farcr.nomansland.client.model.BillhookBassModel;
+import com.farcr.nomansland.client.model.BuriedModel;
+import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
+import com.farcr.nomansland.client.model.deer.DeerModel;
+import com.farcr.nomansland.client.model.goose.GooseModel;
+import com.farcr.nomansland.client.model.living_pot.LivingPotModel;
+import com.farcr.nomansland.client.model.moose.MooseModel;
+import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
+import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class NMLModelLayers {
 
     //Creatures
+    public static final ModelLayerLocation LIVING_POT_LAYER = new ModelLayerLocation(NoMansLand.location("living_pot"), "main");
     public static final ModelLayerLocation BURIED_LAYER = new ModelLayerLocation(NoMansLand.location("buried"), "main");
     public static final ModelLayerLocation MOOSE_LAYER = new ModelLayerLocation(NoMansLand.location("moose/maple"), "main");
     public static final ModelLayerLocation BASS_LAYER = new ModelLayerLocation(NoMansLand.location("bass"), "main");
@@ -28,6 +30,7 @@ public class NMLModelLayers {
     public static final ModelLayerLocation TORTOISE_SHELL_LAYER = new ModelLayerLocation(NoMansLand.location("tortoise_shell"), "main");
 
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(NMLModelLayers.LIVING_POT_LAYER, LivingPotModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BURIED_LAYER, BuriedModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.MOOSE_LAYER, MooseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BASS_LAYER, BillhookBassModel::createBodyLayer);

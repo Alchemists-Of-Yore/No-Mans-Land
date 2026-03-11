@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:emerald"
+    },
+    "weight": 1,
+    "text": "Valuable, to the smooth headed ones. Perhaps I could sell them my wisdom."
+}

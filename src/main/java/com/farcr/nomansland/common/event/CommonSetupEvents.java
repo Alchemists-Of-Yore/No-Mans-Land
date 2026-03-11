@@ -13,13 +13,16 @@ import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.*;
+import com.farcr.nomansland.common.networking.dialogue.*;
+import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -52,10 +55,12 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -118,6 +123,8 @@ public class CommonSetupEvents {
         event.dataPackRegistry(NMLRegistries.NEGATIVE_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.OFFERING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
         event.dataPackRegistry(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.LEAVING_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
+        event.dataPackRegistry(NMLRegistries.SPECIAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
 
         event.dataPackRegistry(NMLRegistries.BUDDY_FOOD_KEY, BuddyFood.CODEC, BuddyFood.CODEC);
     }
@@ -129,6 +136,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
+        event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
     }
 
@@ -140,7 +148,6 @@ public class CommonSetupEvents {
         event.register(EntityType.HUSK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.TORTOISE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Tortoise::checkTortoiseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.GOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.OCEAN_FLOOR, Goose::checkGooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-//        event.register(NMLEntities.BUDDY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Buddy::checkBuddySpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent
@@ -255,14 +262,29 @@ public class CommonSetupEvents {
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
-        registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
+        registrar.playToClient(ClientboundDialogueRegistrySyncPacket.TYPE, ClientboundDialogueRegistrySyncPacket.STREAM_CODEC, ClientboundDialogueRegistrySyncPacket::handleData);
+
+        // Friend Moon related packets
         registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
 
+        registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
+        registrar.playToClient(ClientboundMeetingPointPacket.TYPE, ClientboundMeetingPointPacket.STREAM_CODEC, ClientboundMeetingPointPacket::handleData);
+        registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
+
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
+
+        // sun dog update packet
+        registrar.playToClient(ClientboundSunDogStatePacket.TYPE, ClientboundSunDogStatePacket.STREAM_CODEC, ClientboundSunDogStatePacket::handleData);
     }
 
     @SubscribeEvent
     public static void onReload(AddReloadListenerEvent event) {
         event.addListener(new DialogueConditionCompiler(event.getRegistryAccess()));
+    }
+
+    @SubscribeEvent
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        event.getRelevantPlayers().forEach((player)
+            -> PacketDistributor.sendToPlayer(player, new ClientboundDialogueRegistrySyncPacket()));
     }
 }
