@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -67,20 +68,32 @@ public class InvertedBellBlock extends BaseEntityBlock {
         }
     }
 
+    private boolean onHit(Level level, BlockPos pos, Direction direction) {
+        if (direction.getAxis() != Direction.Axis.Y) {
+            if (!level.isClientSide && level.getBlockEntity(pos) instanceof InvertedBellBlockEntity ibbe) {
+                InvertedBellBlockEntity controller = ibbe.getController();
+                if (controller != null && controller.timer <= 0) {
+                    level.blockEvent(pos, controller.getBlockState().getBlock(), 1, direction.get2DDataValue());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     protected InteractionResult useWithoutItem(final BlockState state, final Level level, final BlockPos pos, final Player player, final BlockHitResult hitResult) {
         if (player.getMainHandItem().isEmpty()) {
-            if (hitResult.getDirection().getAxis() != Direction.Axis.Y) {
-                if (!level.isClientSide && level.getBlockEntity(pos) instanceof InvertedBellBlockEntity ibbe) {
-                    InvertedBellBlockEntity controller = ibbe.getController();
-                    if (controller != null && controller.timer <= 0) {
-                        level.blockEvent(pos, state.getBlock(), 1, hitResult.getDirection().get2DDataValue());
-                    }
-                }
+            if (this.onHit(level, pos, hitResult.getDirection())) {
                 return InteractionResult.SUCCESS;
             }
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
+    }
+
+    @Override
+    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+        this.onHit(level, hit.getBlockPos(), hit.getDirection());
     }
 
     @Override

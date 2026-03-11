@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.handler;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -14,6 +15,17 @@ import org.joml.Quaternionf;
 import java.io.IOException;
 
 public class InvertedBellClientHandler {
+    // bell swinging when interacted with
+    private static final int ANIMATION_DURATION = 100;
+    private static final double ANIMATION_DECAY = 0.7;
+    private static final double ANIMATION_INTENSITY = 0.25;
+    private static final double ANIMATION_SPEED = 0.25;
+
+    // shader / look slow
+    public static final int FADE_IN_TIME = InvertedBellServerHandler.TELEPORT_PLAYER_TIME; // 35
+    public static final int FADE_OUT_TIME = 20;
+    public static final int FADE_OUT_PAINFUL_TIME = InvertedBellServerHandler.FAILURE_NAUSEA_DURATION / 2; // 100
+
     public static InvertedBellClientHandler instance = new InvertedBellClientHandler();
     public PostChain postChain = null;
 
@@ -38,17 +50,19 @@ public class InvertedBellClientHandler {
         }
     }
 
-    public static final int FADE_IN_TIME = InvertedBellServerHandler.TELEPORT_WINDUP_TIME;
-    public static final int FADE_OUT_TIME = 20;
-    public static final int FADE_OUT_PAINFUL_TIME = InvertedBellServerHandler.FAILURE_NAUSEA_DURATION;
 
     private int timer;
     private State state = State.INACTIVE;
+
+    public State getState() {
+        return this.state;
+    }
 
     public void startFadeIn() {
         this.timer = 1;
         this.state = State.FADE_IN;
         Minecraft.getInstance().player.displayClientMessage(Component.literal("fading in"), true);
+        ((LivingEntityExtension)Minecraft.getInstance().player).nml$beginBellParalysis();
     }
 
     public void startFadeOut() {
@@ -72,7 +86,7 @@ public class InvertedBellClientHandler {
         if (animationTimer > 0) {
             animationTimer--;
         }
-        switch (state) {
+        switch (this.state) {
             case FADE_IN -> {
                 this.timer++;
                 // safeguard if packet explodes or something
@@ -96,6 +110,9 @@ public class InvertedBellClientHandler {
         }
         this.previousFade = this.fade;
         this.fade = (float) Mth.lerp(0.5, this.fade, this.getTargetFade());
+        if (this.fade < 1E-4) {
+            this.fade = 0;
+        }
     }
 
     public boolean isActive() {
@@ -103,12 +120,12 @@ public class InvertedBellClientHandler {
     }
 
     private float getTargetFade() {
-        return switch (this.state) {
+        return Math.clamp(switch (this.state) {
             case FADE_IN -> (float) this.timer / FADE_IN_TIME;
             case FADE_OUT -> 1 - (float) this.timer / FADE_OUT_TIME;
             case FADE_OUT_PAINFUL -> 1 - (float) this.timer / FADE_OUT_PAINFUL_TIME;
             default -> 0;
-        };
+        }, 0, 1);
     }
 
     public float getFade(float pt) {
@@ -129,10 +146,6 @@ public class InvertedBellClientHandler {
         animationTimer = ANIMATION_DURATION;
     }
 
-    private static final int ANIMATION_DURATION = 100;
-    private static final double ANIMATION_DECAY = 0.7;
-    private static final double ANIMATION_INTENSITY = 0.25;
-    private static final double ANIMATION_SPEED = 0.25;
     private float getAnimationAngle(float pt) {
         float t = animationTimer - pt;
         if (animationTimer > 0) {
@@ -144,13 +157,13 @@ public class InvertedBellClientHandler {
     }
 
     public @Nullable Quaternionf getAnimationRotation(float pt) {
-        if (this.direction != null) {
-            return (switch (this.direction) {
+        if (direction != null) {
+            return (switch (direction) {
                 case NORTH -> Axis.XN;
                 case SOUTH -> Axis.XP;
                 case EAST -> Axis.ZN;
                 case WEST -> Axis.ZP;
-                default -> throw new IllegalStateException("Unexpected value: " + this.direction);
+                default -> throw new IllegalStateException("Unexpected value: " + direction);
             }).rotation(this.getAnimationAngle(pt));
         }
         return null;

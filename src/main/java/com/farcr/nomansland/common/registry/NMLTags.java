@@ -36,6 +36,9 @@ public class NMLTags {
     public static final TagKey<Biome> OLD_GROWTH_FOREST = createBiomeTag("old_growth_forest");
     public static final TagKey<EntityType<?>> CANNOT_BE_PACIFIED = createEntityTag("cannot_be_pacified");
 
+    public static final TagKey<EntityType<?>> INVERTED_BELL_UNAFFECTED = createEntityTag("inverted_bell_unaffected");
+    public static final TagKey<EntityType<?>> INVERTED_BELL_REPULSED = createEntityTag("inverted_bell_repulsed");
+
     public static final TagKey<Biome> CAVES = createBiomeTag("caves");
     public static final TagKey<DamageType> IGNITES_FLAMMABLE = createDamageTypeTag("ignites_flammable");
     public static final TagKey<Biome> SPAWNS_MUD_FROGS = createBiomeTag("entity/spawns_mud_frogs");

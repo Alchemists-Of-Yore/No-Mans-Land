@@ -66,6 +66,7 @@
     "client.ItemStackMixin",
     "client.LevelRendererMixin",
     "client.LivingEntityRendererMixin",
+    "client.MouseHandlerMixin",
     "client.MusicManagerMixin",
     "client.RenderBuffersMixin",
     "client.SkinManagerMixin",
