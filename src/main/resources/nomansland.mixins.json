@@ -59,6 +59,7 @@
     "client.BrewingStandScreenMixin",
     "client.CapeRenderLayerMixin",
     "client.ClientLevelMixin",
+    "client.GameRendererMixin",
     "client.HumanoidModelMixin",
     "client.ItemRendererMixin",
     "client.ItemStackMixin",
