@@ -39,6 +39,10 @@ public class NMLBlockEntities {
         BLOCK_ENTITIES.register("moonlight_basin", () ->
             BlockEntityType.Builder.of(MoonlightBasinBlockEntity::new, NMLBlocks.MOONLIGHT_BASIN.get()).build(null));
 
+    public static final Supplier<BlockEntityType<InvertedBellBlockEntity>> INVERTED_BELL =
+        BLOCK_ENTITIES.register("inverted_bell", () ->
+                BlockEntityType.Builder.of(InvertedBellBlockEntity::new, NMLBlocks.INVERTED_BELL.get()).build(null));
+
     public static void addBlockEntities(final BlockEntityTypeAddBlocksEvent event) {
         event.modify(
                 BlockEntityType.SIGN,

@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -580,6 +579,9 @@ public class NMLBlocks {
     //Eggs
     public static final BlockDefinition<TortoiseEggBlock> TORTOISE_EGGS = register("tortoise_egg",
             () -> new TortoiseEggBlock((ofFullCopy(Blocks.TURTLE_EGG).randomTicks())));
+
+    public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = register("inverted_bell",
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
 
     public static <T extends Block> BlockDefinition<T> registerNoItem(String name, Supplier<T> block, BlockProperties properties) {
         DeferredBlock<T> deferred = BLOCKS.register(name, block);
