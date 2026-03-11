@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.renderer.entity;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -32,7 +33,9 @@ public class InvertedBellRenderer<T extends InvertedBellBlockEntity> implements 
         if (bell.isController()) {
             poseStack.pushPose();
 
-            Quaternionf rotation = bell.getAnimationRotation(pt);
+            // cursed to have a static value affect all bell block entities
+            // but there's only ever intended to be at most one on screen and this removes the pain of having a block entity thousands of blocks away ticking on the client
+            Quaternionf rotation = InvertedBellClientHandler.instance.getAnimationRotation(pt);
             if (rotation != null) {
                 poseStack.rotateAround(rotation, 0.5f, 2f, 0.5f);
             }

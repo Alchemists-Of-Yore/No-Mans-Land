@@ -71,8 +71,11 @@ public class InvertedBellBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(final BlockState state, final Level level, final BlockPos pos, final Player player, final BlockHitResult hitResult) {
         if (player.getMainHandItem().isEmpty()) {
             if (hitResult.getDirection().getAxis() != Direction.Axis.Y) {
-                if (!level.isClientSide) {
-                    level.blockEvent(pos, state.getBlock(), 1, hitResult.getDirection().get2DDataValue());
+                if (!level.isClientSide && level.getBlockEntity(pos) instanceof InvertedBellBlockEntity ibbe) {
+                    InvertedBellBlockEntity controller = ibbe.getController();
+                    if (controller != null && controller.timer <= 0) {
+                        level.blockEvent(pos, state.getBlock(), 1, hitResult.getDirection().get2DDataValue());
+                    }
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -100,7 +103,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellBlockEntity::tick) : null;
+        return createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellBlockEntity::tick);
     }
 
     @Override

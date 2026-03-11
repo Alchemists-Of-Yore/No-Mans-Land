@@ -20,10 +20,13 @@ import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
 import com.farcr.nomansland.common.networking.ClientboundSunDogStatePacket;
+import com.farcr.nomansland.common.networking.InvertedBellPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
-import com.farcr.nomansland.common.networking.friend.*;
+import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
+import com.farcr.nomansland.common.networking.friend.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -270,6 +273,8 @@ public class CommonSetupEvents {
 
         // sun dog update packet
         registrar.playToClient(ClientboundSunDogStatePacket.TYPE, ClientboundSunDogStatePacket.STREAM_CODEC, ClientboundSunDogStatePacket::handleData);
+
+        registrar.playToClient(InvertedBellPacket.TYPE, InvertedBellPacket.STREAM_CODEC, InvertedBellPacket::handleData);
     }
 
     @SubscribeEvent
