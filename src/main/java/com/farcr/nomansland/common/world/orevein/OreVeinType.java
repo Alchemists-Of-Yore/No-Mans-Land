@@ -47,7 +47,7 @@ import java.util.Optional;
       "probability": 1.0,
         * the generation order of the vein
         * higher values = generates later
-        * an integer. default: -2147483648 (minimum possible integer)
+        * an integer. default: 0
       "generation_order": 0,
 
         -- SIZE CONTROLS --
@@ -168,7 +168,7 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
                     Codec.INT.fieldOf("spacing").validate(OreVeinType::validateSpacing).forGetter(OreVeinType::spacing),
                     Codec.INT.fieldOf("separation").validate(OreVeinType::validateSeparation).forGetter(OreVeinType::separation),
                     Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(OreVeinType::probability),
-                    Codec.INT.optionalFieldOf("generationOrder", Integer.MIN_VALUE).forGetter(OreVeinType::generationOrder),
+                    Codec.INT.optionalFieldOf("generationOrder", 0).forGetter(OreVeinType::generationOrder),
                     // size controls
                     IntProvider.CODEC.fieldOf("radius").forGetter(OreVeinType::radius),
                     HeightProvider.CODEC.fieldOf("min_height").forGetter(OreVeinType::minHeight),
