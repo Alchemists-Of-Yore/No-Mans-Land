@@ -20,7 +20,7 @@ public class SanctuaryCell {
     public final int x;
     public final int z;
 
-    private boolean isValid = true;
+    private boolean isValid = false;
     private boolean attemptedToGenerate = false;
 
     @Nullable
@@ -67,22 +67,22 @@ public class SanctuaryCell {
             break;
         }
 
-        if (this.firstSanctuaryPos == null || this.secondSanctuaryPos == null) {
-            this.isValid = false;
+        if (this.firstSanctuaryPos != null && this.secondSanctuaryPos != null) {
+            this.isValid = true;
         }
 
         this.attemptedToGenerate = true;
     }
 
     private @Nullable Pair<BlockPos, Holder<Biome>> getSanctuaryPos(final ChunkGeneratorStructureState state, final RandomSource source, final RandomSource biomeSource) {
-        return this.locateValidPosition(state, SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH * source.nextDouble(), SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH * source.nextDouble(), biomeSource);
+        return this.locateValidPosition(state, SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), biomeSource);
     }
 
-    private Pair<BlockPos, Holder<Biome>> locateValidPosition(final ChunkGeneratorStructureState state, final double localX, final double localZ, final RandomSource biomeSource) {
+    private Pair<BlockPos, Holder<Biome>> locateValidPosition(final ChunkGeneratorStructureState state, final double localBlockX, final double localBlockZ, final RandomSource biomeSource) {
         return state.biomeSource.findBiomeHorizontal(
-                (int) ((this.x * SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + localX) * 16,
+                (int) ((this.x * SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockX),
                 64,
-                (int) ((this.z * SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + localZ) * 16,
+                (int) ((this.z * SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockZ),
                 32,
                 biome -> !biome.is(BiomeTags.IS_OCEAN) && !biome.is(BiomeTags.IS_RIVER),
                 biomeSource,
