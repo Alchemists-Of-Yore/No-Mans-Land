@@ -116,7 +116,10 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellBlockEntity::tick);
+        if (state.getValue(CONTROLLER)) {
+            return createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellBlockEntity::tick);
+        }
+        return null;
     }
 
     @Override

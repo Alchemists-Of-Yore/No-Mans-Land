@@ -177,8 +177,7 @@ public class InvertedBellServerHandler extends SavedData {
                     ClientboundDistantChunkPacket loadPacket = new ClientboundDistantChunkPacket(access.getPos().x, access.getPos().z);
                     ClientboundChunkBatchFinishedPacket chunkFinished = new ClientboundChunkBatchFinishedPacket(1);
                     this.teleportingPlayers.forEach(p -> {
-                        // todo somehow this explodes the chunks the player is currently standing within
-//                        PacketDistributor.sendToPlayer(p, loadPacket);
+                        PacketDistributor.sendToPlayer(p, loadPacket);
                         p.connection.send(ClientboundChunkBatchStartPacket.INSTANCE);
                         ((PlayerChunkSenderInvoker)p.connection.chunkSender).setUnacknowledgedBatches(
                                 ((PlayerChunkSenderInvoker)p.connection.chunkSender).getUnacknowledgedBatches() + 1
