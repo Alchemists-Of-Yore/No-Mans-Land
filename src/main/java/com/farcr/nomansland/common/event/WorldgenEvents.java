@@ -30,7 +30,11 @@ public class WorldgenEvents {
                 final SanctuaryCell cell = SanctuaryGridHandler.getCell(sl.getSeed(), chunkPos.getMinBlockX(), chunkPos.getMinBlockZ());
 
                 if (cell != null) {
-                    player.displayClientMessage(Component.literal("gridX " + cell.x + " gridZ " + cell.z), true);
+                    player.displayClientMessage(Component.literal("gridX " + cell.x)
+                            .append(" gridZ " + cell.z)
+                            .append(" valid " + cell.valid())
+                            .append(cell.valid() ? " firstChunkPos " + cell.getFirstSanctuaryPos().toString() : "")
+                            .append(cell.valid() ? " secondChunkPos " + cell.getSecondSanctuaryPos().toString() : ""), true);
                 }
             }
         }

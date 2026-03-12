@@ -18,6 +18,12 @@ import org.jetbrains.annotations.Nullable;
 public class InvertedBellBlockEntity extends BlockEntity {
     public static final int COOLDOWN = 100;
 
+    /*
+    * When generated -> grabs closest sanctuary pos -> populate cell blockpos for associated sanctuary pos -> done
+    * Attempts to grab sanctuary cell -> grabs chunk pos for first or second -> waits for chunk to generate ->
+    *
+    * */
+
     public BlockPos targetBell;
     private BlockPos controller;
     private boolean active = false;
@@ -144,7 +150,6 @@ public class InvertedBellBlockEntity extends BlockEntity {
             ibbe.timer--;
         }
     }
-
 
     @Override
     protected void saveAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {

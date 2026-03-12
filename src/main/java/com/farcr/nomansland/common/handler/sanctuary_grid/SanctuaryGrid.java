@@ -1,25 +1,41 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
+import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import org.jetbrains.annotations.NotNull;
 
 public class SanctuaryGrid {
 
-    public static final int SHIFT = 13; //2 ^ SHIFT == 8192
+    /**
+     * How many chunks long and tall a single cell is
+     */
+    public static final int CELL_SIDE_CHUNK_LENGTH = 32;
+    public static final int CELL_SIDE_BLOCK_LENGTH = CELL_SIDE_CHUNK_LENGTH * 16;
 
     private final Table<Integer, Integer, SanctuaryCell> grid;
 
-    public SanctuaryGrid() {
+    private final long levelSeed;
+
+    public SanctuaryGrid(final long levelSeed) {
         this.grid = HashBasedTable.create();
+        this.levelSeed = levelSeed;
     }
 
     public SanctuaryCell getCell(final int blockX, final int blockZ) {
-        return this.grid.get(blockX >> SHIFT, blockZ >> SHIFT);
+        return this.grid.get(Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH), Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH));
     }
 
-    public void generateCellIfAbsent(final int blockX, final int blockZ) {
-        final int cellX = blockX >> SHIFT; // should keep sign
-        final int cellZ = blockZ >> SHIFT; // should keep sign
+    /**
+     * Attempts to generate a sanctuary cell given the X and Z positions.
+     *
+     * @return The newly generated cell, or an already present one.
+     */
+    @NotNull
+    public SanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final SanctuaryRuinsStructurePlacement placement, final int blockX, final int blockZ) {
+        final int cellX = Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH); // should keep sign
+        final int cellZ = Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH); // should keep sign
 
         SanctuaryCell sanctuaryCell = this.grid.get(cellX, cellZ);
         if (sanctuaryCell == null) {
@@ -43,8 +59,10 @@ public class SanctuaryGrid {
                 }
             }
 
-            sanctuaryCell.generatePositions(adjacent);
+            sanctuaryCell.generatePositions(this.levelSeed, state, placement, adjacent);
         }
+
+        return sanctuaryCell;
     }
 
     public void clean() {
