@@ -1,6 +1,6 @@
 files:
   - source: /src/main/resources/assets/*/lang/en_us.json
-    translation: /%original_path%/lang/%locale_with_underscore%.json
+    translation: /%original_path%/%locale_with_underscore%.json
   - source: /src/generated/resources/assets/nomansland/lang/en_us.json
     translation: /src/main/resources/assets/nomansland/lang/%locale_with_underscore%.json
   - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/contextual/template.json
