@@ -19,6 +19,7 @@ import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 
 @IfModLoaded("sereneseasons")
 @IfModAbsent("snowrealmagic")
+@IfModAbsent("eclipticseasons")
 @Mixin(SeasonHooks.class)
 public class SeasonHooksMixin {
 
