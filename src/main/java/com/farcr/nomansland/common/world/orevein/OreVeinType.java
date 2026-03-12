@@ -45,6 +45,10 @@ import java.util.Optional;
         * the probability that a vein will be discarded completely.
         * a number between 0.0 and 1.0
       "probability": 1.0,
+        * the "priority" of the vein
+        * higher values = generates later, will override lower priority ones
+        * an integer. default: -2147483648 (minimum possible integer)
+      "priority": 0,
 
         -- SIZE CONTROLS --
         * the radius of the ore vein. an IntProvider
@@ -149,6 +153,7 @@ import java.util.Optional;
 public record OreVeinType(boolean sampleBiomeAtSurface,
                           Optional<HolderSet<Biome>> biomes,
                           int spacing, int separation, float probability,
+                          int priority,
                           IntProvider radius,
                           HeightProvider minHeight, HeightProvider maxHeight,
                           FloatProvider veinRadius, boolean invert,
@@ -163,6 +168,7 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
                     Codec.INT.fieldOf("spacing").validate(OreVeinType::validateSpacing).forGetter(OreVeinType::spacing),
                     Codec.INT.fieldOf("separation").validate(OreVeinType::validateSeparation).forGetter(OreVeinType::separation),
                     Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(OreVeinType::probability),
+                    Codec.INT.optionalFieldOf("priority", Integer.MIN_VALUE).forGetter(OreVeinType::priority),
                     // size controls
                     IntProvider.CODEC.fieldOf("radius").forGetter(OreVeinType::radius),
                     HeightProvider.CODEC.fieldOf("min_height").forGetter(OreVeinType::minHeight),
