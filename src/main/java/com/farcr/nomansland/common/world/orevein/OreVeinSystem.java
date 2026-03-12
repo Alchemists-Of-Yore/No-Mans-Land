@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.orevein;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.world.InterpolatedNoiseField;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
@@ -24,7 +23,6 @@ import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
-import net.neoforged.fml.loading.FMLLoader;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -132,10 +130,6 @@ public class OreVeinSystem {
 
         float veinRadius = type.veinRadius().sample(veinRandom);
         if (veinRadius <= 0) return Optional.empty();
-
-        // log vein position if in dev mode
-        if (!FMLLoader.isProduction())
-            NoMansLand.LOGGER.info("Generated ore vein of type {} at {} {} {}", typeHolder.getKey().location(), centerX, centerY, centerZ);
 
         return Optional.of(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, veinRadius));
     }
