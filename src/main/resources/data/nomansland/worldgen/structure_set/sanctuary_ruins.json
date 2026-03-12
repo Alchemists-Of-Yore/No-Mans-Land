@@ -1,0 +1,11 @@
+{
+  "structures": [
+    {
+      "structure": "nomansland:sanctuary_ruin",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "nomansland:sanctuary_ruin"
+  }
+}
