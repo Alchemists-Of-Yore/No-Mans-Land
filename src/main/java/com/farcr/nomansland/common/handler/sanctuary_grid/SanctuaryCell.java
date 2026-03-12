@@ -80,9 +80,9 @@ public class SanctuaryCell {
 
     private Pair<BlockPos, Holder<Biome>> locateValidPosition(final ChunkGeneratorStructureState state, final double localX, final double localZ, final RandomSource biomeSource) {
         return state.biomeSource.findBiomeHorizontal(
-                (int) ((this.x * SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + localX),
+                (int) ((this.x * SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + localX) * 16,
                 64,
-                (int) ((this.z * SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + localZ),
+                (int) ((this.z * SanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + localZ) * 16,
                 32,
                 biome -> !biome.is(BiomeTags.IS_OCEAN) && !biome.is(BiomeTags.IS_RIVER),
                 biomeSource,
