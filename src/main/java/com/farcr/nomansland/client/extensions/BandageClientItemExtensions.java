@@ -57,7 +57,7 @@ public class BandageClientItemExtensions implements IClientItemExtensions {
         float progress = 1 - (f / itemStack.getUseDuration(player));
         
         poseStack.pushPose();
-        poseStack.translate(-0.1 * flip, -0.66 + Mth.sin((progress * 20) + Mth.PI) / 30, -0.6 + Mth.cos((progress * 20) + Mth.PI) / 30);
+        poseStack.translate(-0.1 * flip, -0.66 + Mth.sin((progress * 25) + Mth.PI) / 30, -0.6 + Mth.cos((progress * 25) + Mth.PI) / 30);
         poseStack.mulPose(Axis.ZP.rotationDegrees(-93));
         poseStack.mulPose(Axis.XP.rotationDegrees(-5));
         poseStack.translate(-0.4 * flip, -0.4, 0);
@@ -74,8 +74,8 @@ public class BandageClientItemExtensions implements IClientItemExtensions {
         float f = player.getUseItemRemainingTicks() - partialTick + 1.0F;
         float progress = 1 - (f / itemStack.getUseDuration(player));
 
-        poseStack.translate(0.4 * flip, -0.7 + Mth.clamp(progress * 10, 0, 1) * 0.2 + Mth.sin(progress * 20) / 7, -0.6 + Mth.cos(progress * 20) / 5);
-        poseStack.mulPose(Axis.ZP.rotationDegrees((90 * Mth.clamp(progress * 10, 0, 1) + Mth.sin((progress * 20) + 6) * 8) * flip));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-20 + Mth.sin((progress * 20) + 6) * 8));
+        poseStack.translate(0.4 * flip, -0.9 + Mth.clamp(progress * 10, 0, 1) * 0.4 + Mth.sin(progress * 25) / 7, -0.6 + Mth.cos(progress * 25) / 5);
+        poseStack.mulPose(Axis.ZP.rotationDegrees((90 * Mth.clamp(progress * 10, 0, 1) + Mth.sin((progress * 25) + 6) * 8) * flip));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-20 + Mth.sin((progress * 25) + 6) * 8));
     }
 }
