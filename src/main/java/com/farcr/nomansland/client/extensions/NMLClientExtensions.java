@@ -28,5 +28,9 @@ public class NMLClientExtensions {
         event.registerItem(new LodestoneArmorClientItemExtensions(()->NMLArmorModels.TORTOISE_SHELL), NMLItems.TORTOISE_SHELL.get());
         event.registerItem(new PotClientItemExtensions(), NMLItems.ANCIENT_POT.get());
         event.registerItem(new PotClientItemExtensions(), NMLItems.LARGE_ANCIENT_POT.get());
+        event.registerItem(new BandageClientItemExtensions(), NMLItems.BANDAGE.get());
+        event.registerItem(new BandageClientItemExtensions(), NMLItems.MEDICINAL_BANDAGE.get());
+        event.registerItem(new BandageClientItemExtensions(), NMLItems.ANTIDOTE_BANDAGE.get());
+        event.registerItem(new BandageClientItemExtensions(), NMLItems.WARDING_BANDAGE.get());
     }
 }
