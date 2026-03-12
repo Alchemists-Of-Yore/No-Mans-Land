@@ -3,3 +3,17 @@ files:
     translation: /%original_path%/lang/%locale_with_underscore%.json
   - source: /src/generated/resources/assets/nomansland/lang/en_us.json
     translation: /src/main/resources/assets/nomansland/lang/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/contextual/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/contextual/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/greeting/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/greeting/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/leaving/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/leaving/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/negative/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/negative/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/offering/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/offering/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/passive/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/passive/%locale_with_underscore%.json
+  - source: /src/generated/resources/assets/nomansland/lang/nomansland/dialogue_pools/special/en_us.json
+    translation: /src/main/resources/assets/nomansland/lang/nomansland/dialogue_pools/special/%locale_with_underscore%.json
