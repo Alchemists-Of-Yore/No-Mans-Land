@@ -98,7 +98,7 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
             }
         }
         super.tick();
-        moose.getMoveControl().lookAtAndFaceTarget(moose.getTarget());
+        moose.lookAtAndFaceTarget(moose.getTarget());
     }
 
     @Override

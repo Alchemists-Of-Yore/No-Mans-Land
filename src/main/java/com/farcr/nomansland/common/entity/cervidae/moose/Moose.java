@@ -701,6 +701,29 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         }
     }
 
+    public void lookAtAndFaceTarget(Entity target) {
+        var moveControl = getMoveControl();
+        if (target == null || !target.isAlive()) {
+            moveControl.target = null;
+            return;
+        }
+        if (navigation.getPath() != null && !navigation.isDone()) {
+            moveControl.replaceBodyDirection(MooseMoveControl.BodyDirection.FACE_TARGET);
+        } else {
+            faceTarget(target);
+        }
+        getLookControl().setLookAt(target, 60.0F, 60.0F);
+        moveControl.target = target;
+    }
+
+    public void faceTarget(Entity target) {
+        double xTargetDiff = target.getX() - getX();
+        double zTargetDiff = target.getZ() - getZ();
+        float toTarget = (float) (Mth.atan2(zTargetDiff, xTargetDiff) * 180.0F / (float) Math.PI) - 90.0F;
+
+        setYRot(getMoveControl().rotlerp(getYRot(), toTarget, 30.0F));
+    }
+
     /**
      * Copied From & Matches {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
      */

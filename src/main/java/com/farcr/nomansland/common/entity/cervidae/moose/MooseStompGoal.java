@@ -85,6 +85,14 @@ public class MooseStompGoal extends Goal {
     }
 
     @Override
+    public void tick() {
+        if (stompTarget != null && stompTarget.isAlive()) {
+            moose.faceTarget(stompTarget);
+        }
+        super.tick();
+    }
+
+    @Override
     public void stop() {
         stompTarget = null;
     }

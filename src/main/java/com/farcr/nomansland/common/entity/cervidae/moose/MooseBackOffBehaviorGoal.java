@@ -31,13 +31,19 @@ public class MooseBackOffBehaviorGoal extends Goal {
 
     @Nullable
     protected Path path;
+    protected Entity avoidedTarget;
 
     public MooseBackOffBehaviorGoal(Moose moose, double speedModifier, float introvertDistance) {
         this.moose = moose;
         this.speedModifier = speedModifier;
         this.introvertDistance = introvertDistance;
         this.pathNav = moose.getNavigation();
-        setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 
     public boolean shouldAvoid(Entity entity) {
@@ -76,6 +82,7 @@ public class MooseBackOffBehaviorGoal extends Goal {
             return false;
         }
         path = pathNav.createPath(escapePos.x, escapePos.y, escapePos.z, 0);
+        this.avoidedTarget = avoidedTarget;
         return path != null;
     }
 
@@ -93,5 +100,6 @@ public class MooseBackOffBehaviorGoal extends Goal {
     @Override
     public void tick() {
         moose.getNavigation().setSpeedModifier(moose.getStompAdjustedMovementSpeed((float) speedModifier));
+        moose.lookAtAndFaceTarget(avoidedTarget);
     }
 }

@@ -12,6 +12,8 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.joml.Vector3d;
 
+import javax.annotation.Nonnull;
+
 /**
  * Copy of Malum's CultistMoveControl, which is a copy of Cappin's MoveControl.
  * Offers better movement interpolation and more precise body look control.
@@ -27,7 +29,7 @@ public class MooseMoveControl extends MoveControl {
     public final Moose moose;
 
     public BodyDirection direction = BodyDirection.DEFAULT;
-
+    public Entity target;
     public int strafeAdjustmentLimiter;
 
     public MooseMoveControl(Moose moose) {
@@ -157,36 +159,15 @@ public class MooseMoveControl extends MoveControl {
         if (direction.equals(BodyDirection.DISABLED)) {
             return;
         }
-        var target = moose.getTarget();
+        var target = this.target != null ? this.target : moose.getTarget();
         if (direction.equals(BodyDirection.FACE_TARGET) && target != null) {
-            faceTarget(target);
+            moose.faceTarget(target);
             return;
         }
         double xDiff = wantedX - moose.getX();
         double zDiff = wantedZ - moose.getZ();
         float movementAngle = (float) (Mth.atan2(zDiff, xDiff) * 180.0F / (float) Math.PI) - 90.0F;
         moose.setYRot(rotlerp(moose.getYRot(), movementAngle, 90.0F));
-    }
-
-    public void lookAtAndFaceTarget(Entity target) {
-        if (target == null) {
-            return;
-        }
-        var navigation = moose.getNavigation();
-        if (navigation.getPath() != null && !navigation.isDone()) {
-            replaceBodyDirection(BodyDirection.FACE_TARGET);
-        } else {
-            faceTarget(target);
-        }
-        moose.getLookControl().setLookAt(target, 60.0F, 60.0F);
-    }
-
-    public void faceTarget(Entity target) {
-        double xTargetDiff = target.getX() - moose.getX();
-        double zTargetDiff = target.getZ() - moose.getZ();
-        float toTarget = (float) (Mth.atan2(zTargetDiff, xTargetDiff) * 180.0F / (float) Math.PI) - 90.0F;
-
-        moose.setYRot(rotlerp(moose.getYRot(), toTarget, 90.0F));
     }
 
     public void tryJump(double xDiff, double yDiff, double zDiff) {
