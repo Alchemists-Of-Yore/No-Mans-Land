@@ -22,7 +22,7 @@ public class SanctuaryRuinsStructurePlacement extends StructurePlacement {
     @Override
     protected boolean isPlacementChunk(final ChunkGeneratorStructureState chunkGeneratorStructureState, final int chunkX, final int chunkZ) {
         final SanctuaryCell cell = SanctuaryGridHandler.generateOrGetCell(chunkGeneratorStructureState, this, chunkX * 16, chunkZ * 16);
-        if (!cell.valid()) {
+        if (!cell.isValid()) {
             return false;
         }
 

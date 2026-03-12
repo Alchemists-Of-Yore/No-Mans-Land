@@ -2,8 +2,14 @@ package com.farcr.nomansland.common.handler.sanctuary_grid;
 
 import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -13,9 +19,33 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 //wowee wow weeee
 public class SanctuaryCell implements Iterable<ChunkPos> {
+
+    public static Codec<SanctuaryCell> CODEC = RecordCodecBuilder.create(i ->
+            i.group(Codec.INT.fieldOf("x").forGetter(c -> c.x),
+                    Codec.INT.fieldOf("z").forGetter(c -> c.z),
+                    Codec.BOOL.fieldOf("valid").forGetter(c -> c.valid),
+                    Codec.BOOL.fieldOf("generated").forGetter(c -> c.attemptedToGenerate),
+                    Codec.LONG.optionalFieldOf("firstSanctuaryPos").forGetter(c ->
+                            c.firstSanctuaryPos == null ? Optional.empty() : Optional.of(c.firstSanctuaryPos.toLong())),
+                    Codec.LONG.optionalFieldOf("secondSanctuaryPos").forGetter(c ->
+                            c.secondSanctuaryPos == null ? Optional.empty() : Optional.of(c.secondSanctuaryPos.toLong()))
+            ).apply(i, (x, z, valid, generated, first, second) -> {
+                SanctuaryCell cell = new SanctuaryCell(x, z);
+
+                cell.valid = valid;
+                cell.attemptedToGenerate = generated;
+                if (valid) {
+                    cell.firstSanctuaryPos = new ChunkPos(first.get());
+                    cell.secondSanctuaryPos = new ChunkPos(second.get());
+                }
+
+                return cell;
+            })
+    );
 
     public static final int MIN_CHUNK_DISTANCE = 5;
     public static final int MAX_CHUNK_DISTANCE = 6_000;
@@ -23,7 +53,7 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
     public final int x;
     public final int z;
 
-    private boolean isValid = false;
+    private boolean valid = false;
     private boolean attemptedToGenerate = false;
 
     @Nullable
@@ -71,7 +101,7 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
         }
 
         if (this.firstSanctuaryPos != null && this.secondSanctuaryPos != null) {
-            this.isValid = true;
+            this.valid = true;
         }
 
         this.attemptedToGenerate = true;
@@ -96,8 +126,8 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
         return this.attemptedToGenerate;
     }
 
-    public boolean valid() {
-        return this.isValid;
+    public boolean isValid() {
+        return this.valid;
     }
 
     public boolean validGenChunk(final int checkChunkX, final int checkChunkZ) {
@@ -145,5 +175,13 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
                 };
             }
         };
+    }
+
+    public static SanctuaryCell deserialize(final CompoundTag data) {
+        return CODEC.decode(NbtOps.INSTANCE, data).getOrThrow().getFirst();
+    }
+
+    public Tag serialize() {
+        return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
     }
 }

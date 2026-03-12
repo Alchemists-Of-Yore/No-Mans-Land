@@ -4,12 +4,18 @@ import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacem
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SanctuaryGrid {
+public class SanctuaryGrid extends SavedData {
 
     /**
      * How many chunks long and tall a single cell is
@@ -65,6 +71,7 @@ public class SanctuaryGrid {
             sanctuaryCell.generatePositions(this.levelSeed, state, placement, adjacent);
         }
 
+        this.setDirty();
         return sanctuaryCell;
     }
 
@@ -89,7 +96,7 @@ public class SanctuaryGrid {
             for (int localZ = -1; localZ < 2; localZ++) {
                 final SanctuaryCell cell = this.grid.get(cellX + localX, cellZ + localZ);
 
-                if (cell != null && cell.valid()) {
+                if (cell != null && cell.isValid()) {
                     for (final ChunkPos sanctuaryPos : cell) {
                         mut.set(sanctuaryPos.getBlockX(8), blockPos.getY(), sanctuaryPos.getBlockZ(8));
                         if (closestChunk == null) {
@@ -113,5 +120,36 @@ public class SanctuaryGrid {
 
     public void clean() {
         this.grid.clear();
+    }
+
+    @ApiStatus.Internal
+    public Table<Integer, Integer, SanctuaryCell> getGrid() {
+        return this.grid;
+    }
+
+    public SanctuaryGrid deserialize(final CompoundTag data, final HolderLookup.Provider prov) {
+        this.clean(); //clear data and then repopulate
+
+        if (data.get("cells") instanceof final ListTag lt) {
+            for (final Tag tag : lt) {
+                final CompoundTag cellData = (CompoundTag) tag;
+                final SanctuaryCell cell = SanctuaryCell.deserialize(cellData);
+
+                this.grid.put(cell.x, cell.z, cell);
+            }
+        }
+
+        return this;
+    }
+
+    @Override
+    public CompoundTag save(final CompoundTag tag, final HolderLookup.Provider registries) {
+        final ListTag gridTag = new ListTag();
+        for (final SanctuaryCell value : this.grid.values()) {
+            gridTag.add(value.serialize());
+        }
+
+        tag.put("cells", gridTag);
+        return tag;
     }
 }

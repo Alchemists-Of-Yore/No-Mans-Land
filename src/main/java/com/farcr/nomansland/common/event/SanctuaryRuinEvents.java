@@ -7,17 +7,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber(modid = NoMansLand.MODID)
-public class WorldgenEvents {
+public class SanctuaryRuinEvents {
 
     @SubscribeEvent
     public static void onLevelTick(final LevelTickEvent.Pre preTick) {
@@ -32,11 +30,25 @@ public class WorldgenEvents {
                 if (cell != null) {
                     player.displayClientMessage(Component.literal("gridX " + cell.x)
                             .append(" gridZ " + cell.z)
-                            .append(" valid " + cell.valid())
-                            .append(cell.valid() ? " firstChunkPos " + cell.getFirstSanctuaryPos().toString() : "")
-                            .append(cell.valid() ? " secondChunkPos " + cell.getSecondSanctuaryPos().toString() : ""), true);
+                            .append(" valid " + cell.isValid())
+                            .append(cell.isValid() ? " firstChunkPos " + cell.getFirstSanctuaryPos().toString() : "")
+                            .append(cell.isValid() ? " secondChunkPos " + cell.getSecondSanctuaryPos().toString() : ""), true);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLevelLoad(final LevelEvent.Load onLoad) {
+        if (onLoad.getLevel() instanceof final ServerLevel sl) {
+            SanctuaryGridHandler.populateOrCreateData(sl);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnLoad(final LevelEvent.Unload onLoad) {
+        if (onLoad.getLevel() instanceof final ServerLevel sl) {
+            SanctuaryGridHandler.removeGrid(sl.getSeed());
         }
     }
 }
