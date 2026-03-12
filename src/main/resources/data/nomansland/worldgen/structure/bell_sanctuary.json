@@ -1,7 +1,7 @@
 {
   "type": "minecraft:jigsaw",
   "start_pool": "nomansland:bell_sanctuary/start",
-  "size": 1,
+  "size": 5,
   "max_distance_from_center": 1,
   "biomes": "#nomansland:valid_sanctuary_biomes",
   "step": "surface_structures",

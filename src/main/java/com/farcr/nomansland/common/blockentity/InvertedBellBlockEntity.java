@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class InvertedBellBlockEntity extends BlockEntity {
     public static final int COOLDOWN = 100;
 
-    private PositionState state = PositionState.DONT_SEARCH;
+    private PositionState state = PositionState.UNASSIGNED;
     private @Nullable ChunkPos targetArea;
     private @Nullable CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture;
     public @Nullable BlockPos targetBell;
@@ -208,10 +208,13 @@ public class InvertedBellBlockEntity extends BlockEntity {
         if (ibbe.targetAreaFuture != null) {
             if (ibbe.targetAreaFuture.isDone()) {
                 try {
-                    BlockPos otherPos = handleTheSearch(ibbe.targetAreaFuture);
-                    if (otherPos != null) {
-                        ibbe.targetBell = otherPos;
+                    InvertedBellBlockEntity otherIbbe = handleTheSearch(ibbe.targetAreaFuture);
+                    if (otherIbbe != null) {
+                        ibbe.targetBell = otherIbbe.getBlockPos();
                         ibbe.state = PositionState.BLOCK_POS;
+                        
+                        otherIbbe.state = PositionState.BLOCK_POS;
+                        otherIbbe.targetBell = ibbe.getBlockPos();
                     } else {
                         NoMansLand.LOGGER.error("Inverted Bell at {} mundanely failed to find pair around {}", pos, ibbe.targetArea);
                         ibbe.state = PositionState.DONT_SEARCH;
@@ -231,14 +234,14 @@ public class InvertedBellBlockEntity extends BlockEntity {
         }
     }
 
-    private static @Nullable BlockPos handleTheSearch(CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture) throws ExecutionException, InterruptedException {
+    private static @Nullable InvertedBellBlockEntity handleTheSearch(CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture) throws ExecutionException, InterruptedException {
         List<ChunkResult<ChunkAccess>> chunks = targetAreaFuture.get();
         for (ChunkResult<ChunkAccess> chunk : chunks) {
             if (chunk.isSuccess()) {
                 ChunkAccess access = chunk.orElseThrow(AssertionError::new);
                 for (BlockPos bePos : access.getBlockEntitiesPos()) {
                     if (access.getBlockEntity(bePos) instanceof InvertedBellBlockEntity ibbe && ibbe.isController()) {
-                        return bePos;
+                        return ibbe;
                     }
                 }
             }
