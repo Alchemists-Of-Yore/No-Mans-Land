@@ -2,6 +2,7 @@
   "spacing": 128,
   "separation": 64,
   "probability": 0.5,
+  "generationOrder": 33,
 
   "radius": {
     "type": "uniform",
