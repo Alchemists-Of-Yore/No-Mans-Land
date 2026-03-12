@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity.cervidae.moose;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,7 +22,7 @@ import java.util.EnumSet;
  */
 public class MooseIntrovertedBehaviorGoal extends Goal {
 
-    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(Moose.INTROVERT_DISTANCE);
 
     protected final Moose moose;
     protected final double speedModifier;
@@ -60,7 +61,7 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
         if (avoidedTarget == null) {
             return false;
         }
-        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, 8, 4, avoidedTarget.position());
+        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, Mth.floor(introvertDistance*2f), 6, avoidedTarget.position());
         if (escapePos == null) {
             return false;
         }

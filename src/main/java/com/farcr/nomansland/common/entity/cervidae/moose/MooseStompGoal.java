@@ -9,6 +9,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 
 /**
@@ -17,7 +18,7 @@ import javax.annotation.Nullable;
  */
 public class MooseStompGoal extends Goal {
 
-    private static final TargetingConditions STOMP_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+    private static final TargetingConditions STOMP_TARGETING = TargetingConditions.forNonCombat().range(Moose.STOMP_DISTANCE * 1.5f);
 
     protected final Moose moose;
     protected final float stompDistance;
@@ -28,6 +29,7 @@ public class MooseStompGoal extends Goal {
     public MooseStompGoal(Moose moose, float stompDistance) {
         this.moose = moose;
         this.stompDistance = stompDistance;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
     public boolean shouldStomp(Entity entity) {
@@ -71,6 +73,7 @@ public class MooseStompGoal extends Goal {
     @Override
     public void start() {
         moose.startStomping();
+        moose.getNavigation().stop();
     }
 
     @Override

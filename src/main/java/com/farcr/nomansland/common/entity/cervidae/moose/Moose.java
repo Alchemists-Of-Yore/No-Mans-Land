@@ -60,26 +60,30 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public static final byte EAT_EVENT = 7;
     public static final byte REJECT_FOOD_EVENT = 6;
 
-    private static final int STOMP_DURATION = 15;
-    private static final int STOMP_COOLDOWN = 100;
-    private static final int STOMP_FEAR_DURATION = 200;
-    private static final int STOMP_AGGRESSION_DELAY = 40;
-    private static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
-    private static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
+    protected static final int STOMP_DURATION = 15;
+    protected static final int STOMP_COOLDOWN = 100;
+    protected static final int STOMP_FEAR_DURATION = 200;
+    protected static final int STOMP_AGGRESSION_DELAY = 40;
+    protected static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
+    protected static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
 
-    private static final float STOMP_DISTANCE = 5f;
-    private static final float INTROVERT_DISTANCE = 10f;
-    private static final float LOOK_DISTANCE = 15f;
+    protected static final float STOMP_DISTANCE = 3f;
+    protected static final float INTROVERT_DISTANCE = 8f;
+    protected static final float LOOK_DISTANCE = 12f;
 
-    private static final int SADDLE_SHAKEOFF_DELAY = 10;
-    private static final int MINIMUM_TAME_ATTEMPTS = 4;
-    private static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
+    protected static final float IRRITATED_AGGRO_DISTANCE = 4f;
+    protected static final float ACTIVE_AGGRO_DISTANCE = 16f;
 
-    private static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
+    protected static final int SADDLE_SHAKEOFF_DELAY = 10;
+    protected static final int MINIMUM_TAME_ATTEMPTS = 4;
+    protected static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
+
+    protected static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
     public AnimationState stompAnimationState = new AnimationState();
     public AnimationState attackAnimationState = new AnimationState();
 
-    public MooseTargetManagementMemory targetMemory = new MooseTargetManagementMemory();
+    protected final MooseTargetManagementMemory targetMemory = new MooseTargetManagementMemory();
+    protected final MooseMovementData movementData = new MooseMovementData();
 
     public int antlerTimer;
 
@@ -95,6 +99,16 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     public Moose(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+        moveControl = new MooseMoveControl(this);
+    }
+
+    @Override
+    public @NotNull MooseMoveControl getMoveControl() {
+        return (MooseMoveControl) moveControl;
+    }
+
+    public MooseMovementData getMovementData() {
+        return movementData;
     }
 
     @Override
@@ -171,15 +185,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, e -> targetMemory.isUpsetAt(e)));
 
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new MooseMeleeAttackGoal(this, 1.75f));
-        goalSelector.addGoal(2, new MooseStompGoal(this, STOMP_DISTANCE));
+        goalSelector.addGoal(1, new MooseStompGoal(this, STOMP_DISTANCE));
+        goalSelector.addGoal(2, new MooseMeleeAttackGoal(this, 1.75f));
         goalSelector.addGoal(3, new ShedAntlersGoal(this));
-        goalSelector.addGoal(4, new MooseIntrovertedBehaviorGoal(this, 1.5f, INTROVERT_DISTANCE));
+        goalSelector.addGoal(4, new MooseIntrovertedBehaviorGoal(this, 1.25f, INTROVERT_DISTANCE));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE));
-        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE));
     }
-
 
     @Override
     public boolean hasAntlers() {
@@ -219,12 +232,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     @Override
     protected void customServerAiStep() {
         targetMemory.tick();
+        movementData.update();
         tickStompState();
         tickSaddleState();
         if (!isBaby()) {
             regrowLostAntlers(this);
         }
         super.customServerAiStep();
+        move(MoverType.SELF, movementData.getMotionVector());
     }
 
     protected void tickStompState() {
@@ -252,11 +267,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public void tickPostStompTargetSearch() {
         var level = level();
         if (level.getGameTime() % 4L == 0) {
-            float distance = STOMP_DISTANCE;
+            float distance = IRRITATED_AGGRO_DISTANCE;
             var attackArea = getBoundingBox().inflate(distance, 3.0, distance);
             var attackTargets = level.getEntitiesOfClass(LivingEntity.class, attackArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldAttackAfterStomp));
             for (LivingEntity target : attackTargets) {
-                targetMemory.addTarget(target, 200);
+                targetMemory.addTarget(target, 3600);
             }
         }
     }
