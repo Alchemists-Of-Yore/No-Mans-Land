@@ -10,10 +10,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
 
 public class BandageClientItemExtensions implements IClientItemExtensions {
     @Override
-    public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
+    public boolean applyForgeHandTransform(@NotNull PoseStack poseStack, LocalPlayer player, @NotNull HumanoidArm arm, @NotNull ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
 
         if (player.isUsingItem() && player.getUseItemRemainingTicks() > 0) {
             float flip = arm == HumanoidArm.RIGHT ? 1 : -1;
