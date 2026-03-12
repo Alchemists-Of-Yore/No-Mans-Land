@@ -54,7 +54,8 @@
     "integration.SeasonHooksMixin",
     "integration.SpoutBlockEntityMixin",
     "integration.TreeCutterMixin",
-    "integration.VanillaFluidTargetsMixin"
+    "integration.VanillaFluidTargetsMixin",
+    "sanctuary_ruins.ChunkGeneratorMixin"
   ],
   "client": [
     "client.AbstractSoundInstanceMixin",

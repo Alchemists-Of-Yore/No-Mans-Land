@@ -9,10 +9,13 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+
 //wowee wow weeee
-public class SanctuaryCell {
+public class SanctuaryCell implements Iterable<ChunkPos> {
 
     public static final int MIN_CHUNK_DISTANCE = 5;
     public static final int MAX_CHUNK_DISTANCE = 6_000;
@@ -113,5 +116,34 @@ public class SanctuaryCell {
 
     public @Nullable ChunkPos getSecondSanctuaryPos() {
         return this.secondSanctuaryPos;
+    }
+
+    @Override
+    public @NotNull Iterator<ChunkPos> iterator() {
+        return new Iterator<>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return this.i < 2;
+            }
+
+            @Override
+            public ChunkPos next() {
+                return switch (this.i) {
+                    case 0 -> {
+                        this.i++;
+                        yield SanctuaryCell.this.firstSanctuaryPos;
+                    }
+
+                    case 1 -> {
+                        this.i++;
+                        yield SanctuaryCell.this.secondSanctuaryPos;
+                    }
+
+                    default -> throw new IllegalStateException("Unexpected value: " + this.i);
+                };
+            }
+        };
     }
 }

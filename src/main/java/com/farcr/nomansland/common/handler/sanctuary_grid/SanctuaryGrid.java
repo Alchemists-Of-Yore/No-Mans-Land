@@ -3,15 +3,18 @@ package com.farcr.nomansland.common.handler.sanctuary_grid;
 import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SanctuaryGrid {
 
     /**
      * How many chunks long and tall a single cell is
      */
-    public static final int CELL_SIDE_CHUNK_LENGTH = 32;
+    public static final int CELL_SIDE_CHUNK_LENGTH = 500;
     public static final int CELL_SIDE_BLOCK_LENGTH = CELL_SIDE_CHUNK_LENGTH * 16;
 
     private final Table<Integer, Integer, SanctuaryCell> grid;
@@ -63,6 +66,49 @@ public class SanctuaryGrid {
         }
 
         return sanctuaryCell;
+    }
+
+    /**
+     * Attempts to get the closest sanctuary from the given block position. <p>
+     *     Searches in a 3x3 area of cells.
+     *
+     * @param blockPos the block position to center the search on.
+     * @return The chunk position of the nearest sanctuary, null if none were found.
+     */
+    @Nullable
+    public ChunkPos getClosestSanctuary3x3(final BlockPos blockPos) {
+        final int cellX = Math.floorDiv(blockPos.getX(), CELL_SIDE_BLOCK_LENGTH);
+        final int cellZ = Math.floorDiv(blockPos.getZ(), CELL_SIDE_BLOCK_LENGTH);
+
+        ChunkPos closestChunk = null;
+        double closestDistanceSqr = 0;
+
+        final BlockPos.MutableBlockPos mut = new BlockPos.MutableBlockPos();
+        //3x3 centered on given grid
+        for (int localX = -1; localX < 2; localX++) {
+            for (int localZ = -1; localZ < 2; localZ++) {
+                final SanctuaryCell cell = this.grid.get(cellX + localX, cellZ + localZ);
+
+                if (cell != null && cell.valid()) {
+                    for (final ChunkPos sanctuaryPos : cell) {
+                        mut.set(sanctuaryPos.getBlockX(8), blockPos.getY(), sanctuaryPos.getBlockZ(8));
+                        if (closestChunk == null) {
+                            closestChunk = sanctuaryPos;
+                            closestDistanceSqr = mut.distSqr(blockPos);
+                            continue;
+                        }
+
+                        final double testDistanceSqr = mut.distSqr(blockPos);
+                        if (testDistanceSqr < closestDistanceSqr) {
+                            closestDistanceSqr = testDistanceSqr;
+                            closestChunk = sanctuaryPos;
+                        }
+                    }
+                }
+            }
+        }
+
+        return closestChunk;
     }
 
     public void clean() {

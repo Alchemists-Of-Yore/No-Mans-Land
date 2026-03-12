@@ -1,0 +1,50 @@
+package com.farcr.nomansland.common.mixin.sanctuary_ruins;
+
+import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryGrid;
+import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryGridHandler;
+import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
+import java.util.Set;
+
+@Mixin(ChunkGenerator.class)
+public class ChunkGeneratorMixin {
+
+    @Inject(method = "findNearestMapStructure", at = @At(value = "INVOKE", target = "Ljava/util/Map$Entry;getKey()Ljava/lang/Object;", ordinal = 0))
+    private void nomansland$SanctuaryRuinsFinder(final ServerLevel level,
+                                                 final HolderSet<Structure> structure,
+                                                 final BlockPos pos,
+                                                 final int searchRadius,
+                                                 final boolean skipKnownStructures,
+                                                 final CallbackInfoReturnable<Pair<BlockPos, Holder<Structure>>> cir,
+                                                 @Local(name = "pair2") final LocalRef<Pair<BlockPos, Holder<Structure>>> localPair,
+                                                 @Local(name = "entry") final Map.Entry<StructurePlacement, Set<Holder<Structure>>> localEntry) {
+        final StructurePlacement placement = localEntry.getKey();
+        if (placement instanceof final SanctuaryRuinsStructurePlacement sanctPlacement) {
+            for (final Holder<Structure> iterStructure : localEntry.getValue()) {
+                final SanctuaryGrid grid = SanctuaryGridHandler.getGrid(level.getSeed());
+                final ChunkPos closest = grid.getClosestSanctuary3x3(pos);
+
+                if (closest != null) {
+                    localPair.set(new Pair<>(closest.getBlockAt(8, pos.getY(), 8), iterStructure));
+                    break;
+                }
+            }
+        }
+    }
+}
