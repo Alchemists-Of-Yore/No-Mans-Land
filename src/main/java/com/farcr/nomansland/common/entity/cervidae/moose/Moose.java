@@ -53,6 +53,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     private static final EntityDataAccessor<Boolean> DATA_HAS_ANTLERS = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_SADDLED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
 
+    public static final byte ADD_WARNING_FEEDBACK_EVENT = 12;
     public static final byte ADD_STOMP_FEEDBACK_EVENT = 11;
     public static final byte START_STOMP_EVENT = 10;
     public static final byte ATTACK_EVENT = 9;
@@ -60,25 +61,50 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     public static final byte EAT_EVENT = 7;
     public static final byte REJECT_FOOD_EVENT = 6;
 
+    //Controls how long a nearby entity has to stay within the stomp radius in order for the Moose to stomp
+    protected static final int STOMP_WINDUP = 30;
+    //Controls how close an entity has to be for the moose to consider stomping
+    protected static final float STOMP_DISTANCE = 7f;
+    //Controls how long the stomp action is considered to be. Should be equal to the animation length
     protected static final int STOMP_DURATION = 15;
-    protected static final int STOMP_COOLDOWN = 100;
-    protected static final int STOMP_FEAR_DURATION = 200;
-    protected static final int STOMP_AGGRESSION_DELAY = 40;
-    protected static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
-    protected static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
+    //Controls how long it takes before the moose can stomp again. Also applies after the moose attacks
+    protected static final int STOMP_COOLDOWN = 200;
+    //Controls how long certain mobs should be scared of the Moose after it stomps
+    protected static final int STOMP_FEAR_DURATION = 300;
+    //Controls how long after a stomp the moose should start looking for targets that haven't backed off.
+    protected static final int STOMP_AGGRO_DELAY = 40;
 
-    protected static final float STOMP_DISTANCE = 3f;
-    protected static final float INTROVERT_DISTANCE = 8f;
-    protected static final float LOOK_DISTANCE = 12f;
-
-    protected static final float IRRITATED_AGGRO_DISTANCE = 4f;
+    //Controls how long the moose will ignore nearby entities that it would normally attack for after a successful attack
+    protected static final int AGGRO_TIMEOUT = 100;
+    //Controls how long a nearby entity has to stay within the aggro radius in order for the Moose to start attacking them
+    protected static final int AGGRO_WINDUP = 60;
+    //Controls how close an entity has to be after the moose stomps for the moose to charge at it
+    protected static final float IRRITATED_AGGRO_DISTANCE = 6f;
+    //Controls how close an entity has to remain for the moose to continue charging at it. If the entity re-enters this radius, the moose will resume its charge
     protected static final float ACTIVE_AGGRO_DISTANCE = 16f;
 
+    //Multiplies the movement speed of the moose during the stomp state
+    protected static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
+    //Multiplies the movement speed of the moose for a short duration after it stomps
+    protected static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
+    //Multiplies the movement speed of the moose while it is being ridden by a player
+    protected static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
+
+    //Controls how far the moose will try to back away from the nearest target after it stomps, or after it attacks
+    protected static final float BACK_OFF_DISTANCE = 12f;
+    //Controls how long the moose will back off for after either stomping or attacking
+    protected static final int BACK_OFF_DURATION = 120;
+
+    //Controls how far the moose will look at players from
+    protected static final float LOOK_DISTANCE = 18f;
+
+    //Controls how long it takes before an un-pacified moose shakes off it's saddle
     protected static final int SADDLE_SHAKEOFF_DELAY = 10;
+    //Controls how many carrots must be fed to the moose before rolling for a successful taming attempt
     protected static final int MINIMUM_TAME_ATTEMPTS = 4;
+    //Controls the change for the moose to be pacified after being fed a carrot.
     protected static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
 
-    protected static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
     public AnimationState stompAnimationState = new AnimationState();
     public AnimationState attackAnimationState = new AnimationState();
 
@@ -87,11 +113,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     public int antlerTimer;
 
+    public int inAggroRadius;
+    public long mostRecentWarning;
+    public long mostRecentAttack;
+
     public boolean isStomping;
     public int stompTimer;
     public int stompCooldown;
-    public int stompFearDuration;
-    public int stompAggressionDelay;
+    public long mostRecentStomp;
 
     public int saddleShakeOffTimer;
 
@@ -126,11 +155,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
         compound.put("targetMemory", targetMemory.serializeNBT());
 
+        compound.putInt("InAggroRadius", inAggroRadius);
+        compound.putLong("MostRecentWarning", mostRecentWarning);
+        compound.putLong("MostRecentAttack", mostRecentAttack);
+
         compound.putBoolean("IsInStompState", isStomping);
         compound.putInt("StompTimer", stompTimer);
         compound.putInt("StompCooldown", stompCooldown);
-        compound.putInt("StompFearDuration", stompFearDuration);
-        compound.putInt("StompAggressionDelay", stompAggressionDelay);
+        compound.putLong("MostRecentStomp", mostRecentStomp);
 
         compound.putInt("SaddleShakeOffTimer", saddleShakeOffTimer);
 
@@ -145,11 +177,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
         targetMemory.deserializeNBT(compound.getCompound("targetMemory"));
 
+        inAggroRadius = compound.getInt("InAggroRadius");
+        mostRecentWarning = compound.getInt("MostRecentWarning");
+        mostRecentAttack = compound.getInt("MostRecentAttack");
+
         isStomping = compound.getBoolean("IsInStompState");
         stompTimer = compound.getInt("StompTimer");
         stompCooldown = compound.getInt("StompCooldown");
-        stompFearDuration = compound.getInt("StompFearDuration");
-        stompAggressionDelay = compound.getInt("StompAggressionDelay");
+        mostRecentStomp = compound.getInt("MostRecentStomp");
 
         saddleShakeOffTimer = compound.getInt("SaddleShakeOffTimer");
 
@@ -182,16 +217,16 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     protected void registerGoals() {
         super.registerGoals();
 
-        targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, e -> targetMemory.isUpsetAt(e)));
+        targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, (e) -> targetMemory.isUpsetAt(e)));
 
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new MooseStompGoal(this, STOMP_DISTANCE));
-        goalSelector.addGoal(2, new MooseMeleeAttackGoal(this, 1.75f));
+        goalSelector.addGoal(1, new MooseMeleeAttackGoal(this, 1.75f));
+        goalSelector.addGoal(2, new MooseStompGoal(this, STOMP_DISTANCE));
         goalSelector.addGoal(3, new ShedAntlersGoal(this));
-        goalSelector.addGoal(4, new MooseIntrovertedBehaviorGoal(this, 1.25f, INTROVERT_DISTANCE));
-        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
+        goalSelector.addGoal(4, new MooseBackOffBehaviorGoal(this, 0.25f, BACK_OFF_DISTANCE));
+        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.75f));
         goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE));
+        goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.005f));
     }
 
     @Override
@@ -243,15 +278,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     }
 
     protected void tickStompState() {
-        if (stompFearDuration > 0) {
-            stompFearDuration--;
-        }
-        if (stompAggressionDelay > 0) {
-            stompAggressionDelay--;
-        }
         if (stompCooldown > 0) {
             stompCooldown--;
-            if (stompAggressionDelay == 0) {
+            if (stompCooldown == 0) {
+                inAggroRadius = 0;
+            }
+            if (!hasAttackedRecently(AGGRO_TIMEOUT) && !hasStompedRecently(STOMP_AGGRO_DELAY)) {
                 tickPostStompTargetSearch();
             }
             return;
@@ -266,12 +298,27 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     public void tickPostStompTargetSearch() {
         var level = level();
-        if (level.getGameTime() % 4L == 0) {
+        int interval = 4;
+        if (level.getGameTime() % interval == 0) {
             float distance = IRRITATED_AGGRO_DISTANCE;
             var attackArea = getBoundingBox().inflate(distance, 3.0, distance);
             var attackTargets = level.getEntitiesOfClass(LivingEntity.class, attackArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldAttackAfterStomp));
-            for (LivingEntity target : attackTargets) {
-                targetMemory.addTarget(target, 3600);
+            if (attackTargets.isEmpty()) {
+                if (inAggroRadius > 0) {
+                    inAggroRadius = Math.max(inAggroRadius-interval*2, 0);
+                }
+            }
+            else {
+                inAggroRadius += interval;
+                if (inAggroRadius >= AGGRO_WINDUP/4) {
+                    tryShowWarning();
+                }
+                if (inAggroRadius >= AGGRO_WINDUP) {
+                    for (LivingEntity target : attackTargets) {
+                        targetMemory.addTarget(target, 3600);
+                    }
+                    inAggroRadius = 0;
+                }
             }
         }
     }
@@ -306,6 +353,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     @Override
     public void handleEntityEvent(byte id) {
         switch (id) {
+            case ADD_WARNING_FEEDBACK_EVENT -> spawnIrritationParticles();
             case ADD_STOMP_FEEDBACK_EVENT -> spawnStompParticles();
             case START_STOMP_EVENT -> stompAnimationState.start(tickCount);
             case ATTACK_EVENT -> attackAnimationState.start(tickCount);
@@ -350,6 +398,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
             if (level() instanceof ServerLevel serverLevel) {
                 EnchantmentHelper.doPostAttackEffects(serverLevel, target, damagesource);
             }
+            mostRecentAttack = level().getGameTime();
             return true;
         }
         return false;
@@ -384,7 +433,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
      */
     public static boolean shouldHostilesAvoid(LivingEntity underAllCircumstancesThisShouldBeTheMooseEntity) {
         if (underAllCircumstancesThisShouldBeTheMooseEntity instanceof Moose moose) {
-            return moose.shouldScareOffMonsters();
+            return moose.hasStompedRecently(Moose.STOMP_FEAR_DURATION);
         }
         return false;
     }
@@ -485,13 +534,38 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         }
     }
 
+    public boolean canStartStomp() {
+        return !isStomping && !isStompOnCooldown();
+    }
+
+    public boolean isStompOnCooldown() {
+        return stompCooldown > 0;
+    }
+
+    public boolean hasShownWarningRecently(int timeframe) {
+        return level().getGameTime() - mostRecentWarning < timeframe;
+    }
+
+    public boolean hasAttackedRecently(int timeframe) {
+        return level().getGameTime() - mostRecentAttack < timeframe;
+    }
+
+    public boolean hasStompedRecently(int timeframe) {
+        return level().getGameTime() - mostRecentStomp < timeframe;
+    }
+
+    public void tryShowWarning() {
+        if (hasShownWarningRecently(60)) {
+            return;
+        }
+        level().broadcastEntityEvent(this, Moose.ADD_WARNING_FEEDBACK_EVENT);
+        playSound(NMLSounds.MOOSE_SHOWS_WARNING.get(), 1.5f, 1 + random.nextFloat() * 0.3f);
+        mostRecentWarning = level().getGameTime();
+    }
+
     public void startStomping() {
         level().broadcastEntityEvent(this, Moose.START_STOMP_EVENT);
         isStomping = true;
-    }
-
-    public boolean canStartStomp() {
-        return !isStomping && stompCooldown == 0;
     }
 
     public void finalizeStomp() {
@@ -500,16 +574,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         isStomping = false;
         stompTimer = 0;
         setStompCooldown();
-        stompFearDuration = STOMP_FEAR_DURATION;
+        mostRecentStomp = level().getGameTime();
     }
 
     public void setStompCooldown() {
         stompCooldown = STOMP_COOLDOWN;
-        stompAggressionDelay = STOMP_AGGRESSION_DELAY;
-    }
-
-    public boolean shouldScareOffMonsters() {
-        return stompFearDuration > 0;
     }
 
     public boolean shouldAttackAfterStomp(Entity entity) {
@@ -653,6 +722,28 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
             double y = random.nextGaussian() * motion;
             double z = random.nextGaussian() * motion;
             level().addParticle(ParticleTypes.SMOKE, getRandomX(1.0F), getRandomY() + (double) 0.5F, getRandomZ(1.0F), x, y, z);
+        }
+    }
+
+    protected void spawnIrritationParticles() {
+        float forwardsYaw = yBodyRot - 180F;
+        float x = Mth.sin(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
+        float z = Mth.cos(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
+        float forwardsOffset = getBbWidth() * 0.9f;
+        var headPosition = position().add(x * forwardsOffset, getEyeHeight(), z * forwardsOffset);
+
+        float sideX = Mth.sin(-forwardsYaw * (float) (Math.PI / 180.0) - 1.57f);
+        float sideZ = Mth.cos(-forwardsYaw * (float) (Math.PI / 180.0) - 4.71f);
+
+        for (int i = 0; i < 20; i++) {
+            double sideOffset = 0.4f;
+            double xPos = headPosition.x + sideOffset * sideX;
+            double yPos = headPosition.y - i * 0.01f;
+            double zPos = headPosition.z + sideOffset * sideZ;
+            double xVelocity = (0.8f + random.nextFloat() * 0.2f) * x * 0.2f;
+            double yVelocity = -0.05F;
+            double zVelocity = (0.8f + random.nextFloat() * 0.2f) * z * 0.2f;
+            level().addParticle(ParticleTypes.SMOKE, xPos, yPos, zPos, xVelocity, yVelocity, zVelocity);
         }
     }
 

@@ -845,6 +845,17 @@
     ],
     "subtitle": "nomansland.subtitles.entity.moose.stomp"
   },
+  "entity.moose.warn": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/moose/warn1"
+      },
+      {
+        "name": "nomansland:entity/moose/warn2"
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.warn"
+  },
   "entity.moose.shed_antlers": {
     "sounds": [
       {

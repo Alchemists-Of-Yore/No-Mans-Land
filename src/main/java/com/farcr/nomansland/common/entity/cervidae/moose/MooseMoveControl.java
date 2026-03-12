@@ -169,6 +169,9 @@ public class MooseMoveControl extends MoveControl {
     }
 
     public void lookAtAndFaceTarget(Entity target) {
+        if (target == null) {
+            return;
+        }
         var navigation = moose.getNavigation();
         if (navigation.getPath() != null && !navigation.isDone()) {
             replaceBodyDirection(BodyDirection.FACE_TARGET);

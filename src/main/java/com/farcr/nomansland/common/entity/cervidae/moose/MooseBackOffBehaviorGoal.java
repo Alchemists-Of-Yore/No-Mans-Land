@@ -20,9 +20,9 @@ import java.util.EnumSet;
  * Behavior similar to {@link net.minecraft.world.entity.ai.goal.AvoidEntityGoal}
  * Avoids specified entities from a certain radius. Moves faster after stomping.
  */
-public class MooseIntrovertedBehaviorGoal extends Goal {
+public class MooseBackOffBehaviorGoal extends Goal {
 
-    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(Moose.INTROVERT_DISTANCE);
+    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(Moose.BACK_OFF_DISTANCE);
 
     protected final Moose moose;
     protected final double speedModifier;
@@ -32,7 +32,7 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
     @Nullable
     protected Path path;
 
-    public MooseIntrovertedBehaviorGoal(Moose moose, double speedModifier, float introvertDistance) {
+    public MooseBackOffBehaviorGoal(Moose moose, double speedModifier, float introvertDistance) {
         this.moose = moose;
         this.speedModifier = speedModifier;
         this.introvertDistance = introvertDistance;
@@ -40,8 +40,15 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
         setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
     }
 
-    public boolean shouldPassivelyAvoid(Entity entity) {
-        return !moose.isPacified() && entity instanceof Player;
+    public boolean shouldAvoid(Entity entity) {
+        if (moose.isPacified()) {
+            return false;
+        }
+        if (entity instanceof Player) {
+            int duration = Moose.BACK_OFF_DURATION;
+            return moose.hasStompedRecently(duration) || moose.hasAttackedRecently(duration);
+        }
+        return false;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
         var introvertArea = moose.getBoundingBox().inflate(introvertDistance, 3.0, introvertDistance);
         var level = moose
                 .level();
-        var avoided = level.getEntitiesOfClass(LivingEntity.class, introvertArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldPassivelyAvoid));
+        var avoided = level.getEntitiesOfClass(LivingEntity.class, introvertArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldAvoid));
 
         var avoidedTarget = level.getNearestEntity(
                 avoided, INTROVERT_TARGETING,
@@ -61,7 +68,7 @@ public class MooseIntrovertedBehaviorGoal extends Goal {
         if (avoidedTarget == null) {
             return false;
         }
-        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, Mth.floor(introvertDistance*2f), 6, avoidedTarget.position());
+        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, Mth.floor(introvertDistance), 6, avoidedTarget.position());
         if (escapePos == null) {
             return false;
         }

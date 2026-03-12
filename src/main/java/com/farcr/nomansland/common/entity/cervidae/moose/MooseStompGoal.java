@@ -22,6 +22,7 @@ public class MooseStompGoal extends Goal {
 
     protected final Moose moose;
     protected final float stompDistance;
+    protected int inStompRadius;
 
     @Nullable
     protected LivingEntity stompTarget;
@@ -29,7 +30,7 @@ public class MooseStompGoal extends Goal {
     public MooseStompGoal(Moose moose, float stompDistance) {
         this.moose = moose;
         this.stompDistance = stompDistance;
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
     public boolean shouldStomp(Entity entity) {
@@ -60,9 +61,15 @@ public class MooseStompGoal extends Goal {
                 moose, moose.getX(), moose.getY(), moose.getZ());
 
         if (stompTarget == null) {
+            if (inStompRadius > 0) {
+                inStompRadius--;
+            }
             return false;
         }
-        return moose.distanceTo(stompTarget) < stompDistance;
+        if (moose.distanceTo(stompTarget) < stompDistance) {
+            inStompRadius++;
+        }
+        return inStompRadius > Moose.STOMP_WINDUP;
     }
 
     @Override
@@ -74,6 +81,7 @@ public class MooseStompGoal extends Goal {
     public void start() {
         moose.startStomping();
         moose.getNavigation().stop();
+        inStompRadius = 0;
     }
 
     @Override
