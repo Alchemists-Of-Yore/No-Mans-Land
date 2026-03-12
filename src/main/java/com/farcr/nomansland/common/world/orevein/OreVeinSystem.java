@@ -65,12 +65,12 @@ public class OreVeinSystem {
 
         ObjectOpenHashSet<OreVeinInstance> oreVeinsInChunk = this.collectVeinsInChunk(level, chunk, context, random);
         if (oreVeinsInChunk.isEmpty()) return;
-        // sort by priorities.
-        // if priorities are equal, fallback to sort by manhattan distance to world origin
+        // sort by generation order.
+        // if generation orders are equal, fallback to sort by manhattan distance to world origin
         List<OreVeinInstance> sortedOreVeinsInChunk = oreVeinsInChunk
                 .stream()
                 .sorted(Comparator
-                        .comparingInt((OreVeinInstance instance) -> instance.type().priority())
+                        .comparingInt((OreVeinInstance instance) -> instance.type().generationOrder())
                         .thenComparingInt(instance -> Math.abs(instance.x) + Math.abs(instance.z)))
                 .toList();
         this.fill(sortedOreVeinsInChunk, level, chunk, random, defaultBlock);
