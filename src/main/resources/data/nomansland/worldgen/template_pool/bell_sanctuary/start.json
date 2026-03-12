@@ -4,7 +4,7 @@
     {
       "weight": 1,
       "element": {
-        "location": "nomansland:sanctuary_ruin/sanctuary_ruins_1",
+        "location": "nomansland:bell_sanctuary/bell_sanctuaries_1",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"

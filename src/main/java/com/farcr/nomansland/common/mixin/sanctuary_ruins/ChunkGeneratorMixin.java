@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.mixin.sanctuary_ruins;
 
-import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryGrid;
-import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryGridHandler;
-import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
+import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
+import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
+import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.datafixers.util.Pair;
@@ -35,10 +35,10 @@ public class ChunkGeneratorMixin {
                                                  @Local(name = "pair2") final LocalRef<Pair<BlockPos, Holder<Structure>>> localPair,
                                                  @Local(name = "entry") final Map.Entry<StructurePlacement, Set<Holder<Structure>>> localEntry) {
         final StructurePlacement placement = localEntry.getKey();
-        if (placement instanceof final SanctuaryRuinsStructurePlacement sanctPlacement) {
+        if (placement instanceof final BellSanctuaryStructurePlacement sanctPlacement) {
             for (final Holder<Structure> iterStructure : localEntry.getValue()) {
-                final SanctuaryGrid grid = SanctuaryGridHandler.getGrid(level.getSeed());
-                final ChunkPos closest = grid.getClosestSanctuary3x3(pos);
+                final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(level.getSeed());
+                final ChunkPos closest = grid.getClosestBellSanctuary3x3(pos);
 
                 if (closest != null) {
                     localPair.set(new Pair<>(closest.getBlockAt(8, pos.getY(), 8), iterStructure));

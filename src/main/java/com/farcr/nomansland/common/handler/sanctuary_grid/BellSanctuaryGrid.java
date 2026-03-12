@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
-import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
+import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import net.minecraft.core.BlockPos;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SanctuaryGrid extends SavedData {
+public class BellSanctuaryGrid extends SavedData {
 
     /**
      * How many chunks long and tall a single cell is
@@ -23,16 +23,16 @@ public class SanctuaryGrid extends SavedData {
     public static final int CELL_SIDE_CHUNK_LENGTH = 500;
     public static final int CELL_SIDE_BLOCK_LENGTH = CELL_SIDE_CHUNK_LENGTH * 16;
 
-    private final Table<Integer, Integer, SanctuaryCell> grid;
+    private final Table<Integer, Integer, BellSanctuaryCell> grid;
 
     private final long levelSeed;
 
-    public SanctuaryGrid(final long levelSeed) {
+    public BellSanctuaryGrid(final long levelSeed) {
         this.grid = HashBasedTable.create();
         this.levelSeed = levelSeed;
     }
 
-    public SanctuaryCell getCell(final int blockX, final int blockZ) {
+    public BellSanctuaryCell getCell(final int blockX, final int blockZ) {
         return this.grid.get(Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH), Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH));
     }
 
@@ -42,18 +42,18 @@ public class SanctuaryGrid extends SavedData {
      * @return The newly generated cell, or an already present one.
      */
     @NotNull
-    public SanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final SanctuaryRuinsStructurePlacement placement, final int blockX, final int blockZ) {
+    public BellSanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final BellSanctuaryStructurePlacement placement, final int blockX, final int blockZ) {
         final int cellX = Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH); // should keep sign
         final int cellZ = Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH); // should keep sign
 
-        SanctuaryCell sanctuaryCell = this.grid.get(cellX, cellZ);
+        BellSanctuaryCell sanctuaryCell = this.grid.get(cellX, cellZ);
         if (sanctuaryCell == null) {
-            sanctuaryCell = new SanctuaryCell(cellX, cellZ);
-            this.grid.put(cellX, cellZ, new SanctuaryCell(cellX, cellZ));
+            sanctuaryCell = new BellSanctuaryCell(cellX, cellZ);
+            this.grid.put(cellX, cellZ, new BellSanctuaryCell(cellX, cellZ));
         }
 
         if (!sanctuaryCell.hasAttemptedToGenerate()) {
-            final SanctuaryCell[][] adjacent = new SanctuaryCell[3][3];
+            final BellSanctuaryCell[][] adjacent = new BellSanctuaryCell[3][3];
 
             //-1 -> 1
             for (int adjX = -1; adjX < 2; adjX++) {
@@ -83,7 +83,7 @@ public class SanctuaryGrid extends SavedData {
      * @return The chunk position of the nearest sanctuary, null if none were found.
      */
     @Nullable
-    public ChunkPos getClosestSanctuary3x3(final BlockPos blockPos) {
+    public ChunkPos getClosestBellSanctuary3x3(final BlockPos blockPos) {
         final int cellX = Math.floorDiv(blockPos.getX(), CELL_SIDE_BLOCK_LENGTH);
         final int cellZ = Math.floorDiv(blockPos.getZ(), CELL_SIDE_BLOCK_LENGTH);
 
@@ -94,7 +94,7 @@ public class SanctuaryGrid extends SavedData {
         //3x3 centered on given grid
         for (int localX = -1; localX < 2; localX++) {
             for (int localZ = -1; localZ < 2; localZ++) {
-                final SanctuaryCell cell = this.grid.get(cellX + localX, cellZ + localZ);
+                final BellSanctuaryCell cell = this.grid.get(cellX + localX, cellZ + localZ);
 
                 if (cell != null && cell.isValid()) {
                     for (final ChunkPos sanctuaryPos : cell) {
@@ -123,17 +123,17 @@ public class SanctuaryGrid extends SavedData {
     }
 
     @ApiStatus.Internal
-    public Table<Integer, Integer, SanctuaryCell> getGrid() {
+    public Table<Integer, Integer, BellSanctuaryCell> getGrid() {
         return this.grid;
     }
 
-    public SanctuaryGrid deserialize(final CompoundTag data, final HolderLookup.Provider prov) {
+    public BellSanctuaryGrid deserialize(final CompoundTag data, final HolderLookup.Provider prov) {
         this.clean(); //clear data and then repopulate
 
         if (data.get("cells") instanceof final ListTag lt) {
             for (final Tag tag : lt) {
                 final CompoundTag cellData = (CompoundTag) tag;
-                final SanctuaryCell cell = SanctuaryCell.deserialize(cellData);
+                final BellSanctuaryCell cell = BellSanctuaryCell.deserialize(cellData);
 
                 this.grid.put(cell.x, cell.z, cell);
             }
@@ -145,7 +145,7 @@ public class SanctuaryGrid extends SavedData {
     @Override
     public CompoundTag save(final CompoundTag tag, final HolderLookup.Provider registries) {
         final ListTag gridTag = new ListTag();
-        for (final SanctuaryCell value : this.grid.values()) {
+        for (final BellSanctuaryCell value : this.grid.values()) {
             gridTag.add(value.serialize());
         }
 

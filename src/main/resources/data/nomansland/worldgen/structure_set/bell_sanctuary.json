@@ -1,0 +1,11 @@
+{
+  "structures": [
+    {
+      "structure": "nomansland:bell_sanctuary",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "nomansland:bell_sanctuary"
+  }
+}

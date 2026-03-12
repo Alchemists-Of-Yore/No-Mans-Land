@@ -1,9 +1,8 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
-import com.farcr.nomansland.common.world.structure.SanctuaryRuinsStructurePlacement;
+import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -21,33 +20,32 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Optional;
 
-//wowee wow weeee
-public class SanctuaryCell implements Iterable<ChunkPos> {
+public class BellSanctuaryCell implements Iterable<ChunkPos> {
 
-    public static Codec<SanctuaryCell> CODEC = RecordCodecBuilder.create(i ->
+    public static Codec<BellSanctuaryCell> CODEC = RecordCodecBuilder.create(i ->
             i.group(Codec.INT.fieldOf("x").forGetter(c -> c.x),
                     Codec.INT.fieldOf("z").forGetter(c -> c.z),
                     Codec.BOOL.fieldOf("valid").forGetter(c -> c.valid),
                     Codec.BOOL.fieldOf("generated").forGetter(c -> c.attemptedToGenerate),
-                    Codec.LONG.optionalFieldOf("firstSanctuaryPos").forGetter(c ->
-                            c.firstSanctuaryPos == null ? Optional.empty() : Optional.of(c.firstSanctuaryPos.toLong())),
-                    Codec.LONG.optionalFieldOf("secondSanctuaryPos").forGetter(c ->
-                            c.secondSanctuaryPos == null ? Optional.empty() : Optional.of(c.secondSanctuaryPos.toLong()))
+                    Codec.LONG.optionalFieldOf("firstBellSanctuaryPos").forGetter(c ->
+                            c.firstBellSanctuaryPos == null ? Optional.empty() : Optional.of(c.firstBellSanctuaryPos.toLong())),
+                    Codec.LONG.optionalFieldOf("secondBellSanctuaryPos").forGetter(c ->
+                            c.secondBellSanctuaryPos == null ? Optional.empty() : Optional.of(c.secondBellSanctuaryPos.toLong()))
             ).apply(i, (x, z, valid, generated, first, second) -> {
-                SanctuaryCell cell = new SanctuaryCell(x, z);
+                BellSanctuaryCell cell = new BellSanctuaryCell(x, z);
 
                 cell.valid = valid;
                 cell.attemptedToGenerate = generated;
                 if (valid) {
-                    cell.firstSanctuaryPos = new ChunkPos(first.get());
-                    cell.secondSanctuaryPos = new ChunkPos(second.get());
+                    cell.firstBellSanctuaryPos = new ChunkPos(first.get());
+                    cell.secondBellSanctuaryPos = new ChunkPos(second.get());
                 }
 
                 return cell;
             })
     );
 
-    public static final int MIN_CHUNK_DISTANCE = 5;
+    public static final int MIN_CHUNK_DISTANCE = 10;
     public static final int MAX_CHUNK_DISTANCE = 6_000;
 
     public final int x;
@@ -57,12 +55,12 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
     private boolean attemptedToGenerate = false;
 
     @Nullable
-    private ChunkPos firstSanctuaryPos;
+    private ChunkPos firstBellSanctuaryPos;
 
     @Nullable
-    private ChunkPos secondSanctuaryPos;
+    private ChunkPos secondBellSanctuaryPos;
 
-    public SanctuaryCell(final int x, final int z) {
+    public BellSanctuaryCell(final int x, final int z) {
         this.x = x;
         this.z = z;
     }
@@ -70,7 +68,7 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
     /**
      * Attempts to generate the pair of sanctuary positions for this cell, with the given adjacent cells for distance checks.
      */
-    public void generatePositions(final long levelSeed, final ChunkGeneratorStructureState state, final SanctuaryRuinsStructurePlacement placement, final SanctuaryCell[][] adjacentCells) {
+    public void generatePositions(final long levelSeed, final ChunkGeneratorStructureState state, final BellSanctuaryStructurePlacement placement, final BellSanctuaryCell[][] adjacentCells) {
         final long newSeed = (long) this.x * 341873128712L + (long) this.z * 132897987541L + levelSeed;
 
         final RandomSource source = RandomSource.create(newSeed);
@@ -95,12 +93,12 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
                 continue;
             }
 
-            this.firstSanctuaryPos = firstChunkPos;
-            this.secondSanctuaryPos = secondChunkPos;
+            this.firstBellSanctuaryPos = firstChunkPos;
+            this.secondBellSanctuaryPos = secondChunkPos;
             break;
         }
 
-        if (this.firstSanctuaryPos != null && this.secondSanctuaryPos != null) {
+        if (this.firstBellSanctuaryPos != null && this.secondBellSanctuaryPos != null) {
             this.valid = true;
         }
 
@@ -108,14 +106,14 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
     }
 
     private @Nullable Pair<BlockPos, Holder<Biome>> getSanctuaryPos(final ChunkGeneratorStructureState state, final RandomSource source, final RandomSource biomeSource) {
-        return this.locateValidPosition(state, SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), biomeSource);
+        return this.locateValidPosition(state, BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), biomeSource);
     }
 
     private Pair<BlockPos, Holder<Biome>> locateValidPosition(final ChunkGeneratorStructureState state, final double localBlockX, final double localBlockZ, final RandomSource biomeSource) {
         return state.biomeSource.findBiomeHorizontal(
-                (int) ((this.x * SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockX),
+                (int) ((this.x * BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockX),
                 64,
-                (int) ((this.z * SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockZ),
+                (int) ((this.z * BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockZ),
                 32,
                 biome -> !biome.is(BiomeTags.IS_OCEAN) && !biome.is(BiomeTags.IS_RIVER),
                 biomeSource,
@@ -132,20 +130,20 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
 
     public boolean validGenChunk(final int checkChunkX, final int checkChunkZ) {
         final ChunkPos checkPos = new ChunkPos(checkChunkX, checkChunkZ);
-        return checkPos.equals(this.firstSanctuaryPos) || checkPos.equals(this.secondSanctuaryPos);
+        return checkPos.equals(this.firstBellSanctuaryPos) || checkPos.equals(this.secondBellSanctuaryPos);
     }
 
     public boolean isBlockPosInside(final BlockPos pos) {
-        return Math.floorDiv(pos.getX(), SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.x
-                || Math.floorDiv(pos.getZ(), SanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.z;
+        return Math.floorDiv(pos.getX(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.x
+                || Math.floorDiv(pos.getZ(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.z;
     }
 
-    public @Nullable ChunkPos getFirstSanctuaryPos() {
-        return this.firstSanctuaryPos;
+    public @Nullable ChunkPos getFirstBellSanctuaryPos() {
+        return this.firstBellSanctuaryPos;
     }
 
-    public @Nullable ChunkPos getSecondSanctuaryPos() {
-        return this.secondSanctuaryPos;
+    public @Nullable ChunkPos getSecondBellSanctuaryPos() {
+        return this.secondBellSanctuaryPos;
     }
 
     @Override
@@ -163,12 +161,12 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
                 return switch (this.i) {
                     case 0 -> {
                         this.i++;
-                        yield SanctuaryCell.this.firstSanctuaryPos;
+                        yield BellSanctuaryCell.this.firstBellSanctuaryPos;
                     }
 
                     case 1 -> {
                         this.i++;
-                        yield SanctuaryCell.this.secondSanctuaryPos;
+                        yield BellSanctuaryCell.this.secondBellSanctuaryPos;
                     }
 
                     default -> throw new IllegalStateException("Unexpected value: " + this.i);
@@ -177,7 +175,7 @@ public class SanctuaryCell implements Iterable<ChunkPos> {
         };
     }
 
-    public static SanctuaryCell deserialize(final CompoundTag data) {
+    public static BellSanctuaryCell deserialize(final CompoundTag data) {
         return CODEC.decode(NbtOps.INSTANCE, data).getOrThrow().getFirst();
     }
 

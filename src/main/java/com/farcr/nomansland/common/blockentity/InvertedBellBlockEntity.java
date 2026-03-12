@@ -4,9 +4,9 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.common.block.InvertedBellBlock;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
-import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryCell;
-import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryGrid;
-import com.farcr.nomansland.common.handler.sanctuary_grid.SanctuaryGridHandler;
+import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell;
+import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
+import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
@@ -161,8 +161,8 @@ public class InvertedBellBlockEntity extends BlockEntity {
             ibbe.timer--;
         }
         if (level instanceof ServerLevel serverLevel) {
-            SanctuaryGrid grid = SanctuaryGridHandler.getGrid(serverLevel.getSeed());
-            SanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
+            BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
+            BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
             if (cell != null) {
                 switch (ibbe.state) {
                     case DONT_SEARCH -> {}
@@ -182,13 +182,13 @@ public class InvertedBellBlockEntity extends BlockEntity {
         }
     }
 
-    private static ChunkPos getLikelyOtherSanctuary(SanctuaryCell cell, BlockPos pos) {
-        double dd1 = cell.getFirstSanctuaryPos().distanceSquared(new ChunkPos(pos));
-        double dd2 = cell.getSecondSanctuaryPos().distanceSquared(new ChunkPos(pos));
+    private static ChunkPos getLikelyOtherSanctuary(BellSanctuaryCell cell, BlockPos pos) {
+        double dd1 = cell.getFirstBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
+        double dd2 = cell.getSecondBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
         if (dd1 > dd2) {
-            return cell.getFirstSanctuaryPos();
+            return cell.getFirstBellSanctuaryPos();
         } else {
-            return cell.getSecondSanctuaryPos();
+            return cell.getSecondBellSanctuaryPos();
         }
     }
 
