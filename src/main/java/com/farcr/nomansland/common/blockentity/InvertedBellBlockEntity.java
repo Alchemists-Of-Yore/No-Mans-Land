@@ -5,14 +5,11 @@ import com.farcr.nomansland.common.block.InvertedBellBlock;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -101,8 +98,6 @@ public class InvertedBellBlockEntity extends BlockEntity {
             }
             controller.timer = COOLDOWN;
         } else {
-            // todo proper sound
-            this.level.playSound(Minecraft.getInstance().player, this.getBlockPos(), SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
             InvertedBellClientHandler.instance.onHit(hitDirection);
         }
     }

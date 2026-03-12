@@ -2,12 +2,17 @@ package com.farcr.nomansland.client.handler;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
+import com.farcr.nomansland.common.extension.SoundInstanceExtension;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -61,20 +66,34 @@ public class InvertedBellClientHandler {
     public void startFadeIn() {
         this.timer = 1;
         this.state = State.FADE_IN;
-        Minecraft.getInstance().player.displayClientMessage(Component.literal("fading in"), true);
         ((LivingEntityExtension)Minecraft.getInstance().player).nml$beginBellParalysis();
+        SimpleSoundInstance sound = new SimpleSoundInstance(
+                SoundEvents.BELL_BLOCK.getLocation(),
+                SoundSource.BLOCKS,
+                1.0f,
+                0.5f,
+                SoundInstance.createUnseededRandom(),
+                false,
+                0,
+                SoundInstance.Attenuation.NONE,
+                0.0,
+                0.0,
+                0.0,
+                true
+        );
+        ((SoundInstanceExtension)sound).nml$setBypassDeafening(true);
+        Minecraft.getInstance().getSoundManager().play(sound);
     }
 
     public void startFadeOut() {
         this.timer = 1;
         this.state = State.FADE_OUT;
-        Minecraft.getInstance().player.displayClientMessage(Component.literal("fading out"), true);
     }
 
     public void startFadeOutPainful() {
         this.timer = 1;
         this.state = State.FADE_OUT_PAINFUL;
-        Minecraft.getInstance().player.displayClientMessage(Component.literal("oof outch owie :("), true);
+        Minecraft.getInstance().player.displayClientMessage(Component.translatable("block.nomansland.inverted_bell.bad_teleport"), true);
     }
 
     public void stop() {

@@ -8,11 +8,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public enum InvertedBellPacket implements CustomPacketPayload {
+public enum ClientboundInvertedBellPacket implements CustomPacketPayload {
     FADE_IN, FADE_OUT, FADE_OUT_PAINFUL;
-    public static final StreamCodec<FriendlyByteBuf, InvertedBellPacket> STREAM_CODEC = new EnumStreamCodec<>(InvertedBellPacket.class);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundInvertedBellPacket> STREAM_CODEC = new EnumStreamCodec<>(ClientboundInvertedBellPacket.class);
 
-    public static final Type<InvertedBellPacket> TYPE = new Type<>(NoMansLand.location("client/inverted_bell"));
+    public static final Type<ClientboundInvertedBellPacket> TYPE = new Type<>(NoMansLand.location("client/inverted_bell"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

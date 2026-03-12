@@ -2,11 +2,15 @@ package com.farcr.nomansland.common.handler;
 
 import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
-import com.farcr.nomansland.common.networking.InvertedBellPacket;
+import com.farcr.nomansland.common.mixin.PlayerChunkSenderInvoker;
+import com.farcr.nomansland.common.networking.ClientboundDistantChunkPacket;
+import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundChunkBatchFinishedPacket;
+import net.minecraft.network.protocol.game.ClientboundChunkBatchStartPacket;
 import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +25,7 @@ import net.minecraft.world.level.BlockCollisions;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipBlockStateContext;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
@@ -71,7 +76,7 @@ public class InvertedBellServerHandler extends SavedData {
                     level.getChunkSource().removeRegionTicket(TicketType.FORCED, offChunk, 2, offChunk);
                 }
             }
-            if (entry.chunkFutureIsFailure()) {
+            if (entry.chunkFutureIsFailure(level)) {
                 entry.stop(level);
                 it.remove();
             } else if (entry.tick(level)) {
@@ -129,7 +134,7 @@ public class InvertedBellServerHandler extends SavedData {
                     extension.nml$beginBellParalysis();
                 }
             });
-            this.teleportingPlayers.forEach(e -> PacketDistributor.sendToPlayer(e, InvertedBellPacket.FADE_IN));
+            this.teleportingPlayers.forEach(e -> PacketDistributor.sendToPlayer(e, ClientboundInvertedBellPacket.FADE_IN));
         }
 
         public void stop(ServerLevel level) {
@@ -157,7 +162,7 @@ public class InvertedBellServerHandler extends SavedData {
         }
 
         // return true if chunk future is a failure (targeting bell that does not exist)
-        public boolean chunkFutureIsFailure() {
+        public boolean chunkFutureIsFailure(ServerLevel level) {
             if (this.chunkFuture == null || !this.chunkFuture.isDone()) {
                 return false;
             }
@@ -168,11 +173,27 @@ public class InvertedBellServerHandler extends SavedData {
                 if (!(access.getBlockEntity(this.to) instanceof InvertedBellBlockEntity ibbe) || !ibbe.targetBell.equals(this.from)) {
                     return true;
                 }
+                if (access instanceof LevelChunk levelChunk) {
+                    ClientboundDistantChunkPacket loadPacket = new ClientboundDistantChunkPacket(access.getPos().x, access.getPos().z);
+                    ClientboundChunkBatchFinishedPacket chunkFinished = new ClientboundChunkBatchFinishedPacket(1);
+                    this.teleportingPlayers.forEach(p -> {
+                        // todo somehow this explodes the chunks the player is currently standing within
+//                        PacketDistributor.sendToPlayer(p, loadPacket);
+                        p.connection.send(ClientboundChunkBatchStartPacket.INSTANCE);
+                        ((PlayerChunkSenderInvoker)p.connection.chunkSender).setUnacknowledgedBatches(
+                                ((PlayerChunkSenderInvoker)p.connection.chunkSender).getUnacknowledgedBatches() + 1
+                        );
+                        PlayerChunkSenderInvoker.invokeSendChunk(p.connection, level, levelChunk);
+                        p.connection.send(chunkFinished);
+                    });
+                }
             } catch (ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
             return false;
         }
+
+
 
         public void teleportEntities(ServerLevel level) {
             ChunkPos centerChunk = new ChunkPos(this.to);
@@ -204,9 +225,9 @@ public class InvertedBellServerHandler extends SavedData {
             }
             for (ServerPlayer serverPlayer : this.teleportingPlayers) {
                 if (!this.doTeleportEntity(serverPlayer, level)) {
-                    PacketDistributor.sendToPlayer(serverPlayer, InvertedBellPacket.FADE_OUT_PAINFUL);
+                    PacketDistributor.sendToPlayer(serverPlayer, ClientboundInvertedBellPacket.FADE_OUT_PAINFUL);
                 } else {
-                    PacketDistributor.sendToPlayer(serverPlayer, InvertedBellPacket.FADE_OUT);
+                    PacketDistributor.sendToPlayer(serverPlayer, ClientboundInvertedBellPacket.FADE_OUT);
                 }
             }
         }

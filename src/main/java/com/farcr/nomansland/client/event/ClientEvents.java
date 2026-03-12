@@ -4,6 +4,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -25,6 +26,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
@@ -96,5 +98,13 @@ public class ClientEvents {
     public static void onClientTick(ClientTickEvent.Pre event) {
         if (Minecraft.getInstance().player == null) return;
         InvertedBellClientHandler.instance.tick();
+    }
+
+    @SubscribeEvent
+    public static void onClickEvent(InputEvent.InteractionKeyMappingTriggered event) {
+        if (((LivingEntityExtension)Minecraft.getInstance().player).nml$getBellParalysis() > 0) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
+        }
     }
 }

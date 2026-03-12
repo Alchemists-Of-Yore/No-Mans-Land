@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
@@ -22,7 +21,6 @@ import org.joml.Quaternionf;
 import java.util.List;
 
 public class InvertedBellRenderer<T extends InvertedBellBlockEntity> implements BlockEntityRenderer<T> {
-    public static final ResourceLocation TEXTURE = NoMansLand.location("textures/block/inverted_bell_temp.png");
     public static final ModelResourceLocation MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/inverted_bell_temp"));
 
     public InvertedBellRenderer(BlockEntityRendererProvider.Context context) {
