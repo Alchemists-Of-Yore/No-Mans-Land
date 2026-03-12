@@ -43,7 +43,7 @@ public class SanctuaryGrid {
             this.grid.put(cellX, cellZ, new SanctuaryCell(cellX, cellZ));
         }
 
-        if (sanctuaryCell.valid() && !sanctuaryCell.hasAttemptedToGenerate()) {
+        if (!sanctuaryCell.hasAttemptedToGenerate()) {
             final SanctuaryCell[][] adjacent = new SanctuaryCell[3][3];
 
             //-1 -> 1
