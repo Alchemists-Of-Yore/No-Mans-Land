@@ -11,12 +11,13 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 public class DialogueUtil {
     public static final int FRIEND_MOON_TEXT_COLOR = 9276752;
     public static final int NOBODY_CAME_TEXT_COLOR = 16711696;
-    public static Registry<DialogueRegistry.DialoguePool> getDialogueRegistry(Level level, ResourceKey<Registry<DialogueRegistry.DialoguePool>> resourceKey) {
+    public static Registry<DialoguePool> getDialogueRegistry(Level level, ResourceKey<Registry<DialoguePool>> resourceKey) {
         try {
             return level.registryAccess().registryOrThrow(resourceKey);
         } catch (IllegalStateException e) {
@@ -24,18 +25,26 @@ public class DialogueUtil {
         }
     }
 
+
+    public static DialoguePool getWeightedEntry(List<DialoguePool> list, RandomSource randomSource) {
+        if (list.isEmpty())
+            return null;
+        WeightedRandomList<DialoguePool> weightedRandomList = WeightedRandomList.create(list);
+        return getWeightedEntryInternal(weightedRandomList, randomSource);
+    }
+
     /* It's probably fine to make this recursive? lol??? */
-    public static DialogueRegistry.DialoguePool getWeightedEntry(WeightedRandomList<DialogueRegistry.DialoguePool> list, RandomSource randomSource) {
-        Optional<DialogueRegistry.DialoguePool> optionalDialogue = list.getRandom(randomSource);
-        return optionalDialogue.orElseGet(() -> getWeightedEntry(list, randomSource));
+    private static DialoguePool getWeightedEntryInternal(WeightedRandomList<DialoguePool> list, RandomSource randomSource) {
+        Optional<DialoguePool> optionalDialogue = list.getRandom(randomSource);
+        return optionalDialogue.orElseGet(() -> getWeightedEntryInternal(list, randomSource));
     }
 
     public static <T> void appendTags(
             T value, RegistryAccess registryAccess,
             ResourceKey<Registry<T>> registry,
-            HashMap<T, ArrayList<DialogueRegistry.DialoguePool>> map,
-            HashMap<TagKey<T>, ArrayList<DialogueRegistry.DialoguePool>> tagMap,
-            ArrayList<DialogueRegistry.DialoguePool> emptyPool
+            HashMap<T, ArrayList<DialoguePool>> map,
+            HashMap<TagKey<T>, ArrayList<DialoguePool>> tagMap,
+            ArrayList<DialoguePool> emptyPool
     ) {
         if (map.containsKey(value))
             emptyPool.addAll(map.get(value));

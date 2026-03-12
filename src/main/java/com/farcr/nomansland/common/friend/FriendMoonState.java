@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.friend;
 
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.core.Registry;
@@ -22,12 +23,12 @@ public enum FriendMoonState implements StringRepresentable {
     UPSET("upset", null, (moon) -> {});
 
     private final String name;
-    private final @Nullable ResourceKey<Registry<DialogueRegistry.DialoguePool>> dialoguePool;
+    private final @Nullable ResourceKey<Registry<DialoguePool>> dialoguePool;
     private final Consumer<FriendMoon> moonConsumer;
     public static final EnumCodec<FriendMoonState> CODEC = StringRepresentable.fromEnum(FriendMoonState::values);
     FriendMoonState(
         String name,
-        @Nullable ResourceKey<Registry<DialogueRegistry.DialoguePool>> dialoguePool,
+        @Nullable ResourceKey<Registry<DialoguePool>> dialoguePool,
         Consumer<FriendMoon> moonConsumer
     ) {
         this.name = name;
@@ -46,7 +47,7 @@ public enum FriendMoonState implements StringRepresentable {
     public @NotNull String getSerializedName() {
         return name;
     }
-    public @Nullable ResourceKey<Registry<DialogueRegistry.DialoguePool>> getDialoguePoolType() {
+    public @Nullable ResourceKey<Registry<DialoguePool>> getDialoguePoolType() {
         return dialoguePool;
     }
     public Consumer<FriendMoon> getMoonConsumer() {

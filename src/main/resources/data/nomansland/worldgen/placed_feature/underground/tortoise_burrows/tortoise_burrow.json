@@ -6,10 +6,6 @@
       "count": 10
     },
     {
-      "type": "minecraft:rarity_filter",
-      "chance": 3
-    },
-    {
       "type": "minecraft:in_square"
     },
     {
@@ -17,7 +13,7 @@
       "height": {
         "type": "minecraft:uniform",
         "max_inclusive": {
-          "below_top": 15
+          "absolute": 50
         },
         "min_inclusive": {
           "absolute": -20

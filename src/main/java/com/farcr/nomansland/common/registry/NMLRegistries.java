@@ -6,8 +6,9 @@ import com.farcr.nomansland.client.music.condition.MusicCondition;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
+import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.world.feature.decorator.BoulderDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.FallenTreeDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.PondDecoratorType;
@@ -49,7 +50,10 @@ public class NMLRegistries {
     public static final ResourceKey<Registry<DialoguePool>> NEGATIVE_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/negative"));
     public static final ResourceKey<Registry<DialoguePool>> OFFERING_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/offering"));
     public static final ResourceKey<Registry<DialoguePool>> CONTEXTUAL_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/contextual"));
+    public static final ResourceKey<Registry<DialoguePool>> LEAVING_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/leaving"));
     public static final ResourceKey<Registry<DialoguePool>> SPECIAL_DIALOGUE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("dialogue_pools/special"));
+
+    public static final ResourceKey<Registry<BuddyFood>> BUDDY_FOOD_KEY = ResourceKey.createRegistryKey(NoMansLand.location("buddy_food"));
 
     public static final ResourceKey<Registry<ExtinguishableBlock>> EXTINGUISHABLE_BLOCKS_KEY = ResourceKey.createRegistryKey(NoMansLand.location("extinguishable_blocks"));
     public static final Registry<ExtinguishableBlock> EXTINGUISHABLE_BLOCKS = new RegistryBuilder<>(EXTINGUISHABLE_BLOCKS_KEY).create();

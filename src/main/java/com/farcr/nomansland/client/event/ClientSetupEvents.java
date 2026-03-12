@@ -83,6 +83,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.GOOSE.get(), GooseRenderer::new);
         event.registerEntityRenderer(NMLEntities.MOOSE.get(), MooseRenderer::new);
         event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
+        event.registerEntityRenderer(NMLEntities.BUDDY.get(), BuddyRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.FIREBOMB.get(), FirebombRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_BOMB.get(), InkBombRenderer::new);

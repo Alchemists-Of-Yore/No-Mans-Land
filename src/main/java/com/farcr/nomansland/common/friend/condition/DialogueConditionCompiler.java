@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.friend.condition;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.google.gson.JsonObject;
@@ -18,17 +19,18 @@ import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 public class DialogueConditionCompiler implements PreparableReloadListener {
-    private RegistryAccess registryAccess;
+    private final RegistryAccess registryAccess;
     public DialogueConditionCompiler(RegistryAccess registryAccess) {
         this.registryAccess = registryAccess;
     }
 
-    public static final List<ResourceKey<Registry<DialogueRegistry.DialoguePool>>> REGISTRIES = List.of(
+    public static final List<ResourceKey<Registry<DialoguePool>>> REGISTRIES = List.of(
         NMLRegistries.GREETING_DIALOGUE_KEY,
         NMLRegistries.PASSIVE_DIALOGUE_KEY,
         NMLRegistries.OFFERING_DIALOGUE_KEY,
         NMLRegistries.NEGATIVE_DIALOGUE_KEY,
         NMLRegistries.CONTEXTUAL_DIALOGUE_KEY,
+        NMLRegistries.LEAVING_DIALOGUE_KEY,
         NMLRegistries.SPECIAL_DIALOGUE_KEY
     );
 
@@ -56,8 +58,8 @@ public class DialogueConditionCompiler implements PreparableReloadListener {
     }
 
     public void compileConditionMaps(Void data) {
-        for (ResourceKey<Registry<DialogueRegistry.DialoguePool>> registryKey : REGISTRIES) {
-            Registry<DialogueRegistry.DialoguePool> dialoguePools =
+        for (ResourceKey<Registry<DialoguePool>> registryKey : REGISTRIES) {
+            Registry<DialoguePool> dialoguePools =
                 registryAccess.registryOrThrow(registryKey);
             dialoguePools.forEach((dialoguePool) -> {
                 if (dialoguePool.condition().isPresent() && dialoguePool.condition().get().validate(registryKey)) {

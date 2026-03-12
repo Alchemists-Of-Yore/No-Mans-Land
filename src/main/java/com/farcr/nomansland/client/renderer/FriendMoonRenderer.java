@@ -238,7 +238,8 @@ public class FriendMoonRenderer {
                                     ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
                                         NoMansLand.location("nobody_came"),
                                         NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
-                                        Optional.of(player.getUUID())
+                                        Optional.of(player.getUUID()),
+                                        player.getRandom()
                                     );
                                     packet.applyPacket(player.level(), player);
                                     DialogueRenderer.getCurrentState()
@@ -352,7 +353,6 @@ public class FriendMoonRenderer {
         if (meetingPointContext.enabled() && FriendMoon.displayFriendShadow(player)) {
             float time = player.level().getTimeOfDay(partialTick);
             boolean visible = (time > NIGHT_TIME_THRESHOLD && time < (1 - NIGHT_TIME_THRESHOLD));
-            NoMansLand.LOGGER.info(player.level().getTimeOfDay(partialTick));
             if (clientBlockPos != null) {
                 AABB aabb = new AABB(clientBlockPos).inflate(MoonlightBasinBlockEntity.FRIENDSHIP_MAX_RANGE);
                 if (aabb.contains(player.position()))

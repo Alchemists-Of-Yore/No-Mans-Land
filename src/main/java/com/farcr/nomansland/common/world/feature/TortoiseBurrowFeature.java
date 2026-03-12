@@ -8,9 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.tazer.mixed_litter.VariantUtil;
 import dev.tazer.mixed_litter.registry.MLDataAttachmentTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.MobSpawnType;
@@ -61,7 +63,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                     offsetBlockPos = offsetBlockPos.relative(direction, 4);
                 }
                 if (offsetPos == maxOffset) {
-                    offsetBlockPos = offsetBlockPos.relative(direction, 3).below(2);
+                    offsetBlockPos = offsetBlockPos.relative(direction, 3).below(1);
                 }
                 Direction randomDirection = Direction.from2DDataValue(randomsource.nextInt(4));
                 while (randomDirection == direction || randomDirection == direction.getOpposite()) {

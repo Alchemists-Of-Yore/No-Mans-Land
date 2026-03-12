@@ -1,0 +1,9 @@
+{
+  "feature": "nomansland:field_mushroom_circle",
+  "placement": [
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    }
+  ]
+}

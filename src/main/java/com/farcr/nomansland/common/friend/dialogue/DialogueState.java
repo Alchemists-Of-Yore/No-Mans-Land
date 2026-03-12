@@ -2,11 +2,8 @@ package com.farcr.nomansland.common.friend.dialogue;
 
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
 
 public class DialogueState {
@@ -24,7 +21,13 @@ public class DialogueState {
     public @Nullable Float ticks;
     public static final int FADE_TICKS = 20;
     public void setTicks(float newTicks) {
-        this.ticks = newTicks + originalDialogue.getTextLength();
+        this.ticks = newTicks;
+    }
+
+    private boolean paused = false;
+    public void pause() { paused = true; }
+    public boolean isPaused() {
+        return paused;
     }
 
     public @Nullable Integer overrideColor;
@@ -35,7 +38,7 @@ public class DialogueState {
     public DialogueState(
         ResourceLocation location,
         String registryName,
-        DialogueRegistry.DialoguePool dialoguePool
+        DialoguePool dialoguePool
     ) {
         String defaultText = dialoguePool.text();
         originalDialogue = new DialogueContainer(defaultText);

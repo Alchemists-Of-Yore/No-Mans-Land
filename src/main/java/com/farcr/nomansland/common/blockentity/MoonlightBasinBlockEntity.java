@@ -1,9 +1,11 @@
 package com.farcr.nomansland.common.blockentity;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -85,7 +87,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             if (entity.NML$wasPreviouslyInspected())
                 return null;
 
-            ArrayList<DialogueRegistry.DialoguePool> list = new ArrayList<>();
+            ArrayList<DialoguePool> list = new ArrayList<>();
             // Item Offering List
             if (entity instanceof ItemEntity itemEntity) {
                 Item itemType = itemEntity.getItem().getItem().asItem();
@@ -105,8 +107,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             );
 
             if (!list.isEmpty()) {
-                DialogueRegistry.DialoguePool pool = list.stream().max(Comparator.comparingInt(p -> p.getWeight().asInt())).get();
-                Optional<Registry<DialogueRegistry.DialoguePool>> optionalRegistry = level.registryAccess().registry(NMLRegistries.OFFERING_DIALOGUE_KEY);
+                DialoguePool pool = list.stream().max(Comparator.comparingInt(p -> p.getWeight().asInt())).get();
+                Optional<Registry<DialoguePool>> optionalRegistry = level.registryAccess().registry(NMLRegistries.OFFERING_DIALOGUE_KEY);
                 if (optionalRegistry.isPresent()) return new OfferingContext(entity, optionalRegistry.get().getKey(pool));
             }
             return null;
@@ -226,6 +228,13 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         if (friendMoon.getState() == FriendMoonState.OFFERING) {
             OfferingContext inspectionContext = blockEntity.inspectionContext;
             if (inspectionContext != null && inspectionContext.entity() != null) {
+                boolean specialOffering = false;
+                if (FriendMoon.isSpecialInteraction(inspectionContext)) {
+                    if (friendMoon.specialInteraction(level, inspectionContext.entity()))
+                        specialOffering = true;
+                    else blockEntity.setInspectionContext(null, friendMoon);
+                }
+
                 Entity entity = inspectionContext.entity();
                 Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
                 entity.setDeltaMovement(new Vec3(0, 0, 0));
@@ -236,15 +245,21 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 entity.addDeltaMovement(approachSpeed);
                 if (approachSpeed.lengthSqr() <= 0.001f) {
                     // Levitate object
-                    Vec3 raisedPosition = pos.above(2).getCenter();
+                    int raiseDistance = specialOffering ? 4 : 2;
+                    Vec3 raisedPosition = pos.above(raiseDistance).getCenter();
                     Vec3 dist = raisedPosition.subtract(entity.position());
 
                     float speed = 1 / 20f;
                     entity.setDeltaMovement(
                         dist.multiply(new Vec3(new Vector3f(speed))));
 
-                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0))
-                        friendMoon.sendDialogue(inspectionContext.dialogueLocation(), NMLRegistries.OFFERING_DIALOGUE_KEY);
+                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) && !specialOffering) {
+                        int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
+                            .dispatch(level, friendMoon.getFriendshipPlayers());
+                        friendMoon.applyDialogueLength(dialogueLength - 80);
+                    }
+                    if (specialOffering)
+                        return;
                 }
             }
         } else

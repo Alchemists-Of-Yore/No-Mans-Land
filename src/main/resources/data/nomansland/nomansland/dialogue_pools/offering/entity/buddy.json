@@ -1,0 +1,8 @@
+{
+  "condition": {
+    "type": "nomansland:entity_conditional",
+    "entity": "nomansland:buddy"
+  },
+  "weight": 1,
+  "text": ""
+}
