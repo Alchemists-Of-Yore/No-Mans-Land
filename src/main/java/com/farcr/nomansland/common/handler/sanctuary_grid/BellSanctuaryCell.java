@@ -1,19 +1,12 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
-import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -53,12 +46,12 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
     /**
      * The minimum distance allowed between <i>any<i/> two Bell Sanctuary position.
      */
-    public static final int MIN_CHUNK_DISTANCE = 10;
+    public static final int MIN_CHUNK_DISTANCE = 60;
 
     /**
      * The maximum distance allowed between <i>any<i/> two Bell Sanctuary positions.
      */
-    public static final int MAX_CHUNK_DISTANCE = 6_000;
+    public static final int MAX_CHUNK_DISTANCE = 350;
 
     /**
      * This cell's X position
@@ -100,31 +93,16 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
     /**
      * Attempts to generate a valid pairing of Bell Sanctuary positions.
      *
-     * @param levelSeed     The seed to base generation off of.
-     * @param state         The chunk generation state associated with the {@link net.minecraft.server.level.ServerLevel}
-     * @param placement     TEMP
-     * @param adjacentCells Adjacent {@link BellSanctuaryCell cells} used for distance checks.
+     * @param levelSeed The seed to base generation off of.
      */
     @Contract(mutates = "this")
-    public void generatePositions(final long levelSeed, final ChunkGeneratorStructureState state, final BellSanctuaryStructurePlacement placement, final BellSanctuaryCell[][] adjacentCells) {
+    public void generatePositionsNoBiome(final long levelSeed) {
         final long newSeed = (long) this.x * 341873128712L + (long) this.z * 132897987541L + levelSeed;
+        final RandomSource random = RandomSource.create(newSeed);
 
-        final RandomSource source = RandomSource.create(newSeed);
-        final RandomSource biomeSource = source.fork();
-
-        for (int i = 0; i < 100; i++) {
-            final Pair<BlockPos, Holder<Biome>> firstPosition = this.getSanctuaryPos(state, source, biomeSource);
-            if (firstPosition == null || !this.isBlockPosInside(firstPosition.getFirst())) {
-                continue;
-            }
-
-            final Pair<BlockPos, Holder<Biome>> secondPosition = this.getSanctuaryPos(state, source, biomeSource);
-            if (secondPosition == null || !this.isBlockPosInside(secondPosition.getFirst())) {
-                continue;
-            }
-
-            final ChunkPos firstChunkPos = new ChunkPos(firstPosition.getFirst());
-            final ChunkPos secondChunkPos = new ChunkPos(secondPosition.getFirst());
+        for (int i = 0; i < 10000; i++) {
+            final ChunkPos firstChunkPos = this.generateRandomChunkPos(random);
+            final ChunkPos secondChunkPos = this.generateRandomChunkPos(random);
 
             final int dist = firstChunkPos.distanceSquared(secondChunkPos);
             if (dist < MIN_CHUNK_DISTANCE * MIN_CHUNK_DISTANCE || dist > MAX_CHUNK_DISTANCE * MAX_CHUNK_DISTANCE) {
@@ -143,21 +121,11 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
         this.attemptedToGenerate = true;
     }
 
-    //TODO:make point gathering smarter
-    private @Nullable Pair<BlockPos, Holder<Biome>> getSanctuaryPos(final ChunkGeneratorStructureState state, final RandomSource source, final RandomSource biomeSource) {
-        return this.locateValidPosition(state, BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), biomeSource);
-    }
-
-    //TODO:make biome gathering not take this into account.
-    private Pair<BlockPos, Holder<Biome>> locateValidPosition(final ChunkGeneratorStructureState state, final double localBlockX, final double localBlockZ, final RandomSource biomeSource) {
-        return state.biomeSource.findBiomeHorizontal(
-                (int) ((this.x * BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockX),
-                64,
-                (int) ((this.z * BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockZ),
-                32,
-                biome -> !biome.is(BiomeTags.IS_OCEAN) && !biome.is(BiomeTags.IS_RIVER),
-                biomeSource,
-                state.randomState().sampler());
+    private @NotNull ChunkPos generateRandomChunkPos(final RandomSource random) {
+        return new ChunkPos(
+                (int) ((this.x * BellSanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + (BellSanctuaryGrid.CELL_SIDE_CHUNK_LENGTH - MIN_CHUNK_DISTANCE) * random.nextDouble()),
+                (int) ((this.z * BellSanctuaryGrid.CELL_SIDE_CHUNK_LENGTH) + (BellSanctuaryGrid.CELL_SIDE_CHUNK_LENGTH - MIN_CHUNK_DISTANCE) * random.nextDouble())
+        );
     }
 
     public boolean hasAttemptedToGenerate() {
@@ -172,17 +140,6 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
     public boolean validGenChunk(final int checkChunkX, final int checkChunkZ) {
         final ChunkPos checkPos = new ChunkPos(checkChunkX, checkChunkZ);
         return checkPos.equals(this.firstBellSanctuaryPos) || checkPos.equals(this.secondBellSanctuaryPos);
-    }
-
-    /**
-     * Whether the given {@link BlockPos} is withing the bounds of this {@link BellSanctuaryCell cell}.
-     *
-     * @param pos The block position to check
-     * @return Whether the given block pos is in bounds.
-     */
-    public boolean isBlockPosInside(final BlockPos pos) {
-        return Math.floorDiv(pos.getX(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.x
-                || Math.floorDiv(pos.getZ(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.z;
     }
 
     public @Nullable ChunkPos getFirstBellSanctuaryPos() {

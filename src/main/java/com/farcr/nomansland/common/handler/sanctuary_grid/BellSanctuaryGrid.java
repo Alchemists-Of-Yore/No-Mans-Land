@@ -84,7 +84,7 @@ public class BellSanctuaryGrid extends SavedData {
                 }
             }
 
-            sanctuaryCell.generatePositions(this.levelSeed, state, placement, adjacent);
+            sanctuaryCell.generatePositionsNoBiome(this.levelSeed);
         }
 
         this.setDirty();
