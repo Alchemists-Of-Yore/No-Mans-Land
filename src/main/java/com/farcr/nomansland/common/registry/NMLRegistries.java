@@ -5,7 +5,7 @@ import com.farcr.nomansland.client.ambience.fogmodifiers.FogModifier;
 import com.farcr.nomansland.client.music.condition.MusicCondition;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
-import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
+import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
@@ -55,6 +55,6 @@ public class NMLRegistries {
 
     public static final ResourceKey<Registry<BuddyFood>> BUDDY_FOOD_KEY = ResourceKey.createRegistryKey(NoMansLand.location("buddy_food"));
 
-    public static final ResourceKey<Registry<ExtinguishableBlock>> EXTINGUISHABLE_BLOCKS_KEY = ResourceKey.createRegistryKey(NoMansLand.location("extinguishable_blocks"));
-    public static final Registry<ExtinguishableBlock> EXTINGUISHABLE_BLOCKS = new RegistryBuilder<>(EXTINGUISHABLE_BLOCKS_KEY).create();
+    public static final ResourceKey<Registry<ExtinguishableBlockPairing>> EXTINGUISHABLE_BLOCKS_KEY = ResourceKey.createRegistryKey(NoMansLand.location("extinguishable_blocks"));
+    public static final Registry<ExtinguishableBlockPairing> EXTINGUISHABLE_BLOCKS = new RegistryBuilder<>(EXTINGUISHABLE_BLOCKS_KEY).create();
 }

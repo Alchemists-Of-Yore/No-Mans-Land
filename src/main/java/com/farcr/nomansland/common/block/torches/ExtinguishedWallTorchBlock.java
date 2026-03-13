@@ -26,20 +26,11 @@ import net.minecraft.world.phys.HitResult;
 
 public class ExtinguishedWallTorchBlock extends WallTorchBlock {
 
-    public final Block litBlock;
+    private Block litBlock;
 
     public ExtinguishedWallTorchBlock(SimpleParticleType flameParticle, Properties properties) {
         super(flameParticle, properties);
-
-        Block litBlock = null;
-        for (ExtinguishableBlock block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
-            if (this == block.extinguishedBlock()) {
-                litBlock = block.litBlock();
-                break;
-            }
-        }
-
-        this.litBlock = litBlock;    }
+    }
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
@@ -56,7 +47,7 @@ public class ExtinguishedWallTorchBlock extends WallTorchBlock {
                     SoundSource.BLOCKS,
                     1.0F,
                     1.0F);
-            level.setBlock(pos, litBlock.withPropertiesOf(state), 3);
+            level.setBlock(pos, getLitBlock().withPropertiesOf(state), 3);
             if (!level.isClientSide) {
                 Direction direction = state.getValue(FACING).getOpposite();
                 ServerLevel serverLevel = (ServerLevel) level;
@@ -79,17 +70,42 @@ public class ExtinguishedWallTorchBlock extends WallTorchBlock {
     @Override
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         if (!level.isClientSide && projectile.isOnFire()) {
-            level.setBlock(hit.getBlockPos(), this.litBlock.withPropertiesOf(state), 11);
+            level.setBlock(hit.getBlockPos(), this.getLitBlock().withPropertiesOf(state), 11);
         }
     }
 
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return litBlock.asItem().getDefaultInstance();
+        return getLitBlock().asItem().getDefaultInstance();
     }
 
     @Override
     public String getDescriptionId() {
-        return litBlock.getDescriptionId();
+        return getLitBlock().getDescriptionId();
+    }
+
+    /**
+     * Lazily initializes the lit version of this block. <p>
+     * Initializing {@link ExtinguishedWallTorchBlock#litBlock} in the constructor is too soon.
+     *
+     * @return The lit version of this block
+     */
+    public Block getLitBlock() {
+        if (this.litBlock == null) {
+            Block litBlock = null;
+            for (final ExtinguishableBlockPairing block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+                if (this == block.extinguishedBlock()) {
+                    litBlock = block.litBlock();
+                    break;
+                }
+            }
+
+            this.litBlock = litBlock;
+        }
+
+        //lit block should not be null after this. if it is, then we missed something.
+        assert this.litBlock != null;
+
+        return this.litBlock;
     }
 }
