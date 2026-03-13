@@ -143,40 +143,24 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
     }
 
     public @Nullable ChunkPos getFirstBellSanctuaryPos() {
+        if (this.isValid()) {
+            assert this.firstBellSanctuaryPos != null : "Cell is valid, and yet the first sanctuary position is null. How??";
+        }
+        
         return this.firstBellSanctuaryPos;
     }
 
     public @Nullable ChunkPos getSecondBellSanctuaryPos() {
+        if (this.isValid()) {
+            assert this.secondBellSanctuaryPos != null : "Cell is valid, and yet the second sanctuary position is null. How??";
+        }
+
         return this.secondBellSanctuaryPos;
     }
 
     @Override
     public @NotNull Iterator<ChunkPos> iterator() {
-        return new Iterator<>() {
-            private int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return this.i < 2;
-            }
-
-            @Override
-            public ChunkPos next() {
-                return switch (this.i) {
-                    case 0 -> {
-                        this.i++;
-                        yield BellSanctuaryCell.this.firstBellSanctuaryPos;
-                    }
-
-                    case 1 -> {
-                        this.i++;
-                        yield BellSanctuaryCell.this.secondBellSanctuaryPos;
-                    }
-
-                    default -> throw new IllegalStateException("Unexpected value: " + this.i);
-                };
-            }
-        };
+        return new BellSanctuaryIterator();
     }
 
     @ApiStatus.Internal
@@ -187,5 +171,30 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
     @ApiStatus.Internal
     public Tag serialize() {
         return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+    }
+
+    @ApiStatus.Internal
+    private class BellSanctuaryIterator implements Iterator<ChunkPos> {
+        private byte i = 0;
+
+        @Override
+        public boolean hasNext() {
+            return BellSanctuaryCell.this.isValid() && this.i < 2;
+        }
+
+        @Override
+        public ChunkPos next() {
+            if (!BellSanctuaryCell.this.isValid()) {
+                return null;
+            }
+
+            if (this.i == 0) {
+                this.i++;
+                return BellSanctuaryCell.this.firstBellSanctuaryPos;
+            } else {
+                this.i++;
+                return BellSanctuaryCell.this.secondBellSanctuaryPos;
+            }
+        }
     }
 }

@@ -79,7 +79,7 @@ public class InvertedBellServerHandler extends SavedData {
     }
 
     public static InvertedBellServerHandler get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new Factory<InvertedBellServerHandler>(
+        return level.getDataStorage().computeIfAbsent(new Factory<>(
                 InvertedBellServerHandler::new, InvertedBellServerHandler::load
         ), "inverted_bell");
     }

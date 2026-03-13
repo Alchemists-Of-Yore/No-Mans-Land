@@ -119,13 +119,21 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         }
     }
 
+    @Nullable
     private static ChunkPos getLikelyOtherSanctuary(final BellSanctuaryCell cell, final BlockPos pos) {
-        final double dd1 = cell.getFirstBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
-        final double dd2 = cell.getSecondBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
+        if (!cell.isValid()) {
+            return null;
+        }
+
+        final ChunkPos firstPos = cell.getFirstBellSanctuaryPos();
+        final ChunkPos secondPos = cell.getSecondBellSanctuaryPos();
+
+        final double dd1 = firstPos.distanceSquared(new ChunkPos(pos));
+        final double dd2 = secondPos.distanceSquared(new ChunkPos(pos));
         if (dd1 > dd2) {
-            return cell.getFirstBellSanctuaryPos();
+            return firstPos;
         } else {
-            return cell.getSecondBellSanctuaryPos();
+            return secondPos;
         }
     }
 
