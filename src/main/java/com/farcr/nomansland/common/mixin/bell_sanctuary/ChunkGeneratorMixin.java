@@ -2,7 +2,7 @@ package com.farcr.nomansland.common.mixin.bell_sanctuary;
 
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
-import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
+import com.farcr.nomansland.common.world.structure.bell_sanctuary.BellSanctuaryStructurePlacement;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.datafixers.util.Pair;

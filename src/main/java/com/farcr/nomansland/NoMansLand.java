@@ -72,6 +72,7 @@ public class NoMansLand {
         NMLDataComponents.DATA_COMPONENTS.register(bus);
         NMLVariantActions.ACTIONS.register(bus);
         NMLStructureTypes.STRUCTURE_TYPES.register(bus);
+        NMLStructurePieces.STRUCTURE_PIECES.register(bus);
         NMLStructurePlacements.STRUCTURE_PLACEMENTS.register(bus);
         NMLBlockStateProviderTypes.BLOCKSTATE_PROVIDER_TYPES.register(bus);
 

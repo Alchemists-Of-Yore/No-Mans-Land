@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.world.structure;
+package com.farcr.nomansland.common.world.structure.bell_sanctuary;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.InvertedBellBlock;
@@ -43,7 +43,8 @@ public class BellSanctuaryStructure extends Structure {
         final int z = chunkpos.getMiddleBlockZ();
         final int y = context.chunkGenerator().getFirstOccupiedHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
 
-        final Optional<StructureTemplate> templateOptional = templateManager.get(NoMansLand.location("bell_sanctuary/bell_sanctuaries_1"));
+        final ResourceLocation resourceLocation = NoMansLand.location("bell_sanctuary/bell_sanctuaries_1");
+        final Optional<StructureTemplate> templateOptional = templateManager.get(resourceLocation);
 
         final Optional<GenerationStub> stub;
         if (templateOptional.isPresent()) {
@@ -51,7 +52,7 @@ public class BellSanctuaryStructure extends Structure {
             final Vec3i s = t.getSize();
             final BlockPos pos = new BlockPos(x - s.getX() / 2, y + 1, z - s.getZ() / 2);
             stub = Optional.of(new GenerationStub(pos, (b) ->
-                    b.addPiece(new SingleBellSanctuaryPiece(context.chunkGenerator().getGenDepth(), templateManager, NoMansLand.location("bell_sanctuary/bell_sanctuaries_1"), new StructurePlaceSettings(), pos))));
+                    b.addPiece(new CenterBellPiece(templateManager, resourceLocation, new StructurePlaceSettings(), pos))));
         } else {
             stub = Optional.empty();
         }
@@ -62,33 +63,5 @@ public class BellSanctuaryStructure extends Structure {
     @Override
     public StructureType<?> type() {
         return NMLStructureTypes.BELL_SANCTUARY.get();
-    }
-
-    public static class SingleBellSanctuaryPiece extends TemplateStructurePiece {
-
-        public SingleBellSanctuaryPiece(final int genDepth, final StructureTemplateManager structureTemplateManager, final ResourceLocation location, final StructurePlaceSettings placeSettings, final BlockPos templatePosition) {
-            super(StructurePieceType.JIGSAW, genDepth, structureTemplateManager, location, location.toString(), placeSettings, templatePosition);
-        }
-
-        @Override
-        protected void handleDataMarker(final String name, final BlockPos pos, final ServerLevelAccessor level, final RandomSource random, final BoundingBox box) {
-            if (name.startsWith("inverted_bell_")) {
-                String suffix = name.substring("inverted_bell_".length());
-                Direction dir = switch (suffix) {
-                    case "north" -> Direction.NORTH;
-                    case "south" -> Direction.SOUTH;
-                    case "east" -> Direction.EAST;
-                    case "west" -> Direction.WEST;
-                    default -> null;
-                };
-                if (dir != null) {
-                    dir = this.getRotation().rotate(dir);
-                    InvertedBellBlock.placeBell(pos, dir, level);
-                    if (level.getBlockEntity(pos.above()) instanceof InvertedBellBlockEntity ibbe) {
-                        ibbe.state = InvertedBellBlockEntity.PositionState.UNASSIGNED;
-                    }
-                }
-            }
-        }
     }
 }

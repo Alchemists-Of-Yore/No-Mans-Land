@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.registry.worldgen;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
+import com.farcr.nomansland.common.world.structure.bell_sanctuary.BellSanctuaryStructurePlacement;
 import com.farcr.nomansland.common.world.structure.MeetingPointStructurePlacement;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;

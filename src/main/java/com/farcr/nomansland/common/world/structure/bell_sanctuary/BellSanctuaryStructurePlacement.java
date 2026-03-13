@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.world.structure;
+package com.farcr.nomansland.common.world.structure.bell_sanctuary;
 
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;

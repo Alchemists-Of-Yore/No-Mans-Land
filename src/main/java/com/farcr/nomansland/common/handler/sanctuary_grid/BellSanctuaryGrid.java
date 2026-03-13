@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
-import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import net.minecraft.core.BlockPos;
@@ -9,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

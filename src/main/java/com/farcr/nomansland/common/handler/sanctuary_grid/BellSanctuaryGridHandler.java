@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
-import com.farcr.nomansland.common.world.structure.BellSanctuaryStructurePlacement;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.server.level.ServerLevel;
