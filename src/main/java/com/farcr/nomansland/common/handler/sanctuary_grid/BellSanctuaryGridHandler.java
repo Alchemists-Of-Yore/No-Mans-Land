@@ -57,9 +57,9 @@ public class BellSanctuaryGridHandler {
      * @return The newly generated cell, or an already present one.
      */
     @NotNull
-    public static BellSanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final BellSanctuaryStructurePlacement placement, final int blockX, final int blockZ) {
+    public static BellSanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final int blockX, final int blockZ) {
         return LEVEL_SEED_MAP.computeIfAbsent(state.getLevelSeed(), BellSanctuaryGrid::new)
-                .generateOrGetCell(state, placement, blockX, blockZ);
+                .generateOrGetCell(blockX, blockZ);
     }
 
     @ApiStatus.Internal

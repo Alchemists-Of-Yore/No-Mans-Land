@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A grid of {@link BellSanctuaryCell cells}. Each cell contains A pair of Bell Sanctuary {@link net.minecraft.core.SectionPos section positions.}
+ * A grid of {@link BellSanctuaryCell cells}. Each cell contains A pair of Bell Sanctuary {@link ChunkPos section positions.}
  */
 public class BellSanctuaryGrid extends SavedData {
 
@@ -58,7 +58,7 @@ public class BellSanctuaryGrid extends SavedData {
      * @return A newly generated {@link BellSanctuaryCell cell}, or an already present one.
      */
     @NotNull
-    public BellSanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final BellSanctuaryStructurePlacement placement, final int blockX, final int blockZ) {
+    public BellSanctuaryCell generateOrGetCell(final int blockX, final int blockZ) {
         final int cellX = Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH); // should keep sign
         final int cellZ = Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH); // should keep sign
 

@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * A cell containing a pair of Bell Sanctuary {@link net.minecraft.core.SectionPos section positions}.
+ * A cell containing a pair of Bell Sanctuary {@link ChunkPos section positions}.
  */
 public class BellSanctuaryCell implements Iterable<ChunkPos> {
 

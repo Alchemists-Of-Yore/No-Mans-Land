@@ -21,7 +21,7 @@ public class BellSanctuaryStructurePlacement extends StructurePlacement {
 
     @Override
     protected boolean isPlacementChunk(final ChunkGeneratorStructureState chunkGeneratorStructureState, final int chunkX, final int chunkZ) {
-        final BellSanctuaryCell cell = BellSanctuaryGridHandler.generateOrGetCell(chunkGeneratorStructureState, this, chunkX * 16, chunkZ * 16);
+        final BellSanctuaryCell cell = BellSanctuaryGridHandler.generateOrGetCell(chunkGeneratorStructureState, chunkX * 16, chunkZ * 16);
         if (!cell.isValid()) {
             return false;
         }
