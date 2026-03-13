@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.world.structure.bell_sanctuary;
 
 import com.farcr.nomansland.common.block.InvertedBellBlock;
-import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
+import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructurePieces;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,10 +9,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.TemplateStructurePiece;
-import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
@@ -40,8 +38,8 @@ public class CenterBellPiece extends TemplateStructurePiece {
             if (dir != null) {
                 dir = this.getRotation().rotate(dir);
                 InvertedBellBlock.placeBell(pos, dir, level);
-                if (level.getBlockEntity(pos.above()) instanceof final InvertedBellBlockEntity ibbe) {
-                    ibbe.state = InvertedBellBlockEntity.PositionState.UNASSIGNED;
+                if (level.getBlockEntity(pos.above()) instanceof final InvertedBellControllerBlockEntity ibbe) {
+                    ibbe.state = InvertedBellControllerBlockEntity.PositionState.UNASSIGNED;
                 }
             }
         }

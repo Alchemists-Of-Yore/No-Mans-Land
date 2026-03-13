@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.handler;
 
-import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
+import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.mixin.PlayerChunkSenderInvoker;
 import com.farcr.nomansland.common.networking.ClientboundDistantChunkPacket;
@@ -122,9 +122,9 @@ public class InvertedBellServerHandler extends SavedData {
             this.toDir = toDir;
 
             ChunkPos fromChunk = new ChunkPos(toPos);
-            level.getChunkSource().addRegionTicket(InvertedBellBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
+            level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
             ChunkPos toChunk = new ChunkPos(toPos);
-            level.getChunkSource().addRegionTicket(InvertedBellBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
+            level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
 
             this.teleportingEntities.forEach(e -> {
                 if (e instanceof LivingEntityExtension extension) {
@@ -160,7 +160,7 @@ public class InvertedBellServerHandler extends SavedData {
                 ChunkResult<ChunkAccess> result = this.chunkFuture.get();
                 this.chunkFuture = null;
                 ChunkAccess access = result.orElseThrow(() -> new RuntimeException(result.getError()));
-                if (!(access.getBlockEntity(this.toPos) instanceof InvertedBellBlockEntity ibbe) || !ibbe.targetBell.equals(this.fromPos)) {
+                if (!(access.getBlockEntity(this.toPos) instanceof InvertedBellControllerBlockEntity ibbe) || !ibbe.targetBell.equals(this.fromPos)) {
                     return true;
                 }
                 if (access instanceof LevelChunk levelChunk) {
@@ -194,8 +194,8 @@ public class InvertedBellServerHandler extends SavedData {
                         entity.kill();
                     } else {
                         this.doTeleportEntity(entity, level);
-                        if (level.getBlockEntity(this.fromPos) instanceof InvertedBellBlockEntity fromIbbe &&
-                                level.getBlockEntity(this.toPos) instanceof InvertedBellBlockEntity toIbbe) {
+                        if (level.getBlockEntity(this.fromPos) instanceof InvertedBellControllerBlockEntity fromIbbe &&
+                                level.getBlockEntity(this.toPos) instanceof InvertedBellControllerBlockEntity toIbbe) {
                             toIbbe.ringCooldown = fromIbbe.ringCooldown;
                         }
                     }

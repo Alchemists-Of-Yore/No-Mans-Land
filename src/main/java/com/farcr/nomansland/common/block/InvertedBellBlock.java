@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.block;
 
-import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
+import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.mojang.serialization.MapCodec;
@@ -117,7 +117,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
     private boolean onHit(final Level level, final BlockState state, final BlockPos pos, final Direction direction) {
         final Direction front = state.getValue(HORIZONTAL_FACING);
         if (!level.isClientSide && direction.getAxis() == front.getAxis()) {
-            final InvertedBellBlockEntity controller = getControllerBE(level, pos, state);
+            final InvertedBellControllerBlockEntity controller = getControllerBE(level, pos, state);
             if (controller != null && controller.ringCooldown <= 0) {
                 level.blockEvent(controller.getBlockPos(), controller.getBlockState().getBlock(), 1,
                         direction == front ? 2 : 0 // types are an unsigned byte...
@@ -146,7 +146,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     protected void onRemove(final BlockState state, final Level level, final BlockPos pos, final BlockState newState, final boolean movedByPiston) {
-        final InvertedBellBlockEntity ibbe = getControllerBE(level, pos, state);
+        final InvertedBellControllerBlockEntity ibbe = getControllerBE(level, pos, state);
         if (ibbe != null) {
             ibbe.destroyBell();
         }
@@ -155,9 +155,13 @@ public class InvertedBellBlock extends BaseEntityBlock {
     }
 
     //can probably be changed to be constant instead of iterating over all positions in a 3x3x3 volume
-    private static InvertedBellBlockEntity getControllerBE(final Level level, final BlockPos pos, final BlockState ownState) {
+    public static InvertedBellControllerBlockEntity getControllerBE(final Level level, final BlockPos pos, final BlockState ownState) {
+
+
+
+
         for (final BlockPos searchPos : BlockPos.betweenClosed(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)) {
-            if (level.getBlockEntity(searchPos) instanceof final InvertedBellBlockEntity ibbe) {
+            if (level.getBlockEntity(searchPos) instanceof final InvertedBellControllerBlockEntity ibbe) {
                 return ibbe;
             }
         }
@@ -173,7 +177,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> blockEntityType) {
         if (state.getValue(PART) == CONTROLLER_PART) {
-            return createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellBlockEntity::tick);
+            return createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellControllerBlockEntity::tick);
         }
         return null;
     }
@@ -190,6 +194,6 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(final BlockPos blockPos, final BlockState blockState) {
-        return blockState.getValue(PART) == CONTROLLER_PART ? new InvertedBellBlockEntity(blockPos, blockState) : null;
+        return blockState.getValue(PART) == CONTROLLER_PART ? new InvertedBellControllerBlockEntity(blockPos, blockState) : null;
     }
 }

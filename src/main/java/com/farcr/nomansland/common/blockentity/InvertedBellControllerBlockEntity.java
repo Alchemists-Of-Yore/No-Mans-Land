@@ -35,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class InvertedBellBlockEntity extends BlockEntity {
+public class InvertedBellControllerBlockEntity extends BlockEntity {
     public static final TicketType<ChunkPos> BELL_TICKET = TicketType.create("nml:inverted_bell", Comparator.comparingLong(ChunkPos::toLong), 300);
     public static final int COOLDOWN = 100;
 
@@ -48,12 +48,9 @@ public class InvertedBellBlockEntity extends BlockEntity {
     public @Nullable BlockPos targetBell;
     public @Nullable Direction targetDir;
 
-    private @Nullable BlockPos controller;
-    private boolean valid = true; // invalidates when destroyed to prevent cascading block updates
-
     public int ringCooldown = 0;
 
-    public InvertedBellBlockEntity(BlockPos pos, BlockState blockState) {
+    public InvertedBellControllerBlockEntity(final BlockPos pos, final BlockState blockState) {
         super(NMLBlockEntities.INVERTED_BELL.get(), pos, blockState);
     }
 
@@ -61,101 +58,33 @@ public class InvertedBellBlockEntity extends BlockEntity {
         return this.getBlockState().getValue(InvertedBellBlock.PART) == InvertedBellBlock.CONTROLLER_PART;
     }
 
-    public boolean canSurvive() {
-        InvertedBellBlockEntity controller = this.getController();
-        if (controller != null) {
-            BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    for (int y = -1; y < 2; y++) {
-                        mutPos.setWithOffset(controller.getBlockPos(), x, y, z);
-                        if (!controller.level.getBlockState(mutPos).is(NMLBlocks.INVERTED_BELL.block())) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     public void destroyBell() {
-        if (!this.valid) {
-            return;
-        }
-
-        InvertedBellBlockEntity controller = this.getController();
-        if (controller != null) {
-            BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    for (int y = -1; y < 2; y++) {
-                        if (controller.level.getBlockEntity(mutPos.setWithOffset(controller.getBlockPos(), x, y, z))
-                                instanceof InvertedBellBlockEntity ibbe) {
-                            ibbe.valid = false;
-                        }
-                    }
-                }
-            }
-
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    for (int y = -1; y < 2; y++) {
-                        if (controller.level.getBlockState(mutPos.setWithOffset(controller.getBlockPos(), x, y, z))
-                                .is(NMLBlocks.INVERTED_BELL.block())) {
-                            controller.level.destroyBlock(mutPos, false);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public void ring(int direction, boolean teleport) {
-        InvertedBellBlockEntity controller = this.getController();
-        if (controller == null) {
-            return;
-        }
-
-        if (controller.level instanceof ServerLevel serverLevel) {
-            if (teleport && controller.state == PositionState.BLOCK_POS && controller.targetBell != null) {
-                InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
-                        controller.getBlockPos(), controller.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
-                        controller.targetBell, controller.targetDir
-                );
-            }
-            controller.ringCooldown = COOLDOWN;
-        } else {
-            InvertedBellClientHandler.instance.onHit(direction);
-        }
-    }
-
-    public @Nullable InvertedBellBlockEntity getController() {
-        if (this.controller != null) {
-            BlockEntity be = this.level.getBlockEntity(this.controller);
-            if (be instanceof InvertedBellBlockEntity ibbe && ibbe.isController()) {
-                return ibbe;
-            }
-        }
-
-        BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
+        final BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = -1; y < 2; y++) {
-                    mutPos.setWithOffset(this.getBlockPos(), x, y, z);
-                    BlockEntity be = this.level.getBlockEntity(mutPos);
-                    if (be instanceof InvertedBellBlockEntity ibbe && ibbe.isController()) {
-                        this.controller = mutPos;
-                        return ibbe;
+                    if (this.level.getBlockState(mutPos.setWithOffset(this.getBlockPos(), x, y, z))
+                            .is(NMLBlocks.INVERTED_BELL.block())) {
+
+                        this.level.destroyBlock(mutPos, false);
                     }
                 }
             }
         }
+    }
 
-        return null;
+    public void ring(final int direction, final boolean teleport) {
+        if (this.getLevel() instanceof final ServerLevel serverLevel) {
+            if (teleport && this.state == PositionState.BLOCK_POS && this.targetBell != null) {
+                InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
+                        this.getBlockPos(), this.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
+                        this.targetBell, this.targetDir
+                );
+            }
+            this.ringCooldown = COOLDOWN;
+        } else {
+            InvertedBellClientHandler.instance.onHit(direction);
+        }
     }
 
     @Override
@@ -170,16 +99,16 @@ public class InvertedBellBlockEntity extends BlockEntity {
         return super.triggerEvent(id, type);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, InvertedBellBlockEntity ibbe) {
+    public static void tick(final Level level, final BlockPos pos, final BlockState state, final InvertedBellControllerBlockEntity ibbe) {
         if (ibbe.ringCooldown > 0) {
             ibbe.ringCooldown--;
         }
-        if (level instanceof ServerLevel serverLevel) {
-            BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
-            BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
+
+        if (level instanceof final ServerLevel serverLevel) {
+            final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
+            final BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
             if (cell != null) {
                 switch (ibbe.state) {
-                    case DONT_SEARCH -> {}
                     case UNASSIGNED -> {
                         ibbe.targetArea = getLikelyOtherSanctuary(cell, pos);
                         ibbe.state = PositionState.CHUNK;
@@ -187,8 +116,8 @@ public class InvertedBellBlockEntity extends BlockEntity {
                     case CHUNK -> {
                         handleAwaitingTheSearch(ibbe, pos, serverLevel);
                     }
-                    case BLOCK_POS -> {}
                 }
+
             } else if (ibbe.state == PositionState.UNASSIGNED) {
                 NoMansLand.LOGGER.error("Inverted Bell at {} failed to find approximate pair region", pos);
                 ibbe.state = PositionState.DONT_SEARCH;
@@ -196,9 +125,9 @@ public class InvertedBellBlockEntity extends BlockEntity {
         }
     }
 
-    private static ChunkPos getLikelyOtherSanctuary(BellSanctuaryCell cell, BlockPos pos) {
-        double dd1 = cell.getFirstBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
-        double dd2 = cell.getSecondBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
+    private static ChunkPos getLikelyOtherSanctuary(final BellSanctuaryCell cell, final BlockPos pos) {
+        final double dd1 = cell.getFirstBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
+        final double dd2 = cell.getSecondBellSanctuaryPos().distanceSquared(new ChunkPos(pos));
         if (dd1 > dd2) {
             return cell.getFirstBellSanctuaryPos();
         } else {
@@ -206,11 +135,11 @@ public class InvertedBellBlockEntity extends BlockEntity {
         }
     }
 
-    private static CompletableFuture<List<ChunkResult<ChunkAccess>>> tryLoadOtherSanctuary(ServerLevel level, ChunkPos other) {
-        List<CompletableFuture<ChunkResult<ChunkAccess>>> futures = new ArrayList<>(9);
+    private static CompletableFuture<List<ChunkResult<ChunkAccess>>> tryLoadOtherSanctuary(final ServerLevel level, final ChunkPos other) {
+        final List<CompletableFuture<ChunkResult<ChunkAccess>>> futures = new ArrayList<>(9);
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
-                futures.add(level.getChunkSource().getChunkFuture(other.x+x, other.z+z, ChunkStatus.FULL, true));
+                futures.add(level.getChunkSource().getChunkFuture(other.x + x, other.z + z, ChunkStatus.FULL, true));
             }
         }
         // black magic https://www.baeldung.com/java-completablefuture-list-convert
@@ -218,16 +147,16 @@ public class InvertedBellBlockEntity extends BlockEntity {
                 .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
     }
 
-    private static void handleAwaitingTheSearch(InvertedBellBlockEntity ibbe, BlockPos pos, ServerLevel serverLevel) {
+    private static void handleAwaitingTheSearch(final InvertedBellControllerBlockEntity ibbe, final BlockPos pos, final ServerLevel serverLevel) {
         if (ibbe.targetAreaFuture != null) {
             if (ibbe.targetAreaFuture.isDone()) {
                 try {
-                    InvertedBellBlockEntity otherIbbe = handleTheSearch(ibbe.targetAreaFuture);
+                    final InvertedBellControllerBlockEntity otherIbbe = handleTheSearch(ibbe.targetAreaFuture);
                     if (otherIbbe != null) {
                         ibbe.targetBell = otherIbbe.getBlockPos();
                         ibbe.targetDir = otherIbbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
                         ibbe.state = PositionState.BLOCK_POS;
-                        
+
                         otherIbbe.targetBell = ibbe.getBlockPos();
                         otherIbbe.targetDir = ibbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
                         otherIbbe.state = PositionState.BLOCK_POS;
@@ -235,7 +164,7 @@ public class InvertedBellBlockEntity extends BlockEntity {
                         NoMansLand.LOGGER.error("Inverted Bell at {} mundanely failed to find pair around {}", pos, ibbe.targetArea);
                         ibbe.state = PositionState.DONT_SEARCH;
                     }
-                } catch (ExecutionException | InterruptedException e) {
+                } catch (final ExecutionException | InterruptedException e) {
                     NoMansLand.LOGGER.error("Inverted Bell at {} exceptionally failed to find pair around {}\n{}", pos, ibbe.targetArea, e);
                     ibbe.state = PositionState.DONT_SEARCH;
                 }
@@ -249,8 +178,8 @@ public class InvertedBellBlockEntity extends BlockEntity {
             if (ibbe.escalationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
                 ibbe.escalationTimer++;
                 if (ibbe.escalationTimer > 10) {
-                    ChunkStep step = ChunkPyramid.GENERATION_PYRAMID.steps().get(ibbe.escalationValue);
-                    int dist = ChunkLevel.byStatus(step.targetStatus());
+                    final ChunkStep step = ChunkPyramid.GENERATION_PYRAMID.steps().get(ibbe.escalationValue);
+                    final int dist = ChunkLevel.byStatus(step.targetStatus());
                     serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, dist, ibbe.targetArea);
                     ibbe.escalationTimer = 0;
                     ibbe.escalationValue++;
@@ -261,13 +190,13 @@ public class InvertedBellBlockEntity extends BlockEntity {
         }
     }
 
-    private static @Nullable InvertedBellBlockEntity handleTheSearch(CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture) throws ExecutionException, InterruptedException {
-        List<ChunkResult<ChunkAccess>> chunks = targetAreaFuture.get();
-        for (ChunkResult<ChunkAccess> chunk : chunks) {
+    private static @Nullable InvertedBellControllerBlockEntity handleTheSearch(final CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture) throws ExecutionException, InterruptedException {
+        final List<ChunkResult<ChunkAccess>> chunks = targetAreaFuture.get();
+        for (final ChunkResult<ChunkAccess> chunk : chunks) {
             if (chunk.isSuccess()) {
-                ChunkAccess access = chunk.orElseThrow(AssertionError::new);
-                for (BlockPos bePos : access.getBlockEntitiesPos()) {
-                    if (access.getBlockEntity(bePos) instanceof InvertedBellBlockEntity ibbe && ibbe.isController()) {
+                final ChunkAccess access = chunk.orElseThrow(AssertionError::new);
+                for (final BlockPos bePos : access.getBlockEntitiesPos()) {
+                    if (access.getBlockEntity(bePos) instanceof final InvertedBellControllerBlockEntity ibbe && ibbe.isController()) {
                         return ibbe;
                     }
                 }
@@ -298,7 +227,7 @@ public class InvertedBellBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        int state = tag.getInt("State");
+        final int state = tag.getInt("State");
         if (state >= 0 && state < PositionState.values().length) {
             this.state = PositionState.values()[state];
         }

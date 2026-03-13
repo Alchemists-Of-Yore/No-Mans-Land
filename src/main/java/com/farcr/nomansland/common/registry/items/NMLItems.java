@@ -216,9 +216,6 @@ public class NMLItems {
                     // Add Corrosion & Decay when they're implemented
             )));
 
-    public static final ItemDefinition<MagicBellWandItem> MAGIC_BELL_WAND = register("magic_bell_wand",
-            () -> new MagicBellWandItem(new Properties().stacksTo(1)));
-
     public static final ItemDefinition<CuringBandageItem> MEDICINAL_BANDAGE = register("medicinal_bandage",
             () -> new CuringBandageItem(new Properties().stacksTo(16), List.of(
                     MobEffects.MOVEMENT_SLOWDOWN,

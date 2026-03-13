@@ -3,7 +3,7 @@ package com.farcr.nomansland.client.renderer.entity;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.common.block.InvertedBellBlock;
-import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
+import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,7 +16,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
 
-public class InvertedBellRenderer<T extends InvertedBellBlockEntity> implements BlockEntityRenderer<T> {
+public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> implements BlockEntityRenderer<T> {
     public static final ModelResourceLocation BELL_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/inverted_bell_bell"));
     public static final ModelResourceLocation BEAM_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/inverted_bell_beam"));
 
