@@ -168,7 +168,7 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
                     Codec.INT.fieldOf("spacing").validate(OreVeinType::validateSpacing).forGetter(OreVeinType::spacing),
                     Codec.INT.fieldOf("separation").validate(OreVeinType::validateSeparation).forGetter(OreVeinType::separation),
                     Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(OreVeinType::probability),
-                    Codec.INT.optionalFieldOf("generationOrder", 0).forGetter(OreVeinType::generationOrder),
+                    Codec.INT.optionalFieldOf("generation_order", 0).forGetter(OreVeinType::generationOrder),
                     // size controls
                     IntProvider.CODEC.fieldOf("radius").forGetter(OreVeinType::radius),
                     HeightProvider.CODEC.fieldOf("min_height").forGetter(OreVeinType::minHeight),
