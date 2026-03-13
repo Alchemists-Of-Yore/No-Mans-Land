@@ -6,14 +6,22 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Static handler for {@link ServerLevel#getSeed() server level seeds} -> {@link BellSanctuaryGrid grids}
+ */
 public class BellSanctuaryGridHandler {
 
     private static final Long2ObjectMap<BellSanctuaryGrid> LEVEL_SEED_MAP = new Long2ObjectOpenHashMap<>();
 
-    //called when server level is created
+    /**
+     * Populates {@link BellSanctuaryGridHandler#LEVEL_SEED_MAP} With the given {@link ServerLevel}'s saved data. <p>
+     * Either creates, or gets the current BellSanctuary saved data, and loads the correct entry.
+     */
+    @ApiStatus.Internal
     public static void populateOrCreateData(final ServerLevel level) {
         level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
                 () -> LEVEL_SEED_MAP.computeIfAbsent(level.getSeed(), BellSanctuaryGrid::new),
@@ -21,15 +29,25 @@ public class BellSanctuaryGridHandler {
         ), "bell_sanctuarys");
     }
 
+    /**
+     * Attempts to get the {@link BellSanctuaryCell cell} associated with the given X and Z block positions.
+     *
+     * @return The associated {@link BellSanctuaryCell cell}, or null if none exists.
+     */
     @Nullable
-    public static BellSanctuaryCell getCell(final long level, final int blockX, final int blockZ) {
-        return LEVEL_SEED_MAP.computeIfAbsent(level, BellSanctuaryGrid::new)
+    public static BellSanctuaryCell getCell(final long serverLevelSeed, final int blockX, final int blockZ) {
+        return LEVEL_SEED_MAP.computeIfAbsent(serverLevelSeed, BellSanctuaryGrid::new)
                 .getCell(blockX, blockZ);
     }
 
+    /**
+     * Attempts to get the {@link BellSanctuaryGrid grid} associated with the given {@link ServerLevel#getSeed() server level seed}.
+     *
+     * @return The associated {@link BellSanctuaryGrid grid}
+     */
     @NotNull
-    public static BellSanctuaryGrid getGrid(final long level) {
-        return LEVEL_SEED_MAP.computeIfAbsent(level, BellSanctuaryGrid::new);
+    public static BellSanctuaryGrid getGrid(final long serverLevelSeed) {
+        return LEVEL_SEED_MAP.computeIfAbsent(serverLevelSeed, BellSanctuaryGrid::new);
     }
 
     /**
@@ -44,6 +62,7 @@ public class BellSanctuaryGridHandler {
                 .generateOrGetCell(state, placement, blockX, blockZ);
     }
 
+    @ApiStatus.Internal
     public static void clean() {
         LEVEL_SEED_MAP.clear();
     }
