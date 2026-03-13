@@ -139,7 +139,7 @@ public class OreVeinSystem {
         if (!FMLLoader.isProduction())
             NoMansLand.LOGGER.info("Generated ore vein of type {} at {} {} {}", typeHolder.getKey().location(), centerX, centerY, centerZ);
 
-        return Optional.of(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, veinRadius));
+        return Optional.of(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, radius * radius, veinRadius));
     }
 
     private ObjectOpenHashSet<OreVeinInstance> collectVeinsInChunk(WorldGenRegion level, ChunkAccess chunk, WorldGenerationContext context, RandomState random) {
@@ -217,15 +217,17 @@ public class OreVeinSystem {
                 int worldZ = z + chunkMinZ;
                 mPos.setZ(worldZ);
 
-                LevelChunkSection chunkSection;
-
                 int maxColumnY = Math.min(chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x, z), maxY);
-
+                LevelChunkSection chunkSection = null;
+                int lastSectionIndex = Integer.MIN_VALUE;
                 for (int y = maxColumnY; y >= minY; y--) {
                     int localY = y - chunkMinY;
                     int sectionY = y & 15;
                     int sectionIndex = chunk.getSectionIndex(y);
-                    chunkSection = chunk.getSection(sectionIndex);
+                    if (sectionIndex != lastSectionIndex) {
+                        chunkSection = chunk.getSection(sectionIndex);
+                        lastSectionIndex = sectionIndex;
+                    }
                     mPos.setY(y);
 
                     BlockState currentState = chunkSection.getBlockState(x, sectionY, z);
@@ -237,8 +239,17 @@ public class OreVeinSystem {
                     double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise));
 
                     for (OreVeinInstance vein : oreVeinsInChunk) {
+                        int maxYDist = vein.maxY - y, minYDist = y - vein.minY;
+                        if (maxYDist < 0 || minYDist < 0) continue;
+                        double xzDistSq = Mth.lengthSquared(worldX - vein.x, worldZ - vein.z);
+                        if (xzDistSq > vein.radiusSquared) continue;
+
                         if (vein.type().targetCondition().test(level, mPos)) {
-                            BlockState veinState = getVeinState(worldX, y, worldZ, veinRidgeNoise, veinGapNoise, mPos, fillRandom, vein);
+                            BlockState veinState = getVeinState(
+                                    worldX, y, worldZ,
+                                    maxYDist, minYDist, xzDistSq,
+                                    veinRidgeNoise, veinGapNoise,
+                                    mPos, fillRandom, vein);
                             if (veinState != null) {
                                 chunkSection.setBlockState(x, sectionY, z, veinState, false);
                                 break;
@@ -252,16 +263,15 @@ public class OreVeinSystem {
     }
 
     @Nullable
-    private BlockState getVeinState(int x, int y, int z, double veinRidgeNoise, double veinGapNoise, BlockPos pos, RandomSource random, OreVeinInstance vein) {
-        if (random.nextFloat() > vein.type().filler().probability()) return null;
-
-        int maxYDist = vein.maxY - y, minYDist = y - vein.minY;
-        if (maxYDist < 0 || minYDist < 0) return null;
+    private BlockState getVeinState(int x, int y, int z,
+                                    int maxYDist, int minYDist, double xzDistSq,
+                                    double veinRidgeNoise, double veinGapNoise,
+                                    BlockPos pos, RandomSource random, OreVeinInstance vein) {
         int yDist = Math.min(maxYDist, minYDist);
         int yDiff = vein.maxY - vein.minY;
+        double xzDist = Math.sqrt(xzDistSq);
 
-        double xzDist = Mth.length(x - vein.x, z - vein.z);
-        if (xzDist > vein.radius) return null;
+        if (random.nextFloat() > vein.type().filler().probability()) return null;
 
         if (vein.type().invert()) veinRidgeNoise = 1 - veinRidgeNoise;
         float veinRadius = vein.veinRadius();
@@ -280,5 +290,5 @@ public class OreVeinSystem {
         }
     }
 
-    private record OreVeinInstance(OreVeinType type, int x, int z, int minY, int maxY, int radius, float veinRadius) {}
+    private record OreVeinInstance(OreVeinType type, int x, int z, int minY, int maxY, int radius, int radiusSquared, float veinRadius) {}
 }
