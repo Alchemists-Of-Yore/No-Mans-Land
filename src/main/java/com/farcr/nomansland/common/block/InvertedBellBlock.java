@@ -20,19 +20,59 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class InvertedBellBlock extends BaseEntityBlock {
-    public static BooleanProperty CONTROLLER = BooleanProperty.create("controller");
+    public static DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static int CONTROLLER_PART = 3*3*3 / 2;
+    public static IntegerProperty PART = IntegerProperty.create("part", 0, 3*3*3-1);
 
     public InvertedBellBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(CONTROLLER, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(HORIZONTAL_FACING, Direction.NORTH)
+                .setValue(PART, 0)
+        );
+    }
+
+    public static final VoxelShape[] BELL_NS = new VoxelShape[3*3*3];
+    public static final VoxelShape[] BELL_EW = new VoxelShape[3*3*3];
+
+    static {
+        VoxelShape lowerRun = Block.box(-10, -16, -10, 26, -14, 26);
+        VoxelShape mainBody = Block.box(-8, -14, -8, 24, 28, 24);
+        VoxelShape beamNS = Block.box(6, 28, -16, 10, 32, 32);
+        VoxelShape beamEW = Block.box(-16, 28, 6, 32, 32, 10);
+
+        VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, beamNS);
+        VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, beamEW);
+        for (int x = -1; x < 2; x++) {
+            for (int z = -1; z < 2; z++) {
+                for (int y = -1; y < 2; y++) {
+                    int i = x + z*3 + y*9 + 13;
+                    VoxelShape here = Block.box(x*16, y*16, z*16, x*16+16, y*16+16, z*16+16);
+                    BELL_NS[i] = Shapes.join(fullBellNS, here, BooleanOp.AND).move(-x, -y, -z);
+                    BELL_EW[i] = Shapes.join(fullBellEW, here, BooleanOp.AND).move(-x, -y, -z);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (state.getValue(HORIZONTAL_FACING).getAxis() == Direction.Axis.X) {
+            return BELL_NS[state.getValue(PART)];
+        } else {
+            return BELL_EW[state.getValue(PART)];
+        }
     }
 
     @Override
@@ -50,30 +90,34 @@ public class InvertedBellBlock extends BaseEntityBlock {
                 }
             }
         }
-        return this.defaultBlockState();
+        return this.defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection());
     }
 
     @Override
     public void setPlacedBy(final Level level, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack) {
         BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
+        Direction dx = state.getValue(HORIZONTAL_FACING);
+        Direction dz = dx.getClockWise();
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = 0; y < 3; y++) {
-                    level.setBlock(mutPos.setWithOffset(pos, x, y, z),
-                            state.setValue(CONTROLLER, x == 0 && z == 0 && y == 1),
-                            3
-                    );
+                    mutPos.setWithOffset(pos, x, y, z);
+                    int i = x + z*3 + y*9 + 4;
+                    level.setBlock(mutPos, state.setValue(PART, i), 3);
                 }
             }
         }
     }
 
-    private boolean onHit(Level level, BlockPos pos, Direction direction) {
-        if (direction.getAxis() != Direction.Axis.Y) {
+    private boolean onHit(Level level, BlockState state, BlockPos pos, Direction direction) {
+        Direction front = state.getValue(HORIZONTAL_FACING);
+        if (direction.getAxis() == front.getAxis()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof InvertedBellBlockEntity ibbe) {
                 InvertedBellBlockEntity controller = ibbe.getController();
-                if (controller != null && controller.timer <= 0) {
-                    level.blockEvent(pos, controller.getBlockState().getBlock(), 1, direction.get2DDataValue());
+                if (controller != null && controller.ringCooldown <= 0) {
+                    level.blockEvent(pos, controller.getBlockState().getBlock(), 1,
+                        direction == front ? 2 : 0 // types are an unsigned byte...
+                    );
                     return true;
                 }
             }
@@ -84,7 +128,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(final BlockState state, final Level level, final BlockPos pos, final Player player, final BlockHitResult hitResult) {
         if (player.getMainHandItem().isEmpty()) {
-            if (this.onHit(level, pos, hitResult.getDirection())) {
+            if (this.onHit(level, state, pos, hitResult.getDirection())) {
                 return InteractionResult.SUCCESS;
             }
         }
@@ -93,7 +137,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
-        this.onHit(level, hit.getBlockPos(), hit.getDirection());
+        this.onHit(level, state, hit.getBlockPos(), hit.getDirection());
     }
 
     @Override
@@ -105,18 +149,13 @@ public class InvertedBellBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected VoxelShape getVisualShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
-        return Shapes.empty();
-    }
-
-    @Override
     protected boolean propagatesSkylightDown(final BlockState state, final BlockGetter level, final BlockPos pos) {
         return true;
     }
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> blockEntityType) {
-        if (state.getValue(CONTROLLER)) {
+        if (state.getValue(PART) == CONTROLLER_PART) {
             return createTickerHelper(blockEntityType, NMLBlockEntities.INVERTED_BELL.get(), InvertedBellBlockEntity::tick);
         }
         return null;
@@ -129,7 +168,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder.add(CONTROLLER));
+        super.createBlockStateDefinition(builder.add(HORIZONTAL_FACING).add(PART));
     }
 
     @Override

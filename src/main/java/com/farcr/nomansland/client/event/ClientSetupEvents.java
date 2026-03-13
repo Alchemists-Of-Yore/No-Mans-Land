@@ -61,7 +61,8 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
-        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.MODEL.id()));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BELL_MODEL.id()));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BEAM_MODEL.id()));
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
 
         //Load all the pot models here otherwise you die

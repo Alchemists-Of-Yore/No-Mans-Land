@@ -21,6 +21,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkPyramid;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -38,25 +39,26 @@ public class InvertedBellBlockEntity extends BlockEntity {
     public static final TicketType<ChunkPos> BELL_TICKET = TicketType.create("nml:inverted_bell", Comparator.comparingLong(ChunkPos::toLong), 300);
     public static final int COOLDOWN = 100;
 
-    private PositionState state = PositionState.UNASSIGNED;
+    public PositionState state = PositionState.DONT_SEARCH;
     private @Nullable ChunkPos targetArea;
-    // slowly escelates chunk ticket level to spread generation out over time
-    private int escelationTimer = 20;
-    private int escelationValue = 0;
+    // slowly escalates chunk ticket level to spread generation out over time
+    private int escalationTimer = 20;
+    private int escalationValue = 0;
     private @Nullable CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture;
     public @Nullable BlockPos targetBell;
+    public @Nullable Direction targetDir;
 
     private @Nullable BlockPos controller;
     private boolean valid = true; // invalidates when destroyed to prevent cascading block updates
 
-    public int timer = 0;
+    public int ringCooldown = 0;
 
     public InvertedBellBlockEntity(BlockPos pos, BlockState blockState) {
         super(NMLBlockEntities.INVERTED_BELL.get(), pos, blockState);
     }
 
     public boolean isController() {
-        return this.getBlockState().getValue(InvertedBellBlock.CONTROLLER);
+        return this.getBlockState().getValue(InvertedBellBlock.PART) == InvertedBellBlock.CONTROLLER_PART;
     }
 
     public boolean canSurvive() {
@@ -112,7 +114,7 @@ public class InvertedBellBlockEntity extends BlockEntity {
         }
     }
 
-    public void ring(Direction hitDirection, boolean teleport) {
+    public void ring(int direction, boolean teleport) {
         InvertedBellBlockEntity controller = this.getController();
         if (controller == null) {
             return;
@@ -120,11 +122,14 @@ public class InvertedBellBlockEntity extends BlockEntity {
 
         if (controller.level instanceof ServerLevel serverLevel) {
             if (teleport && controller.state == PositionState.BLOCK_POS && controller.targetBell != null) {
-                InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel, controller.getBlockPos(), controller.targetBell);
+                InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
+                        controller.getBlockPos(), controller.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
+                        controller.targetBell, controller.targetDir
+                );
             }
-            controller.timer = COOLDOWN;
+            controller.ringCooldown = COOLDOWN;
         } else {
-            InvertedBellClientHandler.instance.onHit(hitDirection);
+            InvertedBellClientHandler.instance.onHit(direction);
         }
     }
 
@@ -156,18 +161,18 @@ public class InvertedBellBlockEntity extends BlockEntity {
     @Override
     public boolean triggerEvent(final int id, final int type) {
         if (id == 1) {
-            this.ring(Direction.from2DDataValue(type), true);
+            this.ring(type - 1, true);
             return true;
         } else if (id == 2) {
-            this.ring(Direction.from2DDataValue(type), false);
+            this.ring(type - 1, false);
             return true;
         }
         return super.triggerEvent(id, type);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, InvertedBellBlockEntity ibbe) {
-        if (ibbe.timer > 0) {
-            ibbe.timer--;
+        if (ibbe.ringCooldown > 0) {
+            ibbe.ringCooldown--;
         }
         if (level instanceof ServerLevel serverLevel) {
             BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
@@ -220,10 +225,12 @@ public class InvertedBellBlockEntity extends BlockEntity {
                     InvertedBellBlockEntity otherIbbe = handleTheSearch(ibbe.targetAreaFuture);
                     if (otherIbbe != null) {
                         ibbe.targetBell = otherIbbe.getBlockPos();
+                        ibbe.targetDir = otherIbbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
                         ibbe.state = PositionState.BLOCK_POS;
                         
-                        otherIbbe.state = PositionState.BLOCK_POS;
                         otherIbbe.targetBell = ibbe.getBlockPos();
+                        otherIbbe.targetDir = ibbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+                        otherIbbe.state = PositionState.BLOCK_POS;
                     } else {
                         NoMansLand.LOGGER.error("Inverted Bell at {} mundanely failed to find pair around {}", pos, ibbe.targetArea);
                         ibbe.state = PositionState.DONT_SEARCH;
@@ -239,14 +246,14 @@ public class InvertedBellBlockEntity extends BlockEntity {
                 ibbe.targetAreaFuture = null;
             }
         } else {
-            if (ibbe.escelationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
-                ibbe.escelationTimer++;
-                if (ibbe.escelationTimer > 10) {
-                    ChunkStep step = ChunkPyramid.GENERATION_PYRAMID.steps().get(ibbe.escelationValue);
+            if (ibbe.escalationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
+                ibbe.escalationTimer++;
+                if (ibbe.escalationTimer > 10) {
+                    ChunkStep step = ChunkPyramid.GENERATION_PYRAMID.steps().get(ibbe.escalationValue);
                     int dist = ChunkLevel.byStatus(step.targetStatus());
                     serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, dist, ibbe.targetArea);
-                    ibbe.escelationTimer = 0;
-                    ibbe.escelationValue++;
+                    ibbe.escalationTimer = 0;
+                    ibbe.escalationValue++;
                 }
             } else {
                 ibbe.targetAreaFuture = tryLoadOtherSanctuary(serverLevel, ibbe.targetArea);
@@ -283,6 +290,7 @@ public class InvertedBellBlockEntity extends BlockEntity {
                 tag.putInt("targetX", this.targetBell.getX());
                 tag.putInt("targetY", this.targetBell.getY());
                 tag.putInt("targetZ", this.targetBell.getZ());
+                tag.putInt("targetOrientation", this.targetDir.get2DDataValue());
             }
         }
     }
@@ -307,6 +315,7 @@ public class InvertedBellBlockEntity extends BlockEntity {
                         tag.getInt("targetY"),
                         tag.getInt("targetZ")
                 );
+                this.targetDir = Direction.from2DDataValue(tag.getInt("targetOrientation"));
             }
         }
     }

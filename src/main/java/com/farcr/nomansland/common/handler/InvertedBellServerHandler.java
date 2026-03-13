@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.networking.ClientboundDistantChunkPacket;
 import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundChunkBatchFinishedPacket;
@@ -50,8 +51,8 @@ public class InvertedBellServerHandler extends SavedData {
 
     private final List<ActiveTeleport> teleports = new ArrayList<>();
 
-    public void beginTeleport(ServerLevel level, BlockPos from, BlockPos to) {
-        this.teleports.add(new ActiveTeleport(level, from, to));
+    public void beginTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, BlockPos toPos, Direction toDir) {
+        this.teleports.add(new ActiveTeleport(level, fromPos, fromDir, toPos, toDir));
     }
 
     public static boolean canTeleport(Entity entity, Vec3 from) {
@@ -97,13 +98,15 @@ public class InvertedBellServerHandler extends SavedData {
         private int timer = 0;
         private List<Entity> teleportingEntities;
         private List<ServerPlayer> teleportingPlayers;
-        private BlockPos from;
-        private BlockPos to;
+        private BlockPos fromPos;
+        private Direction fromDir;
+        private BlockPos toPos;
+        private Direction toDir;
         private @Nullable CompletableFuture<ChunkResult<ChunkAccess>> chunkFuture;
 
-        private ActiveTeleport(ServerLevel level, BlockPos from, BlockPos to) {
-            this.teleportingEntities = level.getEntities(null, new AABB(from).inflate(16)).stream()
-                    .filter(e -> InvertedBellServerHandler.canTeleport(e, from.getCenter())).collect(Collectors.toList());
+        private ActiveTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, BlockPos toPos, Direction toDir) {
+            this.teleportingEntities = level.getEntities(null, new AABB(fromPos).inflate(16)).stream()
+                    .filter(e -> InvertedBellServerHandler.canTeleport(e, fromPos.getCenter())).collect(Collectors.toList());
             this.teleportingPlayers = new ArrayList<>();
             Iterator<Entity> it = this.teleportingEntities.iterator();
             while (it.hasNext()) {
@@ -113,12 +116,14 @@ public class InvertedBellServerHandler extends SavedData {
                 }
             }
 
-            this.from = from;
-            this.to = to;
+            this.fromPos = fromPos;
+            this.fromDir = fromDir;
+            this.toPos = toPos;
+            this.toDir = toDir;
 
-            ChunkPos fromChunk = new ChunkPos(to);
+            ChunkPos fromChunk = new ChunkPos(toPos);
             level.getChunkSource().addRegionTicket(InvertedBellBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
-            ChunkPos toChunk = new ChunkPos(to);
+            ChunkPos toChunk = new ChunkPos(toPos);
             level.getChunkSource().addRegionTicket(InvertedBellBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
 
             this.teleportingEntities.forEach(e -> {
@@ -133,7 +138,7 @@ public class InvertedBellServerHandler extends SavedData {
             if (this.chunkFuture != null) {
                 this.chunkFuture.cancel(true);
             }
-            ChunkPos centerChunk = new ChunkPos(this.to);
+            ChunkPos centerChunk = new ChunkPos(this.toPos);
         }
 
         public boolean tick(ServerLevel level) {
@@ -155,7 +160,7 @@ public class InvertedBellServerHandler extends SavedData {
                 ChunkResult<ChunkAccess> result = this.chunkFuture.get();
                 this.chunkFuture = null;
                 ChunkAccess access = result.orElseThrow(() -> new RuntimeException(result.getError()));
-                if (!(access.getBlockEntity(this.to) instanceof InvertedBellBlockEntity ibbe) || !ibbe.targetBell.equals(this.from)) {
+                if (!(access.getBlockEntity(this.toPos) instanceof InvertedBellBlockEntity ibbe) || !ibbe.targetBell.equals(this.fromPos)) {
                     return true;
                 }
                 if (access instanceof LevelChunk levelChunk) {
@@ -181,7 +186,7 @@ public class InvertedBellServerHandler extends SavedData {
 
         public void teleportEntities(ServerLevel level) {
             for (Entity entity : this.teleportingEntities) {
-                if (entity.distanceToSqr(this.from.getCenter()) < InvertedBellServerHandler.RANGE_SQUARED) {
+                if (entity.distanceToSqr(this.fromPos.getCenter()) < InvertedBellServerHandler.RANGE_SQUARED) {
                     if (entity.getType().is(NMLTags.INVERTED_BELL_REPULSED)) {
                         if (entity instanceof LivingEntityExtension extension) {
                             extension.nml$skipDroppingDeathLoot();
@@ -189,6 +194,10 @@ public class InvertedBellServerHandler extends SavedData {
                         entity.kill();
                     } else {
                         this.doTeleportEntity(entity, level);
+                        if (level.getBlockEntity(this.fromPos) instanceof InvertedBellBlockEntity fromIbbe &&
+                                level.getBlockEntity(this.toPos) instanceof InvertedBellBlockEntity toIbbe) {
+                            toIbbe.ringCooldown = fromIbbe.ringCooldown;
+                        }
                     }
                 }
             }
@@ -206,8 +215,10 @@ public class InvertedBellServerHandler extends SavedData {
 
         // return true if success
         private boolean doTeleportEntity(Entity entity, ServerLevel level) {
-            Vec3 diff = entity.position().subtract(this.from.getCenter());
-            Vec3 newPos = this.to.getCenter().add(diff);
+            Vec3 diff = entity.position().subtract(this.fromPos.getCenter());
+            float dYRot = this.fromDir.toYRot() - this.toDir.toYRot();
+            diff = diff.yRot((float)(dYRot / 180 * Math.PI));
+            Vec3 newPos = this.toPos.getCenter().add(diff);
 
             if (entityAtPositionIsColliding(entity, newPos, level)) {
                 entity.hurt(level.damageSources().cramming(), 10);
@@ -218,7 +229,7 @@ public class InvertedBellServerHandler extends SavedData {
             } else {
                 entity.teleportTo(level, newPos.x, newPos.y, newPos.z,
                         EnumSet.noneOf(RelativeMovement.class),
-                        entity.getYRot(), entity.getXRot());
+                        entity.getYRot() - dYRot, entity.getXRot());
                 return true;
             }
         }

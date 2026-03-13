@@ -9,12 +9,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 import java.io.IOException;
@@ -39,7 +37,7 @@ public class InvertedBellClientHandler {
 
     // mildly evil but there will only ever be one on screen :3
     public static int animationTimer = 0;
-    public static Direction direction;
+    public static int direction;
 
     public InvertedBellClientHandler() {
         try {
@@ -160,12 +158,12 @@ public class InvertedBellClientHandler {
         }
     }
 
-    public void onHit(Direction direction) {
+    public void onHit(int direction) {
         InvertedBellClientHandler.direction = direction;
         animationTimer = ANIMATION_DURATION;
     }
 
-    private float getAnimationAngle(float pt) {
+    private static float getAnimationAngle(float pt) {
         float t = animationTimer - pt;
         if (animationTimer > 0) {
             double decay = (Math.exp(t / ANIMATION_DURATION) - 1) / (Math.exp(ANIMATION_DECAY) - 1);
@@ -175,17 +173,8 @@ public class InvertedBellClientHandler {
         return 0;
     }
 
-    public @Nullable Quaternionf getAnimationRotation(float pt) {
-        if (direction != null) {
-            return (switch (direction) {
-                case NORTH -> Axis.XN;
-                case SOUTH -> Axis.XP;
-                case EAST -> Axis.ZN;
-                case WEST -> Axis.ZP;
-                default -> throw new IllegalStateException("Unexpected value: " + direction);
-            }).rotation(this.getAnimationAngle(pt));
-        }
-        return null;
+    public Quaternionf getAnimationRotation(float pt) {
+        return Axis.XN.rotation(InvertedBellClientHandler.getAnimationAngle(pt) * InvertedBellClientHandler.direction);
     }
 
     public enum State {
