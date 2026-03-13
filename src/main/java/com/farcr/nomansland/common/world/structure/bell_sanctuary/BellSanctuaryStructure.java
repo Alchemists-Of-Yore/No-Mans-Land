@@ -19,6 +19,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.TemplateStructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
@@ -41,18 +42,18 @@ public class BellSanctuaryStructure extends Structure {
         final ChunkPos chunkpos = context.chunkPos();
         final int x = chunkpos.getMiddleBlockX();
         final int z = chunkpos.getMiddleBlockZ();
-        final int y = context.chunkGenerator().getFirstOccupiedHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
+        final int y = context.chunkGenerator().getFirstOccupiedHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState());
 
-        final ResourceLocation resourceLocation = NoMansLand.location("bell_sanctuary/bell_sanctuaries_1");
+        final ResourceLocation resourceLocation = NoMansLand.location("bell_sanctuary/bell_sanctuary_center");
         final Optional<StructureTemplate> templateOptional = templateManager.get(resourceLocation);
 
         final Optional<GenerationStub> stub;
         if (templateOptional.isPresent()) {
             final StructureTemplate t = templateOptional.get();
             final Vec3i s = t.getSize();
-            final BlockPos pos = new BlockPos(x - s.getX() / 2, y + 1, z - s.getZ() / 2);
+            final BlockPos pos = new BlockPos(x - s.getX() / 2, y - 38, z - s.getZ() / 2);
             stub = Optional.of(new GenerationStub(pos, (b) ->
-                    b.addPiece(new CenterBellPiece(templateManager, resourceLocation, new StructurePlaceSettings(), pos))));
+                    b.addPiece(new CenterBellPiece(templateManager, resourceLocation, new StructurePlaceSettings().setLiquidSettings(LiquidSettings.IGNORE_WATERLOGGING), pos))));
         } else {
             stub = Optional.empty();
         }

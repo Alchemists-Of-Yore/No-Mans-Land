@@ -1,7 +1,7 @@
 {
   "type": "nomansland:bell_sanctuary",
-  "biomes": "#nomansland:valid_sanctuary_biomes",
-  "step": "surface_structures",
-  "terrain_adaptation": "beard_thin",
+  "biomes": "#minecraft:is_overworld",
+  "step": "underground_structures",
+  "terrain_adaptation": "none",
   "spawn_overrides": {}
 }
