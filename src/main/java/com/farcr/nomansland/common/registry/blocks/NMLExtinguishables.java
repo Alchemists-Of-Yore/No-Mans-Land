@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.registry.blocks;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.torches.ExtinguishableBlock;
+import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
@@ -13,11 +13,11 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class NMLExtinguishables {
 
-    public static final DeferredRegister<ExtinguishableBlock> EXTINGUISHABLES = DeferredRegister.create(NMLRegistries.EXTINGUISHABLE_BLOCKS_KEY, NoMansLand.MODID);
+    public static final DeferredRegister<ExtinguishableBlockPairing> EXTINGUISHABLES = DeferredRegister.create(NMLRegistries.EXTINGUISHABLE_BLOCKS_KEY, NoMansLand.MODID);
     private static boolean registered = false;
 
-    public static <B extends Block> DeferredHolder<ExtinguishableBlock, ExtinguishableBlock> register(String name, Holder<B> from, Holder<B> to) {
-        return EXTINGUISHABLES.register(name, () -> new ExtinguishableBlock(from.value(), to.value()));
+    public static <B extends Block> DeferredHolder<ExtinguishableBlockPairing, ExtinguishableBlockPairing> register(String name, Holder<B> from, Holder<B> to) {
+        return EXTINGUISHABLES.register(name, () -> new ExtinguishableBlockPairing(from.value(), to.value()));
     }
 
     static {

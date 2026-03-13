@@ -25,28 +25,18 @@ import net.minecraft.world.phys.HitResult;
 
 public class ExtinguishedTorchBlock extends TorchBlock {
 
-    public final Block litBlock;
+    private Block litBlock;
 
-    public ExtinguishedTorchBlock(SimpleParticleType flameParticle, Properties properties) {
+    public ExtinguishedTorchBlock(final SimpleParticleType flameParticle, final Properties properties) {
         super(flameParticle, properties);
-
-        Block litBlock = null;
-        for (ExtinguishableBlock block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
-            if (this == block.extinguishedBlock()) {
-                litBlock = block.litBlock();
-                break;
-            }
-        }
-
-        this.litBlock = litBlock;
     }
 
     @Override
-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+    public void animateTick(final BlockState state, final Level level, final BlockPos pos, final RandomSource random) {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected ItemInteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hitResult) {
         if (player.getItemInHand(hand).is(NMLTags.FIRESTARTERS)) {
             level.playSound(player,
                     player.getX(),
@@ -56,10 +46,10 @@ public class ExtinguishedTorchBlock extends TorchBlock {
                     SoundSource.BLOCKS,
                     1.0F,
                     1.0F);
-            level.setBlock(pos, litBlock.defaultBlockState(), 3);
+            level.setBlock(pos, this.getLitBlock().defaultBlockState(), 3);
             if (!level.isClientSide) {
-                ServerLevel serverLevel = (ServerLevel) level;
-                serverLevel.sendParticles(flameParticle, pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5, 5, 0, 0, 0, 0);
+                final ServerLevel serverLevel = (ServerLevel) level;
+                serverLevel.sendParticles(this.flameParticle, pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5, 5, 0, 0, 0, 0);
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -67,24 +57,45 @@ public class ExtinguishedTorchBlock extends TorchBlock {
     }
 
     @Override
-    protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
+    protected void spawnAfterBreak(final BlockState state, final ServerLevel level, final BlockPos pos, final ItemStack stack, final boolean dropExperience) {
         level.sendParticles(ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5, level.random.nextInt(2, 7), 0, 0, 0, 0.05);
     }
 
     @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+    protected void onProjectileHit(final Level level, final BlockState state, final BlockHitResult hit, final Projectile projectile) {
         if (!level.isClientSide && projectile.isOnFire()) {
-            level.setBlock(hit.getBlockPos(), this.litBlock.withPropertiesOf(state), 11);
+            level.setBlock(hit.getBlockPos(), this.getLitBlock().withPropertiesOf(state), 11);
         }
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return litBlock.getCloneItemStack(state, target, level, pos, player);
+    public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final LevelReader level, final BlockPos pos, final Player player) {
+        return this.getLitBlock().getCloneItemStack(state, target, level, pos, player);
     }
 
     @Override
     public String getDescriptionId() {
-        return litBlock.getDescriptionId();
+        return this.getLitBlock().getDescriptionId();
+    }
+
+    /**
+     * Lazily initializes the lit version of this block. <p>
+     * Initializing {@link ExtinguishedTorchBlock#litBlock} in the constructor is too soon.
+     *
+     * @return The lit version of this block
+     */
+    public Block getLitBlock() {
+        if (this.litBlock == null) {
+            for (final ExtinguishableBlockPairing pair : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+                if (pair.isExtinguishedVersion(this)) {
+                    this.litBlock = pair.litBlock();
+                    break;
+                }
+            }
+        }
+
+        //lit block should not be null after this. if it is, then we missed something.
+        assert this.litBlock != null;
+        return this.litBlock;
     }
 }
