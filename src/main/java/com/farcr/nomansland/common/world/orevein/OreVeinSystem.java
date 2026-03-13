@@ -73,7 +73,7 @@ public class OreVeinSystem {
                         .comparingInt((OreVeinInstance instance) -> instance.type().generationOrder())
                         .thenComparingInt(instance -> Math.abs(instance.x) + Math.abs(instance.z)))
                 .toList();
-        this.fill(sortedOreVeinsInChunk, level, chunk, random, defaultBlock);
+        this.fill(sortedOreVeinsInChunk, level, chunk, random);
     }
 
     private Optional<OreVeinInstance> getOrCreateOreVein(Holder<OreVeinType> typeHolder, OreVeinType type, int cellX, int cellZ, WorldGenRegion level, WorldGenerationContext context, RandomState random) {
@@ -172,12 +172,12 @@ public class OreVeinSystem {
         return oreVeinsInChunk;
     }
 
-    private void fill(List<OreVeinInstance> oreVeinsInChunk, WorldGenLevel level, ChunkAccess chunk, RandomState randomState, BlockState defaultBlock) {
+    private void fill(List<OreVeinInstance> oreVeinsInChunk, WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
         ChunkPos chunkpos = chunk.getPos();
         int chunkMinX = chunkpos.getMinBlockX(),
-                chunkMinZ = chunkpos.getMinBlockZ();
+            chunkMinZ = chunkpos.getMinBlockZ();
         int chunkHeight = chunk.getHeight(),
-                chunkMinY = chunk.getMinBuildHeight();
+            chunkMinY = chunk.getMinBuildHeight();
 
         // find the maximum possible y for any ore vein
         int maxY = Integer.MIN_VALUE, minY = Integer.MAX_VALUE;
@@ -194,99 +194,94 @@ public class OreVeinSystem {
         maxY = Math.min(maxY, maxHeight);
         minY = Math.max(minY, chunkMinY + 1);
 
-        RandomSource fillRandom = randomState.getOrCreateRandomFactory(ORE_VEIN_RANDOM).at(chunkMinX, 0, chunkMinZ);
-
         NormalNoise oreVeinA = randomState.getOrCreateNoise(Noises.ORE_VEIN_A),
-                    oreVeinB = randomState.getOrCreateNoise(Noises.ORE_VEIN_B),
-                    oreGap = randomState.getOrCreateNoise(Noises.ORE_GAP);
-
+                oreVeinB = randomState.getOrCreateNoise(Noises.ORE_VEIN_B),
+                oreGap = randomState.getOrCreateNoise(Noises.ORE_GAP);
         InterpolatedNoiseField oreVeinAField = new InterpolatedNoiseField(chunkHeight, 2, 2),
-                               oreVeinBField = new InterpolatedNoiseField(chunkHeight, 2, 2),
-                               oreGapField = new InterpolatedNoiseField(chunkHeight, 2, 2);
-
+                oreVeinBField = new InterpolatedNoiseField(chunkHeight, 2, 2),
+                oreGapField = new InterpolatedNoiseField(chunkHeight, 2, 2);
         int fieldStartY = minY - chunkMinY, fieldEndY = maxY - chunkMinY;
         oreVeinAField.fill(fieldStartY, fieldEndY, chunkMinX, chunkMinY, chunkMinZ, (x, y, z) -> oreVeinA.getValue(x * 4, y * 4, z * 4));
         oreVeinBField.fill(fieldStartY, fieldEndY, chunkMinX, chunkMinY, chunkMinZ, (x, y, z) -> oreVeinB.getValue(x * 4, y * 4, z * 4));
         oreGapField.fill(fieldStartY, fieldEndY, chunkMinX, chunkMinY, chunkMinZ, oreGap::getValue);
 
-        BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos();
+        RandomSource fillRandom = randomState.getOrCreateRandomFactory(ORE_VEIN_RANDOM).at(chunkMinX, 0, chunkMinZ);
+
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
             int worldX = x + chunkMinX;
-            mPos.setX(worldX);
+            pos.setX(worldX);
             for (int z = 0; z < 16; z++) {
                 int worldZ = z + chunkMinZ;
-                mPos.setZ(worldZ);
-
-                int maxColumnY = Math.min(chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x, z), maxY);
-                LevelChunkSection chunkSection = null;
-                int lastSectionIndex = Integer.MIN_VALUE;
-                for (int y = maxColumnY; y >= minY; y--) {
-                    int localY = y - chunkMinY;
-                    int sectionY = y & 15;
-                    int sectionIndex = chunk.getSectionIndex(y);
-                    if (sectionIndex != lastSectionIndex) {
-                        chunkSection = chunk.getSection(sectionIndex);
-                        lastSectionIndex = sectionIndex;
-                    }
-                    mPos.setY(y);
-
-                    BlockState currentState = chunkSection.getBlockState(x, sectionY, z);
-                    if (!currentState.canOcclude()) continue;
-
-                    double veinANoise = oreVeinAField.retrieve(x, localY, z),
-                           veinBNoise = oreVeinBField.retrieve(x, localY, z),
-                           veinGapNoise = oreGapField.retrieve(x, localY, z);
-                    double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise));
-
-                    for (OreVeinInstance vein : oreVeinsInChunk) {
-                        int maxYDist = vein.maxY - y, minYDist = y - vein.minY;
-                        if (maxYDist < 0 || minYDist < 0) continue;
-                        double xzDistSq = Mth.lengthSquared(worldX - vein.x, worldZ - vein.z);
-                        if (xzDistSq > vein.radiusSquared) continue;
-
-                        if (vein.type().targetCondition().test(level, mPos)) {
-                            BlockState veinState = getVeinState(
-                                    worldX, y, worldZ,
-                                    maxYDist, minYDist, xzDistSq,
-                                    veinRidgeNoise, veinGapNoise,
-                                    mPos, fillRandom, vein);
-                            if (veinState != null) {
-                                chunkSection.setBlockState(x, sectionY, z, veinState, false);
-                                break;
-                            }
-                        }
-
-                    }
+                pos.setZ(worldZ);
+                for (OreVeinInstance oreVeinInstance : oreVeinsInChunk) {
+                    fillColumnForVein(
+                            oreVeinInstance, x, z, worldX, worldZ, chunkMinY, pos,
+                            oreVeinAField, oreVeinBField, oreGapField,
+                            level, chunk, fillRandom
+                    );
                 }
             }
         }
     }
 
-    @Nullable
-    private BlockState getVeinState(int x, int y, int z,
-                                    int maxYDist, int minYDist, double xzDistSq,
-                                    double veinRidgeNoise, double veinGapNoise,
-                                    BlockPos pos, RandomSource random, OreVeinInstance vein) {
-        int yDist = Math.min(maxYDist, minYDist);
-        int yDiff = vein.maxY - vein.minY;
+    private void fillColumnForVein(OreVeinInstance veinInstance,
+                                   int localX, int localZ, int worldX, int worldZ, int chunkMinY, BlockPos.MutableBlockPos pos,
+                                   InterpolatedNoiseField oreVeinAField, InterpolatedNoiseField oreVeinBField, InterpolatedNoiseField oreGapField,
+                                   WorldGenLevel level, ChunkAccess chunk, RandomSource fillRandom) {
+        int minY = veinInstance.minY,
+            maxY = veinInstance.maxY;
+        double xzDistSq = Mth.lengthSquared(worldX - veinInstance.x, worldZ - veinInstance.z);
+        if (xzDistSq > veinInstance.radiusSquared) return;
         double xzDist = Math.sqrt(xzDistSq);
 
-        if (random.nextFloat() > vein.type().filler().probability()) return null;
+        int minColumnY = Math.max(minY, chunkMinY + 1),
+            maxColumnY = Math.min(chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, localX, localZ), maxY);
 
-        if (vein.type().invert()) veinRidgeNoise = 1 - veinRidgeNoise;
-        float veinRadius = vein.veinRadius();
-        veinRadius = (float) Mth.clampedMap(yDist, 0, yDiff * 0.25F, 0, veinRadius);
-        veinRadius = (float) Mth.clampedMap(xzDist, vein.radius * 0.75F, vein.radius, veinRadius, 0);
+        LevelChunkSection chunkSection = null;
+        int lastSectionIndex = Integer.MIN_VALUE;
 
-        veinRidgeNoise = veinRidgeNoise * 64 - veinRadius;
-        if (veinRidgeNoise >= random.triangle(0.0, vein.type().filler().incoherence())) return null;
+        OreVeinType veinType = veinInstance.type();
+        for (int y = maxColumnY; y >= minColumnY; y--) {
+            int localY = y - chunkMinY;
+            int sectionY = y & 15;
+            int sectionIndex = chunk.getSectionIndex(y);
+            if (sectionIndex != lastSectionIndex) {
+                chunkSection = chunk.getSection(sectionIndex);
+                lastSectionIndex = sectionIndex;
+            }
+            pos.setY(y);
 
-        if (veinGapNoise > -0.3F &&
-            random.nextFloat() <= vein.type().core().probability() &&
-            -veinRidgeNoise >= random.triangle(veinRadius * 0.5, vein.type().core().incoherence() * 0.5F)) {
-            return vein.type().core().resolve(random, pos);
-        } else {
-            return vein.type().filler().resolve(random, pos);
+            BlockState currentState = chunkSection.getBlockState(localX, sectionY, localZ);
+            if (!currentState.canOcclude()) continue;
+
+            double veinANoise = oreVeinAField.retrieve(localX, localY, localZ),
+                   veinBNoise = oreVeinBField.retrieve(localX, localY, localZ),
+                   veinGapNoise = oreGapField.retrieve(localX, localY, localZ);
+            double veinRidgeNoise = Math.max(Math.abs(veinANoise), Math.abs(veinBNoise));
+
+            if (veinType.targetCondition().test(level, pos)) {
+                int yDist = Math.min(maxY - y, y - minY);
+                int yDiff = maxY - minY;
+
+                if (fillRandom.nextFloat() > veinType.filler().probability()) continue;
+
+                if (veinType.invert()) veinRidgeNoise = 1 - veinRidgeNoise;
+                float veinRadius = veinInstance.veinRadius();
+                veinRadius = (float) Mth.clampedMap(yDist, 0, yDiff * 0.25F, 0, veinRadius);
+                veinRadius = (float) Mth.clampedMap(xzDist, veinInstance.radius * 0.75F, veinInstance.radius, veinRadius, 0);
+
+                veinRidgeNoise = veinRidgeNoise * 64 - veinRadius;
+                if (veinRidgeNoise >= fillRandom.triangle(0.0, veinType.filler().incoherence())) continue;
+
+                if (veinGapNoise > -0.3F &&
+                        fillRandom.nextFloat() <= veinType.core().probability() &&
+                        -veinRidgeNoise >= fillRandom.triangle(veinRadius * 0.5, veinType.core().incoherence() * 0.5F)) {
+                    chunkSection.setBlockState(localX, sectionY, localZ, veinType.core().resolve(fillRandom, pos), false);
+                } else {
+                    chunkSection.setBlockState(localX, sectionY, localZ, veinType.filler().resolve(fillRandom, pos), false);
+                }
+            }
         }
     }
 
