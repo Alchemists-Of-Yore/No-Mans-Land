@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.block;
 
 import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelWriter;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -93,20 +95,23 @@ public class InvertedBellBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection());
     }
 
-    @Override
-    public void setPlacedBy(final Level level, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack) {
+    public static void placeBell(BlockPos bottomCenter, Direction facing, LevelWriter level) {
+        BlockState baseState = NMLBlocks.INVERTED_BELL.get().defaultBlockState().setValue(HORIZONTAL_FACING, facing);
         BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
-        Direction dx = state.getValue(HORIZONTAL_FACING);
-        Direction dz = dx.getClockWise();
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = 0; y < 3; y++) {
-                    mutPos.setWithOffset(pos, x, y, z);
+                    mutPos.setWithOffset(bottomCenter, x, y, z);
                     int i = x + z*3 + y*9 + 4;
-                    level.setBlock(mutPos, state.setValue(PART, i), 3);
+                    level.setBlock(mutPos, baseState.setValue(PART, i), 3);
                 }
             }
         }
+    }
+
+    @Override
+    public void setPlacedBy(final Level level, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack) {
+        placeBell(pos, state.getValue(HORIZONTAL_FACING), level);
     }
 
     private boolean onHit(Level level, BlockState state, BlockPos pos, Direction direction) {

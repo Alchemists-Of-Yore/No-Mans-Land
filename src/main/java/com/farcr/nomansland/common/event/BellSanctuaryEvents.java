@@ -1,23 +1,17 @@
 package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class BellSanctuaryEvents {
 
+    /*
     @SubscribeEvent
     public static void onLevelTick(final LevelTickEvent.Pre preTick) {
         final Level level = preTick.getLevel();
@@ -38,6 +32,7 @@ public class BellSanctuaryEvents {
             }
         }
     }
+     */
 
     @SubscribeEvent
     public static void onLevelLoad(final LevelEvent.Load onLoad) {

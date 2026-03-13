@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 public class NMLTags {
     public static final TagKey<Item> FIRESTARTERS = createItemTag("firestarters");
@@ -38,6 +39,7 @@ public class NMLTags {
 
     public static final TagKey<EntityType<?>> INVERTED_BELL_UNAFFECTED = createEntityTag("inverted_bell_unaffected");
     public static final TagKey<EntityType<?>> INVERTED_BELL_REPULSED = createEntityTag("inverted_bell_repulsed");
+    public static final TagKey<Structure> INVERTED_BELL_STRUCTURES = createStructureTag("inverted_bell");
 
     public static final TagKey<Biome> CAVES = createBiomeTag("caves");
     public static final TagKey<DamageType> IGNITES_FLAMMABLE = createDamageTypeTag("ignites_flammable");
@@ -127,5 +129,9 @@ public class NMLTags {
 
     private static TagKey<DamageType> createDamageTypeTag(String name) {
         return TagKey.create(Registries.DAMAGE_TYPE, NoMansLand.location(name));
+    }
+
+    private static TagKey<Structure> createStructureTag(String name) {
+        return TagKey.create(Registries.STRUCTURE, NoMansLand.location(name));
     }
 }

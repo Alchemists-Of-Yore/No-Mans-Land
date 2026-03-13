@@ -1,10 +1,13 @@
 package com.farcr.nomansland.common.world.structure;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.InvertedBellBlock;
+import com.farcr.nomansland.common.blockentity.InvertedBellBlockEntity;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructureTypes;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -69,7 +72,23 @@ public class BellSanctuaryStructure extends Structure {
 
         @Override
         protected void handleDataMarker(final String name, final BlockPos pos, final ServerLevelAccessor level, final RandomSource random, final BoundingBox box) {
-
+            if (name.startsWith("inverted_bell_")) {
+                String suffix = name.substring("inverted_bell_".length());
+                Direction dir = switch (suffix) {
+                    case "north" -> Direction.NORTH;
+                    case "south" -> Direction.SOUTH;
+                    case "east" -> Direction.EAST;
+                    case "west" -> Direction.WEST;
+                    default -> null;
+                };
+                if (dir != null) {
+                    dir = this.getRotation().rotate(dir);
+                    InvertedBellBlock.placeBell(pos, dir, level);
+                    if (level.getBlockEntity(pos.above()) instanceof InvertedBellBlockEntity ibbe) {
+                        ibbe.state = InvertedBellBlockEntity.PositionState.UNASSIGNED;
+                    }
+                }
+            }
         }
     }
 }
