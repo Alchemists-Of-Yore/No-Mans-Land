@@ -86,7 +86,6 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
     @Nullable
     private ChunkPos firstBellSanctuaryPos;
 
-
     /**
      * The second valid Bell Sanctuary position.
      */
@@ -98,13 +97,12 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
         this.z = z;
     }
 
-
     /**
      * Attempts to generate a valid pairing of Bell Sanctuary positions.
      *
-     * @param levelSeed The seed to base generation off of.
-     * @param state The chunk generation state associated with the {@link net.minecraft.server.level.ServerLevel}
-     * @param placement TEMP
+     * @param levelSeed     The seed to base generation off of.
+     * @param state         The chunk generation state associated with the {@link net.minecraft.server.level.ServerLevel}
+     * @param placement     TEMP
      * @param adjacentCells Adjacent {@link BellSanctuaryCell cells} used for distance checks.
      */
     @Contract(mutates = "this")

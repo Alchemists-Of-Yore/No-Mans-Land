@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.mixin.sanctuary_ruins;
+package com.farcr.nomansland.common.mixin.bell_sanctuary;
 
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
@@ -22,6 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Fix for {@link ChunkGenerator#findNearestMapStructure(ServerLevel, HolderSet, BlockPos, int, boolean)} not taking into account {@link com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell cells}
+ */
 @Mixin(ChunkGenerator.class)
 public class ChunkGeneratorMixin {
 

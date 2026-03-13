@@ -55,7 +55,7 @@
     "integration.SpoutBlockEntityMixin",
     "integration.TreeCutterMixin",
     "integration.VanillaFluidTargetsMixin",
-    "sanctuary_ruins.ChunkGeneratorMixin"
+    "bell_sanctuary.ChunkGeneratorMixin"
   ],
   "client": [
     "client.AbstractSoundInstanceMixin",
