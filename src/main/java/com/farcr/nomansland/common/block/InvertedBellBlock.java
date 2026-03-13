@@ -34,10 +34,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class InvertedBellBlock extends BaseEntityBlock {
     public static DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static int CONTROLLER_PART = 3*3*3 / 2;
-    public static IntegerProperty PART = IntegerProperty.create("part", 0, 3*3*3-1);
+    public static int CONTROLLER_PART = 3 * 3 * 3 / 2;
+    public static IntegerProperty PART = IntegerProperty.create("part", 0, 3 * 3 * 3 - 1);
 
-    public InvertedBellBlock(Properties properties) {
+    public InvertedBellBlock(final Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(HORIZONTAL_FACING, Direction.NORTH)
@@ -45,22 +45,22 @@ public class InvertedBellBlock extends BaseEntityBlock {
         );
     }
 
-    public static final VoxelShape[] BELL_NS = new VoxelShape[3*3*3];
-    public static final VoxelShape[] BELL_EW = new VoxelShape[3*3*3];
+    public static final VoxelShape[] BELL_NS = new VoxelShape[3 * 3 * 3];
+    public static final VoxelShape[] BELL_EW = new VoxelShape[3 * 3 * 3];
 
     static {
-        VoxelShape lowerRun = Block.box(-10, -16, -10, 26, -14, 26);
-        VoxelShape mainBody = Block.box(-8, -14, -8, 24, 28, 24);
-        VoxelShape beamNS = Block.box(6, 28, -16, 10, 32, 32);
-        VoxelShape beamEW = Block.box(-16, 28, 6, 32, 32, 10);
+        final VoxelShape lowerRun = Block.box(-10, -16, -10, 26, -14, 26);
+        final VoxelShape mainBody = Block.box(-8, -14, -8, 24, 28, 24);
+        final VoxelShape beamNS = Block.box(6, 28, -16, 10, 32, 32);
+        final VoxelShape beamEW = Block.box(-16, 28, 6, 32, 32, 10);
 
-        VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, beamNS);
-        VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, beamEW);
+        final VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, beamNS);
+        final VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, beamEW);
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = -1; y < 2; y++) {
-                    int i = x + z*3 + y*9 + 13;
-                    VoxelShape here = Block.box(x*16, y*16, z*16, x*16+16, y*16+16, z*16+16);
+                    final int i = x + z * 3 + y * 9 + 13;
+                    final VoxelShape here = Block.box(x * 16, y * 16, z * 16, x * 16 + 16, y * 16 + 16, z * 16 + 16);
                     BELL_NS[i] = Shapes.join(fullBellNS, here, BooleanOp.AND).move(-x, -y, -z);
                     BELL_EW[i] = Shapes.join(fullBellEW, here, BooleanOp.AND).move(-x, -y, -z);
                 }
@@ -69,7 +69,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
         if (state.getValue(HORIZONTAL_FACING).getAxis() == Direction.Axis.X) {
             return BELL_NS[state.getValue(PART)];
         } else {
@@ -79,9 +79,9 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockState getStateForPlacement(final BlockPlaceContext context) {
-        BlockPos blockpos = context.getClickedPos();
-        BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
-        Level level = context.getLevel();
+        final BlockPos blockpos = context.getClickedPos();
+        final BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
+        final Level level = context.getLevel();
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = 0; y < 3; y++) {
@@ -95,14 +95,14 @@ public class InvertedBellBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection());
     }
 
-    public static void placeBell(BlockPos bottomCenter, Direction facing, LevelWriter level) {
-        BlockState baseState = NMLBlocks.INVERTED_BELL.get().defaultBlockState().setValue(HORIZONTAL_FACING, facing);
-        BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
+    public static void placeBell(final BlockPos bottomCenter, final Direction facing, final LevelWriter level) {
+        final BlockState baseState = NMLBlocks.INVERTED_BELL.get().defaultBlockState().setValue(HORIZONTAL_FACING, facing);
+        final BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = 0; y < 3; y++) {
                     mutPos.setWithOffset(bottomCenter, x, y, z);
-                    int i = x + z*3 + y*9 + 4;
+                    final int i = x + z * 3 + y * 9 + 4;
                     level.setBlock(mutPos, baseState.setValue(PART, i), 3);
                 }
             }
@@ -114,19 +114,18 @@ public class InvertedBellBlock extends BaseEntityBlock {
         placeBell(pos, state.getValue(HORIZONTAL_FACING), level);
     }
 
-    private boolean onHit(Level level, BlockState state, BlockPos pos, Direction direction) {
-        Direction front = state.getValue(HORIZONTAL_FACING);
-        if (direction.getAxis() == front.getAxis()) {
-            if (!level.isClientSide && level.getBlockEntity(pos) instanceof InvertedBellBlockEntity ibbe) {
-                InvertedBellBlockEntity controller = ibbe.getController();
-                if (controller != null && controller.ringCooldown <= 0) {
-                    level.blockEvent(pos, controller.getBlockState().getBlock(), 1,
+    private boolean onHit(final Level level, final BlockState state, final BlockPos pos, final Direction direction) {
+        final Direction front = state.getValue(HORIZONTAL_FACING);
+        if (!level.isClientSide && direction.getAxis() == front.getAxis()) {
+            final InvertedBellBlockEntity controller = getControllerBE(level, pos, state);
+            if (controller != null && controller.ringCooldown <= 0) {
+                level.blockEvent(controller.getBlockPos(), controller.getBlockState().getBlock(), 1,
                         direction == front ? 2 : 0 // types are an unsigned byte...
-                    );
-                    return true;
-                }
+                );
+                return true;
             }
         }
+
         return false;
     }
 
@@ -141,16 +140,29 @@ public class InvertedBellBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+    protected void onProjectileHit(final Level level, final BlockState state, final BlockHitResult hit, final Projectile projectile) {
         this.onHit(level, state, hit.getBlockPos(), hit.getDirection());
     }
 
     @Override
     protected void onRemove(final BlockState state, final Level level, final BlockPos pos, final BlockState newState, final boolean movedByPiston) {
-        if (level.getBlockEntity(pos) instanceof InvertedBellBlockEntity ibbe) {
+        final InvertedBellBlockEntity ibbe = getControllerBE(level, pos, state);
+        if (ibbe != null) {
             ibbe.destroyBell();
         }
+
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    //can probably be changed to be constant instead of iterating over all positions in a 3x3x3 volume
+    private static InvertedBellBlockEntity getControllerBE(final Level level, final BlockPos pos, final BlockState ownState) {
+        for (final BlockPos searchPos : BlockPos.betweenClosed(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)) {
+            if (level.getBlockEntity(searchPos) instanceof final InvertedBellBlockEntity ibbe) {
+                return ibbe;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -177,7 +189,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new InvertedBellBlockEntity(blockPos, blockState);
+    public @Nullable BlockEntity newBlockEntity(final BlockPos blockPos, final BlockState blockState) {
+        return blockState.getValue(PART) == CONTROLLER_PART ? new InvertedBellBlockEntity(blockPos, blockState) : null;
     }
 }
