@@ -14,12 +14,17 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Optional;
 
+/**
+ * A cell containing a pair of Bell Sanctuary {@link net.minecraft.core.SectionPos section positions}.
+ */
 public class BellSanctuaryCell implements Iterable<ChunkPos> {
 
     public static Codec<BellSanctuaryCell> CODEC = RecordCodecBuilder.create(i ->
@@ -45,18 +50,46 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
             })
     );
 
+    /**
+     * The minimum distance allowed between <i>any<i/> two Bell Sanctuary position.
+     */
     public static final int MIN_CHUNK_DISTANCE = 10;
+
+    /**
+     * The maximum distance allowed between <i>any<i/> two Bell Sanctuary positions.
+     */
     public static final int MAX_CHUNK_DISTANCE = 6_000;
 
+    /**
+     * This cell's X position
+     */
     public final int x;
+
+    /**
+     * This cell's Z position
+     */
     public final int z;
 
+    /**
+     * Whether This cell was able to generate A valid pairing of Bell Sanctuary positions.
+     */
     private boolean valid = false;
+
+    /**
+     * Whether this cell has attempted to generate or not.
+     */
     private boolean attemptedToGenerate = false;
 
+    /**
+     * The first valid Bell Sanctuary position.
+     */
     @Nullable
     private ChunkPos firstBellSanctuaryPos;
 
+
+    /**
+     * The second valid Bell Sanctuary position.
+     */
     @Nullable
     private ChunkPos secondBellSanctuaryPos;
 
@@ -65,9 +98,16 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
         this.z = z;
     }
 
+
     /**
-     * Attempts to generate the pair of sanctuary positions for this cell, with the given adjacent cells for distance checks.
+     * Attempts to generate a valid pairing of Bell Sanctuary positions.
+     *
+     * @param levelSeed The seed to base generation off of.
+     * @param state The chunk generation state associated with the {@link net.minecraft.server.level.ServerLevel}
+     * @param placement TEMP
+     * @param adjacentCells Adjacent {@link BellSanctuaryCell cells} used for distance checks.
      */
+    @Contract(mutates = "this")
     public void generatePositions(final long levelSeed, final ChunkGeneratorStructureState state, final BellSanctuaryStructurePlacement placement, final BellSanctuaryCell[][] adjacentCells) {
         final long newSeed = (long) this.x * 341873128712L + (long) this.z * 132897987541L + levelSeed;
 
@@ -105,10 +145,12 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
         this.attemptedToGenerate = true;
     }
 
+    //TODO:make point gathering smarter
     private @Nullable Pair<BlockPos, Holder<Biome>> getSanctuaryPos(final ChunkGeneratorStructureState state, final RandomSource source, final RandomSource biomeSource) {
         return this.locateValidPosition(state, BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH * source.nextDouble(), biomeSource);
     }
 
+    //TODO:make biome gathering not take this into account.
     private Pair<BlockPos, Holder<Biome>> locateValidPosition(final ChunkGeneratorStructureState state, final double localBlockX, final double localBlockZ, final RandomSource biomeSource) {
         return state.biomeSource.findBiomeHorizontal(
                 (int) ((this.x * BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) + localBlockX),
@@ -128,11 +170,18 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
         return this.valid;
     }
 
+    //TODO:replace when BellSanctuary structure is created
     public boolean validGenChunk(final int checkChunkX, final int checkChunkZ) {
         final ChunkPos checkPos = new ChunkPos(checkChunkX, checkChunkZ);
         return checkPos.equals(this.firstBellSanctuaryPos) || checkPos.equals(this.secondBellSanctuaryPos);
     }
 
+    /**
+     * Whether the given {@link BlockPos} is withing the bounds of this {@link BellSanctuaryCell cell}.
+     *
+     * @param pos The block position to check
+     * @return Whether the given block pos is in bounds.
+     */
     public boolean isBlockPosInside(final BlockPos pos) {
         return Math.floorDiv(pos.getX(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.x
                 || Math.floorDiv(pos.getZ(), BellSanctuaryGrid.CELL_SIDE_BLOCK_LENGTH) == this.z;
@@ -175,10 +224,12 @@ public class BellSanctuaryCell implements Iterable<ChunkPos> {
         };
     }
 
+    @ApiStatus.Internal
     public static BellSanctuaryCell deserialize(final CompoundTag data) {
         return CODEC.decode(NbtOps.INSTANCE, data).getOrThrow().getFirst();
     }
 
+    @ApiStatus.Internal
     public Tag serialize() {
         return CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
     }
