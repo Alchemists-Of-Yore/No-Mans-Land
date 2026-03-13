@@ -54,10 +54,6 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         super(NMLBlockEntities.INVERTED_BELL.get(), pos, blockState);
     }
 
-    public boolean isController() {
-        return this.getBlockState().getValue(InvertedBellBlock.PART) == InvertedBellBlock.CONTROLLER_PART;
-    }
-
     public void destroyBell() {
         final BlockPos.MutableBlockPos mutPos = new BlockPos.MutableBlockPos();
         for (int x = -1; x < 2; x++) {
@@ -113,9 +109,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                         ibbe.targetArea = getLikelyOtherSanctuary(cell, pos);
                         ibbe.state = PositionState.CHUNK;
                     }
-                    case CHUNK -> {
-                        handleAwaitingTheSearch(ibbe, pos, serverLevel);
-                    }
+                    case CHUNK -> handleAwaitingTheSearch(ibbe, pos, serverLevel);
                 }
 
             } else if (ibbe.state == PositionState.UNASSIGNED) {
@@ -196,7 +190,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
             if (chunk.isSuccess()) {
                 final ChunkAccess access = chunk.orElseThrow(AssertionError::new);
                 for (final BlockPos bePos : access.getBlockEntitiesPos()) {
-                    if (access.getBlockEntity(bePos) instanceof final InvertedBellControllerBlockEntity ibbe && ibbe.isController()) {
+                    if (access.getBlockEntity(bePos) instanceof final InvertedBellControllerBlockEntity ibbe) {
                         return ibbe;
                     }
                 }

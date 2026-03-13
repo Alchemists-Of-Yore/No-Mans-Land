@@ -92,6 +92,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
                 }
             }
         }
+
         return this.defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection());
     }
 
@@ -156,10 +157,6 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     //can probably be changed to be constant instead of iterating over all positions in a 3x3x3 volume
     public static InvertedBellControllerBlockEntity getControllerBE(final Level level, final BlockPos pos, final BlockState ownState) {
-
-
-
-
         for (final BlockPos searchPos : BlockPos.betweenClosed(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)) {
             if (level.getBlockEntity(searchPos) instanceof final InvertedBellControllerBlockEntity ibbe) {
                 return ibbe;

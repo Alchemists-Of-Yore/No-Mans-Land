@@ -28,32 +28,30 @@ public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> i
 
     @Override
     public void render(T bell, float pt, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
-        if (bell.isController()) {
-            poseStack.pushPose();
-            poseStack.rotateAround(
-                     Axis.YP.rotationDegrees(180 - bell.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING).toYRot()),
-                    0.5f, 0.5f, 0.5f
-            );
-            poseStack.pushPose();
-            // cursed to have a static value affect all bell block entities
-            // but there's only ever intended to be at most one on screen and this removes the pain of having a block entity thousands of blocks away ticking on the client
-            Quaternionf rotation = InvertedBellClientHandler.instance.getAnimationRotation(pt);
-            if (rotation != null) {
-                poseStack.rotateAround(rotation, 0.5f, 2f - 4/16f, 0.5f);
-            }
-            BakedModel model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BELL_MODEL);
-            this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.solidBlockSheet()), bell.getBlockState(), model,
-                    1, 1, 1, packedLight, packedOverlay);
-            poseStack.popPose();
-
-            poseStack.pushPose();
-            poseStack.translate(0, 1, 0);
-            model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BEAM_MODEL);
-            this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.solidBlockSheet()), bell.getBlockState(), model,
-                    1, 1, 1, packedLight, packedOverlay);
-            poseStack.popPose();
-            poseStack.popPose();
+        poseStack.pushPose();
+        poseStack.rotateAround(
+                Axis.YP.rotationDegrees(180 - bell.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING).toYRot()),
+                0.5f, 0.5f, 0.5f
+        );
+        poseStack.pushPose();
+        // cursed to have a static value affect all bell block entities
+        // but there's only ever intended to be at most one on screen and this removes the pain of having a block entity thousands of blocks away ticking on the client
+        Quaternionf rotation = InvertedBellClientHandler.instance.getAnimationRotation(pt);
+        if (rotation != null) {
+            poseStack.rotateAround(rotation, 0.5f, 2f - 4 / 16f, 0.5f);
         }
+        BakedModel model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BELL_MODEL);
+        this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.solidBlockSheet()), bell.getBlockState(), model,
+                1, 1, 1, packedLight, packedOverlay);
+        poseStack.popPose();
+
+        poseStack.pushPose();
+        poseStack.translate(0, 1, 0);
+        model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BEAM_MODEL);
+        this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.solidBlockSheet()), bell.getBlockState(), model,
+                1, 1, 1, packedLight, packedOverlay);
+        poseStack.popPose();
+        poseStack.popPose();
     }
 
     @Override
