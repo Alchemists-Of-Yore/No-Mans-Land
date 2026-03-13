@@ -13,27 +13,36 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ChunkLevel;
 import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkPyramid;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStep;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class InvertedBellBlockEntity extends BlockEntity {
+    public static final TicketType<ChunkPos> BELL_TICKET = TicketType.create("nml:inverted_bell", Comparator.comparingLong(ChunkPos::toLong), 300);
     public static final int COOLDOWN = 100;
 
     private PositionState state = PositionState.UNASSIGNED;
     private @Nullable ChunkPos targetArea;
+    // slowly escelates chunk ticket level to spread generation out over time
+    private int escelationTimer = 20;
+    private int escelationValue = 0;
     private @Nullable CompletableFuture<List<ChunkResult<ChunkAccess>>> targetAreaFuture;
     public @Nullable BlockPos targetBell;
 
@@ -230,7 +239,18 @@ public class InvertedBellBlockEntity extends BlockEntity {
                 ibbe.targetAreaFuture = null;
             }
         } else {
-            ibbe.targetAreaFuture = tryLoadOtherSanctuary(serverLevel, ibbe.targetArea);
+            if (ibbe.escelationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
+                ibbe.escelationTimer++;
+                if (ibbe.escelationTimer > 10) {
+                    ChunkStep step = ChunkPyramid.GENERATION_PYRAMID.steps().get(ibbe.escelationValue);
+                    int dist = ChunkLevel.byStatus(step.targetStatus());
+                    serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, dist, ibbe.targetArea);
+                    ibbe.escelationTimer = 0;
+                    ibbe.escelationValue++;
+                }
+            } else {
+                ibbe.targetAreaFuture = tryLoadOtherSanctuary(serverLevel, ibbe.targetArea);
+            }
         }
     }
 

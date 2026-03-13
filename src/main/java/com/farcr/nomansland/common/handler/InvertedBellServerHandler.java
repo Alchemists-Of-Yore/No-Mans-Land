@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.game.ClientboundChunkBatchStartPacket;
 import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -26,7 +25,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipBlockStateContext;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -69,13 +67,6 @@ public class InvertedBellServerHandler extends SavedData {
         Iterator<ActiveTeleport> it = this.teleports.iterator();
         while (it.hasNext()) {
             ActiveTeleport entry = it.next();
-            ChunkPos centerChunk = new ChunkPos(entry.to);
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    ChunkPos offChunk = new ChunkPos(centerChunk.x+x, centerChunk.z+z);
-                    level.getChunkSource().removeRegionTicket(TicketType.FORCED, offChunk, 2, offChunk);
-                }
-            }
             if (entry.chunkFutureIsFailure(level)) {
                 entry.stop(level);
                 it.remove();
@@ -125,9 +116,10 @@ public class InvertedBellServerHandler extends SavedData {
             this.from = from;
             this.to = to;
 
+            ChunkPos fromChunk = new ChunkPos(to);
+            level.getChunkSource().addRegionTicket(InvertedBellBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
             ChunkPos toChunk = new ChunkPos(to);
-            level.getChunkSource().addRegionTicket(TicketType.FORCED, toChunk, 0, toChunk);
-            this.chunkFuture = level.getChunkSource().getChunkFuture(toChunk.x, toChunk.z, ChunkStatus.FULL, true);
+            level.getChunkSource().addRegionTicket(InvertedBellBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
 
             this.teleportingEntities.forEach(e -> {
                 if (e instanceof LivingEntityExtension extension) {
@@ -142,12 +134,6 @@ public class InvertedBellServerHandler extends SavedData {
                 this.chunkFuture.cancel(true);
             }
             ChunkPos centerChunk = new ChunkPos(this.to);
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    ChunkPos offChunk = new ChunkPos(centerChunk.x+x, centerChunk.z+z);
-                    level.getChunkSource().removeRegionTicket(TicketType.FORCED, offChunk, 2, offChunk);
-                }
-            }
         }
 
         public boolean tick(ServerLevel level) {
@@ -161,7 +147,6 @@ public class InvertedBellServerHandler extends SavedData {
             return this.timer > TELEPORT_PLAYER_TIME;
         }
 
-        // return true if chunk future is a failure (targeting bell that does not exist)
         public boolean chunkFutureIsFailure(ServerLevel level) {
             if (this.chunkFuture == null || !this.chunkFuture.isDone()) {
                 return false;
@@ -195,12 +180,6 @@ public class InvertedBellServerHandler extends SavedData {
 
 
         public void teleportEntities(ServerLevel level) {
-            ChunkPos centerChunk = new ChunkPos(this.to);
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    level.getChunkSource().getChunk(centerChunk.x+x, centerChunk.z+z, ChunkStatus.FULL, true);
-                }
-            }
             for (Entity entity : this.teleportingEntities) {
                 if (entity.distanceToSqr(this.from.getCenter()) < InvertedBellServerHandler.RANGE_SQUARED) {
                     if (entity.getType().is(NMLTags.INVERTED_BELL_REPULSED)) {
@@ -216,12 +195,6 @@ public class InvertedBellServerHandler extends SavedData {
         }
 
         public void teleportPlayers(ServerLevel level) {
-            ChunkPos centerChunk = new ChunkPos(this.to);
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-                    level.getChunkSource().getChunk(centerChunk.x+x, centerChunk.z+z, ChunkStatus.FULL, true);
-                }
-            }
             for (ServerPlayer serverPlayer : this.teleportingPlayers) {
                 if (!this.doTeleportEntity(serverPlayer, level)) {
                     PacketDistributor.sendToPlayer(serverPlayer, ClientboundInvertedBellPacket.FADE_OUT_PAINFUL);

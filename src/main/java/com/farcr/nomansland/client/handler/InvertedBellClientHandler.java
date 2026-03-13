@@ -108,8 +108,8 @@ public class InvertedBellClientHandler {
         switch (this.state) {
             case FADE_IN -> {
                 this.timer++;
-                // safeguard if packet explodes or something
-                if (this.timer >= FADE_IN_TIME + 20) {
+                // safeguard if server lags (badly) (which it probably will)
+                if (this.timer >= FADE_IN_TIME + 100) {
                     this.startFadeOut();
                 }
             }
