@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.common.entity.buddy.Buddy;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.ArmedModel;
@@ -18,6 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidModel.class)
 public abstract class HumanoidModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements ArmedModel, HeadedModel {
+    @Shadow
+    @Final
+    public ModelPart head;
+
+    @Shadow
+    @Final
+    public ModelPart hat;
+
     @Shadow
     @Final
     public ModelPart leftArm;
@@ -72,6 +82,14 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
                     leftArm.xRot = 0.0F;
                 }
             }
+        }
+
+        if (entity.hasEffect(NMLEffects.HAPPINESS)) {
+            Buddy.setupAnimationHappy(
+                entity, head, hat,
+                leftArm, rightArm,
+                leftLeg, rightLeg
+            );
         }
     }
 }

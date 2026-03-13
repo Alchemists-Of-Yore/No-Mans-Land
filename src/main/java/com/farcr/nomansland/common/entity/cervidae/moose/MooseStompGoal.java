@@ -9,6 +9,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 
 /**
@@ -17,10 +18,11 @@ import javax.annotation.Nullable;
  */
 public class MooseStompGoal extends Goal {
 
-    private static final TargetingConditions STOMP_TARGETING = TargetingConditions.forNonCombat().range(8.0).ignoreLineOfSight();
+    private static final TargetingConditions STOMP_TARGETING = TargetingConditions.forNonCombat().range(Moose.STOMP_DISTANCE * 1.5f);
 
     protected final Moose moose;
     protected final float stompDistance;
+    protected int inStompRadius;
 
     @Nullable
     protected LivingEntity stompTarget;
@@ -28,6 +30,7 @@ public class MooseStompGoal extends Goal {
     public MooseStompGoal(Moose moose, float stompDistance) {
         this.moose = moose;
         this.stompDistance = stompDistance;
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
     public boolean shouldStomp(Entity entity) {
@@ -58,9 +61,15 @@ public class MooseStompGoal extends Goal {
                 moose, moose.getX(), moose.getY(), moose.getZ());
 
         if (stompTarget == null) {
+            if (inStompRadius > 0) {
+                inStompRadius--;
+            }
             return false;
         }
-        return moose.distanceTo(stompTarget) < stompDistance;
+        if (moose.distanceTo(stompTarget) < stompDistance) {
+            inStompRadius++;
+        }
+        return inStompRadius > Moose.STOMP_WINDUP;
     }
 
     @Override
@@ -71,6 +80,16 @@ public class MooseStompGoal extends Goal {
     @Override
     public void start() {
         moose.startStomping();
+        moose.getNavigation().stop();
+        inStompRadius = 0;
+    }
+
+    @Override
+    public void tick() {
+        if (stompTarget != null && stompTarget.isAlive()) {
+            moose.faceTarget(stompTarget);
+        }
+        super.tick();
     }
 
     @Override

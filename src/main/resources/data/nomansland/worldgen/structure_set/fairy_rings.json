@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "nomansland:buddy_fairy_ring",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 674545,
+    "separation": 5,
+    "spacing": 16,
+    "type": "minecraft:random_spread"
+  }
+}

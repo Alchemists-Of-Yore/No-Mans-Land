@@ -66,7 +66,6 @@ public class ShedAntlersGoal extends Goal {
     public void start() {
         shedAnimationTick = adjustedTickDelay(mob.getRandom().nextInt(40, 120));
         mob.getNavigation().moveTo(path, 1);
-//        Minecraft.getInstance().player.displayClientMessage(Component.literal(mob.getName().getString() + " is looking for logs to shed their pretty little antlers at :3"), false);
     }
 
     public boolean canContinueToUse() {
@@ -101,6 +100,7 @@ public class ShedAntlersGoal extends Goal {
     public Iterable<BlockPos> getNearbyBlocks(int range) {
         return getNearbyBlocks(range, range);
     }
+
     public Iterable<BlockPos> getNearbyBlocks(int horizontal, int vertical) {
         return BlockPos.betweenClosed(Mth.floor(mob.getX() - horizontal), Mth.floor(mob.getY() - vertical), Mth.floor(mob.getZ() - horizontal), Mth.ceil(mob.getX() + horizontal), Mth.ceil(mob.getY() + vertical), Mth.ceil(mob.getZ() + horizontal));
     }

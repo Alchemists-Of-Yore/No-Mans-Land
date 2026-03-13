@@ -51,6 +51,7 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_EAT = registerSound("entity.moose.eat");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_REJECTS_FOOD = registerSound("entity.moose.reject_food");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_STOMPS = registerSound("entity.moose.stomp");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_SHOWS_WARNING = registerSound("entity.moose.warn");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_SHEDS_ANTLERS = registerSound("entity.moose.shed_antlers");
 
 

@@ -228,6 +228,13 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         if (friendMoon.getState() == FriendMoonState.OFFERING) {
             OfferingContext inspectionContext = blockEntity.inspectionContext;
             if (inspectionContext != null && inspectionContext.entity() != null) {
+                boolean specialOffering = false;
+                if (FriendMoon.isSpecialInteraction(inspectionContext)) {
+                    if (friendMoon.specialInteraction(level, inspectionContext.entity()))
+                        specialOffering = true;
+                    else blockEntity.setInspectionContext(null, friendMoon);
+                }
+
                 Entity entity = inspectionContext.entity();
                 Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
                 entity.setDeltaMovement(new Vec3(0, 0, 0));
@@ -238,18 +245,21 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 entity.addDeltaMovement(approachSpeed);
                 if (approachSpeed.lengthSqr() <= 0.001f) {
                     // Levitate object
-                    Vec3 raisedPosition = pos.above(2).getCenter();
+                    int raiseDistance = specialOffering ? 4 : 2;
+                    Vec3 raisedPosition = pos.above(raiseDistance).getCenter();
                     Vec3 dist = raisedPosition.subtract(entity.position());
 
                     float speed = 1 / 20f;
                     entity.setDeltaMovement(
                         dist.multiply(new Vec3(new Vector3f(speed))));
 
-                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0)) {
+                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) && !specialOffering) {
                         int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
                             .dispatch(level, friendMoon.getFriendshipPlayers());
                         friendMoon.applyDialogueLength(dialogueLength - 80);
                     }
+                    if (specialOffering)
+                        return;
                 }
             }
         } else

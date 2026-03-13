@@ -2,10 +2,13 @@ package com.farcr.nomansland.common.entity.cervidae.moose;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.player.Player;
 
 public class MooseMeleeAttackGoal extends MeleeAttackGoal {
 
     private final Moose moose;
+    protected final PathNavigation pathNav;
 
     private LivingEntity cachedTarget;
     private boolean isReadyingAttack;
@@ -14,11 +17,7 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
     public MooseMeleeAttackGoal(Moose moose, double speedModifier) {
         super(moose, speedModifier, false);
         this.moose = moose;
-    }
-
-    @Override
-    public boolean requiresUpdateEveryTick() {
-        return true;
+        this.pathNav = moose.getNavigation();
     }
 
     @Override
@@ -27,10 +26,21 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
         if (target == null) {
             return false;
         }
+        if (!target.isAlive()) {
+            return false;
+        }
         if (!moose.targetMemory.isUpsetAt(target)) {
             return false;
         }
-        return super.canUse();
+        long time = moose.level().getGameTime();
+
+        if (isReadyingAttack || time - lastCanUseCheck > 4L) {
+            lastCanUseCheck = time;
+            path = pathNav.createPath(target, 0);
+            return path != null;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -42,10 +52,29 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
         if (target == null) {
             return false;
         }
+        if (!target.isAlive()) {
+            return false;
+        }
         if (!moose.targetMemory.isUpsetAt(target)) {
             return false;
         }
-        return super.canContinueToUse();
+        if (moose.distanceTo(target) > Moose.ACTIVE_AGGRO_DISTANCE) {
+            return false;
+        }
+        if (followingTargetEvenIfNotSeen) {
+            if (moose.isWithinRestriction(target.blockPosition())) {
+                if (target.isSpectator()) {
+                    return false;
+                }
+                if (target instanceof Player player) {
+                    return !player.isCreative();
+                }
+                return true;
+            }
+            return false;
+        } else {
+            return !pathNav.isDone();
+        }
     }
 
     @Override
@@ -69,6 +98,7 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
             }
         }
         super.tick();
+        moose.lookAtAndFaceTarget(moose.getTarget());
     }
 
     @Override

@@ -96,13 +96,13 @@ public class BandageItem extends Item {
         return 40;
     }
 
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
-        LivingEntity target = TARGET_ENTITY.get();
-        if (target != null) {
-            return UseAnim.CROSSBOW;
-        }
-        return UseAnim.EAT;
-    }
+//    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+//        LivingEntity target = TARGET_ENTITY.get();
+//        if (target != null) {
+//            return UseAnim.CROSSBOW;
+//        }
+//        return UseAnim.EAT;
+//    }
 
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         return ItemUtils.startUsingInstantly(level, player, hand);

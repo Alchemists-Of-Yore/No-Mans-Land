@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.bombs.Firebomb;
 import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
+import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
@@ -86,7 +87,7 @@ public class NMLEntities {
 //
     public static final Supplier<EntityType<Moose>> MOOSE =
             ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
-                    .sized(1.5F, 2.5F)
+                    .sized(1.25F, 1.75F)
                     .eyeHeight(2.0F)
                     .passengerAttachments(new Vec3(0.0F, 2.05F, -0.5F))
                     .build("moose"));
@@ -97,6 +98,12 @@ public class NMLEntities {
                     .eyeHeight(1.0F)
                     .passengerAttachments(new Vec3(0.0F, 1.15F, 0.0F))
                     .build("tortoise"));
+
+    public static final Supplier<EntityType<Buddy>> BUDDY =
+        ENTITIES.register("buddy", () -> EntityType.Builder.of(Buddy::new, MobCategory.MISC)
+            .sized(.75f, 2.05f)
+            .ridingOffset(-0.7F)
+            .build("buddy"));
 
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {
         return ENTITIES.register(name, () -> EntityType.Builder.of(entity, category).sized(width, height).build(name));

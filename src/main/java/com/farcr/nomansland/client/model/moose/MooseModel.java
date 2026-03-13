@@ -156,18 +156,18 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
 //            this.neck.xRot += headPitch * 0.4F * Mth.DEG_TO_RAD;
 //            this.neck.yRot += netHeadYaw * 0.4F * Mth.DEG_TO_RAD;
 
-//            float upperBodyXRot = headPitch * 0.1F * Mth.DEG_TO_RAD;
-//            float upperBodyYRot = netHeadYaw * 0.05F * Mth.DEG_TO_RAD;
-//            this.upperbody.xRot += upperBodyXRot;
-//            this.upperbody.yRot += upperBodyYRot;
-//            left_leg.xRot -= upperBodyXRot;
-//            right_leg.xRot -= upperBodyXRot;
-//            left_leg_back.xRot -= upperBodyXRot;
-//            right_leg_back.xRot -= upperBodyXRot;
-//            left_leg.yRot -= upperBodyYRot;
-//            right_leg.yRot -= upperBodyYRot;
-//            left_leg_back.yRot -= upperBodyYRot;
-//            right_leg_back.yRot -= upperBodyYRot;
+            float upperBodyXRot = headPitch * 0.1F * Mth.DEG_TO_RAD;
+            float upperBodyYRot = netHeadYaw * 0.05F * Mth.DEG_TO_RAD;
+            this.upperbody.xRot += upperBodyXRot;
+            this.upperbody.yRot += upperBodyYRot;
+            left_leg.xRot -= upperBodyXRot;
+            right_leg.xRot -= upperBodyXRot;
+            left_leg_back.xRot -= upperBodyXRot;
+            right_leg_back.xRot -= upperBodyXRot;
+            left_leg.yRot -= upperBodyYRot;
+            right_leg.yRot -= upperBodyYRot;
+            left_leg_back.yRot -= upperBodyYRot;
+            right_leg_back.yRot -= upperBodyYRot;
 
             this.dewlap.xRot -= Math.min(headPitch * Mth.DEG_TO_RAD, 0.1F);
         }
