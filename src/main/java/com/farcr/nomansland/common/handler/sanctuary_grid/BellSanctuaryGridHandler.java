@@ -50,15 +50,11 @@ public class BellSanctuaryGridHandler {
     }
 
     /**
-     * Attempts to generate the cell for the given X and Z position.
-     *
-     * @param state The chunk generation state.
-     * @return The newly generated cell, or an already present one.
+     * Attempts to generate the {@link BellSanctuaryCell cell} for the given X and Z position. If a cell already exists, does nothing.
      */
-    @NotNull
-    public static BellSanctuaryCell generateOrGetCell(final ChunkGeneratorStructureState state, final int blockX, final int blockZ) {
-        return LEVEL_SEED_MAP.computeIfAbsent(state.getLevelSeed(), BellSanctuaryGrid::new)
-                .generateOrGetCell(blockX, blockZ);
+    @ApiStatus.Internal
+    public static void generateCell(final long levelSeed, final int chunkX, final int chunkZ) {
+        LEVEL_SEED_MAP.computeIfAbsent(levelSeed, BellSanctuaryGrid::new).generateCell(chunkX, chunkZ);
     }
 
     @ApiStatus.Internal

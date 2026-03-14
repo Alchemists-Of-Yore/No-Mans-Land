@@ -51,14 +51,12 @@ public class BellSanctuaryGrid extends SavedData {
     }
 
     /**
-     * Attempts to generate a {@link BellSanctuaryCell cell} given the X and Z block positions.
-     *
-     * @return A newly generated {@link BellSanctuaryCell cell}, or an already present one.
+     * Attempts to generate a {@link BellSanctuaryCell cell} given the X and Z chunk positions. If a cell already exists, does nothing.
      */
-    @NotNull
-    public BellSanctuaryCell generateOrGetCell(final int blockX, final int blockZ) {
-        final int cellX = Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH); // should keep sign
-        final int cellZ = Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH); // should keep sign
+    @ApiStatus.Internal
+    public void generateCell(final int chunkX, final int chunkZ) {
+        final int cellX = Math.floorDiv(chunkX, CELL_SIDE_CHUNK_LENGTH);
+        final int cellZ = Math.floorDiv(chunkZ, CELL_SIDE_CHUNK_LENGTH);
 
         BellSanctuaryCell sanctuaryCell = this.bellSanctuaryCells.get(cellX, cellZ);
         if (sanctuaryCell == null) {
@@ -67,26 +65,9 @@ public class BellSanctuaryGrid extends SavedData {
         }
 
         if (!sanctuaryCell.hasAttemptedToGenerate()) {
-            final BellSanctuaryCell[][] adjacent = new BellSanctuaryCell[3][3];
-
-            //-1 -> 1
-            for (int adjX = -1; adjX < 2; adjX++) {
-                for (int adjZ = -1; adjZ < 2; adjZ++) {
-                    //center cell
-                    if (adjX == 0 && adjZ == 0) {
-                        continue;
-                    }
-
-                    //+1 to avoid negative indices inside array
-                    adjacent[adjX + 1][adjZ + 1] = this.bellSanctuaryCells.get(cellX + adjX, cellZ + adjZ);
-                }
-            }
-
             sanctuaryCell.generatePositionsNoBiome(this.levelSeed);
+            this.setDirty();
         }
-
-        this.setDirty();
-        return sanctuaryCell;
     }
 
     /**

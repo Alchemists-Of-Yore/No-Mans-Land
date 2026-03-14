@@ -26,7 +26,7 @@ import java.util.Set;
  * Fix for {@link ChunkGenerator#findNearestMapStructure(ServerLevel, HolderSet, BlockPos, int, boolean)} not taking into account {@link com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell cells}
  */
 @Mixin(ChunkGenerator.class)
-public class ChunkGeneratorMixin {
+public class FindNearestMapStructureFix {
 
     @Inject(method = "findNearestMapStructure", at = @At(value = "INVOKE", target = "Ljava/util/Map$Entry;getKey()Ljava/lang/Object;", ordinal = 0))
     private void nomansland$SanctuaryRuinsFinder(final ServerLevel level,

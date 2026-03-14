@@ -46,6 +46,8 @@
     "VineBlockMixin",
     "WaterAvoidingRandomStrollGoalMixin",
     "WaterlilyBlockMixin",
+    "bell_sanctuary.FindNearestMapStructureFix",
+    "bell_sanctuary.GenerateCell",
     "caves.DimensionBiomePlacementMixin",
     "caves.MultiNoiseBiomeSourceMixin",
     "integration.PloughMovementBehaviorMixin",
@@ -55,8 +57,7 @@
     "integration.SeasonHooksMixin",
     "integration.SpoutBlockEntityMixin",
     "integration.TreeCutterMixin",
-    "integration.VanillaFluidTargetsMixin",
-    "bell_sanctuary.ChunkGeneratorMixin"
+    "integration.VanillaFluidTargetsMixin"
   ],
   "client": [
     "client.AbstractSoundInstanceMixin",
