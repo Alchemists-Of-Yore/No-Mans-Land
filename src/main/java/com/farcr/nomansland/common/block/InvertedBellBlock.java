@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class InvertedBellBlock extends BaseEntityBlock {
     public static DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static int CONTROLLER_PART = 3 * 3 * 3 / 2;
+    public static int CONTROLLER_PART = 3 * 3 * 3 / 2; // 13
     public static IntegerProperty PART = IntegerProperty.create("part", 0, 3 * 3 * 3 - 1);
 
     public InvertedBellBlock(final Properties properties) {
@@ -155,12 +155,13 @@ public class InvertedBellBlock extends BaseEntityBlock {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    //can probably be changed to be constant instead of iterating over all positions in a 3x3x3 volume
     public static InvertedBellControllerBlockEntity getControllerBE(final Level level, final BlockPos pos, final BlockState ownState) {
-        for (final BlockPos searchPos : BlockPos.betweenClosed(pos.getX() - 1, pos.getY() - 1, pos.getZ() - 1, pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)) {
-            if (level.getBlockEntity(searchPos) instanceof final InvertedBellControllerBlockEntity ibbe) {
-                return ibbe;
-            }
+        int part = ownState.getValue(PART);
+        int rx = part % 3;
+        int rz = (part / 3) % 3;
+        int ry = part / 9;
+        if (level.getBlockEntity(pos.offset(1-rx, 1-ry, 1-rz)) instanceof final InvertedBellControllerBlockEntity ibbe) {
+            return ibbe;
         }
 
         return null;

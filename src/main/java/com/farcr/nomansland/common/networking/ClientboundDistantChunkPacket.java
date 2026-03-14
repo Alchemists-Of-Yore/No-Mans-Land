@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+// todo: inverted bell seamless teleport black magic
 public record ClientboundDistantChunkPacket(int x, int z) implements CustomPacketPayload {
     public static final StreamCodec<FriendlyByteBuf, ClientboundDistantChunkPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

@@ -36,7 +36,7 @@ public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> i
         poseStack.pushPose();
         // cursed to have a static value affect all bell block entities
         // but there's only ever intended to be at most one on screen and this removes the pain of having a block entity thousands of blocks away ticking on the client
-        Quaternionf rotation = InvertedBellClientHandler.instance.getAnimationRotation(pt);
+        Quaternionf rotation = InvertedBellClientHandler.instance.getBellAnimationRotation(pt);
         if (rotation != null) {
             poseStack.rotateAround(rotation, 0.5f, 2f - 4 / 16f, 0.5f);
         }

@@ -2,17 +2,12 @@ package com.farcr.nomansland.common.handler;
 
 import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
-import com.farcr.nomansland.common.mixin.PlayerChunkSenderInvoker;
-import com.farcr.nomansland.common.networking.ClientboundDistantChunkPacket;
 import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundChunkBatchFinishedPacket;
-import net.minecraft.network.protocol.game.ClientboundChunkBatchStartPacket;
-import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
@@ -24,26 +19,24 @@ import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.BlockCollisions;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipBlockStateContext;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+/**
+ * Runs serverside logic of inverted bell teleports, gathering entities, sending packets to relevant clients, chunkloading the destination, and teleporting targets
+ */
 public class InvertedBellServerHandler extends SavedData {
-    // difference in timing is needed due to a bug with simultaneous teleporting into loaded chunks :p
+    // difference in timing is needed due to a vanilla bug with simultaneous teleporting into loaded chunks :p
     public static final int TELEPORT_ENTITY_TIME = 25;
     public static final int TELEPORT_PLAYER_TIME = 35;
     public static final int FAILURE_NAUSEA_DURATION = 200;
@@ -68,10 +61,7 @@ public class InvertedBellServerHandler extends SavedData {
         Iterator<ActiveTeleport> it = this.teleports.iterator();
         while (it.hasNext()) {
             ActiveTeleport entry = it.next();
-            if (entry.chunkFutureIsFailure(level)) {
-                entry.stop(level);
-                it.remove();
-            } else if (entry.tick(level)) {
+            if (entry.tick(level)) {
                 it.remove();
             }
             this.setDirty();
@@ -90,19 +80,17 @@ public class InvertedBellServerHandler extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        CompoundTag teleportsTag = new CompoundTag();
-        return teleportsTag;
+        return new CompoundTag();
     }
 
     public static class ActiveTeleport {
         private int timer = 0;
-        private List<Entity> teleportingEntities;
-        private List<ServerPlayer> teleportingPlayers;
-        private BlockPos fromPos;
-        private Direction fromDir;
-        private BlockPos toPos;
-        private Direction toDir;
-        private @Nullable CompletableFuture<ChunkResult<ChunkAccess>> chunkFuture;
+        private final List<Entity> teleportingEntities;
+        private final List<ServerPlayer> teleportingPlayers;
+        private final BlockPos fromPos;
+        private final Direction fromDir;
+        private final BlockPos toPos;
+        private final Direction toDir;
 
         private ActiveTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, BlockPos toPos, Direction toDir) {
             this.teleportingEntities = level.getEntities(null, new AABB(fromPos).inflate(16)).stream()
@@ -134,13 +122,6 @@ public class InvertedBellServerHandler extends SavedData {
             this.teleportingPlayers.forEach(e -> PacketDistributor.sendToPlayer(e, ClientboundInvertedBellPacket.FADE_IN));
         }
 
-        public void stop(ServerLevel level) {
-            if (this.chunkFuture != null) {
-                this.chunkFuture.cancel(true);
-            }
-            ChunkPos centerChunk = new ChunkPos(this.toPos);
-        }
-
         public boolean tick(ServerLevel level) {
             this.timer++;
             if (this.timer == TELEPORT_ENTITY_TIME) {
@@ -151,38 +132,6 @@ public class InvertedBellServerHandler extends SavedData {
             }
             return this.timer > TELEPORT_PLAYER_TIME;
         }
-
-        public boolean chunkFutureIsFailure(ServerLevel level) {
-            if (this.chunkFuture == null || !this.chunkFuture.isDone()) {
-                return false;
-            }
-            try {
-                ChunkResult<ChunkAccess> result = this.chunkFuture.get();
-                this.chunkFuture = null;
-                ChunkAccess access = result.orElseThrow(() -> new RuntimeException(result.getError()));
-                if (!(access.getBlockEntity(this.toPos) instanceof InvertedBellControllerBlockEntity ibbe) || !ibbe.targetBell.equals(this.fromPos)) {
-                    return true;
-                }
-                if (access instanceof LevelChunk levelChunk) {
-                    ClientboundDistantChunkPacket loadPacket = new ClientboundDistantChunkPacket(access.getPos().x, access.getPos().z);
-                    ClientboundChunkBatchFinishedPacket chunkFinished = new ClientboundChunkBatchFinishedPacket(1);
-                    this.teleportingPlayers.forEach(p -> {
-                        PacketDistributor.sendToPlayer(p, loadPacket);
-                        p.connection.send(ClientboundChunkBatchStartPacket.INSTANCE);
-                        ((PlayerChunkSenderInvoker)p.connection.chunkSender).setUnacknowledgedBatches(
-                                ((PlayerChunkSenderInvoker)p.connection.chunkSender).getUnacknowledgedBatches() + 1
-                        );
-                        PlayerChunkSenderInvoker.invokeSendChunk(p.connection, level, levelChunk);
-                        p.connection.send(chunkFinished);
-                    });
-                }
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            return false;
-        }
-
-
 
         public void teleportEntities(ServerLevel level) {
             for (Entity entity : this.teleportingEntities) {
@@ -213,7 +162,11 @@ public class InvertedBellServerHandler extends SavedData {
             }
         }
 
-        // return true if success
+        /**
+         * Teleports an entity based on the relative positions and directions</br>
+         * If target is obstructed, deals damage and applies nausea instead
+         * @return true if teleport was successful
+         */
         private boolean doTeleportEntity(Entity entity, ServerLevel level) {
             Vec3 diff = entity.position().subtract(this.fromPos.getCenter());
             float dYRot = this.fromDir.toYRot() - this.toDir.toYRot();

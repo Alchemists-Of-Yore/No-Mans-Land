@@ -19,12 +19,12 @@ public abstract class MinecraftMixin {
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;updateSource(Lnet/minecraft/client/Camera;)V"))
     private void deafenBell(boolean renderLevel, CallbackInfo ci) {
-        float fade = InvertedBellClientHandler.instance.getFade(this.getTimer().getRealtimeDeltaTicks());
+        float intensity = InvertedBellClientHandler.instance.getIntensity(this.getTimer().getRealtimeDeltaTicks());
         SoundEngineAccessor accessor = (SoundEngineAccessor) this.soundManager.soundEngine;
-        if (fade > 0) {
+        if (intensity > 0) {
             accessor.getInstanceToChannel().forEach((instance, channel) -> {
                 if (!instance.nml$getBypassDeafening()) {
-                    float f = accessor.invokeCalculateVolume(instance) * (1 - fade) * (1 - fade);
+                    float f = accessor.invokeCalculateVolume(instance) * (1 - intensity) * (1 - intensity);
                     channel.execute(sound -> {
                         sound.setVolume(f);
                     });

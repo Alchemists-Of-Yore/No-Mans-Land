@@ -5,20 +5,16 @@ import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.world.level.ChunkPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.function.BooleanSupplier;
 
+// todo: inverted bell seamless teleport black magic
 @Mixin(ClientChunkCache.class)
 public class ClientChunkCacheMixin implements ClientChunkCacheExtension {
     @Unique
     private HashMap<ChunkPos, Integer> nml$distOverrides = new HashMap<>();
 
+    /*
     @Inject(method = "tick", at = @At("TAIL"))
     private void nml$tickOverrides(BooleanSupplier hasTimeLeft, boolean tickChunks, CallbackInfo ci) {
         Iterator<Map.Entry<ChunkPos, Integer>> it = this.nml$distOverrides.entrySet().iterator();
@@ -32,10 +28,11 @@ public class ClientChunkCacheMixin implements ClientChunkCacheExtension {
             }
         }
     }
+    */
 
     @Override
     public void nml$addToOverride(int x, int z) {
-        this.nml$distOverrides.put(new ChunkPos(x, z), 100);
+//        this.nml$distOverrides.put(new ChunkPos(x, z), 100);
     }
 
     @Override
