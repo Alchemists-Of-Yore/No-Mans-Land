@@ -38,16 +38,16 @@ public class FindNearestMapStructureFix {
                                                  @Local(name = "pair2") final LocalRef<Pair<BlockPos, Holder<Structure>>> localPair,
                                                  @Local(name = "entry") final Map.Entry<StructurePlacement, Set<Holder<Structure>>> localEntry) {
         final StructurePlacement placement = localEntry.getKey();
-        if (placement instanceof final BellSanctuaryStructurePlacement sanctPlacement) {
-            for (final Holder<Structure> iterStructure : localEntry.getValue()) {
-                final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(level.getSeed());
-                final ChunkPos closest = grid.getClosestBellSanctuary(pos);
-
-                if (closest != null) {
-                    localPair.set(new Pair<>(closest.getBlockAt(8, pos.getY(), 8), iterStructure));
-                    break;
-                }
-            }
-        }
+//        if (placement instanceof final BellSanctuaryStructurePlacement sanctPlacement) {
+//            for (final Holder<Structure> iterStructure : localEntry.getValue()) {
+//                final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(level.getSeed());
+//                final ChunkPos closest = grid.getClosestBellSanctuary(pos);
+//
+//                if (closest != null) {
+//                    localPair.set(new Pair<>(closest.getBlockAt(8, pos.getY(), 8), iterStructure));
+//                    break;
+//                }
+//            }
+//        }
     }
 }

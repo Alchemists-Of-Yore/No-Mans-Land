@@ -13,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ChunkLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkPyramid;
-import net.minecraft.world.level.chunk.status.ChunkStep;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -71,6 +69,18 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
     public void ring(final int direction) {
         if (this.getLevel() instanceof final ServerLevel serverLevel) {
+//            if (this.state == PositionState.UNASSIGNED) {
+//                final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
+//                final BellSanctuaryCell cell = grid.getCell(this.getBlockPos().getX(), this.getBlockPos().getZ());
+//                if (cell != null) {
+//                    this.targetArea = getLikelyOtherSanctuary(cell, this.getBlockPos());
+//                    this.state = PositionState.CHUNK;
+//                } else {
+//                    NoMansLand.LOGGER.error("Inverted Bell at {} failed to find approximate pair region", this.getBlockPos());
+//                    this.state = PositionState.DONT_SEARCH;
+//                }
+//            }
+
             if (this.state == PositionState.BLOCK_POS && this.targetBell != null) {
                 InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
                         this.getBlockPos(), this.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
@@ -97,7 +107,12 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
             ibbe.ringCooldown--;
         }
 
+        //TODO: change pair gathering to be on bell ring instead of tick; otherwise we'll have issues with chunkloading taking longer when this bell is generated.
         if (level instanceof final ServerLevel serverLevel) {
+//            if (ibbe.state == PositionState.CHUNK) {
+//                handleAwaitingTheSearch(ibbe, pos, serverLevel);
+//            }
+
             if (ibbe.state == PositionState.UNASSIGNED) {
                 final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
                 final BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
@@ -116,29 +131,21 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
     @Nullable
     private static ChunkPos getLikelyOtherSanctuary(final BellSanctuaryCell cell, final BlockPos pos) {
-        if (!cell.isValid()) {
-            return null;
+        final ChunkPos currentPos = new ChunkPos(pos);
+
+        final BellSanctuaryCell.SanctuaryPair pair = cell.getPair(currentPos);
+        if (pair != null) {
+            return pair.getOther(currentPos);
         }
 
-        final ChunkPos firstPos = cell.getFirstBellSanctuaryPos();
-        final ChunkPos secondPos = cell.getSecondBellSanctuaryPos();
-
-        final double dd1 = firstPos.distanceSquared(new ChunkPos(pos));
-        final double dd2 = secondPos.distanceSquared(new ChunkPos(pos));
-        if (dd1 > dd2) {
-            return firstPos;
-        } else {
-            return secondPos;
-        }
+        return null;
     }
 
     private static void handleAwaitingTheSearch(final InvertedBellControllerBlockEntity ibbe, final BlockPos pos, final ServerLevel serverLevel) {
         if (ibbe.escalationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
             ibbe.escalationTimer++;
             if (ibbe.escalationTimer > 10) {
-                final ChunkStep step = ChunkPyramid.GENERATION_PYRAMID.steps().get(ibbe.escalationValue);
-                final int dist = ChunkLevel.byStatus(step.targetStatus());
-                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, dist, ibbe.targetArea);
+                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 0, ibbe.targetArea);
                 ibbe.escalationTimer = 0;
                 ibbe.escalationValue++;
             }
@@ -153,7 +160,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                 otherIbbe.targetDir = ibbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
                 otherIbbe.state = PositionState.BLOCK_POS;
             } else {
-                NoMansLand.LOGGER.error("Inverted Bell at {} failed to find pair around chunk {}", pos, ibbe.targetArea);
+                NoMansLand.LOGGER.error("Inverted Bell at {} || {} failed to find pair around chunk {} || {}", pos, new ChunkPos(pos), ibbe.targetArea.getBlockAt(8, 0, 8), ibbe.targetArea);
                 ibbe.state = PositionState.DONT_SEARCH;
             }
         }
@@ -162,7 +169,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     private static @Nullable InvertedBellControllerBlockEntity handleTheSearch(final ServerLevel level, final ChunkPos target) {
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
-                LevelChunk chunk = level.getChunk(target.x+x, target.z+z);
+                final LevelChunk chunk = level.getChunk(target.x + x, target.z + z);
                 for (final BlockPos bePos : chunk.getBlockEntitiesPos()) {
                     if (chunk.getBlockEntity(bePos) instanceof final InvertedBellControllerBlockEntity ibbe) {
                         return ibbe;
@@ -218,13 +225,21 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     }
 
     public enum PositionState {
-        /** Default state when placed by a player, or fallback state if the linking process fails */
+        /**
+         * Default state when placed by a player, or fallback state if the linking process fails
+         */
         DONT_SEARCH,
-        /** State when just placed by world gen. References its {@link BellSanctuaryCell} to get an approximate target position and switches to {@link PositionState#CHUNK} */
+        /**
+         * State when just placed by world gen. References its {@link BellSanctuaryCell} to get an approximate target position and switches to {@link PositionState#CHUNK}
+         */
         UNASSIGNED,
-        /** State when slowly generating chunks at its target area. Once complete, searches for another block entity within those chunks and switches to {@link PositionState#BLOCK_POS} */
+        /**
+         * State when slowly generating chunks at its target area. Once complete, searches for another block entity within those chunks and switches to {@link PositionState#BLOCK_POS}
+         */
         CHUNK,
-        /** State when a link has been established. The bell can be interacted with and used to teleport */
+        /**
+         * State when a link has been established. The bell can be interacted with and used to teleport
+         */
         BLOCK_POS
     }
 }

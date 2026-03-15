@@ -34,11 +34,15 @@ public class BellSanctuaryGrid extends SavedData {
      * The minimum distance allowed between two Bell Sanctuary position in a pair.
      */
     public static final int MIN_CHUNK_DISTANCE = 60;
+    public static final int MIN_BLOCK_DISTANCE = MIN_CHUNK_DISTANCE * 16;
+
 
     /**
      * The maximum distance allowed between two Bell Sanctuary positions in a pair.
      */
     public static final int MAX_CHUNK_DISTANCE = 350;
+    public static final int MAX_BLOCK_DISTANCE = MAX_CHUNK_DISTANCE * 16;
+
 
     /**
      * Table containing every {@link BellSanctuaryCell cell} for the associated level.
@@ -71,7 +75,7 @@ public class BellSanctuaryGrid extends SavedData {
 
         //early return as we absolutely know this pair already exists
         if (firstCell.containsPosition(pos)) {
-            return false;
+            return true;
         }
 
         final long newSeed = (long) pos.x * 341873128712L + (long) pos.z * 132897987541L + this.levelSeed;

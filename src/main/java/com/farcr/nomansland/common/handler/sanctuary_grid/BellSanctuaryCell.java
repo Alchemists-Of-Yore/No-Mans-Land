@@ -1,8 +1,10 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
+import com.ibm.icu.impl.StringRange;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -17,6 +19,11 @@ public class BellSanctuaryCell implements Iterable<BellSanctuaryCell.SanctuaryPa
 
     public boolean containsPosition(final ChunkPos toCheck) {
         return this.trackedPairs.containsKey(toCheck);
+    }
+
+    @Nullable
+    public SanctuaryPair getPair(final ChunkPos pos) {
+        return this.trackedPairs.get(pos);
     }
 
     @Override
@@ -35,6 +42,16 @@ public class BellSanctuaryCell implements Iterable<BellSanctuaryCell.SanctuaryPa
     }
 
     public record SanctuaryPair(ChunkPos first, ChunkPos second) {
+
+        public ChunkPos getOther(final ChunkPos toCheck) {
+            if (this.first.equals(toCheck)) {
+                return this.second;
+            } else if (this.second.equals(toCheck)) {
+                return this.first;
+            }
+
+            throw new IllegalArgumentException("Passed ChunkPos must be contained withing this pair!");
+        }
 
     }
 
