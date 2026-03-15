@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.handler.sanctuary_grid;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -173,7 +174,7 @@ public class BellSanctuaryGrid extends SavedData {
     @Override
     @ApiStatus.Internal
     public CompoundTag save(final CompoundTag tag, final HolderLookup.Provider registries) {
-        final LongSet longs = new LongArraySet();
+        final LongSet longs = new LongOpenHashSet();
         for (final BellSanctuaryCell cell : this.bellSanctuaryCells.values()) {
             for (final BellSanctuaryCell.SanctuaryPair pair : cell) {
                 longs.add(pair.first().toLong());

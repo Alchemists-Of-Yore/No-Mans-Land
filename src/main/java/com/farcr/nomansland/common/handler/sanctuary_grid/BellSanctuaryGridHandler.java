@@ -25,7 +25,7 @@ public class BellSanctuaryGridHandler {
         level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
                 () -> LEVEL_SEED_MAP.computeIfAbsent(level.getSeed(), BellSanctuaryGrid::new),
                 (tag, prov) -> LEVEL_SEED_MAP.computeIfAbsent(level.getSeed(), BellSanctuaryGrid::new).deserialize(tag, prov)
-        ), "bell_sanctuarys");
+        ), "bell_sanctuaries");
     }
 
     /**

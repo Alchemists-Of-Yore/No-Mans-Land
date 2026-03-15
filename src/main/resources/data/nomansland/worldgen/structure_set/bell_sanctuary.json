@@ -7,8 +7,8 @@
   ],
   "placement": {
     "salt": 5681523,
-    "separation": 1,
-    "spacing": 3,
+    "separation": 6,
+    "spacing": 100,
     "type": "nomansland:bell_sanctuary"
   }
 }
