@@ -18,7 +18,7 @@ public class NMLStructurePlacements {
 
     public static final Supplier<StructurePlacementType<MeetingPointStructurePlacement>> MEETING_POINT = register("meeting_point", MeetingPointStructurePlacement.CODEC);
 
-    public static final Supplier<StructurePlacementType<BellSanctuaryStructurePlacement>> BELL_SANCTUARY = register("bell_sanctuary", BellSanctuaryStructurePlacement.MAP_CODEC);
+    public static final Supplier<StructurePlacementType<BellSanctuaryStructurePlacement>> BELL_SANCTUARY = register("bell_sanctuary", BellSanctuaryStructurePlacement.CODEC);
 
     private static <P extends StructurePlacement> DeferredHolder<StructurePlacementType<?>, StructurePlacementType<P>> register (String name, MapCodec<P> codec) {
         return STRUCTURE_PLACEMENTS.register(name, () -> () -> codec);

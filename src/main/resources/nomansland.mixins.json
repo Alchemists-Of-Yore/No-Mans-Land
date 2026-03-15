@@ -47,7 +47,6 @@
     "WaterAvoidingRandomStrollGoalMixin",
     "WaterlilyBlockMixin",
     "bell_sanctuary.FindNearestMapStructureFix",
-    "bell_sanctuary.GenerateCell",
     "caves.DimensionBiomePlacementMixin",
     "caves.MultiNoiseBiomeSourceMixin",
     "integration.PloughMovementBehaviorMixin",

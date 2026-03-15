@@ -3,7 +3,7 @@ package com.farcr.nomansland.common.handler.sanctuary_grid;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -49,12 +49,9 @@ public class BellSanctuaryGridHandler {
         return LEVEL_SEED_MAP.computeIfAbsent(serverLevelSeed, BellSanctuaryGrid::new);
     }
 
-    /**
-     * Attempts to generate the {@link BellSanctuaryCell cell} for the given X and Z position. If a cell already exists, does nothing.
-     */
     @ApiStatus.Internal
-    public static void generateCell(final long levelSeed, final int chunkX, final int chunkZ) {
-        LEVEL_SEED_MAP.computeIfAbsent(levelSeed, BellSanctuaryGrid::new).generateCell(chunkX, chunkZ);
+    public static boolean tryGeneratePair(final long levelSeed, ChunkPos pos) {
+        return LEVEL_SEED_MAP.computeIfAbsent(levelSeed, BellSanctuaryGrid::new).tryGeneratePair(pos);
     }
 
     @ApiStatus.Internal

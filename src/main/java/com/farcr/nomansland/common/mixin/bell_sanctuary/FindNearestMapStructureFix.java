@@ -41,7 +41,7 @@ public class FindNearestMapStructureFix {
         if (placement instanceof final BellSanctuaryStructurePlacement sanctPlacement) {
             for (final Holder<Structure> iterStructure : localEntry.getValue()) {
                 final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(level.getSeed());
-                final ChunkPos closest = grid.getClosestBellSanctuary3x3(pos);
+                final ChunkPos closest = grid.getClosestBellSanctuary(pos);
 
                 if (closest != null) {
                     localPair.set(new Pair<>(closest.getBlockAt(8, pos.getY(), 8), iterStructure));

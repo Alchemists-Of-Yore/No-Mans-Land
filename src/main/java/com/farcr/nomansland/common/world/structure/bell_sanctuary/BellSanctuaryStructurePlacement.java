@@ -1,32 +1,42 @@
 package com.farcr.nomansland.common.world.structure.bell_sanctuary;
 
-import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructurePlacements;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
-import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 
 import java.util.Optional;
 
-public class BellSanctuaryStructurePlacement extends StructurePlacement {
+public class BellSanctuaryStructurePlacement extends RandomSpreadStructurePlacement {
 
-    public static final MapCodec<BellSanctuaryStructurePlacement> MAP_CODEC = MapCodec.unit(BellSanctuaryStructurePlacement::new);
+    public static final MapCodec<BellSanctuaryStructurePlacement> CODEC = RecordCodecBuilder.mapCodec(
+            p_204996_ -> placementCodec(p_204996_)
+                    .and(
+                            p_204996_.group(
+                                    Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::spacing),
+                                    Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::separation),
+                                    RandomSpreadType.CODEC
+                                            .optionalFieldOf("spread_type", RandomSpreadType.LINEAR)
+                                            .forGetter(RandomSpreadStructurePlacement::spreadType)
+                            )
+                    )
+                    .apply(p_204996_, BellSanctuaryStructurePlacement::new)
+    );
 
-    protected BellSanctuaryStructurePlacement() {
-        super(new Vec3i(8, 0, 8), FrequencyReductionMethod.DEFAULT, 1, 0, Optional.empty());
+    public BellSanctuaryStructurePlacement(final Vec3i locateOffset, final FrequencyReductionMethod frequencyReductionMethod, final float frequency, final int salt, final Optional<ExclusionZone> exclusionZone, final int spacing, final int separation, final RandomSpreadType spreadType) {
+        super(locateOffset, frequencyReductionMethod, frequency, salt, exclusionZone, spacing, separation, spreadType);
     }
 
     @Override
     protected boolean isPlacementChunk(final ChunkGeneratorStructureState chunkGeneratorStructureState, final int chunkX, final int chunkZ) {
-        final BellSanctuaryCell cell = BellSanctuaryGridHandler.getCell(chunkGeneratorStructureState.getLevelSeed(), chunkX * 16, chunkZ * 16);
-        if (cell == null || !cell.isValid()) {
-            return false;
-        }
-
-        return cell.validGenChunk(chunkX, chunkZ);
+        return BellSanctuaryGridHandler.tryGeneratePair(chunkGeneratorStructureState.getLevelSeed(), new ChunkPos(chunkX, chunkZ));
     }
 
     @Override
