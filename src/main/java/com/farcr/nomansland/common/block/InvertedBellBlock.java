@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -21,6 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelWriter;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -39,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class InvertedBellBlock extends BaseEntityBlock {
     public static DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static int CONTROLLER_PART = 3 * 3 * 3 / 2; // 13
+    public static int CONTROLLER_PART = offsetToPart(0, 0, 0); // 13
     public static IntegerProperty PART = IntegerProperty.create("part", 0, 3 * 3 * 3 - 1);
 
     public InvertedBellBlock(final Properties properties) {
@@ -64,13 +67,28 @@ public class InvertedBellBlock extends BaseEntityBlock {
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = -1; y < 2; y++) {
-                    final int i = x + z * 3 + y * 9 + 13;
+                    final int i = offsetToPart(x, y, z);
                     final VoxelShape here = Block.box(x * 16, y * 16, z * 16, x * 16 + 16, y * 16 + 16, z * 16 + 16);
                     BELL_NS[i] = Shapes.join(fullBellNS, here, BooleanOp.AND).move(-x, -y, -z);
                     BELL_EW[i] = Shapes.join(fullBellEW, here, BooleanOp.AND).move(-x, -y, -z);
                 }
             }
         }
+    }
+
+    public static Vec3i partToOffset(int part) {
+        int dx = part % 3 - 1;
+        int dz = (part / 3) % 3 - 1;
+        int dy = part / 9 - 1;
+        return new Vec3i(dx, dy, dz);
+    }
+
+    public static int offsetToPart(int dx, int dy, int dz) {
+        return dx + dz * 3 + dy * 9 + 13;
+    }
+
+    public static int offsetToPart(Vec3i offset) {
+        return offset.getX() + offset.getZ() * 3 + offset.getY() * 9 + 13;
     }
 
     @Override
@@ -108,7 +126,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
             for (int z = -1; z < 2; z++) {
                 for (int y = 0; y < 3; y++) {
                     mutPos.setWithOffset(bottomCenter, x, y, z);
-                    final int i = x + z * 3 + y * 9 + 4;
+                    final int i = offsetToPart(x, y-1, z);
                     level.setBlock(mutPos, baseState.setValue(PART, i), 3);
                 }
             }
@@ -223,5 +241,30 @@ public class InvertedBellBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(final BlockPos blockPos, final BlockState blockState) {
         return blockState.getValue(PART) == CONTROLLER_PART ? new InvertedBellControllerBlockEntity(blockPos, blockState) : null;
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        Direction dir = state.getValue(HORIZONTAL_FACING);
+        Vec3i offset = partToOffset(state.getValue(PART));
+        offset = switch (rotation) {
+            case NONE -> offset;
+            case CLOCKWISE_90 -> new Vec3i(-offset.getZ(), offset.getY(), offset.getX());
+            case CLOCKWISE_180 -> new Vec3i(-offset.getX(), offset.getY(), -offset.getZ());
+            case COUNTERCLOCKWISE_90 -> new Vec3i(offset.getZ(), offset.getY(), -offset.getX());
+        };
+        return state.setValue(HORIZONTAL_FACING, rotation.rotate(dir)).setValue(PART, offsetToPart(offset));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        Direction dir = state.getValue(HORIZONTAL_FACING);
+        Vec3i offset = partToOffset(state.getValue(PART));
+        offset = switch (mirror) {
+            case NONE -> offset;
+            case LEFT_RIGHT -> new Vec3i(offset.getX(), offset.getY(), -offset.getZ());
+            case FRONT_BACK -> new Vec3i(-offset.getX(), offset.getY(), offset.getZ());
+        };
+        return state.setValue(HORIZONTAL_FACING, mirror.mirror(dir)).setValue(PART, offsetToPart(offset));
     }
 }

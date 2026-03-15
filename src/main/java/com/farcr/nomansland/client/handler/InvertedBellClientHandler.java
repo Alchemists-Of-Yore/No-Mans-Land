@@ -31,7 +31,7 @@ public class InvertedBellClientHandler {
     private static final double ANIMATION_SPEED = 0.15; // frequency of the wobble. higher = faster
 
     // shader / look slow
-    public static final int FADE_IN_TIME = InvertedBellServerHandler.TELEPORT_PLAYER_TIME; // 35
+    public static final int FADE_IN_TIME = InvertedBellServerHandler.TELEPORT_ENTITY_TIME; // 50
     public static final int FADE_OUT_TIME = 60;
     public static final int FADE_OUT_PAINFUL_TIME = InvertedBellServerHandler.FAILURE_NAUSEA_DURATION; // 200
 

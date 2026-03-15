@@ -128,7 +128,11 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                 final BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
                 if (cell != null) {
                     ibbe.targetArea = getLikelyOtherSanctuary(cell, pos);
-                    ibbe.state = PositionState.CHUNK;
+                    if (ibbe.targetArea != null) {
+                        ibbe.state = PositionState.CHUNK;
+                    } else {
+                        NoMansLand.LOGGER.error("Inverted Bell at {} failed to find pair", pos);
+                    }
                 } else {
                     NoMansLand.LOGGER.error("Inverted Bell at {} failed to find approximate pair region", pos);
                     ibbe.state = PositionState.DONT_SEARCH;
