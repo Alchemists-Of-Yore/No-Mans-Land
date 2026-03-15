@@ -301,15 +301,19 @@ public class NMLBlocks {
     public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
     public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
 
-    // Moonlight
+    // Alchemist Relics
     /* Farcr doesn't want these to show up in the Creative Tabs, so I'm just manually registering the items. */
     public static final BlockDefinition<MoonlightBasinBlock> MOONLIGHT_BASIN = registerNoItem("moonlight_basin",
         () -> new MoonlightBasinBlock(ofFullCopy(Blocks.BEDROCK).dynamicShape().sound(SoundType.COPPER)));
     public static final ItemDefinition<BlockItem> MOONLIGHT_BASIN_ITEM = registerBlockItem("moonlight_basin", MOONLIGHT_BASIN);
+
     public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
         () -> new MoonlightCandleBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.CANDLE).offsetType(OffsetType.XZ).dynamicShape()));
     public static final ItemDefinition<BlockItem> MOONLIGHT_CANDLE_ITEM = registerBlockItem("moonlight_candle", MOONLIGHT_CANDLE);
 
+    public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
+    public static final ItemDefinition<BlockItem> INVERTED_BELL_ITEM = registerBlockItem("inverted_bell", INVERTED_BELL);
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
@@ -579,9 +583,6 @@ public class NMLBlocks {
     //Eggs
     public static final BlockDefinition<TortoiseEggBlock> TORTOISE_EGGS = register("tortoise_egg",
             () -> new TortoiseEggBlock((ofFullCopy(Blocks.TURTLE_EGG).randomTicks())));
-
-    public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = register("inverted_bell",
-            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
 
     public static <T extends Block> BlockDefinition<T> registerNoItem(String name, Supplier<T> block, BlockProperties properties) {
         DeferredBlock<T> deferred = BLOCKS.register(name, block);
