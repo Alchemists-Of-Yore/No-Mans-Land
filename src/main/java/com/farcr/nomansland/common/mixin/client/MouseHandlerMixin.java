@@ -25,19 +25,23 @@ public class MouseHandlerMixin {
                                         @Local(name = "d0") LocalDoubleRef d0, @Local(name = "d1") LocalDoubleRef d1) {
         double intensity = InvertedBellClientHandler.instance.getIntensity(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
         if (intensity > 0) {
-            double control = Mth.clamp(1 - intensity * 1.5, 0, 1);
+            double control = Mth.clamp(1 - intensity * 1.5, 0.15, 1);
             this.nml$dx.setStrength(intensity);
             this.nml$dx.deltaTarget(d0.get() * control);
-            d0.set(this.nml$dx.getUpdatedDelta(movementTime));
+            double bonusDx = 0;
+            if (InvertedBellClientHandler.instance.getState() == InvertedBellClientHandler.State.FADE_IN) {
+                bonusDx = 400 * movementTime * Math.sin(intensity * 12) * easeInOutInOut(intensity);
+            }
+            d0.set(this.nml$dx.getUpdatedDelta(movementTime) + bonusDx);
 
             this.nml$dy.setStrength(intensity);
             this.nml$dy.deltaTarget(d1.get() * control
             );
+            double bonusDy = 0;
             if (InvertedBellClientHandler.instance.getState() == InvertedBellClientHandler.State.FADE_IN) {
-                d1.set(this.nml$dy.getUpdatedDelta(movementTime) + 400 * movementTime * easeInOutInOut(intensity));
-            } else {
-                d1.set(this.nml$dy.getUpdatedDelta(movementTime));
+                bonusDy = 400 * movementTime * easeInOutInOut(intensity);
             }
+            d1.set(this.nml$dy.getUpdatedDelta(movementTime) + bonusDy);
         } else {
             this.nml$dx.reset();
             this.nml$dy.reset();

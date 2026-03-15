@@ -62,6 +62,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue CAVE_BIOME_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue DEEP_DARK_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue FOGGY_BIOME_FOG_MODIFIER;
+    public static ModConfigSpec.BooleanValue INVERTED_BELL_BLUR;
 
     public static ModConfigSpec STARTUP_CONFIG;
     public static final String CATEGORY_TORTOISE_SHELL_ATTRIBUTES = "tortoise_shell_attributes";
@@ -248,6 +249,9 @@ public class NMLConfig {
         FOGGY_BIOME_FOG_MODIFIER = CLIENT_BUILDER
                 .comment("If the foggy biome fog modifier is enabled")
                 .define("foggyBiomeFogModifier", true);
+        INVERTED_BELL_BLUR = CLIENT_BUILDER
+                .comment("Whether to apply a blur effect while teleporting via Inverted Bell")
+                .define("invertedBellBlur", true);
         CLIENT_BUILDER.pop();
 
         CLIENT_CONFIG = CLIENT_BUILDER.build();

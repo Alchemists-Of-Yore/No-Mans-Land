@@ -13,7 +13,15 @@ out vec4 fragColor;
 
 void main(){
     vec4 diffuseColor = texture(DiffuseSampler, texCoord);
-    vec3 desaturated = vec3(dot(diffuseColor.rgb, vec3(0.299,0.587,0.114)));
-    float vignette = length(texCoord - vec2(.5)) * Fade * 2.0;
-    fragColor = vec4(mix(diffuseColor.rgb, desaturated, Fade) * (1.0 - vignette) * (1.0 - sqrt(Fade) * 0.5), 1.0);
+
+    float desatValue = min(Fade * 2, 1);
+    vec3 col = mix(diffuseColor.rgb, vec3(dot(diffuseColor.rgb, vec3(0.299,0.587,0.114))), desatValue);
+
+    float greyValue = max(Fade * 2 - 1, 0);
+    col = mix(col, vec3(0.0), greyValue);
+
+    float vignetteValue = length(texCoord - vec2(.5)) * Fade * 2.0;
+    col = col * (1.0 - vignetteValue) * (1.0 - sqrt(Fade) * 0.5);
+
+    fragColor = vec4(col, 1.0);
 }

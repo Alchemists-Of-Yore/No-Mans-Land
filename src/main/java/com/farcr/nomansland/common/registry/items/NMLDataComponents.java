@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry.items;
 
 import com.farcr.nomansland.NoMansLand;
 import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,4 +29,8 @@ public class NMLDataComponents {
                     .persistent(ResourceLocation.CODEC)
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> INVERTED_BELL_TARGET = DATA_COMPONENTS.registerComponentType(
+            "inverted_bell_target", builder -> builder
+                    .persistent(BlockPos.CODEC)
+    );
 }

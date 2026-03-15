@@ -93,6 +93,16 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         }
     }
 
+    public void link(InvertedBellControllerBlockEntity other) {
+        this.targetBell = other.getBlockPos();
+        this.targetDir = other.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        this.state = PositionState.BLOCK_POS;
+
+        other.targetBell = this.getBlockPos();
+        other.targetDir = this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        other.state = PositionState.BLOCK_POS;
+    }
+
     @Override
     public boolean triggerEvent(final int id, final int type) {
         if (id == 1) {
@@ -152,13 +162,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         } else {
             final InvertedBellControllerBlockEntity otherIbbe = handleTheSearch(serverLevel, ibbe.targetArea);
             if (otherIbbe != null) {
-                ibbe.targetBell = otherIbbe.getBlockPos();
-                ibbe.targetDir = otherIbbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
-                ibbe.state = PositionState.BLOCK_POS;
-
-                otherIbbe.targetBell = ibbe.getBlockPos();
-                otherIbbe.targetDir = ibbe.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
-                otherIbbe.state = PositionState.BLOCK_POS;
+                ibbe.link(otherIbbe);
             } else {
                 NoMansLand.LOGGER.error("Inverted Bell at {} || {} failed to find pair around chunk {} || {}", pos, new ChunkPos(pos), ibbe.targetArea.getBlockAt(8, 0, 8), ibbe.targetArea);
                 ibbe.state = PositionState.DONT_SEARCH;

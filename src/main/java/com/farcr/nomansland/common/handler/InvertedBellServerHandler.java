@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
  */
 public class InvertedBellServerHandler extends SavedData {
     // difference in timing is needed due to a vanilla bug with simultaneous teleporting into loaded chunks :p
-    public static final int TELEPORT_ENTITY_TIME = 25;
-    public static final int TELEPORT_PLAYER_TIME = 35;
+    public static final int TELEPORT_ENTITY_TIME = 50;
+    public static final int TELEPORT_PLAYER_TIME = 60;
     public static final int FAILURE_NAUSEA_DURATION = 200;
     public static final double RANGE_SQUARED = 16*16;
 

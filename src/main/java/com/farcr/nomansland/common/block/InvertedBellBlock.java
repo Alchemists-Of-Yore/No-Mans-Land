@@ -3,10 +3,14 @@ package com.farcr.nomansland.common.block;
 import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -26,6 +30,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -113,15 +118,28 @@ public class InvertedBellBlock extends BaseEntityBlock {
     @Override
     public void setPlacedBy(final Level level, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack) {
         placeBell(pos, state.getValue(HORIZONTAL_FACING), level);
+        if (!level.isClientSide) {
+            BlockPos target = stack.get(NMLDataComponents.INVERTED_BELL_TARGET.get());
+            if (target != null && level.getBlockEntity(pos.above()) instanceof InvertedBellControllerBlockEntity ibbe) {
+                if (level.getBlockEntity(target) instanceof InvertedBellControllerBlockEntity ibbe2) {
+                    ibbe.link(ibbe2);
+                    if (placer != null) {
+                        placer.sendSystemMessage(Component.literal("Successfully linked bell"));
+                    }
+                }
+            }
+            stack.set(NMLDataComponents.INVERTED_BELL_TARGET.get(), null);
+        }
     }
 
-    private boolean onHit(final Level level, final BlockState state, final BlockPos pos, final Direction direction) {
+    private boolean onHit(final Level level, final BlockState state, final BlockPos pos, final Vec3 lookAt) {
         final Direction front = state.getValue(HORIZONTAL_FACING);
-        if (!level.isClientSide && direction.getAxis() == front.getAxis()) {
+        if (!level.isClientSide) {
             final InvertedBellControllerBlockEntity controller = getControllerBE(level, pos, state);
             if (controller != null && controller.ringCooldown <= 0) {
+                double angle = lookAt.dot(new Vec3(front.getStepX(), front.getStepY(), front.getStepZ()));
                 level.blockEvent(controller.getBlockPos(), controller.getBlockState().getBlock(), 1,
-                        direction == front ? 2 : 0 // types are an unsigned byte...
+                        angle < 0 ? 2 : 0 // types are an unsigned byte...
                 );
                 return true;
             }
@@ -131,9 +149,21 @@ public class InvertedBellBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (NMLBlocks.INVERTED_BELL.asItem() == stack.getItem()) {
+            InvertedBellControllerBlockEntity controller = getControllerBE(level, pos, state);
+            if (controller != null) {
+                stack.set(NMLDataComponents.INVERTED_BELL_TARGET.get(), controller.getBlockPos());
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    @Override
     protected InteractionResult useWithoutItem(final BlockState state, final Level level, final BlockPos pos, final Player player, final BlockHitResult hitResult) {
         if (player.getMainHandItem().isEmpty()) {
-            if (this.onHit(level, state, pos, hitResult.getDirection())) {
+            if (this.onHit(level, state, pos, player.getLookAngle())) {
                 return InteractionResult.SUCCESS;
             }
         }
@@ -142,7 +172,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     @Override
     protected void onProjectileHit(final Level level, final BlockState state, final BlockHitResult hit, final Projectile projectile) {
-        this.onHit(level, state, hit.getBlockPos(), hit.getDirection());
+        this.onHit(level, state, hit.getBlockPos(), projectile.getDeltaMovement());
     }
 
     @Override

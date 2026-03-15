@@ -1,41 +1,42 @@
 package com.farcr.nomansland.client.handler;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.extension.SoundInstanceExtension;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
+import com.farcr.nomansland.common.mixin.client.GameRendererInvoker;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
 
-import java.io.IOException;
-
 /**
  * Runs clientside logic of inverted bells visually swinging, postprocessing shaders, overriding mouse input, and changing audio volume
  */
 public class InvertedBellClientHandler {
+    public static InvertedBellClientHandler instance = new InvertedBellClientHandler();
+
     // bell swinging when interacted with
     private static final int ANIMATION_DURATION = 100; // ticks to wobble for
-    private static final double ANIMATION_INTENSITY = 0.25; // scalar for maximum angle of the wobble
-    private static final double ANIMATION_SPEED = 0.25; // frequency of the wobble. higher = faster
+    private static final double ANIMATION_INTENSITY = 0.15; // scalar for maximum angle of the wobble
+    private static final double ANIMATION_SPEED = 0.15; // frequency of the wobble. higher = faster
 
     // shader / look slow
     public static final int FADE_IN_TIME = InvertedBellServerHandler.TELEPORT_PLAYER_TIME; // 35
-    public static final int FADE_OUT_TIME = 20;
-    public static final int FADE_OUT_PAINFUL_TIME = InvertedBellServerHandler.FAILURE_NAUSEA_DURATION / 2; // 100
+    public static final int FADE_OUT_TIME = 60;
+    public static final int FADE_OUT_PAINFUL_TIME = InvertedBellServerHandler.FAILURE_NAUSEA_DURATION; // 200
 
-    private int fadeTimer;
+    private int fadeTimer = 0;
     private State state = State.INACTIVE;
-
-    public static InvertedBellClientHandler instance = new InvertedBellClientHandler();
-    public PostChain postChain = null;
 
     private float intensity = 0;
     private float previousIntensity = 0;
@@ -44,21 +45,8 @@ public class InvertedBellClientHandler {
     public static int animationTimer = 0;
     public static int direction;
 
-    public InvertedBellClientHandler() {
-        try {
-            // todo resource pack reloadable maybe
-            this.postChain = new PostChain(
-                    Minecraft.getInstance().getTextureManager(),
-                    Minecraft.getInstance().getResourceManager(),
-                    Minecraft.getInstance().getMainRenderTarget(),
-                    NoMansLand.location("shaders/post/inverted_bell.json")
-            );
-        } catch (IOException e) {
-            NoMansLand.LOGGER.error("Failed to load shader shaders/post/inverted_bell.json", e);
-        }
-    }
-
-
+    public static ResourceLocation INVERTED_BELL_SHADER = NoMansLand.location("shaders/post/inverted_bell.json");
+    public PostChain postChain = null;
 
     public State getState() {
         return this.state;
@@ -88,12 +76,12 @@ public class InvertedBellClientHandler {
 
     public void startFadeOut() {
         this.fadeTimer = 1;
-        this.state = State.FADE_OUT;
+        this.state = State.AWAIT_LOAD;
     }
 
     public void startFadeOutPainful() {
         this.fadeTimer = 1;
-        this.state = State.FADE_OUT_PAINFUL;
+        this.state = State.AWAIT_LOAD_PAINFUL;
         Minecraft.getInstance().player.displayClientMessage(Component.translatable("block.nomansland.inverted_bell.bad_teleport"), true);
     }
 
@@ -112,6 +100,16 @@ public class InvertedBellClientHandler {
                 // safeguard if server lags (badly) (which it probably will)
                 if (this.fadeTimer >= FADE_IN_TIME + 100) {
                     this.startFadeOut();
+                }
+            }
+            case AWAIT_LOAD, AWAIT_LOAD_PAINFUL -> {
+                BlockPos playerPos = Minecraft.getInstance().player.getOnPos();
+                if (Minecraft.getInstance().levelRenderer.isSectionCompiled(playerPos)) {
+                    this.fadeTimer++;
+                }
+                if (this.fadeTimer > 10) {
+                    this.state = this.state.advance();
+                    this.fadeTimer = 1;
                 }
             }
             case FADE_OUT -> {
@@ -144,7 +142,13 @@ public class InvertedBellClientHandler {
 
     public void render(Minecraft minecraft, float pt) {
         float intensity = this.getIntensity(pt);
+        float blur = Mth.clamp(intensity * 20, 0, 10);
         if (this.postChain != null && intensity > 0) {
+            if (NMLConfig.INVERTED_BELL_BLUR.get()) {
+                PostChain blurChain = ((GameRendererInvoker) minecraft.gameRenderer).getBlurEffect();
+                blurChain.setUniform("Radius", blur);
+                blurChain.process(pt);
+            }
             this.postChain.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
             this.postChain.setUniform("Fade", intensity);
             this.postChain.process(pt);
@@ -171,9 +175,11 @@ public class InvertedBellClientHandler {
     }
 
     public enum State {
-        INACTIVE(0, false),
+        INACTIVE(0, true),
         FADE_IN(FADE_IN_TIME, true),
+        AWAIT_LOAD(0, false),
         FADE_OUT(FADE_OUT_TIME, false),
+        AWAIT_LOAD_PAINFUL(0, false),
         FADE_OUT_PAINFUL(FADE_OUT_PAINFUL_TIME, false);
 
         private final int duration;
@@ -186,7 +192,7 @@ public class InvertedBellClientHandler {
 
         public float getIntensity(float timer) {
             if (this.duration == 0) {
-                return 0;
+                return this.inDir ? 0 : 1;
             }
 
             if (this.inDir) {
@@ -194,6 +200,16 @@ public class InvertedBellClientHandler {
             } else {
                 return 1 - Mth.clamp(timer / this.duration, 0, 1);
             }
+        }
+
+        public State advance() {
+            return switch (this) {
+                case INACTIVE -> State.FADE_IN;
+                case FADE_IN -> State.AWAIT_LOAD;
+                case AWAIT_LOAD -> State.FADE_OUT;
+                case AWAIT_LOAD_PAINFUL -> State.FADE_OUT_PAINFUL;
+                case FADE_OUT, FADE_OUT_PAINFUL -> State.INACTIVE;
+            };
         }
     }
 }

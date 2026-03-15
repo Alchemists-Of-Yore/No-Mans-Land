@@ -65,6 +65,7 @@
     "client.ClientChunkCacheMixin",
     "client.ClientChunkCacheStorageMixin",
     "client.ClientLevelMixin",
+    "client.GameRendererInvoker",
     "client.GameRendererMixin",
     "client.HumanoidModelMixin",
     "client.ItemRendererMixin",

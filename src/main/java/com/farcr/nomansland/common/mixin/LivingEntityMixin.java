@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -67,6 +68,12 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         return this.nml$bellParalysisTimer;
     }
 
+    private float nml$getBellParalysisFrac() {
+        float outIn = (float) Math.abs((InvertedBellServerHandler.TELEPORT_ENTITY_TIME - this.nml$bellParalysisTimer))
+                / InvertedBellServerHandler.TELEPORT_ENTITY_TIME;
+        return Mth.clamp(outIn* 2 - 1, 0, 1);
+    }
+
     @Inject(method = "tick", at = @At("TAIL"))
     private void nml$countDownParalysis(CallbackInfo ci) {
         if (this.nml$bellParalysisTimer > 0) {
@@ -78,7 +85,11 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     private void nml$makeParalyzedTravel(Vec3 travelVector, CallbackInfo ci, @Local(argsOnly = true) LocalRef<Vec3> travelVectorr) {
         if (this.nml$bellParalysisTimer > 0) {
             this.jumping = false;
-            travelVectorr.set(Vec3.ZERO);
+            if (((Object)this instanceof Player)) {
+                travelVectorr.set(travelVectorr.get().scale(this.nml$getBellParalysisFrac()));
+            } else {
+                travelVectorr.set(Vec3.ZERO);
+            }
         }
     }
 
