@@ -16,14 +16,11 @@ import com.farcr.nomansland.common.registry.items.NMLCreativeTabs;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.*;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -77,10 +74,7 @@ public class NoMansLand {
         NMLStructureTypes.STRUCTURE_TYPES.register(bus);
         NMLStructurePlacements.STRUCTURE_PLACEMENTS.register(bus);
         NMLBlockStateProviderTypes.BLOCKSTATE_PROVIDER_TYPES.register(bus);
-
-        DeferredRegister<StructurePoolElementType<?>> poolTest = DeferredRegister.create(BuiltInRegistries.STRUCTURE_POOL_ELEMENT, "nomansland");
-        poolTest.register("centered_single_pool_element", CenteredSinglePoolElement.Type::new);
-        poolTest.register(bus);
+        NMLStructureElementTypes.STRUCTURE_ELEMENTS.register(bus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
