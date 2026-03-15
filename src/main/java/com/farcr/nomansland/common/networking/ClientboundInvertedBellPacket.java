@@ -2,15 +2,18 @@ package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
-import net.mehvahdjukaar.moonlight.api.util.codec.EnumStreamCodec;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public enum ClientboundInvertedBellPacket implements CustomPacketPayload {
     FADE_IN, FADE_OUT, FADE_OUT_PAINFUL;
-    public static final StreamCodec<FriendlyByteBuf, ClientboundInvertedBellPacket> STREAM_CODEC = new EnumStreamCodec<>(ClientboundInvertedBellPacket.class);
+
+    public static final StreamCodec<ByteBuf, ClientboundInvertedBellPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BYTE, p -> (byte) p.ordinal(), (e) -> ClientboundInvertedBellPacket.values()[e]
+    );
 
     public static final Type<ClientboundInvertedBellPacket> TYPE = new Type<>(NoMansLand.location("client/inverted_bell"));
 

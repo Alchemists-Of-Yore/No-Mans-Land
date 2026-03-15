@@ -25,10 +25,6 @@ public class BellSanctuaryGrid extends SavedData {
      * How many chunks long and tall a single cell is
      */
     public static final int CELL_SIDE_CHUNK_LENGTH = 40;
-
-    /**
-     * the block equivalent of {@link BellSanctuaryGrid#CELL_SIDE_CHUNK_LENGTH}
-     */
     public static final int CELL_SIDE_BLOCK_LENGTH = CELL_SIDE_CHUNK_LENGTH * 16;
 
     /**
