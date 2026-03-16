@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
+import com.farcr.nomansland.common.world.structure.bell_sanctuary.BellSanctuaryStructurePlacement;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.HolderLookup;
@@ -67,7 +67,7 @@ public class BellSanctuaryGrid extends SavedData {
      * Attempts to generate a new {@link com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell.SanctuaryPair Pair} from the given {@link ChunkPos}
      */
     @ApiStatus.Internal
-    public boolean tryGeneratePair(final ChunkPos pos) {
+    public boolean tryGeneratePair(final ChunkPos pos, final BellSanctuaryStructurePlacement placement) {
         final BellSanctuaryCell firstCell = this.generateOrGetCellChunkPos(pos.x, pos.z, true);
 
         //early return as we absolutely know this pair already exists
@@ -86,7 +86,15 @@ public class BellSanctuaryGrid extends SavedData {
             final double randomRad = Math.TAU * (i / 10d + 1) * source.nextDouble();
             final double randomDist = MIN_CHUNK_DISTANCE + (MAX_CHUNK_DISTANCE - MIN_CHUNK_DISTANCE) * source.nextDouble();
             mutVec.set((randomDist * Math.cos(randomRad)) + pos.x, (randomDist * Math.sin(randomRad)) + pos.z);
-            final ChunkPos secondPos = new ChunkPos((int) mutVec.x, (int) mutVec.y);
+
+            //random position guaranteed to be within min and max away
+            ChunkPos secondPos = new ChunkPos((int) mutVec.x, (int) mutVec.y);
+            secondPos = placement.getPotentialStructureChunk(this.levelSeed, secondPos.x, secondPos.z);
+
+            final int dist = secondPos.distanceSquared(pos);
+            if (dist < MIN_CHUNK_DISTANCE * MIN_BLOCK_DISTANCE || dist > MAX_CHUNK_DISTANCE * MAX_CHUNK_DISTANCE) {
+                continue;
+            }
 
             final BellSanctuaryCell containing = this.generateOrGetCellChunkPos(secondPos.x, secondPos.z, true);
             if (containing.containsPosition(secondPos)) {
