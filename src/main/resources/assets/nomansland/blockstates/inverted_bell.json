@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "nomansland:block/inverted_bell"
+      "model": "nomansland:block/dungeon/bell_sanctuary/inverted_bell"
     }
   }
 }
