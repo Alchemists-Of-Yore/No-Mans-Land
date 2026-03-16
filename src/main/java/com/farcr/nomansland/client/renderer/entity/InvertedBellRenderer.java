@@ -17,8 +17,8 @@ import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
 
 public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> implements BlockEntityRenderer<T> {
-    public static final ModelResourceLocation BELL_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/inverted_bell_bell"));
-    public static final ModelResourceLocation BEAM_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/inverted_bell_beam"));
+    public static final ModelResourceLocation BELL_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/dungeon/bell_sanctuary/inverted_bell_bell"));
+    public static final ModelResourceLocation BEAM_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/dungeon/bell_sanctuary/inverted_bell_beam"));
 
     private final BlockRenderDispatcher blockRenderer;
 
@@ -33,6 +33,7 @@ public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> i
                 Axis.YP.rotationDegrees(180 - bell.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING).toYRot()),
                 0.5f, 0.5f, 0.5f
         );
+
         poseStack.pushPose();
         // cursed to have a static value affect all bell block entities
         // but there's only ever intended to be at most one on screen and this removes the pain of having a block entity thousands of blocks away ticking on the client
@@ -40,8 +41,9 @@ public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> i
         if (rotation != null) {
             poseStack.rotateAround(rotation, 0.5f, 2f - 4 / 16f, 0.5f);
         }
+
         BakedModel model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BELL_MODEL);
-        this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.solidBlockSheet()), bell.getBlockState(), model,
+        this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.cutoutBlockSheet()), bell.getBlockState(), model,
                 1, 1, 1, packedLight, packedOverlay);
         poseStack.popPose();
 
