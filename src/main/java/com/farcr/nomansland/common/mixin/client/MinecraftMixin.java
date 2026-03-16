@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
+import com.farcr.nomansland.common.extension.SoundInstanceExtension;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.SoundManager;
@@ -23,7 +24,7 @@ public abstract class MinecraftMixin {
         SoundEngineAccessor accessor = (SoundEngineAccessor) this.soundManager.soundEngine;
         if (intensity > 0) {
             accessor.getInstanceToChannel().forEach((instance, channel) -> {
-                if (!instance.nml$getBypassDeafening()) {
+                if (!((SoundInstanceExtension)instance).nml$getBypassDeafening()) {
                     float f = accessor.invokeCalculateVolume(instance) * (1 - intensity) * (1 - intensity);
                     channel.execute(sound -> {
                         sound.setVolume(f);
