@@ -1,6 +1,9 @@
 {
   "processors": [
     {
+      "processor_type": "nomansland:inverted_bell"
+    },
+    {
       "rules": [
         {
           "output_state": {
