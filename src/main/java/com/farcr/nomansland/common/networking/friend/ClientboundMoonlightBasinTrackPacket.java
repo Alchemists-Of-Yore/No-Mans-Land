@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.networking.friend;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,7 +26,7 @@ public record ClientboundMoonlightBasinTrackPacket(
     public void handleData(final IPayloadContext context) {
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
-                FriendMoonRenderer.clientBlockPos = pos();
+                FriendMoonRenderer.getInstance().clientBlockPos = pos();
             });
         }
     }

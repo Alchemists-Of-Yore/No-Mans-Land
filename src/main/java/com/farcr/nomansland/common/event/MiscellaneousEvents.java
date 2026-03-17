@@ -5,6 +5,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.friend.dream.DreamManager;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.mixin.MobInvoker;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
@@ -579,6 +580,7 @@ public class MiscellaneousEvents {
             SunDog.getOrDefault(serverLevel).tick();
         } else {
             SunDog.Client.INSTANCE.tick();
+            DreamManager.Client.getInstance().tick();
         }
     }
 
@@ -587,6 +589,7 @@ public class MiscellaneousEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);
             FriendMoon.getOrDefault(serverPlayer.serverLevel()).updatePlayerFriendShadow(serverPlayer);
+            DreamManager.getOrDefault(serverPlayer.serverLevel()).notifyClient(serverPlayer);
         }
     }
 

@@ -1,9 +1,11 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
+import com.farcr.nomansland.common.friend.dream.DreamManager;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,6 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -21,8 +24,31 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
 
     @Shadow public abstract boolean hasEffect(Holder<MobEffect> effect);
 
+    @Unique private LivingEntity nml$Self = (LivingEntity) (Object) this;
+
     @Unique
     private boolean nomansland$skipDroppingDeathLoot = false;
+
+    @Inject(method = "stopSleeping", at = @At("HEAD"), cancellable = true)
+    private void nml$stopSleeping(CallbackInfo ci) {
+        if (DreamManager.isDreamingPlayer(nml$Self, true))
+            ci.cancel();
+    }
+
+    @Inject(method = "startSleeping", at = @At("TAIL"))
+    private void nml$startSleeping(CallbackInfo ci) {
+        if ((nml$Self instanceof ServerPlayer player
+        && nml$Self.level() instanceof ServerLevel level)
+        && DreamManager.getOrDefault(level).playerShouldDream(player))
+            DreamManager.getOrDefault(level).notifyClient(player);
+    }
+
+    @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setXRot(F)V"))
+    private float modifyArgument(float oldAngle) {
+        if (DreamManager.isDreamingPlayer(nml$Self, true))
+            return nml$Self.getXRot();
+        return oldAngle;
+    }
 
     @Override
     public void nml$skipDroppingDeathLoot() {

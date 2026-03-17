@@ -17,11 +17,14 @@ import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.friend.dream.DreamType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.dialogue.*;
+import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
 import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -78,6 +81,8 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            DreamManager.buildDreamTypeContext();
+
             if (NMLConfig.BIOMES.get()) NMLBiomePlacements.register();
             NMLDensityModifications.register();
             NMLSurfaceRules.register();
@@ -107,6 +112,7 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.FALLEN_TREE_DECORATOR_TYPE);
         event.register(NMLRegistries.FOG_MODIFIERS);
         event.register(NMLRegistries.CONTEXTUAL_MUSIC);
+        event.register(NMLRegistries.DREAM_TYPE);
         event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
         event.register(NMLRegistries.DIALOGUE_CONDITIONAL_TYPE);
     }
@@ -265,11 +271,15 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundDialogueRegistrySyncPacket.TYPE, ClientboundDialogueRegistrySyncPacket.STREAM_CODEC, ClientboundDialogueRegistrySyncPacket::handleData);
 
         // Friend Moon related packets
-        registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
+        registrar.playToServer(FriendMoonUpdatePacket.ToServer.TYPE, FriendMoonUpdatePacket.ToServer.STREAM_CODEC, FriendMoonUpdatePacket.ToServer::handleData);
+        registrar.playToClient(FriendMoonUpdatePacket.ToClient.TYPE, FriendMoonUpdatePacket.ToClient.STREAM_CODEC, FriendMoonUpdatePacket.ToClient::handleData);
 
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToClient(ClientboundMeetingPointPacket.TYPE, ClientboundMeetingPointPacket.STREAM_CODEC, ClientboundMeetingPointPacket::handleData);
         registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
+
+        /* Dream Packets */
+        registrar.playToClient(ClientboundDreamStartPacket.TYPE, ClientboundDreamStartPacket.STREAM_CODEC, ClientboundDreamStartPacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
 

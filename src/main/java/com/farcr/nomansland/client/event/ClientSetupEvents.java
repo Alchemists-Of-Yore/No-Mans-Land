@@ -10,6 +10,7 @@ import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
+import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
@@ -213,6 +214,14 @@ public class ClientSetupEvents {
                         DefaultVertexFormat.POSITION_COLOR
                 ),
                 shader -> UpperAtmosphericRenderer.UPPER_ATMOSPHERE_SHADER = shader
+        );
+        event.registerShader(
+            new ShaderInstance(
+                event.getResourceProvider(),
+                NoMansLand.location("friend_moon_dream"),
+                DefaultVertexFormat.POSITION_COLOR
+            ),
+            shader -> FriendDreamRenderer.DREAM_SKY_SHADER = shader
         );
     }
 }

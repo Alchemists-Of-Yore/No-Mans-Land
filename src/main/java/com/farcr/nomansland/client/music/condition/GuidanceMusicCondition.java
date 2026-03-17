@@ -1,6 +1,6 @@
 package com.farcr.nomansland.client.music.condition;
 
-import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.sounds.Music;
 
@@ -16,6 +16,6 @@ public class GuidanceMusicCondition extends MusicCondition {
 
     @Override
     public Supplier<Boolean> getCondition() {
-        return () -> (FriendMoonRenderer.getFriendMoonOpacity() > 0);
+        return () -> (FriendMoonRenderer.getInstance().getFriendMoonOpacity() > 0);
     }
 }

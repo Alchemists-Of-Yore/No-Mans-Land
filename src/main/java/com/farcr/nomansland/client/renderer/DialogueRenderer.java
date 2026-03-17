@@ -1,6 +1,6 @@
 package com.farcr.nomansland.client.renderer;
 
-import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -38,7 +38,7 @@ public class DialogueRenderer {
             if (mc.isPaused())
                 deltaTime = 0f;
 
-            float totalOpacity = FriendMoonRenderer.getFriendMoonOpacity();
+            float totalOpacity = FriendMoonRenderer.getInstance().getFriendMoonOpacity();
             if (currentState.ticks != null) {
                 totalOpacity = Math.min(1, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
                 currentState.ticks -= deltaTime;
@@ -79,7 +79,9 @@ public class DialogueRenderer {
                     StringBuilder stringBuilder = new StringBuilder();
                     String[] splitText = text.split(" ");
                     for (int j = 0; j < splitText.length; j++) {
-                        stringBuilder.append(splitText[j]).append(" ");
+                        stringBuilder.append(splitText[j]);
+                        if (j < splitText.length - 1)
+                            stringBuilder.append(" ");
                         float rightPos = center + font.width(stringBuilder.toString()) / 2f;
                         if (rightPos > (gameWidth * percentageUsable) || (j >= splitText.length - 1)) {
                             totalStringSplits.add(stringBuilder.toString());

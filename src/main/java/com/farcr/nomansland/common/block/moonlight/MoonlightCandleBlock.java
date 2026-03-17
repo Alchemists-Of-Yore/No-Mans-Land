@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.block.moonlight;
 
-import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import net.minecraft.core.BlockPos;
@@ -85,11 +85,12 @@ public class MoonlightCandleBlock extends Block implements SimpleWaterloggedBloc
             Vec3 offset = pos.getCenter().add(state.getOffset(level, pos));
             float f = random.nextFloat();
             if (f < 0.4F) {
-                Quaternionf rotationQuaternion = com.mojang.math.Axis.YP.rotationDegrees(FriendMoonRenderer.friendMoonYawAngle)
-                    .mul(com.mojang.math.Axis.XP.rotationDegrees(FriendMoonRenderer.friendMoonPitchAngle));
+                FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
+                Quaternionf rotationQuaternion = com.mojang.math.Axis.YP.rotationDegrees(renderer.friendMoonYawAngle)
+                    .mul(com.mojang.math.Axis.XP.rotationDegrees(renderer.friendMoonPitchAngle));
 
                 Vector3f worldPosition = new Vector3f(0f, FriendMoonRenderer.MOON_DISTANCE, 0f).rotate(rotationQuaternion);
-                Vec3 directionCandle = new Vec3(worldPosition.normalize().mul(0.1f * FriendMoonRenderer.getFriendMoonOpacity()));
+                Vec3 directionCandle = new Vec3(worldPosition.normalize().mul(0.1f * renderer.getFriendMoonOpacity()));
 
                 level.addParticle(
                     ParticleTypes.SMOKE,
