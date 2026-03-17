@@ -32,14 +32,14 @@ public class BellSanctuaryGrid extends SavedData {
     /**
      * The minimum distance allowed between two Bell Sanctuary position in a pair.
      */
-    public static final int MIN_CHUNK_DISTANCE = 60;
+    public static final int MIN_CHUNK_DISTANCE = 10;
     public static final int MIN_BLOCK_DISTANCE = MIN_CHUNK_DISTANCE * 16;
 
 
     /**
      * The maximum distance allowed between two Bell Sanctuary positions in a pair.
      */
-    public static final int MAX_CHUNK_DISTANCE = 350;
+    public static final int MAX_CHUNK_DISTANCE = 1000;
     public static final int MAX_BLOCK_DISTANCE = MAX_CHUNK_DISTANCE * 16;
 
 
@@ -123,7 +123,7 @@ public class BellSanctuaryGrid extends SavedData {
         
         watch.stop();
         if (newPair == null) {
-            NoMansLand.LOGGER.info("Unable to find a proper chunk position for pairing attempts. {} attempts were too far away. {} attempts already had a pairing.", distanceFailures, pairingFailures);
+            NoMansLand.LOGGER.warn("Unable to find a proper chunk position for pairing. {} attempts were too far away. {} attempts already had a pairing.", distanceFailures, pairingFailures);
             return false;
         }
 
@@ -133,7 +133,9 @@ public class BellSanctuaryGrid extends SavedData {
         }
 
         NoMansLand.LOGGER.info("New pair generated between {}, Distance of {} chunks. Took {}ms", newPair, gatheredDistance, watch.getTime());
-        NoMansLand.LOGGER.info("Random position search took {} iterations due to {} distance fails and {} pairing fails ", distanceFailures + pairingFailures, distanceFailures, pairingFailures);
+        if (distanceFailures + pairingFailures > 0) {
+            NoMansLand.LOGGER.info("Random position search took {} iterations due to {} distance fails and {} pairing fails ", distanceFailures + pairingFailures, distanceFailures, pairingFailures);
+        }
 
         return true;
     }
