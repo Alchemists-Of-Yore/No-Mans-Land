@@ -36,18 +36,18 @@ public class BellSanctuaryStructurePlacement extends RandomSpreadStructurePlacem
     }
 
     /*
-    * If super placement chunk succeeds, it wants to place a new beginning pairing OR use an already existing pair
-    * Because of this we NEED to call generatePair
-    *
-    * However, if super placement does not succeed, we still need to check if the position contains a valid sanctuary position
-    * getCell -> if cell.contains to check pos then true else false
-    */
+     * If super placement chunk succeeds, it wants to place a new beginning pairing OR use an already existing pair
+     * Because of this we NEED to call generatePair
+     *
+     * However, if super placement does not succeed, we still need to check if the position contains a valid sanctuary position
+     * getCell -> if cell.contains to check pos then true else false
+     */
 
     @Override
     protected boolean isPlacementChunk(final ChunkGeneratorStructureState chunkGeneratorStructureState, final int chunkX, final int chunkZ) {
         final long levelSeed = chunkGeneratorStructureState.getLevelSeed();
         if (super.isPlacementChunk(chunkGeneratorStructureState, chunkX, chunkZ)) {
-            return BellSanctuaryGridHandler.tryGeneratePair(levelSeed, new ChunkPos(chunkX, chunkZ));
+            return BellSanctuaryGridHandler.tryGeneratePair(levelSeed, this, new ChunkPos(chunkX, chunkZ));
         }
 
         final BellSanctuaryCell cell = BellSanctuaryGridHandler.getCell(levelSeed, chunkX * 16, chunkZ * 16);

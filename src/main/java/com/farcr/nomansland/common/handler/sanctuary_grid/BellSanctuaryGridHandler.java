@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
+import com.farcr.nomansland.common.world.structure.bell_sanctuary.BellSanctuaryStructurePlacement;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.server.level.ServerLevel;
@@ -51,8 +52,8 @@ public class BellSanctuaryGridHandler {
     }
 
     @ApiStatus.Internal
-    public static boolean tryGeneratePair(final long levelSeed, ChunkPos pos) {
-        return LEVEL_SEED_MAP.computeIfAbsent(levelSeed, BellSanctuaryGrid::new).tryGeneratePair(pos);
+    public static boolean tryGeneratePair(final long levelSeed, BellSanctuaryStructurePlacement placement, ChunkPos pos) {
+        return LEVEL_SEED_MAP.computeIfAbsent(levelSeed, BellSanctuaryGrid::new).tryGeneratePair(pos, placement);
     }
 
     @ApiStatus.Internal
