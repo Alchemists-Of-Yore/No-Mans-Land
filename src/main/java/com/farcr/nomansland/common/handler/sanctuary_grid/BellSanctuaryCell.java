@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
-import com.ibm.icu.impl.StringRange;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.NotNull;
