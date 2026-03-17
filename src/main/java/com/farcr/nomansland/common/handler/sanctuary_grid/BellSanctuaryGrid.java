@@ -102,7 +102,7 @@ public class BellSanctuaryGrid extends SavedData {
             final ChunkPos secondPos = placement.getPotentialStructureChunk(this.levelSeed, (int) mutVec.x, (int) mutVec.y);
 
             final int dist = secondPos.distanceSquared(pos);
-            if (dist < MIN_CHUNK_DISTANCE * MIN_BLOCK_DISTANCE || dist > MAX_CHUNK_DISTANCE * MAX_CHUNK_DISTANCE) {
+            if (dist < MIN_CHUNK_DISTANCE * MIN_CHUNK_DISTANCE || dist > MAX_CHUNK_DISTANCE * MAX_CHUNK_DISTANCE) {
                 distanceFailures ++;
                 continue;
             }
