@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.world.structure.bell_sanctuary.BellSanctuaryStructurePlacement;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +66,7 @@ public class BellSanctuaryGrid extends SavedData {
     }
 
     /**
-     * Attempts to generate a new {@link com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell.SanctuaryPair Pair} from the given {@link ChunkPos}
+     * Attempts to generate a new {@link BellSanctuaryCell.SanctuaryPair Pair} from the given {@link ChunkPos}
      */
     @ApiStatus.Internal
     public boolean tryGeneratePair(final ChunkPos pos, final BellSanctuaryStructurePlacement placement) {
@@ -82,32 +84,46 @@ public class BellSanctuaryGrid extends SavedData {
 
         BellSanctuaryCell secondCell = null;
         BellSanctuaryCell.SanctuaryPair newPair = null;
+
+        double gatheredDistance = 0;
+
+        int distanceFailures = 0;
+        int pairingFailures = 0;
+
+        final StopWatch watch = new StopWatch();
+        watch.start();
         for (int i = 0; i < 100; i++) {
+
+            //this should be fine...
             final double randomRad = Math.TAU * (i / 10d + 1) * source.nextDouble();
             final double randomDist = MIN_CHUNK_DISTANCE + (MAX_CHUNK_DISTANCE - MIN_CHUNK_DISTANCE) * source.nextDouble();
             mutVec.set((randomDist * Math.cos(randomRad)) + pos.x, (randomDist * Math.sin(randomRad)) + pos.z);
 
-            //random position guaranteed to be within min and max away
-            ChunkPos secondPos = new ChunkPos((int) mutVec.x, (int) mutVec.y);
-            secondPos = placement.getPotentialStructureChunk(this.levelSeed, secondPos.x, secondPos.z);
+            final ChunkPos secondPos = placement.getPotentialStructureChunk(this.levelSeed, (int) mutVec.x, (int) mutVec.y);
 
             final int dist = secondPos.distanceSquared(pos);
             if (dist < MIN_CHUNK_DISTANCE * MIN_BLOCK_DISTANCE || dist > MAX_CHUNK_DISTANCE * MAX_CHUNK_DISTANCE) {
+                distanceFailures ++;
                 continue;
             }
 
             final BellSanctuaryCell containing = this.generateOrGetCellChunkPos(secondPos.x, secondPos.z, true);
             if (containing.containsPosition(secondPos)) {
+                pairingFailures ++;
                 continue;
             }
+
+            gatheredDistance = Math.floor(Math.sqrt(dist));
 
             //we have a valid new pair
             secondCell = containing;
             newPair = new BellSanctuaryCell.SanctuaryPair(pos, secondPos);
             break;
         }
-
+        
+        watch.stop();
         if (newPair == null) {
+            NoMansLand.LOGGER.info("Unable to find a proper chunk position for pairing attempts. {} attempts were too far away. {} attempts already had a pairing.", distanceFailures, pairingFailures);
             return false;
         }
 
@@ -115,6 +131,9 @@ public class BellSanctuaryGrid extends SavedData {
         if (firstCell != secondCell) {
             secondCell.addPair(newPair);
         }
+
+        NoMansLand.LOGGER.info("New pair generated between {}, Distance of {} chunks. Took {}ms", newPair, gatheredDistance, watch.getTime());
+        NoMansLand.LOGGER.info("Random position search took {} iterations due to {} distance fails and {} pairing fails ", distanceFailures + pairingFailures, distanceFailures, pairingFailures);
 
         return true;
     }
