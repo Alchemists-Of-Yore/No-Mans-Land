@@ -51,7 +51,7 @@ public class BellSanctuaryGrid extends SavedData {
      * Attempts to generate a new {@link BellSanctuaryCell.SanctuaryPair Pair} from the given {@link ChunkPos}
      */
     @ApiStatus.Internal
-    public boolean tryGeneratePair(final ChunkPos pos, final BellSanctuaryStructurePlacement placement) {
+    public boolean tryGeneratePair(final @NotNull ChunkPos pos, final BellSanctuaryStructurePlacement placement) {
         final BellSanctuaryCell firstCell = this.generateOrGetCellChunkPos(pos.x, pos.z, true);
 
         //early return as we absolutely know this pair already exists

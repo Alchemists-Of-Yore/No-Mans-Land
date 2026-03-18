@@ -234,10 +234,10 @@ public class NMLConfig {
         COMMON_BUILDER.push(BELL_SANCTUARIES);
         MIN_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS = COMMON_BUILDER
                 .comment("The minimum distance allowed between a pair of bell sanctuaries. Should NOT be changed after world has generated. Has NO impact on how close two DIFFERENT pairs of bell sanctuaries can be.")
-                .defineInRange("minBellSanctuaryPairDistance", 50, 0, Integer.MAX_VALUE);
+                .defineInRange("minBellSanctuaryPairDistance", 50, 0, 100_000);
         MAX_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS = COMMON_BUILDER
                 .comment("The maximum distance allowed between a pair of bell sanctuaries. Should NOT be changed after world has generated. Has NO impact on how far away two DIFFERENT pairs of bell sanctuaries can be.")
-                .defineInRange("maxBellSanctuaryPairDistance", 600, 0, Integer.MAX_VALUE);
+                .defineInRange("maxBellSanctuaryPairDistance", 600, 0, 50_000);
         BELL_CELL_SIZE_CHUNKS = COMMON_BUILDER
                 .comment("The side length of a cell used to contain bell santuary pair information. Should NOT be changed after world has generated. Has no impact on how bell sanctuary pairings are generated!")
                 .defineInRange("bellSanctuarySideLength", 40, 10, 100);
