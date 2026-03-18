@@ -18,30 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2d;
 
+import static com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler.*;
+
 /**
  * A grid of {@link BellSanctuaryCell cells}. Each cell contains A pair of Bell Sanctuary {@link ChunkPos section positions.}
  */
 public class BellSanctuaryGrid extends SavedData {
-
-    /**
-     * How many chunks long and tall a single cell is
-     */
-    public static final int CELL_SIDE_CHUNK_LENGTH = 40;
-    public static final int CELL_SIDE_BLOCK_LENGTH = CELL_SIDE_CHUNK_LENGTH * 16;
-
-    /**
-     * The minimum distance allowed between two Bell Sanctuary position in a pair.
-     */
-    public static final int MIN_CHUNK_DISTANCE = 10;
-    public static final int MIN_BLOCK_DISTANCE = MIN_CHUNK_DISTANCE * 16;
-
-
-    /**
-     * The maximum distance allowed between two Bell Sanctuary positions in a pair.
-     */
-    public static final int MAX_CHUNK_DISTANCE = 1000;
-    public static final int MAX_BLOCK_DISTANCE = MAX_CHUNK_DISTANCE * 16;
-
 
     /**
      * Table containing every {@link BellSanctuaryCell cell} for the associated level.
@@ -62,7 +44,7 @@ public class BellSanctuaryGrid extends SavedData {
      */
     @Nullable
     public BellSanctuaryCell getCell(final int blockX, final int blockZ) {
-        return this.bellSanctuaryCells.get(Math.floorDiv(blockX, CELL_SIDE_BLOCK_LENGTH), Math.floorDiv(blockZ, CELL_SIDE_BLOCK_LENGTH));
+        return this.bellSanctuaryCells.get(Math.floorDiv(blockX, getCellSideChunkLength() * 16), Math.floorDiv(blockZ, getCellSideChunkLength() * 16));
     }
 
     /**
@@ -96,13 +78,13 @@ public class BellSanctuaryGrid extends SavedData {
 
             //this should be fine...
             final double randomRad = Math.TAU * (i / 10d + 1) * source.nextDouble();
-            final double randomDist = MIN_CHUNK_DISTANCE + (MAX_CHUNK_DISTANCE - MIN_CHUNK_DISTANCE) * source.nextDouble();
+            final double randomDist = getMinChunkDistance() + (getMaxChunkDistance() - getMinChunkDistance()) * source.nextDouble();
             mutVec.set((randomDist * Math.cos(randomRad)) + pos.x, (randomDist * Math.sin(randomRad)) + pos.z);
 
             final ChunkPos secondPos = placement.getPotentialStructureChunk(this.levelSeed, (int) mutVec.x, (int) mutVec.y);
 
             final int dist = secondPos.distanceSquared(pos);
-            if (dist < MIN_CHUNK_DISTANCE * MIN_CHUNK_DISTANCE || dist > MAX_CHUNK_DISTANCE * MAX_CHUNK_DISTANCE) {
+            if (dist < getMinChunkDistance() * getMinChunkDistance() || dist > getMaxChunkDistance() * getMaxChunkDistance()) {
                 distanceFailures ++;
                 continue;
             }
@@ -141,8 +123,8 @@ public class BellSanctuaryGrid extends SavedData {
     }
 
     private @NotNull BellSanctuaryCell generateOrGetCellChunkPos(final int chunkX, final int chunkZ, final boolean save) {
-        return this.generateOrGetCell(Math.floorDiv(chunkX, CELL_SIDE_CHUNK_LENGTH),
-                Math.floorDiv(chunkZ, CELL_SIDE_CHUNK_LENGTH),
+        return this.generateOrGetCell(Math.floorDiv(chunkX, getCellSideChunkLength()),
+                Math.floorDiv(chunkZ, getCellSideChunkLength()),
                 save);
     }
 

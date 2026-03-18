@@ -28,6 +28,9 @@ import java.util.Comparator;
 
 public class InvertedBellControllerBlockEntity extends BlockEntity {
     public static final TicketType<ChunkPos> BELL_TICKET = TicketType.create("nml:inverted_bell", Comparator.comparingLong(ChunkPos::toLong), 300);
+
+    public FAIL_TYPE failureType = FAIL_TYPE.NO_FAIL;
+
     public static final int COOLDOWN = 100;
 
     public PositionState state = PositionState.DONT_SEARCH;
@@ -69,18 +72,6 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
     public void ring(final int direction) {
         if (this.getLevel() instanceof final ServerLevel serverLevel) {
-//            if (this.state == PositionState.UNASSIGNED) {
-//                final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
-//                final BellSanctuaryCell cell = grid.getCell(this.getBlockPos().getX(), this.getBlockPos().getZ());
-//                if (cell != null) {
-//                    this.targetArea = getLikelyOtherSanctuary(cell, this.getBlockPos());
-//                    this.state = PositionState.CHUNK;
-//                } else {
-//                    NoMansLand.LOGGER.error("Inverted Bell at {} failed to find approximate pair region", this.getBlockPos());
-//                    this.state = PositionState.DONT_SEARCH;
-//                }
-//            }
-
             if (this.state == PositionState.BLOCK_POS && this.targetBell != null) {
                 InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
                         this.getBlockPos(), this.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
@@ -93,7 +84,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         }
     }
 
-    public void link(InvertedBellControllerBlockEntity other) {
+    public void link(final InvertedBellControllerBlockEntity other) {
         this.targetBell = other.getBlockPos();
         this.targetDir = other.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         this.state = PositionState.BLOCK_POS;
@@ -117,28 +108,30 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
             ibbe.ringCooldown--;
         }
 
-        //TODO: change pair gathering to be on bell ring instead of tick; otherwise we'll have issues with chunkloading taking longer when this bell is generated.
         if (level instanceof final ServerLevel serverLevel) {
-//            if (ibbe.state == PositionState.CHUNK) {
-//                handleAwaitingTheSearch(ibbe, pos, serverLevel);
-//            }
+            switch (ibbe.state) {
+                case CHUNK -> handleAwaitingTheSearch(ibbe, pos, serverLevel);
 
-            if (ibbe.state == PositionState.UNASSIGNED) {
-                final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
-                final BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
-                if (cell != null) {
-                    ibbe.targetArea = getLikelyOtherSanctuary(cell, pos);
-                    if (ibbe.targetArea != null) {
-                        ibbe.state = PositionState.CHUNK;
+                case UNASSIGNED -> {
+                    final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
+                    final BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
+
+                    if (cell != null) {
+                        ibbe.targetArea = getLikelyOtherSanctuary(cell, pos);
+                        if (ibbe.targetArea != null) {
+                            ibbe.state = PositionState.CHUNK;
+                        } else {
+                            ibbe.failureType = FAIL_TYPE.NO_PAIRING;
+                        }
                     } else {
-                        NoMansLand.LOGGER.error("Inverted Bell at {} failed to find pair", pos);
+                        ibbe.failureType = FAIL_TYPE.NO_CELL;
+                        ibbe.state = PositionState.DONT_SEARCH;
                     }
-                } else {
-                    NoMansLand.LOGGER.error("Inverted Bell at {} failed to find approximate pair region", pos);
-                    ibbe.state = PositionState.DONT_SEARCH;
+
+                    if (ibbe.failureType != FAIL_TYPE.NO_FAIL) {
+                        NoMansLand.LOGGER.error("{} : {}", ibbe.failureType, ibbe.failureType.failMessage);
+                    }
                 }
-            } else if (ibbe.state == PositionState.CHUNK) {
-                handleAwaitingTheSearch(ibbe, pos, serverLevel);
             }
         }
     }
@@ -168,7 +161,9 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
             if (otherIbbe != null) {
                 ibbe.link(otherIbbe);
             } else {
-                NoMansLand.LOGGER.error("Inverted Bell at {} || {} failed to find pair around chunk {} || {}", pos, new ChunkPos(pos), ibbe.targetArea.getBlockAt(8, 0, 8), ibbe.targetArea);
+                ibbe.failureType = FAIL_TYPE.NO_BLOCK_ENTITY_POS;
+                NoMansLand.LOGGER.error(ibbe.failureType);
+                NoMansLand.LOGGER.error("Inverted Bell at {} || {} failed to find paired bell block position around chunk {} || {}", pos, new ChunkPos(pos), ibbe.targetArea.getBlockAt(8, 0, 8), ibbe.targetArea);
                 ibbe.state = PositionState.DONT_SEARCH;
             }
         }
@@ -249,5 +244,15 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
          * State when a link has been established. The bell can be interacted with and used to teleport
          */
         BLOCK_POS
+    }
+
+    public enum FAIL_TYPE {
+        NO_BLOCK_ENTITY_POS("Unable to find block entity associated with the cell."), NO_CELL("The requested cell does not exist"), NO_PAIRING("The requested pairing does not exist"),  NO_FAIL("No failure");
+
+        public final String failMessage;
+
+        FAIL_TYPE(final String s) {
+            this.failMessage = s;
+        }
     }
 }

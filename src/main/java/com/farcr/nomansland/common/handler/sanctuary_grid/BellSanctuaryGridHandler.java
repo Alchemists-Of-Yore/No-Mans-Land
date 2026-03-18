@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.handler.sanctuary_grid;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.world.structure.bell_sanctuary.BellSanctuaryStructurePlacement;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -59,5 +60,26 @@ public class BellSanctuaryGridHandler {
     @ApiStatus.Internal
     public static void clean() {
         LEVEL_SEED_MAP.clear();
+    }
+
+    /**
+     * How many chunks long and tall a single cell is
+     */
+    public static Integer getCellSideChunkLength() {
+        return NMLConfig.BELL_CELL_SIZE_CHUNKS.getAsInt();
+    }
+
+    /**
+     * The minimum distance allowed between two Bell Sanctuary position in a pair.
+     */
+    public static Integer getMinChunkDistance() {
+        return NMLConfig.MIN_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS.getAsInt();
+    }
+
+    /**
+     * The maximum distance allowed between two Bell Sanctuary positions in a pair.
+     */
+    public static Integer getMaxChunkDistance() {
+        return NMLConfig.MAX_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS.getAsInt();
     }
 }
