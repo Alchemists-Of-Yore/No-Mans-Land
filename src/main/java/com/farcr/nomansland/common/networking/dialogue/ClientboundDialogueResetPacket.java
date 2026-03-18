@@ -23,7 +23,7 @@ public record ClientboundDialogueResetPacket() implements CustomPacketPayload {
             context.enqueueWork(() -> {
                 DialogueState state = DialogueRenderer.getCurrentState();
                 if (state != null) {
-                    if (state.ticks == null || state.ticks > 0)
+                    if (state.ticks > 0)
                         state.setTicks(DialogueState.FADE_TICKS);
                     state.pause();
                 }

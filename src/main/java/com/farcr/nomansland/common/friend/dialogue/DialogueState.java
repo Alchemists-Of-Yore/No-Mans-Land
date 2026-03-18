@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 
@@ -18,11 +19,13 @@ public class DialogueState {
     public DialogueContainer originalDialogue;
     public DialogueContainer translateDialogue;
 
-    public @Nullable Float ticks;
+    public float ticks;
     public static final int FADE_TICKS = 20;
     public void setTicks(float newTicks) {
         this.ticks = newTicks;
     }
+    public static final int GRADIENT_FADE_TICKS = 8;
+    public float elapsedTicks = 0f;
 
     private boolean paused = false;
     public void pause() { paused = true; }
@@ -56,9 +59,16 @@ public class DialogueState {
         return true;
     }
 
+    public void handleTime(float deltaTime) {
+        if (!Minecraft.getInstance().isPaused()) {
+            ticks -= deltaTime;
+            elapsedTicks += deltaTime;
+        }
+    }
+
     public List<String> progressText(float deltaTime) {
         float conversionRate = ((float) translateDialogue.getTextLength() / Math.max(originalDialogue.getTextLength(), 1));
-        progress += (deltaTime * DIALOGUE_SPEED) * conversionRate;
+        if (!isPaused()) progress += (deltaTime * DIALOGUE_SPEED) * conversionRate;
         List<String> stringList = translateDialogue.constructText((int) progress);
 
         // A bit unreliable but it should be fine
