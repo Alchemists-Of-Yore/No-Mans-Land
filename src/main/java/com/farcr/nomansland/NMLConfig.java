@@ -83,7 +83,7 @@ public class NMLConfig {
 
     static {
 
-        ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
+        final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
 
         COMMON_BUILDER.comment("For configuring the mob remodels, go to the mixed litter startup config!");
 
@@ -232,12 +232,13 @@ public class NMLConfig {
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(BELL_SANCTUARIES);
+        final int bellSanctuaryMax = 50_000;
         MIN_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS = COMMON_BUILDER
-                .comment("The minimum distance allowed between a pair of bell sanctuaries. Should NOT be changed after world has generated. Has NO impact on how close two DIFFERENT pairs of bell sanctuaries can be.")
-                .defineInRange("minBellSanctuaryPairDistance", 50, 0, 100_000);
+                .comment("The minimum distance allowed between a pair of bell sanctuaries. Should NOT be changed after world has generated. Has NO impact on how close two DIFFERENT pairs of bell sanctuaries can be. This must be smaller than max distance")
+                .defineInRange("minBellSanctuaryPairDistance", 50, 0, bellSanctuaryMax - 1);
         MAX_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS = COMMON_BUILDER
                 .comment("The maximum distance allowed between a pair of bell sanctuaries. Should NOT be changed after world has generated. Has NO impact on how far away two DIFFERENT pairs of bell sanctuaries can be.")
-                .defineInRange("maxBellSanctuaryPairDistance", 600, 0, 50_000);
+                .defineInRange("maxBellSanctuaryPairDistance", 600, 0, bellSanctuaryMax);
         BELL_CELL_SIZE_CHUNKS = COMMON_BUILDER
                 .comment("The side length of a cell used to contain bell santuary pair information. Should NOT be changed after world has generated. Has no impact on how bell sanctuary pairings are generated!")
                 .defineInRange("bellSanctuarySideLength", 40, 10, 100);
@@ -255,7 +256,7 @@ public class NMLConfig {
 
         COMMON_CONFIG = COMMON_BUILDER.build();
 
-        ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
+        final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
 
         CLIENT_BUILDER.push(CATEGORY_FOG_MODIFIERS);
         FOG_MODIFIERS = CLIENT_BUILDER
@@ -280,7 +281,7 @@ public class NMLConfig {
 
         CLIENT_CONFIG = CLIENT_BUILDER.build();
 
-        ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
+        final ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
 
         STARTUP_BUILDER.comment("For configuring the mob remodels, go to the mixed litter startup config!");
 
