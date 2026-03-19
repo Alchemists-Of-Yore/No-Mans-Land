@@ -36,9 +36,7 @@ import java.util.stream.Collectors;
  * Runs serverside logic of inverted bell teleports, gathering entities, sending packets to relevant clients, chunkloading the destination, and teleporting targets
  */
 public class InvertedBellServerHandler extends SavedData {
-    // difference in timing is needed due to a vanilla bug with simultaneous teleporting into loaded chunks :p
-    public static final int TELEPORT_ENTITY_TIME = 50;
-    public static final int TELEPORT_PLAYER_TIME = 60;
+    public static final int TELEPORT_ENTITY_TIME = 60;
     public static final int FAILURE_NAUSEA_DURATION = 200;
     public static final double RANGE_SQUARED = 16*16;
 
@@ -126,11 +124,9 @@ public class InvertedBellServerHandler extends SavedData {
             this.timer++;
             if (this.timer == TELEPORT_ENTITY_TIME) {
                 this.teleportEntities(level);
-            }
-            if (this.timer == TELEPORT_PLAYER_TIME) {
                 this.teleportPlayers(level);
             }
-            return this.timer > TELEPORT_PLAYER_TIME;
+            return this.timer > TELEPORT_ENTITY_TIME;
         }
 
         public void teleportEntities(ServerLevel level) {
@@ -165,10 +161,14 @@ public class InvertedBellServerHandler extends SavedData {
         /**
          * Teleports an entity based on the relative positions and directions</br>
          * If target is obstructed, deals damage and applies nausea instead
-         * @return true if teleport was successful
+         * @return false if teleport target was obstructed
          */
         private boolean doTeleportEntity(Entity entity, ServerLevel level) {
             Vec3 diff = entity.position().subtract(this.fromPos.getCenter());
+            if (diff.lengthSqr() > RANGE_SQUARED) {
+                return true;
+            }
+
             float dYRot = this.fromDir.toYRot() - this.toDir.toYRot();
             diff = diff.yRot((float)(dYRot / 180 * Math.PI));
             Vec3 newPos = this.toPos.getCenter().add(diff);
@@ -180,9 +180,11 @@ public class InvertedBellServerHandler extends SavedData {
                 }
                 return false;
             } else {
-                entity.teleportTo(level, newPos.x, newPos.y, newPos.z,
-                        EnumSet.noneOf(RelativeMovement.class),
-                        entity.getYRot() - dYRot, entity.getXRot());
+                if (!entity.isPassenger()) {
+                    entity.teleportTo(level, newPos.x, newPos.y, newPos.z,
+                            EnumSet.noneOf(RelativeMovement.class),
+                            entity.getYRot() - dYRot, entity.getXRot());
+                }
                 return true;
             }
         }

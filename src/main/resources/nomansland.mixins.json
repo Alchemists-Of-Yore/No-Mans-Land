@@ -71,6 +71,7 @@
     "client.ItemRendererMixin",
     "client.ItemStackMixin",
     "client.LevelRendererMixin",
+    "client.LivingEntityMixin",
     "client.LivingEntityRendererMixin",
     "client.MinecraftMixin",
     "client.MouseHandlerMixin",
