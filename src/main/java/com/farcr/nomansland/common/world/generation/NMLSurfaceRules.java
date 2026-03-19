@@ -231,19 +231,27 @@ public class NMLSurfaceRules {
                                         tropical_beach),
                                 // top layer biome modifiers - grasses, etc.
                                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
-                                    // todo: check if underwater and don't place grass if that's the case...
                                     SurfaceRules.sequence(
-                                            jungle,
-                                            darkForest, autumnalForest,
-                                            mapleForest, oldGrowthForest,
-                                            frozenWoods,
-                                            bog,
-                                            bayou,
-                                            darkSwamp,
-                                            stonyShore,
-                                            frozen_shore,
-                                            lush_river,
-                                            blackwater_river)
+                                            // above water
+                                            SurfaceRules.ifTrue(SurfaceRules.waterBlockCheck(0, 0),
+                                                    SurfaceRules.sequence(
+                                                            jungle,
+                                                            darkForest, autumnalForest,
+                                                            mapleForest, oldGrowthForest,
+                                                            frozenWoods,
+                                                            bog,
+                                                            bayou,
+                                                            darkSwamp
+                                                    )
+                                            ),
+                                            // below water, or if nothing generated in the previous step
+                                            SurfaceRules.sequence(
+                                                    stonyShore,
+                                                    frozen_shore,
+                                                    lush_river,
+                                                    blackwater_river
+                                            )
+                                    )
                             )
                         )
                 )
@@ -263,5 +271,9 @@ public class NMLSurfaceRules {
 
     private static SurfaceRules.ConditionSource or(SurfaceRules.ConditionSource a, SurfaceRules.ConditionSource b) {
         return new OrConditionSource(a, b);
+    }
+
+    private static SurfaceRules.ConditionSource and(SurfaceRules.ConditionSource a, SurfaceRules.ConditionSource b) {
+        return new AndConditionSource(a, b);
     }
 }
