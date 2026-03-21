@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import net.minecraft.client.CameraType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

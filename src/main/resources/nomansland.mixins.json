@@ -64,8 +64,6 @@
     "client.CameraTypeMixin",
     "client.CapeRenderLayerMixin",
     "client.ClientLevelMixin",
-    "client.ClientPacketListenerMixin",
-    "client.GameRendererMixin",
     "client.GuiMixin",
     "client.HumanoidModelMixin",
     "client.ItemRendererMixin",

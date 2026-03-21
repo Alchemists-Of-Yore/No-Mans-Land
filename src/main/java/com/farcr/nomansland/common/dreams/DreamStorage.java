@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.friend.dream;
+package com.farcr.nomansland.common.dreams;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

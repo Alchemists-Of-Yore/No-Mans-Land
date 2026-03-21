@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.InBedChatScreen;
 import net.minecraft.client.gui.screens.Screen;

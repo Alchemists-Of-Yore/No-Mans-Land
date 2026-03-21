@@ -63,9 +63,7 @@ public class FriendMoonRenderer implements AutoCloseable {
     }
 
     @Override
-    public void close() {
-        NoMansLand.LOGGER.info("closing friend moon renderer");
-    }
+    public void close() {}
 
     public enum FriendMoonAnimation {
         TALKING(0, "talking", 1, 2),

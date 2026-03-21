@@ -5,7 +5,7 @@ import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
 import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.function.Function;

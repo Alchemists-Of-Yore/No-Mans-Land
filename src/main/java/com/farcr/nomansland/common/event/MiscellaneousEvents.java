@@ -5,7 +5,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.friend.FriendMoon;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.mixin.MobInvoker;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;

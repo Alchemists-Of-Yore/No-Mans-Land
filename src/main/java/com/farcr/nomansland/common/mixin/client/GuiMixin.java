@@ -2,16 +2,12 @@ package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
-import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
-import com.farcr.nomansland.common.friend.FriendMoon;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

@@ -1,33 +1,22 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.NMLConfig;
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.dreams.DreamLevelHandler;
-import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
 import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,6 +52,9 @@ public abstract class LevelRendererMixin {
 
     @Unique private LevelRenderer nml$Self = (LevelRenderer) (Object) this;
 
+    /*
+    * TODO replace this !!!
+    */
     @Inject(
         method = "renderLevel",
         at = @At("HEAD"),

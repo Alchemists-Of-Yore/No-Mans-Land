@@ -1,16 +1,12 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.NMLDamageTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

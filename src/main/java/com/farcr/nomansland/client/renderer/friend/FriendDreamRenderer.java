@@ -1,22 +1,16 @@
 package com.farcr.nomansland.client.renderer.friend;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.Meshes;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.*;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 public class FriendDreamRenderer implements AutoCloseable {
     public static ShaderInstance DREAM_SKY_SHADER;
@@ -35,9 +29,6 @@ public class FriendDreamRenderer implements AutoCloseable {
     }
 
     public float elapsedTime = 0.0f;
-    public void applyRotation(PoseStack poseStack) {
-//        poseStack.mulPose(Axis.XP.rotationDegrees(-90));
-    }
     public void renderDream(
         LevelRenderer levelRenderer, PoseStack poseStack,
         DeltaTracker deltaTracker, boolean renderBlockOutline,

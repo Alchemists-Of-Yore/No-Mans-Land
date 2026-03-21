@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
-import com.farcr.nomansland.common.friend.dream.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;

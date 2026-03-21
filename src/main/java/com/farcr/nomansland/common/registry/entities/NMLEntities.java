@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.*;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.Explosive;

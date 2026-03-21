@@ -9,7 +9,7 @@ import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
-import com.farcr.nomansland.common.friend.dream.DreamType;
+import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.world.feature.decorator.BoulderDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.FallenTreeDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.PondDecoratorType;

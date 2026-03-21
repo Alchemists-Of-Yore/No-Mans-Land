@@ -1,8 +1,10 @@
-package com.farcr.nomansland.common.friend.dream;
+package com.farcr.nomansland.common.dreams;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.dreams.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
+import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -11,12 +13,19 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
+import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,16 +66,35 @@ public class DreamManager extends SavedData {
         return getPlayer(player).getHasExperiencedDream();
     }
 
+    // should not be serialized or stored as when the server starts unloading all players should return to their dreaming players
+    public final Map<ServerPlayer, DreamingPlayer> dreamerMap = new HashMap<>();
+    public DreamingPlayer getDreamingPlayer(ServerPlayer serverPlayer, ServerLevel level, DreamType dreamType) {
+        if (!dreamerMap.containsKey(serverPlayer)) {
+            DreamingPlayer dreamPlayer = new DreamingPlayer(level, serverPlayer);
+
+            level.addNewPlayer(dreamPlayer);
+
+            dreamerMap.put(serverPlayer, dreamPlayer);
+        }
+        return dreamerMap.get(serverPlayer);
+    }
+
     public void notifyClient(ServerPlayer player) {
         DreamType dreamType = playerGetDream(player);
         if (dreamType != null && player.isSleeping()) {
+            ServerLevel previousLevel = player.serverLevel();
+            ServerLevel level = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+
+            // needs to be sync list instead of add to list, its own packet as well
             PacketDistributor.sendToPlayer(player, new ClientboundDreamStartPacket(
-                NMLRegistries.DREAM_TYPE.getKey(dreamType)));
+                NMLRegistries.DREAM_TYPE.getKey(dreamType)
+            ));
+
+            DreamingPlayer dreamPlayer = getDreamingPlayer(player, level, dreamType);
         }
     }
 
     public DreamType playerGetDream(ServerPlayer player) {
-
         for (DreamType.DreamTypeInstance dreamTypeInstance : instanceList) {
             BiFunction<ServerPlayer, ServerLevel, Boolean> function = dreamTypeInstance.dreamType.biconsumer;
             if (function != null && !playerHasExperiencedDream(player, dreamTypeInstance.dreamType) && function.apply(player, level))
@@ -143,18 +171,7 @@ public class DreamManager extends SavedData {
         }
 
         private DreamType dream;
-        private DreamLevelHandler handler;
-        public DreamLevelHandler getLevelHandler() {
-            if (handler == null)
-                handler = new DreamLevelHandler(Minecraft.getInstance().levelRenderer);
-            return handler;
-        }
-
         public void clientEndDream() {
-            if (handler != null) {
-                handler.close();
-                handler = null;
-            }
             dream = null;
         }
 
@@ -173,10 +190,7 @@ public class DreamManager extends SavedData {
                 if (!player.isAlive())
                     clientEndDream();
 
-                if (dreamShouldRender()) {
-                    // Tick levelHandler
-                    getLevelHandler().tick();
-                }
+                if (dreamShouldRender()) {}
             }
 
         }
