@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.core.particles.ParticleOptions;
@@ -78,53 +79,24 @@ public abstract class LevelRendererMixin {
         }
     }
 
-//    @Inject(
-//        method = "renderLevel",
-//        at = @At(
-//            value = "INVOKE",
-//            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSky(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FLnet/minecraft/client/Camera;ZLjava/lang/Runnable;)V",
-//            shift = At.Shift.BEFORE
-//        ),
-//        cancellable = true
-//    )
-//    private void nml$renderLevel(
-//        DeltaTracker deltaTracker, boolean renderBlockOutline,
-//        Camera camera, GameRenderer gameRenderer,
-//        LightTexture lightTexture, Matrix4f frustumMatrix,
-//        Matrix4f projectionMatrix, CallbackInfo ci
-//    ) {
-//        FriendDreamRenderer renderer = FriendDreamRenderer.getInstance();
-//        if (renderer.shouldRenderDream()) {
-//            RenderSystem.depthMask(false);
-//
-//            PoseStack poseStack = new PoseStack();
-//            poseStack.mulPose(frustumMatrix);
-//            renderer.applyRotation(poseStack);
-//            poseStack.pushPose();
-//
-//            renderer.renderDream(
-//                nml$Self, poseStack, deltaTracker, renderBlockOutline, camera,
-//                gameRenderer, lightTexture, frustumMatrix, projectionMatrix
-//            );
-//
-//            if (starBuffer == null)
-//                createStars();
-//            starBuffer.bind();
-//            starBuffer.drawWithShader(poseStack.last().pose(),
-//                projectionMatrix, GameRenderer.getPositionShader());
-//            VertexBuffer.unbind();
-//
-//            renderer.renderMoon(poseStack, projectionMatrix);
-//
-//            this.renderBuffers.bufferSource().endLastBatch();
-//            RenderSystem.applyModelViewMatrix();
-//            RenderSystem.depthMask(true);
-//            RenderSystem.disableBlend();
-//            FogRenderer.setupNoFog();
-//
-//            ci.cancel();
-//        }
-//    }
+    @Inject(
+        method = "renderSky",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void nml$renderLevel(
+        Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
+    ) {
+        DreamManager.Client clientManager = DreamManager.Client.getInstance();
+        if (clientManager.dreamShouldRender() && clientManager.getRenderer() != null) {
+            boolean cancelSkybox = clientManager.getRenderer().render(
+                nml$Self, new PoseStack(),
+                Minecraft.getInstance().getTimer(),
+                frustumMatrix, projectionMatrix
+            );
+            if (cancelSkybox) ci.cancel();
+        }
+    }
 
     @Inject(
         method = "renderSky",
@@ -135,7 +107,7 @@ public abstract class LevelRendererMixin {
             shift = At.Shift.AFTER
         )
     )
-    private void renderFriendMoon(
+    private void nml$renderFriendMoon(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
         Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
@@ -149,7 +121,7 @@ public abstract class LevelRendererMixin {
         method = "renderSky",
         at = @At(value = "TAIL")
     )
-    private void renderFinalize(
+    private void nml$renderFinalize(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
         Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
@@ -166,7 +138,7 @@ public abstract class LevelRendererMixin {
                     target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;getSunriseColor(FF)[F"
             )
     )
-    private void renderUpperAtmosphericSky(
+    private void nml$renderUpperAtmosphericSky(
             Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
             Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci,
             @Local PoseStack poseStack, @Local Vec3 skyColor) {

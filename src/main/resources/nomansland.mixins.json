@@ -69,10 +69,11 @@
     "client.ItemRendererMixin",
     "client.ItemStackMixin",
     "client.LevelRendererMixin",
+    "client.LightTextureMixin",
     "client.LivingEntityRendererMixin",
-    "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "client.MusicManagerMixin",
+    "client.ReceivingLevelScreenMixin",
     "client.RenderBuffersMixin",
     "client.SkinManagerMixin",
     "client.SoundEngineMixin"

@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -9,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.portal.DimensionTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,12 +32,6 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Unique
     private boolean nomansland$skipDroppingDeathLoot = false;
 
-    @Inject(method = "stopSleeping", at = @At("HEAD"), cancellable = true)
-    private void nml$stopSleeping(CallbackInfo ci) {
-        if (DreamManager.isDreamingPlayer(nml$Self, true))
-            ci.cancel();
-    }
-
     @Inject(method = "startSleeping", at = @At("TAIL"))
     private void nml$startSleeping(CallbackInfo ci) {
         if ((nml$Self instanceof ServerPlayer player
@@ -43,11 +40,29 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
             DreamManager.getOrDefault(level).notifyClient(player);
     }
 
-    @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setXRot(F)V"))
-    private float modifyArgument(float oldAngle) {
-        if (DreamManager.isDreamingPlayer(nml$Self, true))
-            return nml$Self.getXRot();
-        return oldAngle;
+    @Inject(method = "baseTick", at = @At("TAIL"))
+    private void nml$transferSleep(CallbackInfo ci) {
+
+        if ((nml$Self instanceof ServerPlayer player
+            && nml$Self.level() instanceof ServerLevel level)
+            && DreamManager.getOrDefault(level).playerShouldDream(player)
+            && player.isSleepingLongEnough()
+        ) {
+            DreamManager manager = DreamManager.getOrDefault(level);
+            DreamType dreamType = manager.playerGetDream(player);
+            ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+            // summon fake player
+            manager.getDreamingPlayer(player);
+            // move player to other dimension
+            player.stopSleeping();
+            player.changeDimension(
+                new DimensionTransition(
+                    dreamLevel, dreamType.spawnPoint,
+                    dreamType.spawnPoint, 0, 0,
+                    DimensionTransition.DO_NOTHING
+                )
+            );
+        }
     }
 
     @Override

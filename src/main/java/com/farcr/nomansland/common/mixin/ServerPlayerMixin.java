@@ -33,12 +33,4 @@ public abstract class ServerPlayerMixin extends LivingEntityMixin {
             startingToTopPosition = null;
         }
     }
-
-    @Unique private ServerPlayer nml$Self = (ServerPlayer) (Object) this;
-
-    @Inject(method = "stopSleepInBed", at = @At("HEAD"), cancellable = true)
-    private void nml$stopSleepingInBed(boolean wakeImmediately, boolean updateLevelForSleepingPlayers, CallbackInfo ci) {
-        if (DreamManager.isDreamingPlayer(nml$Self, false))
-            ci.cancel();
-    }
 }

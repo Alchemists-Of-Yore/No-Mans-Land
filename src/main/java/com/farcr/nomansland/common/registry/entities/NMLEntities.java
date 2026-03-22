@@ -106,6 +106,10 @@ public class NMLEntities {
             .ridingOffset(-0.7F)
             .build("buddy"));
 
+    public static final Supplier<EntityType<DreamingPlayer>> DREAMING_PLAYER =
+        ENTITIES.register("dreaming_player", () -> EntityType.Builder.of(DreamingPlayer::new, MobCategory.MISC)
+            .build("dreaming_player"));
+
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {
         return ENTITIES.register(name, () -> EntityType.Builder.of(entity, category).sized(width, height).build(name));
     }

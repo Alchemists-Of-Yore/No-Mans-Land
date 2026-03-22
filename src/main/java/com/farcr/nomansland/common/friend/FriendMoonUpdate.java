@@ -1,9 +1,6 @@
 package com.farcr.nomansland.common.friend;
 
-import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;

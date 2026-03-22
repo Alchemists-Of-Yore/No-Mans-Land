@@ -2,7 +2,6 @@ package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
-import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
 import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
 import com.farcr.nomansland.common.dreams.DreamManager;
@@ -91,7 +90,6 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onClientLogOut(ClientPlayerNetworkEvent.LoggingOut event) {
         FriendMoonRenderer.destroy();
-        FriendDreamRenderer.destroy();
         DreamManager.Client.destroy();
         DialogueRenderer.setCurrentState(null);
     }

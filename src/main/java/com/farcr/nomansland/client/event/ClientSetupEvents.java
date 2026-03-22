@@ -10,7 +10,7 @@ import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
-import com.farcr.nomansland.client.renderer.friend.FriendDreamRenderer;
+import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
@@ -21,11 +21,9 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -86,6 +84,8 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.MOOSE.get(), MooseRenderer::new);
         event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
         event.registerEntityRenderer(NMLEntities.BUDDY.get(), BuddyRenderer::new);
+
+        event.registerEntityRenderer(NMLEntities.DREAMING_PLAYER.get(), DreamingPlayerRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.FIREBOMB.get(), FirebombRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_BOMB.get(), InkBombRenderer::new);
@@ -222,7 +222,7 @@ public class ClientSetupEvents {
                 NoMansLand.location("friend_moon_dream"),
                 DefaultVertexFormat.POSITION_COLOR
             ),
-            shader -> FriendDreamRenderer.DREAM_SKY_SHADER = shader
+            shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
         );
     }
 }

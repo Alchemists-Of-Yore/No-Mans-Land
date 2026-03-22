@@ -8,6 +8,7 @@ import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.mixin.MobInvoker;
+import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
@@ -82,6 +83,7 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -587,6 +589,7 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDimensionSyncPacket(serverPlayer.server.levelKeys()));
             SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);
             FriendMoon.getOrDefault(serverPlayer.serverLevel()).updatePlayerFriendShadow(serverPlayer);
             DreamManager.getOrDefault(serverPlayer.serverLevel()).notifyClient(serverPlayer);

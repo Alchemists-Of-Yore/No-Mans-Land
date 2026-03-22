@@ -33,15 +33,14 @@ public class GuiMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         DreamManager.Client clientRenderer = DreamManager.Client.getInstance();
-        if (clientRenderer.getDream() != null && clientRenderer.getDream().hideHUD()) {
-            clientRenderer.renderOverlay(guiGraphics, deltaTracker);
+        if (clientRenderer.getDream() != null && clientRenderer.getDream().hideHUD())
             ci.cancel();
-        }
     }
 
     @SuppressWarnings("UnstableApiUsage")
     @Inject(method = "<init>", at = @At("TAIL"))
     private void nml$injectDialogueRenderer(Minecraft minecraft, CallbackInfo ci) {
         layerManager.add(NoMansLand.location("dialogue"), DialogueRenderer::render);
+        layerManager.add(NoMansLand.location("dream_overlay"), DreamManager.Client::renderOverlay);
     }
 }

@@ -1,31 +1,26 @@
 package com.farcr.nomansland.common.dreams;
 
-import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.renderer.dreams.AbstractDreamRenderer;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
-import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
-import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,12 +63,13 @@ public class DreamManager extends SavedData {
 
     // should not be serialized or stored as when the server starts unloading all players should return to their dreaming players
     public final Map<ServerPlayer, DreamingPlayer> dreamerMap = new HashMap<>();
-    public DreamingPlayer getDreamingPlayer(ServerPlayer serverPlayer, ServerLevel level, DreamType dreamType) {
-        if (!dreamerMap.containsKey(serverPlayer)) {
-            DreamingPlayer dreamPlayer = new DreamingPlayer(level, serverPlayer);
-
-            level.addNewPlayer(dreamPlayer);
-
+    public DreamingPlayer getDreamingPlayer(ServerPlayer serverPlayer) {
+        if (!dreamerMap.containsKey(serverPlayer)
+        || (dreamerMap.get(serverPlayer) == null)
+        || (!dreamerMap.get(serverPlayer).isAlive())) {
+            DreamingPlayer dreamPlayer = NMLEntities.DREAMING_PLAYER.get().create(level);
+            dreamPlayer.setTetheredPlayer(serverPlayer);
+            serverPlayer.serverLevel().addFreshEntity(dreamPlayer);
             dreamerMap.put(serverPlayer, dreamPlayer);
         }
         return dreamerMap.get(serverPlayer);
@@ -82,15 +78,10 @@ public class DreamManager extends SavedData {
     public void notifyClient(ServerPlayer player) {
         DreamType dreamType = playerGetDream(player);
         if (dreamType != null && player.isSleeping()) {
-            ServerLevel previousLevel = player.serverLevel();
-            ServerLevel level = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
-
-            // needs to be sync list instead of add to list, its own packet as well
+            DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
             PacketDistributor.sendToPlayer(player, new ClientboundDreamStartPacket(
                 NMLRegistries.DREAM_TYPE.getKey(dreamType)
             ));
-
-            DreamingPlayer dreamPlayer = getDreamingPlayer(player, level, dreamType);
         }
     }
 
@@ -152,6 +143,8 @@ public class DreamManager extends SavedData {
         return false;
     }
 
+    public static final int MAX_SLEEP_TICKS = 100;
+
     public static class Client implements AutoCloseable {
         public static DreamManager.Client INSTANCE;
         public static DreamManager.Client getInstance() {
@@ -180,6 +173,13 @@ public class DreamManager extends SavedData {
             this.dream = dream;
         }
 
+        private AbstractDreamRenderer renderer;
+        public AbstractDreamRenderer getRenderer() {
+            if (dream.dreamRenderer != null && renderer == null)
+                renderer = dream.dreamRenderer.get();
+            return renderer;
+        }
+
         public void tick() {
             if (!clientIsDreaming())
                 return;
@@ -189,10 +189,7 @@ public class DreamManager extends SavedData {
                 // Clear Dreams
                 if (!player.isAlive())
                     clientEndDream();
-
-                if (dreamShouldRender()) {}
             }
-
         }
 
         public DreamType getDream() {
@@ -208,9 +205,22 @@ public class DreamManager extends SavedData {
                 .player.getSleepTimer();
         }
 
-        private static final int MAX_SLEEP_TICKS = 100;
         public boolean dreamShouldRender() {
-            return (clientIsDreaming() && (getRawTicks() >= MAX_SLEEP_TICKS));
+            if (clientIsDreaming()) {
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (Minecraft.getInstance().screen instanceof ReceivingLevelScreen receivingLevelScreen) {
+                    storedTicks = 0f;
+                    return true;
+                }
+
+                return player.level()
+                    .dimension().equals(DreamLevelHandler.resourceKey(
+                        Registries.DIMENSION,
+                        NMLRegistries.DREAM_TYPE.getKey(dream),
+                        player
+                    ));
+            }
+            return false;
         }
 
         private float storedTicks = 0f;
@@ -223,11 +233,14 @@ public class DreamManager extends SavedData {
             return getRawTicks();
         }
 
-        public void renderOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-            float alpha = (getSleepTicks(deltaTracker) / MAX_SLEEP_TICKS);
-            int i = FastColor.ARGB32.colorFromFloat(alpha, 0f, 0f, 0f);
-            guiGraphics.fill(RenderType.guiOverlay(), 0, 0,
-                guiGraphics.guiWidth(), guiGraphics.guiHeight(), i);
+        public static void renderOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+            DreamManager.Client manager = DreamManager.Client.getInstance();
+            if (manager.clientIsDreaming()) {
+                float alpha = (manager.getSleepTicks(deltaTracker) / MAX_SLEEP_TICKS);
+                int i = FastColor.ARGB32.colorFromFloat(alpha, 0f, 0f, 0f);
+                guiGraphics.fill(RenderType.guiOverlay(), 0, 0,
+                    guiGraphics.guiWidth(), guiGraphics.guiHeight(), i);
+            }
         }
     }
 }

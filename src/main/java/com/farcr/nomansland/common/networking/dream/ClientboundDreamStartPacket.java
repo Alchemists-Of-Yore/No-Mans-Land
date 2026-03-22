@@ -7,7 +7,9 @@ import com.farcr.nomansland.common.registry.NMLRegistries;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -19,6 +21,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import java.util.UUID;
 
 public record ClientboundDreamStartPacket(
     ResourceLocation dreamType
@@ -37,10 +40,9 @@ public record ClientboundDreamStartPacket(
     public void handleData(IPayloadContext context) {
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
-//                DreamManager.Client clientRenderer = DreamManager.Client.getInstance();
-//                clientRenderer.clientSetDream(
-//                    NMLRegistries.DREAM_TYPE.get(dreamType)
-//                );
+                DreamManager.Client clientRenderer = DreamManager.Client.getInstance();
+                clientRenderer.clientSetDream(
+                    NMLRegistries.DREAM_TYPE.get(dreamType));
 
                 LocalPlayer player = Minecraft.getInstance().player;
                 Set<ResourceKey<Level>> dimensionList = player.connection.levels();

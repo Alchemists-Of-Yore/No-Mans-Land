@@ -46,7 +46,9 @@ public class DreamChunkGenerator extends ChunkGenerator {
     public void applyCarvers(WorldGenRegion level, long seed, RandomState random, BiomeManager biomeManager, StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving step) {}
 
     @Override
-    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState random, ChunkAccess chunk) {}
+    public void buildSurface(WorldGenRegion level, StructureManager structureManager, RandomState random, ChunkAccess chunk) {
+        dream.chunkGenerator.accept(chunk, structureManager, level);
+    }
 
     @Override
     public void spawnOriginalMobs(WorldGenRegion level) {}
@@ -60,7 +62,6 @@ public class DreamChunkGenerator extends ChunkGenerator {
     public @NotNull CompletableFuture<ChunkAccess> fillFromNoise(
         Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk
     ) {
-        dream.chunkGenerator.accept(chunk);
         return CompletableFuture.completedFuture(chunk);
     }
 

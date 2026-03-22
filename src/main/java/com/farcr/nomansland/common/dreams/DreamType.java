@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.dreams;
 
+import com.farcr.nomansland.client.renderer.dreams.AbstractDreamRenderer;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -7,16 +8,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
 
 /*
 * Class that stores information about dream types`
@@ -36,7 +38,7 @@ public class DreamType {
         return this;
     }
 
-    protected void defaultChunkGenerator(ChunkAccess chunk) {
+    protected void defaultChunkGenerator(ChunkAccess chunk, StructureManager manager, WorldGenRegion level) {
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 BlockPos blockPos = new BlockPos(i, 0, j);
@@ -56,8 +58,16 @@ public class DreamType {
         }
     }
 
-    public Consumer<ChunkAccess> chunkGenerator = this::defaultChunkGenerator;
-    public DreamType setChunkGenerator(Consumer<ChunkAccess> chunkGenerator) {
+    public Supplier<AbstractDreamRenderer> dreamRenderer;
+    public DreamType setRenderer(Supplier<AbstractDreamRenderer> dreamRenderer) {
+        this.dreamRenderer = dreamRenderer;
+        return this;
+    }
+
+    public void tick() {}
+
+    public TriConsumer<ChunkAccess, StructureManager, WorldGenRegion> chunkGenerator = this::defaultChunkGenerator;
+    public DreamType setChunkGenerator(TriConsumer<ChunkAccess, StructureManager, WorldGenRegion> chunkGenerator) {
         this.chunkGenerator = chunkGenerator;
         return this;
     }

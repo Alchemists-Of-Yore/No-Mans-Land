@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
@@ -23,6 +24,7 @@ import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.dialogue.*;
+import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
 import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
@@ -41,6 +43,7 @@ import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.monster.Monster;
@@ -143,6 +146,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
+        event.put(NMLEntities.DREAMING_PLAYER.get(), Mob.createMobAttributes().build());
     }
 
     @SubscribeEvent
@@ -279,6 +283,7 @@ public class CommonSetupEvents {
 
         /* Dream Packets */
         registrar.playToClient(ClientboundDreamStartPacket.TYPE, ClientboundDreamStartPacket.STREAM_CODEC, ClientboundDreamStartPacket::handleData);
+        registrar.playToClient(ClientboundDimensionSyncPacket.TYPE, ClientboundDimensionSyncPacket.STREAM_CODEC, ClientboundDimensionSyncPacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
 

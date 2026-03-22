@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.dreams.dreamlevel;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.extension.MinecraftServerExtension;
+import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.mojang.serialization.DynamicOps;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
 import net.minecraft.world.level.storage.WorldData;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -107,6 +109,10 @@ public class DreamLevelHandler implements AutoCloseable {
             // not entirely trustworthy
             // but https://github.com/Commoble/infiniverse/blob/main/src/main/java/net/commoble/infiniverse/internal/InfiniverseMod.java
             server.markWorldsDirty();
+
+            // REMEMBER to tell players what the new dimension set is
+            PacketDistributor.sendToAllPlayers(
+                new ClientboundDimensionSyncPacket(server.levelKeys()));
         }
         return levelList.get(dreamKey);
     }
