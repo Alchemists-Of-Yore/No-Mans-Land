@@ -2,7 +2,7 @@ package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.mojang.blaze3d.vertex.PoseStack;

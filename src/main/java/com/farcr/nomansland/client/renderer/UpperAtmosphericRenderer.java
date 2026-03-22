@@ -1,7 +1,6 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.client.Meshes;
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;

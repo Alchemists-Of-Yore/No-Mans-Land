@@ -4,7 +4,9 @@ import com.farcr.nomansland.client.renderer.dreams.AbstractDreamRenderer;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import net.mehvahdjukaar.moonlight.api.misc.QuadConsumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,7 +15,10 @@ import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 
@@ -56,6 +61,16 @@ public class DreamType {
                 }
             }
         }
+    }
+
+    public void createStructures(
+        ChunkGenerator generator,
+        RegistryAccess registryAccess,
+        ChunkGeneratorStructureState structureState,
+        StructureManager structureManager, ChunkAccess chunk,
+        StructureTemplateManager structureTemplateManager
+    ) {
+
     }
 
     public Supplier<AbstractDreamRenderer> dreamRenderer;

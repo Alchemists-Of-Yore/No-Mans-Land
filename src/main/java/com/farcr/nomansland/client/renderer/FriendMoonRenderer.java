@@ -1,7 +1,6 @@
-package com.farcr.nomansland.client.renderer.friend;
+package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
@@ -33,13 +32,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 

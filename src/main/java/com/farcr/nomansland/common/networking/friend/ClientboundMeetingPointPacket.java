@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.networking.friend;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.context.MeetingPointRenderContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;

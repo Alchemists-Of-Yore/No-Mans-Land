@@ -1,7 +1,7 @@
 package com.farcr.nomansland.client.ambience.fogmodifiers;
 
 import com.farcr.nomansland.client.ambience.FogModifierHandler;
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.client.Minecraft;
 

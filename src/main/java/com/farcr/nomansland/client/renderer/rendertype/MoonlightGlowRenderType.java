@@ -1,6 +1,6 @@
 package com.farcr.nomansland.client.renderer.rendertype;
 
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;

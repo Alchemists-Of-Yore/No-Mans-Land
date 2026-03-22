@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.NMLConfig;
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;

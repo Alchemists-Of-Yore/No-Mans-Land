@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.block.moonlight;
 
-import com.farcr.nomansland.client.renderer.friend.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import net.minecraft.core.BlockPos;

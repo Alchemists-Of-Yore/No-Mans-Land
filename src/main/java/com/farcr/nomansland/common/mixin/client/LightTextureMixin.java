@@ -45,7 +45,7 @@ public class LightTextureMixin {
         )
     )
     private void nml$trueDarknessUpload(float partialTicks, CallbackInfo ci) {
-        if (false && DreamManager.Client.getInstance().dreamShouldRender() && lightPixels != null) {
+        if (DreamManager.Client.getInstance().dreamShouldRender() && lightPixels != null) {
             for (int b = 0; b < 16; b++) {
                 for (int s = 0; s < 16; s++) {
                     final int color = nml$darken(lightPixels.getPixelRGBA(b, s), b);
