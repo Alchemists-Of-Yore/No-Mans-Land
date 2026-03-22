@@ -41,7 +41,7 @@ public class MoonlightDreamType extends DreamType {
 
         this.setCanSprint(false)
             .setHUDHidden(false)
-            .setSpawnPoint(new Vec3(0, 2, -20))
+            .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
             .setChunkGenerator(this::moonlightChunkGenerator)
             .setRenderer(MoonlightDreamRenderer::new);
     }
@@ -83,11 +83,11 @@ public class MoonlightDreamType extends DreamType {
         for (int x = 0; x < chunkSize; x++) {
             for (int z = 0; z < chunkSize; z++) {
                 BlockPos blockPos = new BlockPos(startingX + x, 0, startingZ + z);
-                chunk.setBlockState(blockPos, Blocks.ORANGE_CONCRETE.defaultBlockState(), false);
+                chunk.setBlockState(blockPos.above(MONOLITH_HEIGHT + 1), Blocks.BARRIER.defaultBlockState(), false);
 
                 int approachMax = 108;
                 if (Math.abs(blockPos.getX()) <= 1 && blockPos.getZ() < approachMax) {
-                    int height = (blockPos.getZ() - approachMax) + (MONOLITH_HEIGHT + 3);
+                    int height = (blockPos.getZ() - approachMax) + (MONOLITH_HEIGHT + 4);
                     if (height > 0) {
                         for (int i = 0; i < height; i++)
                             chunk.setBlockState(blockPos.above(i), Blocks.STONE.defaultBlockState(), false);
@@ -109,7 +109,7 @@ public class MoonlightDreamType extends DreamType {
                                 chunk.setBlockState(blockPos.above(i), Blocks.STONE.defaultBlockState(), false);
                             BlockPos monolithStairPos = blockPos.above(MONOLITH_HEIGHT + 1);
                             if (monolithIndex == 1) {
-                                chunk.setBlockState(blockPos.above(MONOLITH_HEIGHT), Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 15), false);
+                                chunk.setBlockState(blockPos.above(MONOLITH_HEIGHT), Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 10), false);
                                 chunk.setBlockState(monolithStairPos, Blocks.STONE.defaultBlockState(), false);
                             } else {
                                 boolean flippedStairs = monolithIndex == 0;
