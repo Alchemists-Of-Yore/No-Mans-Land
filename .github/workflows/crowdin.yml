@@ -1,0 +1,28 @@
+name: Crowdin Sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  synchronize-with-crowdin:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: crowdin/github-action@v2
+        with:
+          upload_sources: true
+          upload_translations: false
+          download_translations: true
+          create_pull_request: true
+          pull_request_title: 'New Crowdin Translations'
+          pull_request_base_branch_name: '1.21.1'
+          localization_branch_name: l10n_crowdin_translations
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
