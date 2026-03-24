@@ -1,0 +1,96 @@
+package com.farcr.nomansland.datagen;
+
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Registry;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
+public class NMLDialogueLanguageProvider implements DataProvider {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    private final PackOutput output;
+    private final Path existingDataRoot;
+
+    public NMLDialogueLanguageProvider(PackOutput output, Path existingDataRoot) {
+        this.output = output;
+        this.existingDataRoot = existingDataRoot;
+    }
+
+    @Override
+    public CompletableFuture<?> run(CachedOutput cache) {
+        CompletableFuture<?>[] futures = DialogueConditionCompiler.REGISTRIES.stream()
+            .map(registryKey -> generateForRegistry(cache, registryKey))
+            .toArray(CompletableFuture[]::new);
+
+        return CompletableFuture.allOf(futures);
+    }
+
+    private CompletableFuture<?> generateForRegistry(CachedOutput cache, ResourceKey<Registry<DialoguePool>> registryKey) {
+        String registryPath = registryKey.location().getPath();
+        String category = registryPath.substring(registryPath.lastIndexOf('/') + 1);
+
+        Path dataDir = existingDataRoot.resolve("data")
+            .resolve(registryKey.location().getNamespace())
+            .resolve(registryKey.location().getNamespace())
+            .resolve(registryPath);
+
+        if (!Files.isDirectory(dataDir)) return CompletableFuture.completedFuture(null);
+
+        TreeMap<String, String> entries = new TreeMap<>();
+
+        try (Stream<Path> paths = Files.walk(dataDir)) {
+            paths.filter(p -> p.toString().endsWith(".json")).forEach(path -> {
+                try {
+                    String content = Files.readString(path);
+                    JsonElement json = JsonParser.parseString(content);
+                    DialoguePool pool = DialoguePool.CODEC.parse(JsonOps.INSTANCE, json)
+                        .getOrThrow(msg -> new RuntimeException("Failed to parse " + path + ": " + msg));
+
+                    String relativePath = dataDir.relativize(path).toString()
+                        .replace(".json", "")
+                        .replace('\\', '/');
+                    String key = relativePath.replace("/", ".");
+                    entries.put(key, pool.text());
+                } catch (Exception e) {
+                    LOGGER.warn("Failed to parse dialogue pool entry {}: {}", path, e.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            LOGGER.warn("Failed to read dialogue pool directory {}: {}", dataDir, e.getMessage());
+        }
+
+        if (entries.isEmpty()) return CompletableFuture.completedFuture(null);
+
+        JsonObject json = new JsonObject();
+        entries.forEach(json::addProperty);
+
+        Path outputPath = output.getOutputFolder()
+            .resolve("assets/" + NoMansLand.MODID + "/lang/nomansland/" + registryPath + "/en_us.json");
+        return DataProvider.saveStable(cache, json, outputPath);
+    }
+
+    @Override
+    public String getName() {
+        return "NML Dialogue Language";
+    }
+}

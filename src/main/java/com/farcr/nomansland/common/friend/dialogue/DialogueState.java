@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
+import com.farcr.nomansland.client.DialogueLangLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -9,10 +9,6 @@ import java.util.List;
 
 public class DialogueState {
     public static final float DIALOGUE_SPEED = (1f / 60f) * 45f;
-    public static final String TRANSLATABLE_COMPONENT = ".friend_moon.";
-    private static String translate(String registryName, ResourceLocation location) {
-        return location.getNamespace() + TRANSLATABLE_COMPONENT + registryName + "." + location.getPath();
-    }
 
     public double progress = 0d;
     public boolean doneTalking = false;
@@ -45,8 +41,11 @@ public class DialogueState {
     ) {
         String defaultText = dialoguePool.text();
         originalDialogue = new DialogueContainer(defaultText);
-        translateDialogue = new DialogueContainer(Language.getInstance()
-                .getOrDefault(translate(registryName, location), defaultText));
+
+        String category = registryName.replace("dialogue_pools.", "");
+        String key = location.getPath().replace("/", ".");
+        String translatedText = DialogueLangLoader.INSTANCE.getString(category, key).orElse(defaultText);
+        translateDialogue = new DialogueContainer(translatedText);
     }
 
     public String currentLatest;
