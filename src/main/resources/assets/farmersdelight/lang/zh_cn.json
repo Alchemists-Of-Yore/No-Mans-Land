@@ -1,8 +1,8 @@
 {
-  "item.farmersdelight.chicken_cuts": "Poultry Cuts",
-  "item.farmersdelight.cooked_chicken_cuts": "Cooked Poultry Cuts",
-  "item.farmersdelight.roast_chicken": "Roast Poultry",
-  "block.farmersdelight.roast_chicken_block": "Roast Poultry",
-  "item.farmersdelight.chicken_sandwich": "Poultry Sandwich",
-  "item.farmersdelight.chicken_soup": "Poultry Soup"
+  "item.farmersdelight.chicken_cuts": "禽肉碎",
+  "item.farmersdelight.cooked_chicken_cuts": "熟禽肉碎",
+  "item.farmersdelight.roast_chicken": "烤禽",
+  "block.farmersdelight.roast_chicken_block": "烤禽",
+  "item.farmersdelight.chicken_sandwich": "禽肉三明治",
+  "item.farmersdelight.chicken_soup": "禽肉汤"
 }
