@@ -3,17 +3,17 @@ package com.farcr.nomansland.datagen;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import org.slf4j.Logger;
 
@@ -26,28 +26,32 @@ import java.util.stream.Stream;
 
 public class NMLDialogueLanguageProvider implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private final PackOutput output;
     private final Path existingDataRoot;
+    private final CompletableFuture<HolderLookup.Provider> lookupProvider;
 
-    public NMLDialogueLanguageProvider(PackOutput output, Path existingDataRoot) {
+    public NMLDialogueLanguageProvider(PackOutput output, Path existingDataRoot, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         this.output = output;
         this.existingDataRoot = existingDataRoot;
+        this.lookupProvider = lookupProvider;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        CompletableFuture<?>[] futures = DialogueConditionCompiler.REGISTRIES.stream()
-            .map(registryKey -> generateForRegistry(cache, registryKey))
-            .toArray(CompletableFuture[]::new);
+        return lookupProvider.thenCompose(registries -> {
+            RegistryOps<JsonElement> registryOps = RegistryOps.create(JsonOps.INSTANCE, registries);
 
-        return CompletableFuture.allOf(futures);
+            CompletableFuture<?>[] futures = DialogueConditionCompiler.REGISTRIES.stream()
+                .map(registryKey -> generateForRegistry(cache, registryKey, registryOps))
+                .toArray(CompletableFuture[]::new);
+
+            return CompletableFuture.allOf(futures);
+        });
     }
 
-    private CompletableFuture<?> generateForRegistry(CachedOutput cache, ResourceKey<Registry<DialoguePool>> registryKey) {
+    private CompletableFuture<?> generateForRegistry(CachedOutput cache, ResourceKey<Registry<DialoguePool>> registryKey, RegistryOps<JsonElement> registryOps) {
         String registryPath = registryKey.location().getPath();
-        String category = registryPath.substring(registryPath.lastIndexOf('/') + 1);
 
         Path dataDir = existingDataRoot.resolve("data")
             .resolve(registryKey.location().getNamespace())
@@ -63,7 +67,7 @@ public class NMLDialogueLanguageProvider implements DataProvider {
                 try {
                     String content = Files.readString(path);
                     JsonElement json = JsonParser.parseString(content);
-                    DialoguePool pool = DialoguePool.CODEC.parse(JsonOps.INSTANCE, json)
+                    DialoguePool pool = DialoguePool.CODEC.parse(registryOps, json)
                         .getOrThrow(msg -> new RuntimeException("Failed to parse " + path + ": " + msg));
 
                     String relativePath = dataDir.relativize(path).toString()
@@ -81,12 +85,12 @@ public class NMLDialogueLanguageProvider implements DataProvider {
 
         if (entries.isEmpty()) return CompletableFuture.completedFuture(null);
 
-        JsonObject json = new JsonObject();
-        entries.forEach(json::addProperty);
+        JsonObject langJson = new JsonObject();
+        entries.forEach(langJson::addProperty);
 
         Path outputPath = output.getOutputFolder()
             .resolve("assets/" + NoMansLand.MODID + "/lang/nomansland/" + registryPath + "/en_us.json");
-        return DataProvider.saveStable(cache, json, outputPath);
+        return DataProvider.saveStable(cache, langJson, outputPath);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class DataGenEvents {
         // Lang
         Path existingDataRoot = packOutput.getOutputFolder().getParent().getParent().resolve("main/resources");
         generator.addProvider(client, new NMLLanguageProvider(packOutput));
-        generator.addProvider(client, new NMLDialogueLanguageProvider(packOutput, existingDataRoot));
+        generator.addProvider(client, new NMLDialogueLanguageProvider(packOutput, existingDataRoot, lookupProvider));
 
         // these don't really work with the existing file structure...
         // made mostly for my sake. use further if you'd like :P
