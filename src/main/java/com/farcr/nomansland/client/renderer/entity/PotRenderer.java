@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -55,7 +54,7 @@ public class PotRenderer<T extends PotBlockEntity> implements BlockEntityRendere
             ModelManager manager = this.blockRenderer.getBlockModelShaper().getModelManager();
             ModelResourceLocation location = ModelResourceLocation.standalone(pot.variant.model().withPrefix("block/"));
             BakedModel model = manager.getModel(location);
-            blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), pot.getBlockState(), model, 1, 1, 1, packedLight, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
+            blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), pot.getBlockState(), model, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay, ModelData.EMPTY, RenderType.cutout());
         }
 
         poseStack.popPose();

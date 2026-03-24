@@ -25,16 +25,20 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.monster.Silverfish;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.LingeringPotionItem;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -156,11 +160,16 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (pot.variant.traits().contains(PotTrait.TRAPPED)) {
+        if (pot.hasModifier(PotModifier.TRAPPED)) {
             startSignal(level, pos);
         }
 
-        if (pot.variant.traits().contains(PotTrait.INFESTED)) {
+        if (pot.isLiving()) {
+            pot.wakeUp(player);
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        if (pot.hasModifier(PotModifier.INFESTED)) {
             int amount = level.getRandom().nextInt(1, 4);
             for (int i = 0; i < amount; i++) {
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
@@ -170,14 +179,43 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     silverfish.spawnAnim();
                 }
             }
-
+            pot.removeModifier(PotModifier.INFESTED);
             level.destroyBlock(pos, true, player);
+            return ItemInteractionResult.SUCCESS;
+        }
 
+        if (pot.hasModifier(PotModifier.OOZING)) {
+            int amount = level.getRandom().nextInt(1, 4);
+            for (int i = 0; i < amount; i++) {
+                Slime slime = EntityType.SLIME.create(level);
+                if (slime != null) {
+                    slime.setSize(1, true);
+                    slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    level.addFreshEntity(slime);
+                }
+            }
+            pot.removeModifier(PotModifier.OOZING);
+            level.destroyBlock(pos, true, player);
             return ItemInteractionResult.SUCCESS;
         }
 
         if (stack.isEmpty()) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+
+        if (stack.getItem() instanceof PotionItem && !(stack.getItem() instanceof ThrowablePotionItem) && pot.getStoredPotion().equals(PotionContents.EMPTY)) {
+            PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+            pot.setStoredPotion(contents);
+            pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
+            player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+            stack.shrink(1);
+            if (!player.getAbilities().instabuild) {
+                player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
+            }
+            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            pot.setChanged();
+            level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return ItemInteractionResult.SUCCESS;
         }
 
         boolean inserted = pot.insert(stack.copyWithCount(1));
@@ -198,10 +236,6 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
         pot.setChanged();
         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-
-        if (pot.isLiving()) {
-            pot.wakeUp(player);
-        }
 
         return ItemInteractionResult.SUCCESS;
     }
@@ -232,9 +266,30 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         return false;
     }
 
+    private static final VoxelShape SMALL_FALLBACK = Shapes.box(2.0 / 16, 0, 2.0 / 16, 14.0 / 16, 1, 14.0 / 16);
+    private static final VoxelShape LARGE_FALLBACK = Shapes.or(
+            Shapes.box(0, 2.0 / 16, 0, 1, 21.0 / 16, 1),
+            Shapes.box(3.0 / 16, 22.0 / 16, 3.0 / 16, 13.0 / 16, 25.0 / 16, 13.0 / 16)
+    );
+
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) return pot.variant.shape();
-        return Shapes.block();
+        return size == PotSize.LARGE ? LARGE_FALLBACK : SMALL_FALLBACK;
+    }
+
+    @Override
+    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
+    }
+
+    @Override
+    protected boolean useShapeForLightOcclusion(BlockState state) {
+        return false;
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -261,16 +316,24 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
-                if (pot.getTheItem().getItem() instanceof LingeringPotionItem potion) {
-                    level.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.SPLASH_POTION_BREAK, SoundSource.NEUTRAL, 0.5F, 0.6F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
-                    if (!level.isClientSide) {
-                        Projectile projectile = potion.asProjectile(level, new Vec3(pos.getX(), pos.getY(), pos.getZ()), pot.getTheItem(), Direction.UP);
-                        projectile.shoot(pos.getX(), pos.getY(), pos.getZ(), 0.5F, 1);
+                ItemStack stored = pot.getTheItem();
+                if (!stored.isEmpty() && !level.isClientSide) {
+                    if (stored.getItem() instanceof ThrowablePotionItem potionItem) {
+                        Projectile projectile = potionItem.asProjectile(level, new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), stored, Direction.UP);
+                        projectile.setDeltaMovement(0, 0.05, 0);
                         level.addFreshEntity(projectile);
+                    } else {
+                        Containers.dropContents(level, pos, pot);
                     }
-                } else Containers.dropContents(level, pos, pot);
+                } else {
+                    Containers.dropContents(level, pos, pot);
+                }
 
-                if (pot.variant.traits().contains(PotTrait.INFESTED)) {
+                if (!pot.getStoredPotion().equals(PotionContents.EMPTY) && !level.isClientSide) {
+                    spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
+                }
+
+                if (pot.hasModifier(PotModifier.INFESTED)) {
                     int amount = level.getRandom().nextInt(1, 4);
                     for (int i = 0; i < amount; i++) {
                         Silverfish silverfish = EntityType.SILVERFISH.create(level);
@@ -282,7 +345,19 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     }
                 }
 
-                if (pot.variant.traits().contains(PotTrait.TRAPPED)) {
+                if (pot.hasModifier(PotModifier.OOZING)) {
+                    int amount = level.getRandom().nextInt(1, 4);
+                    for (int i = 0; i < amount; i++) {
+                        Slime slime = EntityType.SLIME.create(level);
+                        if (slime != null) {
+                            slime.setSize(1, true);
+                            slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                            level.addFreshEntity(slime);
+                        }
+                    }
+                }
+
+                if (pot.hasModifier(PotModifier.TRAPPED)) {
                     spawnRedstoneParticles(level, pos);
                 }
 
@@ -295,6 +370,16 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    public static void spawnPotionCloud(ServerLevel level, BlockPos pos, PotionContents contents) {
+        AreaEffectCloud cloud = new AreaEffectCloud(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        cloud.setRadius(3.0F);
+        cloud.setRadiusOnUse(-0.5F);
+        cloud.setWaitTime(10);
+        cloud.setRadiusPerTick(-cloud.getRadius() / (float) cloud.getDuration());
+        cloud.setPotionContents(contents);
+        level.addFreshEntity(cloud);
     }
 
     protected FluidState getFluidState(BlockState state) {
@@ -397,9 +482,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
-            if (pot.getTheItem().getItem() instanceof LingeringPotionItem && level.getRandom().nextFloat() < 0.15) {
-                PotionContents potionContents = pot.getTheItem().getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-                int i = potionContents.equals(PotionContents.EMPTY) ? 0 : potionContents.getColor();
+            PotionContents potionContents = pot.getStoredPotion();
+            if (!potionContents.equals(PotionContents.EMPTY) && random.nextFloat() < 0.15) {
+                int i = potionContents.getColor();
                 ParticleOptions particle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(80, i));
 
                 double d0 = pos.getX() + 0.5 + random.nextInt(-40, 40) * 0.01;

@@ -57,6 +57,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.moose", "Moose");
         add("entity.nomansland.tortoise", "Tortoise");
         add("entity.nomansland.goose", "Goose");
+        add("entity.nomansland.living_pot", "Living Pot");
         add("fluid_type.nomansland.resin_oil", "Resin Oil");
         add("nomansland.tooltip.mask.regeneration", "Slowly regenerates health");
         add("nomansland.subtitles.block.spike_trap.extend", "Spikes extend");

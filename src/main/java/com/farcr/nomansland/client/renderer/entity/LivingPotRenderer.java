@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.renderer.entity;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
+import com.farcr.nomansland.client.model.living_pot.LivingPotBodyLayer;
 import com.farcr.nomansland.client.model.living_pot.LivingPotModel;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -17,7 +18,7 @@ public class LivingPotRenderer extends MobRenderer<LivingPot, LivingPotModel<Liv
     private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/living_pot_legs.png");
 
     public LivingPotRenderer(EntityRendererProvider.Context context) {
-        super(context, new LivingPotModel<>(context.bakeLayer(NMLModelLayers.LIVING_POT_LAYER)), 0.4F);
+        super(context, new LivingPotModel<>(context.bakeLayer(NMLModelLayers.LIVING_POT_LAYER)), 0.0F);
         addLayer(new LivingPotBodyLayer(this, context.getBlockRenderDispatcher()));
     }
 

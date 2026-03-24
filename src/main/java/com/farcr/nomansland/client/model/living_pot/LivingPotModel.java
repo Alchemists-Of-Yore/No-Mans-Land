@@ -12,31 +12,27 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
     private final ModelPart bone;
     private final ModelPart body;
     private final ModelPart legs;
-    private final ModelPart Left;
-    private final ModelPart Right;
 
     public LivingPotModel(ModelPart root) {
         this.root = root;
         this.bone = root.getChild("bone");
         this.body = this.bone.getChild("body");
         this.legs = this.bone.getChild("legs");
-        this.Left = this.legs.getChild("Left");
-        this.Right = this.legs.getChild("Right");
     }
 
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        PartDefinition bone = partdefinition.addOrReplaceChild("bone", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+        PartDefinition bone = partdefinition.addOrReplaceChild("bone", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
 
-        PartDefinition body = bone.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0.0F, 0, 0.0F));
+        bone.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0, 20F, 0));
 
-        PartDefinition legs = bone.addOrReplaceChild("legs", CubeListBuilder.create(), PartPose.offset(3.0F, -5.0F, 0.0F));
+        PartDefinition legs = bone.addOrReplaceChild("legs", CubeListBuilder.create(), PartPose.offset(3, -5, 0));
 
-        PartDefinition Left = legs.addOrReplaceChild("Left", CubeListBuilder.create().texOffs(0, 9).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+        legs.addOrReplaceChild("Left", CubeListBuilder.create().texOffs(0, 9).addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)), PartPose.offset(0, 0, 0));
 
-        PartDefinition Right = legs.addOrReplaceChild("Right", CubeListBuilder.create().texOffs(0, 9).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 5.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(-6.0F, 0.0F, 0.0F));
+        legs.addOrReplaceChild("Right", CubeListBuilder.create().texOffs(0, 9).mirror().addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)).mirror(false), PartPose.offset(-6, 0, 0));
 
         return LayerDefinition.create(meshdefinition, 16, 16);
     }

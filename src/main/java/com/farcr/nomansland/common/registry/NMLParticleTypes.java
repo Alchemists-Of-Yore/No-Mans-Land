@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.particle.TranslucentDustParticleOptions;
+import com.farcr.nomansland.common.block.pots.PotShatterParticleOption;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -58,6 +59,11 @@ public class NMLParticleTypes {
     public static final Supplier<SimpleParticleType> MOONLIGHT_FLAME = register("moonlight_flame");
 
     public static final Supplier<SimpleParticleType> MOONLIGHT_SPARK = register("moonlight_spark");
+
+    public static final Supplier<ParticleType<PotShatterParticleOption>> POT_SHATTER = register(
+            "pot_shatter", false,
+            PotShatterParticleOption::codec, PotShatterParticleOption::streamCodec
+    );
 
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
         return PARTICLE_TYPES.register(name, () -> new ParticleType<T>(overrideLimitter) {

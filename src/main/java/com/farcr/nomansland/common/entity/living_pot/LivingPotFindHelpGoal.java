@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.entity.living_pot;
 
+import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotSize;
-import com.farcr.nomansland.common.block.pots.PotTrait;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class LivingPotWakeUpLargeGoal extends Goal {
+public class LivingPotFindHelpGoal extends Goal {
 
     private static final int SEARCH_RADIUS = 20;
     private static final double WAKE_RANGE_SQ = 4.0; // 2 blocks away
@@ -20,7 +20,7 @@ public class LivingPotWakeUpLargeGoal extends Goal {
     private final LivingPot pot;
     @Nullable private BlockPos targetPotPos;
 
-    public LivingPotWakeUpLargeGoal(LivingPot pot) {
+    public LivingPotFindHelpGoal(LivingPot pot) {
         this.pot = pot;
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
@@ -43,7 +43,7 @@ public class LivingPotWakeUpLargeGoal extends Goal {
     public void start() {
         if (targetPotPos != null) {
             pot.getNavigation().moveTo(
-                    targetPotPos.getX() + 0.5, targetPotPos.getY(), targetPotPos.getZ() + 0.5, 1.5);
+                    targetPotPos.getX() + 0.5, targetPotPos.getY(), targetPotPos.getZ() + 0.5, 1.4);
         }
     }
 
@@ -52,7 +52,7 @@ public class LivingPotWakeUpLargeGoal extends Goal {
         if (targetPotPos == null) return;
 
         pot.getNavigation().moveTo(
-                targetPotPos.getX() + 0.5, targetPotPos.getY(), targetPotPos.getZ() + 0.5, 1.5);
+                targetPotPos.getX() + 0.5, targetPotPos.getY(), targetPotPos.getZ() + 0.5, 1.4);
 
         double distSq = pot.distanceToSqr(
                 targetPotPos.getX() + 0.5, targetPotPos.getY(), targetPotPos.getZ() + 0.5);
@@ -101,6 +101,6 @@ public class LivingPotWakeUpLargeGoal extends Goal {
         if (!(level.getBlockEntity(pos) instanceof PotBlockEntity be)) return false;
         return be.variant != null
                 && be.variant.size() == PotSize.LARGE
-                && be.variant.traits().contains(PotTrait.ALIVE);
+                && be.hasModifier(PotModifier.ALIVE);
     }
 }

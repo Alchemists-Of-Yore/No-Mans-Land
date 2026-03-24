@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.blockentity;
 
-import com.farcr.nomansland.common.block.pots.PotTrait;
+import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
@@ -13,7 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +24,7 @@ import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
@@ -33,12 +34,16 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.ticks.ContainerSingleItem;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class PotBlockEntity extends BlockEntity implements RandomizableContainer, ContainerSingleItem.BlockContainerSingleItem {
 
     public PotVariant variant;
+    private final EnumSet<PotModifier> modifiers = EnumSet.noneOf(PotModifier.class);
+    private PotionContents storedPotion = PotionContents.EMPTY;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
     private ItemStack item = ItemStack.EMPTY;
@@ -56,6 +61,19 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             tag.putString("Variant", key.toString());
         });
 
+        if (!modifiers.isEmpty()) {
+            ListTag modList = new ListTag();
+            for (PotModifier mod : modifiers) {
+                modList.add(StringTag.valueOf(mod.getSerializedName()));
+            }
+            tag.put("Modifiers", modList);
+        }
+
+        if (!storedPotion.equals(PotionContents.EMPTY)) {
+            Tag potionTag = PotionContents.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), storedPotion).getOrThrow();
+            tag.put("StoredPotion", potionTag);
+        }
+
         if (!this.trySaveLootTable(tag) && !item.isEmpty()) {
             tag.put("Item", item.save(registries));
         }
@@ -66,6 +84,22 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
 
         if (tag.contains("Variant")) {
             variant = registries.lookupOrThrow(NMLRegistries.POT_VARIANT_KEY).get(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, ResourceLocation.parse(tag.getString("Variant")))).orElseThrow().value();
+        }
+
+        modifiers.clear();
+        if (tag.contains("Modifiers")) {
+            ListTag modList = tag.getList("Modifiers", Tag.TAG_STRING);
+            for (int i = 0; i < modList.size(); i++) {
+                try {
+                    modifiers.add(PotModifier.valueOf(modList.getString(i).toUpperCase()));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+
+        storedPotion = PotionContents.EMPTY;
+        if (tag.contains("StoredPotion")) {
+            PotionContents.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("StoredPotion"))
+                    .resultOrPartial().ifPresent(p -> storedPotion = p);
         }
 
         if (!this.tryLoadLootTable(tag)) {
@@ -176,7 +210,34 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     }
 
     public boolean isLiving() {
-        return variant != null && variant.traits().contains(PotTrait.ALIVE);
+        return hasModifier(PotModifier.ALIVE);
+    }
+
+    public Set<PotModifier> getModifiers() {
+        return modifiers;
+    }
+
+    public boolean hasModifier(PotModifier modifier) {
+        return modifiers.contains(modifier);
+    }
+
+    public void addModifier(PotModifier modifier) {
+        modifiers.add(modifier);
+        setChanged();
+    }
+
+    public void removeModifier(PotModifier modifier) {
+        modifiers.remove(modifier);
+        setChanged();
+    }
+
+    public PotionContents getStoredPotion() {
+        return storedPotion;
+    }
+
+    public void setStoredPotion(PotionContents potion) {
+        this.storedPotion = potion;
+        setChanged();
     }
 
     public void wakeUp(@Nullable LivingEntity disturber) {
@@ -191,6 +252,10 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         pot.setYBodyRot(yaw);
         pot.setYHeadRot(yaw);
         pot.setVariant(variant, getBlockState());
+        pot.setModifiers(modifiers);
+        if (!storedPotion.equals(PotionContents.EMPTY)) {
+            pot.setStoredPotion(storedPotion);
+        }
         pot.setHomePos(pos);
         if (this.lootTable != null) {
             pot.setLootTable(this.lootTable);
