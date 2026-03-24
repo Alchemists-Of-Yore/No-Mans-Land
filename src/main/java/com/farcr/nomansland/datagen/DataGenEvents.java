@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -49,10 +50,12 @@ public class DataGenEvents {
         BlockTagsProvider blockTagsProvider = generator.addProvider(server, new NMLBlockTagsProvider(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(server, new NMLItemTagsProvider(packOutput, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
 
-        // Lang
-        generator.addProvider(client, new NMLLanguageProvider(packOutput));
-
         generator.addProvider(server, new NMLDatapackEntriesProvider(packOutput, lookupProvider));
+
+        // Lang
+        Path existingDataRoot = packOutput.getOutputFolder().getParent().getParent().resolve("main/resources");
+        generator.addProvider(client, new NMLLanguageProvider(packOutput));
+        generator.addProvider(client, new NMLDialogueLanguageProvider(packOutput, existingDataRoot, lookupProvider));
 
         // these don't really work with the existing file structure...
         // made mostly for my sake. use further if you'd like :P

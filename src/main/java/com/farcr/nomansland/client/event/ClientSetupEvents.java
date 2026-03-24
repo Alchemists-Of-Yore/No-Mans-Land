@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.DialogueLangLoader;
 import com.farcr.nomansland.client.NMLArmorModels;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
@@ -32,6 +33,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
@@ -118,6 +120,11 @@ public class ClientSetupEvents {
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
         NMLClientExtensions.registerClientExtensions(event);
+    }
+
+    @SubscribeEvent
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(DialogueLangLoader.INSTANCE);
     }
 
     @SubscribeEvent
