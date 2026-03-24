@@ -71,6 +71,7 @@
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
     "client.LivingEntityRendererMixin",
+    "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "client.MusicManagerMixin",
     "client.ReceivingLevelScreenMixin",

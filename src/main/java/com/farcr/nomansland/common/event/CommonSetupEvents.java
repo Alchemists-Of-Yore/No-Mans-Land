@@ -7,7 +7,6 @@ import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
@@ -138,10 +137,10 @@ public class CommonSetupEvents {
     }
 
     @SubscribeEvent
-    public static void createEntityAttributes(final EntityAttributeCreationEvent event) {
-        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
+    public static void createEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(NMLEntities.BILLHOOK_BASS.get(), BillhookBass.createAttributes().build());
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
+        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
@@ -153,6 +152,7 @@ public class CommonSetupEvents {
     public static void registerSpawnPlacements(final RegisterSpawnPlacementsEvent event) {
         event.register(NMLEntities.BILLHOOK_BASS.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BillhookBass::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Deer::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.MOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Moose::checkMooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(EntityType.CAMEL, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Camel::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(EntityType.HUSK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.TORTOISE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Tortoise::checkTortoiseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
@@ -267,6 +267,10 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
+
+
+        //Ominous Moose Behavior that sadly demands our own networking
+        registrar.playToServer(ServerboundMooseBeginJumpSequencePacket.TYPE, ServerboundMooseBeginJumpSequencePacket.STREAM_CODEC, ServerboundMooseBeginJumpSequencePacket::handleData);
 
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);

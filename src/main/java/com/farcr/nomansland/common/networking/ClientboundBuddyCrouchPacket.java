@@ -24,7 +24,7 @@ public record ClientboundBuddyCrouchPacket(
         return TYPE;
     }
 
-    public void handleData(final IPayloadContext context) {
+    public void handleData(IPayloadContext context) {
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
                 Player player = context.player();
