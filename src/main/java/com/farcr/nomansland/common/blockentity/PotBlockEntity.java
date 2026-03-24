@@ -12,10 +12,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -181,6 +185,11 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
 
         LivingPot pot = new LivingPot(NMLEntities.LIVING_POT.get(), level);
         pot.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        float yaw = getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
+        pot.setYRot(yaw);
+        pot.yRotO = yaw;
+        pot.setYBodyRot(yaw);
+        pot.setYHeadRot(yaw);
         pot.setVariant(variant, getBlockState());
         pot.setHomePos(pos);
         if (this.lootTable != null) {
@@ -189,18 +198,25 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         } else if (!item.isEmpty()) {
             pot.setStoredItem(item);
         }
-        if (disturber instanceof Player player) {
+        if (disturber instanceof Player player && player.canBeSeenAsEnemy()) {
             pot.startPersistentAngerTimer();
             pot.setPersistentAngerTarget(player.getUUID());
-            pot.setTarget(player);
-        }
-        if (variant.traits().contains(PotTrait.TRAPPED)) {
-            BlockState currentState = level.getBlockState(pos);
-            level.setBlock(pos, currentState.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED, true), 2);
-            level.updateNeighborsAt(pos, currentState.getBlock());
+            if (!player.isInvisible()) {
+                pot.setTarget(player);
+            }
         }
         level.addFreshEntity(pot);
+        pot.startWakeUp();
+        this.variant = null;
         level.removeBlock(pos, false);
+
+        level.playSound(null, pos, SoundEvents.DECORATED_POT_STEP, SoundSource.HOSTILE, 1.0F, 0.8F);
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    ParticleTypes.DUST_PLUME,
+                    pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5,
+                    8, 0.3, 0.05, 0.3, 0.02);
+        }
     }
 
     public float getFullness() {

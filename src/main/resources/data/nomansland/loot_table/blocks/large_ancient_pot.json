@@ -41,7 +41,7 @@
               "condition": "minecraft:match_tool",
               "predicate": {
                 "items": [
-                  "brush",
+                  "minecraft:brush",
                   "minecraft:air"
                 ]
               }

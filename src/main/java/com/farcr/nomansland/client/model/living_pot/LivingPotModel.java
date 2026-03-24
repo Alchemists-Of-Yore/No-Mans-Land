@@ -6,11 +6,6 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 
-/**
- * Model for Living Pots (both small and large sizes).
- * Only renders legs — the pot body is rendered as a block model via LivingPotBodyLayer.
- * The "body" bone has no cubes but is kept for animation targeting.
- */
 public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
 
     private final ModelPart root;
@@ -35,7 +30,6 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
 
         PartDefinition bone = partdefinition.addOrReplaceChild("bone", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-        // Body is an empty bone (no cubes) — the block model is rendered via LivingPotBodyLayer
         PartDefinition body = bone.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0.0F, 0, 0.0F));
 
         PartDefinition legs = bone.addOrReplaceChild("legs", CubeListBuilder.create(), PartPose.offset(3.0F, -5.0F, 0.0F));
@@ -64,8 +58,6 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root.getAllParts().forEach(ModelPart::resetPose);
 
-        // Walk animations: skip during dash because DASH_START/LOOP include their own leg movement.
-        // Layering walk on top of the dash animations would double-animate the legs.
         boolean isDashing = entity.dashStartAnimState.isStarted() || entity.dashLoopAnimState.isStarted();
         if (!isDashing) {
             if (entity.isSmall()) {
@@ -79,7 +71,6 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
             }
         }
 
-        // State-driven animations (dash anims are self-contained run cycles)
         animate(entity.dashStartAnimState, LivingPotAnimation.DASH_START, ageInTicks);
         animate(entity.dashLoopAnimState, LivingPotAnimation.DASH_LOOP, ageInTicks);
         animate(entity.dashEndAnimState, LivingPotAnimation.DASH_END, ageInTicks);

@@ -5,18 +5,13 @@ import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 import java.util.List;
@@ -27,18 +22,6 @@ public class AncientPotItem extends BlockItem {
     public AncientPotItem(PotSize size, Block block, Properties properties) {
         super(block, properties);
         this.size = size;
-    }
-
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        Level level = context.getLevel();
-        ItemStack stack = context.getItemInHand();
-
-        Registry<PotVariant> variantRegistry = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-        List<Holder.Reference<PotVariant>> variants = variantRegistry.holders().filter(variant -> variant.value().size() == size).toList();
-        PotVariant variant = variantRegistry.getOptional(stack.get(NMLDataComponents.POT_VARIANT.get())).orElse(variants.get(level.getRandom().nextInt(variants.size())).value());
-
-        return super.useOn(context);
     }
 
     @Override
@@ -62,7 +45,4 @@ public class AncientPotItem extends BlockItem {
         }
     }
 
-    // TODO: variant item model rendering
-
-    // TODO: variant hitboxes
 }

@@ -10,6 +10,7 @@ public class LivingPotWanderGoal extends WaterAvoidingRandomStrollGoal {
 
     private static final float STRAY_BIAS_CHANCE = 0.7F;
     private static final int STRAY_DISTANCE = 8;
+    private static final double MAX_WANDER_DISTANCE = 48.0;
 
     private final LivingPot pot;
 
@@ -22,26 +23,36 @@ public class LivingPotWanderGoal extends WaterAvoidingRandomStrollGoal {
     @Nullable
     protected Vec3 getPosition() {
         BlockPos home = pot.getHomePos();
-        if (home != null && pot.getRandom().nextFloat() >= STRAY_BIAS_CHANCE) {
+        if (home == null) return super.getPosition();
 
-            Vec3 homeVec = Vec3.atBottomCenterOf(home);
-            Vec3 awayDir = pot.position().subtract(homeVec);
-            double dist = awayDir.horizontalDistance();
+        Vec3 homeVec = Vec3.atBottomCenterOf(home);
+        double distFromHome = pot.position().subtract(homeVec).horizontalDistance();
 
-            if (dist < 32) {
-                Vec3 biasTarget;
-                if (dist > 0.5) {
-                    biasTarget = pot.position().add(awayDir.normalize().scale(STRAY_DISTANCE));
-                } else {
-                    double angle = pot.getRandom().nextDouble() * Math.PI * 2;
-                    biasTarget = pot.position().add(Math.cos(angle) * STRAY_DISTANCE, 0, Math.sin(angle) * STRAY_DISTANCE);
-                }
-
-                Vec3 pos = DefaultRandomPos.getPosTowards(pot, 10, 7, biasTarget, Math.PI / 2);
-                return pos != null ? pos : super.getPosition();
-            }
+        if (distFromHome >= MAX_WANDER_DISTANCE) {
+            Vec3 pos = DefaultRandomPos.getPosTowards(pot, 10, 7, homeVec, Math.PI / 2);
+            return pos != null ? pos : super.getPosition();
         }
 
-        return super.getPosition();
+        if (pot.getRandom().nextFloat() < 0.5F) {
+            return super.getPosition();
+        }
+
+        if (pot.getRandom().nextFloat() >= STRAY_BIAS_CHANCE) {
+            return super.getPosition();
+        }
+
+        Vec3 awayDir = pot.position().subtract(homeVec);
+        double dist = awayDir.horizontalDistance();
+
+        Vec3 biasTarget;
+        if (dist > 0.5) {
+            biasTarget = pot.position().add(awayDir.normalize().scale(STRAY_DISTANCE));
+        } else {
+            double angle = pot.getRandom().nextDouble() * Math.PI * 2;
+            biasTarget = pot.position().add(Math.cos(angle) * STRAY_DISTANCE, 0, Math.sin(angle) * STRAY_DISTANCE);
+        }
+
+        Vec3 pos = DefaultRandomPos.getPosTowards(pot, 10, 7, biasTarget, Math.PI / 2);
+        return pos != null ? pos : super.getPosition();
     }
 }

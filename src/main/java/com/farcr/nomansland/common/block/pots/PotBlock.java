@@ -11,6 +11,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -26,6 +27,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.entity.player.Player;
@@ -98,29 +100,18 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-        return defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection()).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
+        return defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
     }
 
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (state.getValue(POWERED)) {
             level.setBlock(pos, state.setValue(POWERED, false), 2);
-        } else {
-            level.setBlock(pos, state.setValue(POWERED, true), 2);
-            level.scheduleTick(pos, this, 2);
+            level.updateNeighborsAt(pos, this);
         }
 
         if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
             FallingBlockEntity.fall(level, pos, state);
         }
-    }
-
-    @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant.traits().contains(PotTrait.TRAPPED)) {
-            startSignal(level, pos);
-        }
-
-        return super.playerWillDestroy(level, pos, state, player);
     }
 
     protected boolean isSignalSource(BlockState state) {
@@ -135,9 +126,26 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         return blockState.getValue(POWERED) ? 15 : 0;
     }
 
-    private void startSignal(LevelAccessor level, BlockPos pos) {
-        if (!level.isClientSide() && !level.getBlockTicks().hasScheduledTick(pos, this)) {
-            level.scheduleTick(pos, this, 2);
+    private void startSignal(Level level, BlockPos pos) {
+        if (!level.isClientSide()) {
+            BlockState state = level.getBlockState(pos);
+            if (!state.getValue(POWERED)) {
+                level.setBlock(pos, state.setValue(POWERED, true), 2);
+                level.updateNeighborsAt(pos, this);
+                level.scheduleTick(pos, this, 4);
+            }
+        }
+        spawnRedstoneParticles(level, pos);
+    }
+
+    private void spawnRedstoneParticles(Level level, BlockPos pos) {
+        if (level instanceof ServerLevel serverLevel) {
+            for (int i = 0; i < 6; i++) {
+                double x = pos.getX() + 0.25 + level.getRandom().nextDouble() * 0.5;
+                double y = pos.getY() + 0.5 + level.getRandom().nextDouble() * 0.5;
+                double z = pos.getZ() + 0.25 + level.getRandom().nextDouble() * 0.5;
+                serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z, 1, 0, 0, 0, 0);
+            }
         }
     }
 
@@ -191,6 +199,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         pot.setChanged();
         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 
+        if (pot.isLiving()) {
+            pot.wakeUp(player);
+        }
+
         return ItemInteractionResult.SUCCESS;
     }
 
@@ -207,8 +219,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
         level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT_FAIL, SoundSource.BLOCKS, 1, 1);
         pot.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
+
+        if (pot.isLiving()) {
+            pot.wakeUp(player);
+        }
+
         return InteractionResult.SUCCESS;
     }
+
 
     protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
@@ -264,6 +282,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     }
                 }
 
+                if (pot.variant.traits().contains(PotTrait.TRAPPED)) {
+                    spawnRedstoneParticles(level, pos);
+                }
+
                 if (level instanceof ServerLevel serverLevel && pot.variant.traits().contains(PotTrait.REGENERATES)) {
                     Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
                     RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant)), level.getRandom().nextInt(20, 40)*20);
@@ -297,17 +319,25 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (!level.isClientSide && size == PotSize.SMALL && entity instanceof Player
+        if (!level.isClientSide && size == PotSize.SMALL
                 && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
             pot.wakeUp(null);
         }
+    }
+
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+            pot.wakeUp(entity instanceof LivingEntity le ? le : null);
+        }
+        super.stepOn(level, pos, state, entity);
     }
 
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         BlockPos blockpos = hit.getBlockPos();
         if (!level.isClientSide && projectile.mayInteract(level, blockpos) && projectile.mayBreak(level)) {
             if (level.getBlockEntity(blockpos) instanceof PotBlockEntity pot && pot.isLiving()) {
-                pot.wakeUp(projectile.getOwner() instanceof net.minecraft.world.entity.LivingEntity living ? living : null);
+                pot.wakeUp(projectile.getOwner() instanceof LivingEntity le ? le : null);
             } else {
                 level.destroyBlock(blockpos, true, projectile);
             }

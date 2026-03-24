@@ -43,7 +43,7 @@ public class RegeneratingPotsData extends SavedData {
         for (Tag entryTag : tag.getList("pots", 10)) {
             if (entryTag instanceof CompoundTag dataTag) {
                 BlockPos pos = NbtUtils.readBlockPos(dataTag, "pos").orElseThrow();
-                PotData potData = PotData.read(dataTag, registries);
+                PotData potData = PotData.read(dataTag.getCompound("potData"), registries);
                 int delay = dataTag.getInt("delay");
 
                 regeneratingPots.put(pos, Pair.of(potData, delay));

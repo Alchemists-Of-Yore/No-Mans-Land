@@ -3,10 +3,13 @@ package com.farcr.nomansland.common.entity.living_pot;
 import com.farcr.nomansland.common.block.pots.PotTrait;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.EnumSet;
 
@@ -85,10 +88,25 @@ public class LivingPotReturnHomeGoal extends Goal {
 
     private BlockPos choosePlacePos(BlockPos home) {
         Level level = pot.level();
-        if (!level.getBlockState(home).isAir() && !level.getBlockState(home).canBeReplaced()) {
-            return pot.blockPosition();
+        if (canPlaceAt(level, home)) return home;
+
+        for (int r = 1; r <= 3; r++) {
+            for (BlockPos pos : BlockPos.betweenClosed(home.offset(-r, -1, -r), home.offset(r, 1, r))) {
+                if (canPlaceAt(level, pos)) {
+                    pot.setHomePos(pos.immutable());
+                    return pos.immutable();
+                }
+            }
         }
-        return home;
+
+        BlockPos fallback = pot.blockPosition();
+        pot.setHomePos(fallback);
+        return fallback;
+    }
+
+    private boolean canPlaceAt(Level level, BlockPos pos) {
+        return (level.getBlockState(pos).isAir() || level.getBlockState(pos).canBeReplaced())
+                && level.getBlockState(pos.below()).isSolid();
     }
 
     private void placeBlockAt(Level level, BlockPos pos) {
@@ -107,7 +125,18 @@ public class LivingPotReturnHomeGoal extends Goal {
             }
         }
         if (pot.variant.traits().contains(PotTrait.TRAPPED) && !level.isClientSide()) {
-            level.scheduleTick(pos, state.getBlock(), 2);
+            BlockState placed = level.getBlockState(pos);
+            level.setBlock(pos, placed.setValue(BlockStateProperties.POWERED, true), 2);
+            level.updateNeighborsAt(pos, placed.getBlock());
+            level.scheduleTick(pos, placed.getBlock(), 4);
+            if (level instanceof ServerLevel serverLevel) {
+                for (int i = 0; i < 6; i++) {
+                    double x = pos.getX() + 0.25 + level.getRandom().nextDouble() * 0.5;
+                    double y = pos.getY() + 0.5 + level.getRandom().nextDouble() * 0.5;
+                    double z = pos.getZ() + 0.25 + level.getRandom().nextDouble() * 0.5;
+                    serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z, 1, 0, 0, 0, 0);
+                }
+            }
         }
     }
 }

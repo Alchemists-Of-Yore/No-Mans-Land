@@ -9,6 +9,7 @@ public class PotClientItemExtensions implements IClientItemExtensions {
 
     @Override
     public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-        return renderer == null ? new PotItemRenderer() : renderer;
+        renderer = renderer == null ? new PotItemRenderer() : renderer;
+        return renderer;
     }
 }

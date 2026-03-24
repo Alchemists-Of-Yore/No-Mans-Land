@@ -52,7 +52,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<LivingPot>> LIVING_POT =
             ENTITIES.register("living_pot", () -> EntityType.Builder.<LivingPot>of(LivingPot::new, MobCategory.MISC)
-                    .fireImmune().sized(0.7F, 0.8F).eyeHeight(0.5F).clientTrackingRange(10).build("living_pot"));
+                    .fireImmune().clientTrackingRange(10).build("living_pot"));
 
 
     public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =

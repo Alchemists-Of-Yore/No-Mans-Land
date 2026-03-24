@@ -69,6 +69,7 @@ public class ClientSetupEvents {
             var path = "block/ancient_pots/ancient_pot_small_" + (i+1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_1alt")));
         for (int i = 0; i < 1; i++) {
             var path = "block/ancient_pots/ancient_pot_large_" + (i+1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));

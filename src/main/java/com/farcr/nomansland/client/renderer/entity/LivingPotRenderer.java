@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 public class LivingPotRenderer extends MobRenderer<LivingPot, LivingPotModel<LivingPot>> {
 
-    // Fallback texture — swap out with variant-specific logic once textures are ready
     private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/living_pot_legs.png");
 
     public LivingPotRenderer(EntityRendererProvider.Context context) {
@@ -25,5 +24,10 @@ public class LivingPotRenderer extends MobRenderer<LivingPot, LivingPotModel<Liv
     @Override
     public @NotNull ResourceLocation getTextureLocation(LivingPot pot) {
         return TEXTURE;
+    }
+
+    @Override
+    protected float getFlipDegrees(LivingPot pot) {
+        return 0.0F;
     }
 }
