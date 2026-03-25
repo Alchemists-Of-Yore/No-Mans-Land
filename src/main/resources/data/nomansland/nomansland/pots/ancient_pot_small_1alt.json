@@ -8,9 +8,5 @@
     [4, 0, 4, 12, 2, 12]
   ],
   "traits": [
-    "regenerates",
-    "brittle",
-    "drops_experience",
-    "flammable"
   ]
 }

@@ -69,9 +69,32 @@ public class ClientSetupEvents {
         }
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_1alt")));
         for (int i = 0; i < 1; i++) {
-            var path = "block/ancient_pots/ancient_pot_large_" + (i+1);
+            var path = "block/ancient_pots/ancient_pot_large_" + (i + 1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
+            for (int i = 0; i < 6; i++) {
+                var path = "block/ancient_pots/alchemist_pot_small_" + (i+1);
+                event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+            }
+            event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1alt")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_face_stern")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_face_happy")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_gold")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_green")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_white")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_stern")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_happy")));
+            for (int i = 0; i < 1; i++) {
+                var path = "block/ancient_pots/alchemist_pot_large_" + (i+1);
+                event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+        }
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_stern")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_happy")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle_gold")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle_green")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle_white")));
     }
 
     @SubscribeEvent

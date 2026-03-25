@@ -1,0 +1,63 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made by Farcr",
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"bottom": "nomansland:block/dungeon/ancient_pots/alchemist_pot_base",
+		"side": "nomansland:block/dungeon/ancient_pots/alchemist_pot_large_1",
+		"front": "nomansland:block/dungeon/ancient_pots/alchemist_pot_large_1_wiggle_white",
+		"particle": "nomansland:block/dungeon/ancient_pots/alchemist_pot_particle"
+	},
+	"elements": [
+		{
+			"from": [0, 2, 0],
+			"to": [16, 21, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 2, 4]},
+			"faces": {
+				"north": {"uv": [0, 5.5, 8, 15], "texture": "#front"},
+				"east": {"uv": [0, 5.5, 8, 15], "texture": "#side"},
+				"south": {"uv": [0, 5.5, 8, 15], "texture": "#side"},
+				"west": {"uv": [0, 5.5, 8, 15], "texture": "#side"},
+				"up": {"uv": [0, 4, 4, 8], "texture": "#bottom"},
+				"down": {"uv": [0, 8, 4, 12], "texture": "#bottom"}
+			}
+		},
+		{
+			"from": [4, 21, 4],
+			"to": [12, 22, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 21, 6]},
+			"faces": {
+				"north": {"uv": [2, 5, 6, 5.5], "texture": "#front"},
+				"east": {"uv": [2, 5, 6, 5.5], "texture": "#side"},
+				"south": {"uv": [2, 5, 6, 5.5], "texture": "#side"},
+				"west": {"uv": [2, 5, 6, 5.5], "texture": "#side"}
+			}
+		},
+		{
+			"from": [2, 0, 2],
+			"to": [14, 2, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 0, 6]},
+			"faces": {
+				"north": {"uv": [1, 15, 7, 16], "texture": "#front"},
+				"east": {"uv": [1, 15, 7, 16], "texture": "#side"},
+				"south": {"uv": [1, 15, 7, 16], "texture": "#side"},
+				"west": {"uv": [1, 15, 7, 16], "texture": "#side"},
+				"down": {"uv": [0, 8, 4, 12], "texture": "#bottom"}
+			}
+		},
+		{
+			"from": [3, 22, 3],
+			"to": [13, 25, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 22, 4]},
+			"faces": {
+				"north": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#front"},
+				"east": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#side"},
+				"south": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#side"},
+				"west": {"uv": [1.5, 3.5, 6.5, 5], "texture": "#side"},
+				"up": {"uv": [9.5, 1.5, 14.5, 6.5], "texture": "#side"},
+				"down": {"uv": [9.5, 9.5, 14.5, 14.5], "texture": "#side"}
+			}
+		}
+	]
+}
