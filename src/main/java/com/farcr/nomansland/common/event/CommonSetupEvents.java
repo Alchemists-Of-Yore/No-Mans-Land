@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
+import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
@@ -141,6 +142,7 @@ public class CommonSetupEvents {
         event.dataPackRegistry(NMLRegistries.SPECIAL_DIALOGUE_KEY, DialoguePool.CODEC, DialoguePool.CODEC);
 
         event.dataPackRegistry(NMLRegistries.BUDDY_FOOD_KEY, BuddyFood.CODEC, BuddyFood.CODEC);
+        event.dataPackRegistry(NMLRegistries.POTION_TABLE_KEY, PotionTable.CODEC, null);
     }
 
     @SubscribeEvent

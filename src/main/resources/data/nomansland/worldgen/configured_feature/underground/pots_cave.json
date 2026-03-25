@@ -13,6 +13,9 @@
     ],
     "tries": 16,
     "xz_spread": 4,
-    "y_spread": 3
+    "y_spread": 3,
+    "loot_table": "nomansland:chests/alchemist_pot_potions",
+    "potion_table": "nomansland:cave_potions",
+    "potion_chance": 0.3
   }
 }

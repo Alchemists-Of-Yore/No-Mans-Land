@@ -365,18 +365,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && !pot.skipBreakEffects) {
-                ItemStack stored = pot.getTheItem();
-                if (!stored.isEmpty() && !level.isClientSide) {
-                    if (stored.getItem() instanceof ThrowablePotionItem potionItem) {
-                        Projectile projectile = potionItem.asProjectile(level, new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), stored, Direction.UP);
-                        projectile.setDeltaMovement(0, 0.05, 0);
-                        level.addFreshEntity(projectile);
-                    } else {
-                        Containers.dropContents(level, pos, pot);
-                    }
-                } else {
-                    Containers.dropContents(level, pos, pot);
-                }
+                Containers.dropContents(level, pos, pot);
 
                 if (!pot.getStoredPotion().equals(PotionContents.EMPTY) && !level.isClientSide) {
                     spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
