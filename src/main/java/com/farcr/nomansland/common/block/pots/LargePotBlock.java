@@ -47,7 +47,7 @@ public class LargePotBlock extends PotBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(HALF);
     }
@@ -95,7 +95,12 @@ public class LargePotBlock extends PotBlock {
             if (lowerState.is(this) && !isUpper(lowerState)) {
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
                 level.levelEvent(player, 2001, pos, Block.getId(state));
-                level.destroyBlock(lowerPos, !player.isCreative(), player);
+                super.playerWillDestroy(level, lowerPos, lowerState, player);
+                if (!player.isCreative()) {
+                    BlockEntity be = level.getBlockEntity(lowerPos);
+                    Block.dropResources(lowerState, level, lowerPos, be, player, player.getMainHandItem());
+                }
+                level.removeBlock(lowerPos, false);
                 return state;
             }
         }
@@ -123,6 +128,14 @@ public class LargePotBlock extends PotBlock {
             level.updateNeighborsAt(pos, this);
         }
         if (PotBlock.isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+                BlockState above = level.getBlockState(pos.above());
+                if (above.is(this) && isUpper(above)) {
+                    level.removeBlock(pos.above(), false);
+                }
+                pot.wakeUpSilent();
+                return;
+            }
             CompoundTag beData = null;
             ResourceLocation variantId = null;
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
@@ -130,7 +143,7 @@ public class LargePotBlock extends PotBlock {
                 if (pot.variant != null) {
                     variantId = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(pot.variant);
                 }
-                pot.variant = null;
+                pot.skipBreakEffects = true;
             }
             BlockState above = level.getBlockState(pos.above());
             if (above.is(this) && isUpper(above)) {
@@ -178,6 +191,14 @@ public class LargePotBlock extends PotBlock {
         }
         if (fullShape == null) return Shapes.block();
         return isUpper(state) ? offsetShape(fullShape, -1.0) : fullShape;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        VoxelShape shape = getShape(state, level, pos, context);
+        BlockPos lowerPos = getLowerPos(state, pos);
+        if (!(level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot) || !pot.isLiving()) return shape;
+        return shape.isEmpty() ? shape : Shapes.create(shape.bounds().deflate(0.05));
     }
 
     @Override

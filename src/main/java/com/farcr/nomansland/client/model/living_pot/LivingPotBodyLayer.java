@@ -43,7 +43,8 @@ public class LivingPotBodyLayer extends RenderLayer<LivingPot, LivingPotModel<Li
         model.getBody().translateAndRotate(poseStack);
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
         poseStack.mulPose(Axis.XP.rotationDegrees(180));
-        poseStack.translate(-0.5, 0, -0.5);
+        double yOffset = pot.isLarge() ? -1.0 / 16.0 : 0;
+        poseStack.translate(-0.5, yOffset, -0.5);
 
         ResourceLocation modelLoc = variant.model();
         ModelManager manager = blockRenderer.getBlockModelShaper().getModelManager();

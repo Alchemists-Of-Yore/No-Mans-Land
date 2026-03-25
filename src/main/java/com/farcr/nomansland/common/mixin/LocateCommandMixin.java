@@ -51,11 +51,11 @@ public class LocateCommandMixin {
                 int i = Mth.floor(dist(sourcePosition.getX(), sourcePosition.getZ(), blockPos.getX(), blockPos.getZ()));
                 String s = "~";
                 Component component = ComponentUtils.wrapInSquareBrackets(Component.translatable("chat.coordinates",
-                    new Object[]{blockPos.getX(), s, blockPos.getZ()})).withStyle((p_214489_) -> p_214489_.withColor(ChatFormatting.GREEN)
+                        blockPos.getX(), s, blockPos.getZ())).withStyle((p_214489_) -> p_214489_.withColor(ChatFormatting.GREEN)
                     .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ()))
-                    .withHoverEvent(new HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip")))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip")))
                 );
-                source.sendSuccess(() -> Component.translatable("commands.locate.structure.success", new Object[]{MEETING_POINT.toString(), component, i}), false);
+                source.sendSuccess(() -> Component.translatable("commands.locate.structure.success", MEETING_POINT.toString(), component, i), false);
                 cir.cancel();
             }
         });

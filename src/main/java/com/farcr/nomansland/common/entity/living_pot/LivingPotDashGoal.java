@@ -128,10 +128,10 @@ public class LivingPotDashGoal extends Goal {
         if (hitWall()) {
             pot.hurt(pot.damageSources().fall(), 3.0F);
 
-            pot.spawnShatterParticles(10, 0.3);
+            pot.spawnShatterParticles(20, 0.4);
             pot.level().playSound(null, pot.getX(), pot.getY(), pot.getZ(),
                     SoundEvents.DECORATED_POT_SHATTER, SoundSource.HOSTILE,
-                    1.0F, 0.7F);
+                    1.2F, 0.5F + pot.getRandom().nextFloat() * 0.2F);
             stop();
             return;
         }

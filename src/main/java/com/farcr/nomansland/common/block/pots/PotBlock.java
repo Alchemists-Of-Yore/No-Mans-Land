@@ -123,6 +123,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         }
 
         if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+                pot.wakeUpSilent();
+                return;
+            }
             CompoundTag beData = null;
             ResourceLocation variantId = null;
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
@@ -130,7 +134,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (pot.variant != null) {
                     variantId = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(pot.variant);
                 }
-                pot.variant = null;
+                pot.skipBreakEffects = true;
             }
             FallingPotEntity falling = FallingPotEntity.fall(level, pos, state);
             if (beData != null) {
@@ -233,7 +237,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (stack.is(Items.HONEYCOMB) && !pot.hasModifier(PotModifier.WAXED)) {
+        if (stack.is(Items.HONEYCOMB) && !pot.hasModifier(PotModifier.WAXED) && player.isShiftKeyDown()) {
             pot.addModifier(PotModifier.WAXED);
             pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
             player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
@@ -246,7 +250,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SUCCESS;
         }
 
-        if (stack.getItem() instanceof PotionItem && !(stack.getItem() instanceof ThrowablePotionItem) && pot.getStoredPotion().equals(PotionContents.EMPTY)) {
+        if (stack.getItem() instanceof PotionItem && !(stack.getItem() instanceof ThrowablePotionItem) && pot.getStoredPotion().equals(PotionContents.EMPTY) && player.isShiftKeyDown()) {
             PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
             pot.setStoredPotion(contents);
             pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
@@ -256,6 +260,11 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
             }
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            if (level instanceof ServerLevel serverLevel) {
+                int color = contents.getColor();
+                ParticleOptions particle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(255, color));
+                serverLevel.sendParticles(particle, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 10, 0.2, 0.1, 0.2, 0);
+            }
             pot.setChanged();
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             return ItemInteractionResult.SUCCESS;
@@ -321,6 +330,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        VoxelShape shape = getShape(state, level, pos, context);
+        if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot) || !pot.isLiving()) return shape;
+        return shape.isEmpty() ? shape : Shapes.create(shape.bounds().deflate(0.05));
+    }
+
+    @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
@@ -348,7 +364,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && !pot.skipBreakEffects) {
                 ItemStack stored = pot.getTheItem();
                 if (!stored.isEmpty() && !level.isClientSide) {
                     if (stored.getItem() instanceof ThrowablePotionItem potionItem) {
@@ -393,9 +409,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (level instanceof ServerLevel serverLevel && pot.variant.traits().contains(PotTrait.REGENERATES)) {
                     Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
                     int delay = level.getRandom().nextInt(20, 40) * 20;
-                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant)), delay);
+                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant), pot.getModifiers()), delay);
                     serverLevel.sendParticles(
-                            new PotShatterParticleOption(pot.variant.model(), delay),
+                            new PotShatterParticleOption(pot.variant.model(), delay, PotShatterParticleOption.extractBoxes(pot.variant.shape()), pos.getX(), pos.getY(), pos.getZ()),
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                             size == PotSize.LARGE ? 270 : 135, 0.3, 0.3, 0.3, 0.1);
                 }
@@ -457,9 +473,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 pot.setChanged();
                 Block.popResource(level, pos, pot.getPotAsItem());
                 Block.popResource(level, pos, new ItemStack(Items.HONEYCOMB));
-                pot.variant = null;
+                pot.skipBreakEffects = true;
             } else if (dropsItself(player.getMainHandItem(), level)) {
-                pot.variant = null;
+                pot.skipBreakEffects = true;
             }
             pot.setChanged();
         }
@@ -482,7 +498,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         if (!level.isClientSide) {
             ItemStack held = player.getMainHandItem();
             if (held.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get()) && held.getItem() instanceof AncientPotDebugItem debug) {
-                debug.handleLeftClick(level, pos, player, held);
+                debug.handleLeftClick(level, pos, player);
                 return;
             }
             if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving() && !hasSilkTouch(player, level)) {
@@ -507,8 +523,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         BlockPos lowerPos = pos;
-        if (!level.isClientSide && size == PotSize.SMALL
-                && level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving()) {
+        if (!level.isClientSide && level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving()) {
             pot.wakeUp(null);
         }
     }

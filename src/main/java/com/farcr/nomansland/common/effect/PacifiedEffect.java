@@ -12,7 +12,9 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 
 public class PacifiedEffect extends MobEffect {
     public PacifiedEffect(MobEffectCategory category) {
@@ -61,8 +63,10 @@ public class PacifiedEffect extends MobEffect {
             neutralMob.stopBeingAngry();
             livingEntity.removeEffect(NMLEffects.PACIFIED);
         } else if (livingEntity instanceof Monster monster) {
+            monster.setTarget(null);
             monster.targetSelector.removeAllGoals(goal -> true);
-            monster.targetSelector.addGoal(0, new EnemyAttackGoal(monster));
+            monster.targetSelector.addGoal(1, new HurtByTargetGoal(monster, Player.class));
+            monster.targetSelector.addGoal(2, new EnemyAttackGoal(monster));
         } else {
             livingEntity.removeEffect(NMLEffects.PACIFIED);
         }

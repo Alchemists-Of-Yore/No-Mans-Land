@@ -43,8 +43,11 @@ import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -255,6 +258,18 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     public boolean fireImmune() {
         PotVariant variant = getVariant();
         return variant == null || !variant.traits().contains(PotTrait.FLAMMABLE);
+    }
+
+    @Override
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
+        if (fallDistance > 1.0F && !level().isClientSide) {
+            int count = (int) Math.min(fallDistance * (isLarge() ? 4 : 2), isLarge() ? 20 : 10);
+            spawnShatterParticles(count, isLarge() ? 0.3 : 0.15);
+            level().playSound(null, getX(), getY(), getZ(),
+                    SoundEvents.DECORATED_POT_HIT, SoundSource.HOSTILE,
+                    Math.min(fallDistance * 0.2F, 1.2F), 0.7F + random.nextFloat() * 0.3F);
+        }
+        return super.causeFallDamage(fallDistance, multiplier, source);
     }
 
     @Override
@@ -598,6 +613,8 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                 removeModifier(PotModifier.OOZING);
             }
 
+            removeModifier(PotModifier.TRAPPED);
+
             if (!storedPotion.equals(PotionContents.EMPTY)) {
                 PotBlock.spawnPotionCloud(serverLevel, blockPosition(), storedPotion);
             }
@@ -607,9 +624,10 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                 ResourceLocation variantKey = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
                 if (variantKey != null) {
                     int delay = random.nextInt(20, 40) * 20;
-                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(blockPosition(), new PotData(getBlockState(), variantKey), delay);
+                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(blockPosition(), new PotData(getBlockState(), variantKey, getModifiers()), delay);
+                    BlockPos bPos = blockPosition();
                     serverLevel.sendParticles(
-                            new PotShatterParticleOption(variant.model(), delay),
+                            new PotShatterParticleOption(variant.model(), delay, PotShatterParticleOption.extractBoxes(variant.shape()), bPos.getX(), bPos.getY(), bPos.getZ()),
                             getX(), getY() + (isLarge() ? 0.8 : 0.5), getZ(),
                             isLarge() ? 270 : 135, isLarge() ? 0.4 : 0.25, 0.3, isLarge() ? 0.4 : 0.25, 0.1);
                 }
@@ -624,19 +642,19 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                     if (waxedKey != null) {
                         potItem.set(NMLDataComponents.POT_VARIANT, waxedKey);
                     }
-                    java.util.List<String> modList = modifiers.stream().map(PotModifier::getSerializedName).toList();
+                    List<String> modList = modifiers.stream().map(PotModifier::getSerializedName).toList();
                     if (!modList.isEmpty()) {
                         potItem.set(NMLDataComponents.POT_MODIFIERS, modList);
                     }
                 }
                 if (!storedPotion.equals(PotionContents.EMPTY)) {
-                    potItem.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, storedPotion);
+                    potItem.set(DataComponents.POTION_CONTENTS, storedPotion);
                 }
                 if (!storedItem.isEmpty()) {
-                    potItem.set(net.minecraft.core.component.DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.fromItems(java.util.List.of(storedItem)));
+                    potItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(storedItem)));
                 }
                 spawnAtLocation(potItem);
-                spawnAtLocation(new ItemStack(net.minecraft.world.item.Items.HONEYCOMB));
+                spawnAtLocation(new ItemStack(Items.HONEYCOMB));
             }
         }
         super.die(damageSource);
