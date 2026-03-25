@@ -6,5 +6,11 @@
     [3, 8, 3, 13, 9, 13],
     [2, 9, 2, 14, 11, 14]
   ],
-  "traits": []
+  "traits": [],
+  "modifier_chances": {
+  "alive": 0.01,
+  "trapped": 0.07,
+  "infested": 0.1,
+  "oozing": 0.1
+}
 }

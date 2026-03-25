@@ -13,5 +13,8 @@
     ],
     "net/minecraft/client/resources/sounds/SoundInstance": [
         "com/farcr/nomansland/common/extension/SoundInstanceExtension"
+    ],
+    "net/minecraft/server/MinecraftServer": [
+        "com/farcr/nomansland/common/extension/MinecraftServerExtension"
     ]
 }

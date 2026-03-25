@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.world.feature.decorator.BoulderDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.FallenTreeDecoratorType;
 import com.farcr.nomansland.common.world.feature.decorator.PondDecoratorType;
@@ -33,6 +34,10 @@ public class NMLRegistries {
 
     public static final ResourceKey<Registry<MusicCondition>> CONTEXTUAL_MUSIC_TYPE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("client/contextual_music"));
     public static final Registry<MusicCondition> CONTEXTUAL_MUSIC = new RegistryBuilder<>(CONTEXTUAL_MUSIC_TYPE_KEY).create();
+
+    public static final ResourceKey<Registry<DreamType>> DREAM_TYPE_KEY =
+        ResourceKey.createRegistryKey(NoMansLand.location("dream_types"));
+    public static final Registry<DreamType> DREAM_TYPE = new RegistryBuilder<>(DREAM_TYPE_KEY).create();
 
     public static final ResourceKey<Registry<TapInteraction>> TAP_INTERACTION_KEY = ResourceKey.createRegistryKey(NoMansLand.location("tapping"));
     public static final ResourceKey<Registry<PotVariant>> POT_VARIANT_KEY = ResourceKey.createRegistryKey(NoMansLand.location("pots"));

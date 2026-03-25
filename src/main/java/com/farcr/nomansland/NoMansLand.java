@@ -54,6 +54,7 @@ public class NoMansLand {
         NMLFallenTreeDecoratorTypes.FALLEN_TREE_DECORATOR_TYPES.register(bus);
         NMLDialogueConditions.DIALOGUE_CONDITION_REGISTRY.register(bus);
         NMLContextualMusic.CONTEXTUAL_MUSIC_REGISTRY.register(bus);
+        NMLDreamTypes.DREAM_TYPES_REGISTRY.register(bus);
         NMLFogModifiers.FOG_MODIFIERS.register(bus);
         NMLMobVariants.FROG_VARIANTS.register(bus);
         NMLEffects.MOB_EFFECTS.register(bus);

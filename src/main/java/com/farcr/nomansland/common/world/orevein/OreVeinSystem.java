@@ -135,10 +135,6 @@ public class OreVeinSystem {
         float veinRadius = type.veinRadius().sample(veinRandom);
         if (veinRadius <= 0) return Optional.empty();
 
-        // log vein position if in dev mode
-//        if (!FMLLoader.isProduction())
-//            NoMansLand.LOGGER.info("Generated ore vein of type {} at {} {} {}", typeHolder.getKey().location(), centerX, centerY, centerZ);
-
         return Optional.of(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, radius * radius, veinRadius));
     }
 

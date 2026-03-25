@@ -12,7 +12,7 @@ public class FriendMoonFogModifier extends FogModifier {
     }
 
     public static float opacity() {
-        return FriendMoonRenderer.getFriendMoonOpacity();
+        return FriendMoonRenderer.getInstance().getFriendMoonOpacity();
     }
 
     @Override

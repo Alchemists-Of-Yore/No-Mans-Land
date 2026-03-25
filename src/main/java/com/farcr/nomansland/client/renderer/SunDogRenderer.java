@@ -31,7 +31,6 @@ public class SunDogRenderer implements AutoCloseable {
 
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
-        //if (true) return; // todo: spawning situation for sun dogs
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
         INSTANCE.render(event.getPoseStack(), event.getProjectionMatrix(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
     }
@@ -95,7 +94,7 @@ public class SunDogRenderer implements AutoCloseable {
 
         poseStack.pushPose();
 
-        poseStack.scale(renderDistance + 16.0F, renderDistance + 16.0F, renderDistance + 16.0F);
+        poseStack.scale(renderDistance - 16.0F, renderDistance - 16.0F, renderDistance - 16.0F);
         RenderSystem.setShaderColor(1, 1, 1, brightness);
         RenderSystem.setShaderTexture(0, SUN_DOG_BACK_TEXTURE);
         this.sunDogMesh.drawWithShader(poseStack.last().pose(), projectionMatrix, SUN_DOG_SHADER);
@@ -116,7 +115,7 @@ public class SunDogRenderer implements AutoCloseable {
 
         this.sunDogMesh = new VertexBuffer(VertexBuffer.Usage.STATIC);
         this.sunDogMesh.bind();
-        this.sunDogMesh.upload(Meshes.hemisphere(Tesselator.getInstance(), 12, 24, Mth.PI * 0.34F, 1));
+        this.sunDogMesh.upload(Meshes.hemisphere(Tesselator.getInstance(), 32, 64, Mth.PI * 0.4F, 1));
         VertexBuffer.unbind();
     }
 

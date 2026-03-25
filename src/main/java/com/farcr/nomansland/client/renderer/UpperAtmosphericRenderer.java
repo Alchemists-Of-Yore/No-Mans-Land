@@ -18,7 +18,8 @@ public class UpperAtmosphericRenderer {
     private VertexBuffer ozoneMesh;
 
     public void render(PoseStack poseStack, Matrix4f projectionMatrix, float skyR, float skyG, float skyB, float partialTick) {
-        this.createOzoneMesh();
+        if (ozoneMesh == null)
+            this.createOzoneMesh();
 
         poseStack.pushPose();
         poseStack.scale(100.0F, 100.0F, 100.0F);
@@ -37,12 +38,10 @@ public class UpperAtmosphericRenderer {
     }
 
     public float getUpperAtmosphereFactor(double y) {
-        return Mth.clampedMap((float) y, 180, 256, 0, 1) * (1 - FriendMoonRenderer.getFriendMoonOpacity());
+        return Mth.clampedMap((float) y, 180, 256, 0, 1) * (1 - FriendMoonRenderer.getInstance().getFriendMoonOpacity());
     }
 
     private void createOzoneMesh() {
-        if (this.ozoneMesh != null) this.ozoneMesh.close();
-
         this.ozoneMesh = new VertexBuffer(VertexBuffer.Usage.STATIC);
         this.ozoneMesh.bind();
         this.ozoneMesh.upload(Meshes.texturelessHemisphere(Tesselator.getInstance(), 24, 24, Mth.PI * 0.55F, 1,

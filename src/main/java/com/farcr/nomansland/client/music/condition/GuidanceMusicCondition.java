@@ -16,6 +16,6 @@ public class GuidanceMusicCondition extends MusicCondition {
 
     @Override
     public Supplier<Boolean> getCondition() {
-        return () -> (FriendMoonRenderer.getFriendMoonOpacity() > 0);
+        return () -> (FriendMoonRenderer.getInstance().getFriendMoonOpacity() > 0);
     }
 }

@@ -1,0 +1,108 @@
+package com.farcr.nomansland.common.dreams.dreamlevel;
+
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+public class DreamingPlayer extends Mob {
+    // tethered player for client rendering / tricking clients into thinking player is x
+    public DreamingPlayer(EntityType<? extends DreamingPlayer> entityType, Level level) {
+        super(entityType, level);
+    }
+
+    public void setTetheredPlayer(ServerPlayer serverPlayer) {
+        entityData.set(DREAM_PLAYER_SNAPSHOT, new DreamPlayerSnapshot(
+            serverPlayer.getUUID()
+        ));
+        this.setXRot(serverPlayer.getXRot());
+        this.setYRot(serverPlayer.getYRot());
+        this.setYBodyRot(serverPlayer.yBodyRot);
+        this.setYHeadRot(serverPlayer.yHeadRot);
+        this.setPos(serverPlayer.position());
+        serverPlayer.getSleepingPos().ifPresent(this::setSleepingPos);
+    }
+
+    public DreamPlayerSnapshot getClientSnapshot() {
+        UUID uuid = entityData.get(DREAM_PLAYER_SNAPSHOT).uuid();
+        if (uuid == this.getUUID()) return null;
+        return entityData.get(DREAM_PLAYER_SNAPSHOT);
+    }
+
+    public ServerPlayer getTetheredPlayer() {
+        UUID uuid = entityData.get(DREAM_PLAYER_SNAPSHOT).uuid();
+        if (uuid == this.getUUID()) return null;
+        if (this.getServer() != null) return this.getServer().getPlayerList().getPlayer(uuid);
+        return null;
+    }
+
+    private static final EntityDataAccessor<DreamPlayerSnapshot> DREAM_PLAYER_SNAPSHOT =
+        SynchedEntityData.defineId(DreamingPlayer.class, NMLEntityDataSerializers.DREAM_PLAYER_SNAPSHOT.get());
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DREAM_PLAYER_SNAPSHOT,
+            new DreamPlayerSnapshot(this.getUUID())
+        );
+        super.defineSynchedData(builder);
+    }
+
+    @Override
+    protected EntityDimensions getDefaultDimensions(Pose pose) {
+        return SLEEPING_DIMENSIONS;
+    }
+
+    public Optional<Player> discardTether() {
+        if (this.level() instanceof ServerLevel level) {
+            if (getTetheredPlayer() == null)
+                return Optional.empty();
+            Player player = getTetheredPlayer();
+            this.remove(RemovalReason.DISCARDED);
+            player.teleportTo(level, this.getX(), this.getY(), this.getZ(), Set.of(), this.getXRot(), this.getYRot());
+            NoMansLand.LOGGER.info("teleporting player to tether");
+            return Optional.of(player);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (discardTether().isPresent())
+            return discardTether().get().hurt(source, amount);
+        return super.hurt(source, amount);
+    }
+
+    @Override
+    public UUID getUUID() {
+        return super.getUUID();
+    }
+
+    public Player clientOnlyRemotePlayer;
+
+    @Override
+    public void tick() {
+        if (!level().isClientSide && getTetheredPlayer() == null)
+            this.remove(RemovalReason.DISCARDED);
+        else if (getTetheredPlayer() != null) {
+            if (getTetheredPlayer().level().dimension().equals(this.level().dimension()))
+                discardTether();
+        }
+
+        // hackily obtained from the renderer only on the client as to not . crash the server
+        if (clientOnlyRemotePlayer != null) clientOnlyRemotePlayer.tick();
+
+        super.tick();
+    }
+}

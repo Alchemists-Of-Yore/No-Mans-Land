@@ -9,13 +9,14 @@ import com.farcr.nomansland.client.renderer.context.MeetingPointRenderContext;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
-import com.farcr.nomansland.common.networking.friend.ServerboundFriendMoonUpdatePacket;
+import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Camera;
@@ -32,13 +33,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
@@ -46,13 +45,32 @@ import java.lang.Math;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
-public class FriendMoonRenderer {
+public class FriendMoonRenderer implements AutoCloseable {
+    public static FriendMoonRenderer INSTANCE = new FriendMoonRenderer();
+    public static FriendMoonRenderer getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new FriendMoonRenderer();
+        return INSTANCE;
+    }
+
+    public static void destroy() {
+        if (INSTANCE == null)
+            return;
+        INSTANCE.close();
+        INSTANCE = null;
+    }
+
+    @Override
+    public void close() {}
+
     public enum FriendMoonAnimation {
         TALKING(0, "talking", 1, 2),
         SURPRISED(1, "surprised", 1, 1),
         HIDDEN(2, "hidden", 1, 1),
         HIDDEN_2(3, "hidden_unfocused", 1, 1),
-        PHASES(4, "phases", 6, 1);
+        PHASES(4, "phases", 6, 1),
+        DREAM(5, "dream", 1, 1),
+        DREAM_UNFOCUSED(6, "dream_unfocused", 1, 1);
 
         public static final String textureLocation = "textures/misc/friendmoon_";
         private final ResourceLocation location;
@@ -95,61 +113,56 @@ public class FriendMoonRenderer {
         public static final StreamCodec<ByteBuf, FriendMoonAnimation> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, FriendMoonAnimation::getId);
     }
 
-    public static float friendMoonOpacity = 0.0f;
-    public static float getFriendMoonOpacity() {
+    public float friendMoonOpacity = 0.0f;
+    public float getFriendMoonOpacity() {
         return friendMoonOpacity;
     }
-    public static float friendShadowOpacity = 0.0f;
+    public float friendShadowOpacity = 0.0f;
 
-    public static float badOmenWaitTime = 0.0f;
+    public float badOmenWaitTime = 0.0f;
     public static final int MAX_BAD_OMEN_WAIT_TIME = 60;
 
     public static final float MOON_SIZE = 20f;
     public static final float MOON_DISTANCE = 50f;
     public static final float MOON_UV_TRIM = 0.375f;
+    public static final float LOOKING_AT_THRESHOLD = 0.1f;
 
-    public static FriendMoonAnimation MOON_ANIMATION = FriendMoonAnimation.TALKING;
-    public static void setFriendMoonAnimation(FriendMoonAnimation newAnimation) {
+    public FriendMoonAnimation MOON_ANIMATION = FriendMoonAnimation.TALKING;
+    public void setFriendMoonAnimation(FriendMoonAnimation newAnimation) {
         if (MOON_ANIMATION != newAnimation)
             animationProgress = 0;
         MOON_ANIMATION = newAnimation;
     }
-    public static FriendMoonAnimation getFriendMoonEmotion(FriendMoon friendMoon) {
+    public FriendMoonAnimation getFriendMoonEmotion(FriendMoon friendMoon) {
         if (friendMoon.getState() == FriendMoonState.NEGATIVE
         || friendMoon.getState() == FriendMoonState.UPSET)
             return FriendMoonAnimation.SURPRISED;
         return FriendMoonAnimation.TALKING;
     }
 
-    public static double getSkyAngle(Level level, float partialTick) {
-        return -(level.getTimeOfDay(partialTick) * Math.TAU) - (Math.PI / 2f);
-    }
+    public float friendMoonPitchAngle = 0f;
+    public float friendMoonYawAngle = 0f;
+    public float friendMoonPitchDirection = 0f;
+    public float friendMoonYawDirection = 0f;
+    public float friendMoonPitchStep = 0;
+    public float friendMoonYawStep = 0;
 
-    public static float friendMoonPitchAngle = 0f;
-    public static float friendMoonYawAngle = 0f;
-    public static float friendMoonPitchDirection = 0f;
-    public static float friendMoonYawDirection = 0f;
-    public static float friendMoonPitchStep = 0;
-    public static float friendMoonYawStep = 0;
-
-    public static boolean moonOnScreen(Minecraft mc, Matrix4f moonViewMatrix, float partialTick, float threshold) {
+    public static boolean moonOnScreen(Minecraft mc, Matrix4f moonViewMatrix, Matrix4f projectionMatrix, float threshold) {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vector3f worldPosition = moonViewMatrix.transformPosition(0f, MOON_DISTANCE, 0F, new Vector3f());
-        Vector4f clip = new Vector4f(worldPosition, 1f).mul(
-            mc.gameRenderer.getProjectionMatrix(mc.gameRenderer.getFov(camera, partialTick, true))
-        );
+        Vector4f clip = new Vector4f(worldPosition, 1f).mul(projectionMatrix);
         return (clip.w > 0.0f)
             && ((Math.abs(clip.x / clip.w) <= threshold)
             && (Math.abs(clip.y / clip.w) <= threshold));
     }
 
     // Retrieve Animation Type Logic
-    private static FriendMoonAnimation getFriendMoonAnimation() {
+    private FriendMoonAnimation getFriendMoonAnimation() {
         return MOON_ANIMATION;
     }
 
-    public static float animationProgress = 0;
-    public static float talkAnimationProgress = 0; // separated for smoothness in talking
+    public float animationProgress = 0;
+    public float talkAnimationProgress = 0; // separated for smoothness in talking
 
     public static boolean friendMoonIsOccluded(Minecraft mc, RandomSource random, Entity cameraEntity, Quaternionf moonRotation) {
         // Raycast for the Moon
@@ -168,8 +181,11 @@ public class FriendMoonRenderer {
         return cast.getType() == HitResult.Type.BLOCK;
     }
 
-    public static BlockPos clientBlockPos;
-    public static void updateFriendMoonPosition(Entity cameraEntity, Quaternionf moonRotation, Matrix4f moonViewMatrix, float partialTick) {
+    public BlockPos clientBlockPos;
+    public void updateFriendMoonPosition(
+        Entity cameraEntity, Quaternionf moonRotation,
+        Matrix4f moonViewMatrix, Matrix4f projectionMatrix, float partialTick
+    ) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.isPaused())
             return;
@@ -182,7 +198,7 @@ public class FriendMoonRenderer {
         float turnAnimateSpeed = deltaTime / (15f);
 
         boolean isAwake = false;
-        boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, partialTick, 0.5f);
+        boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, 0.5f);
         if (clientBlockPos != null) {
             Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
             if (optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null)) {
@@ -209,7 +225,7 @@ public class FriendMoonRenderer {
                                 if (friendMoonOpacity >= 1) {
                                     animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
                                     if (animationProgress >= getFriendMoonAnimation().getFrames())
-                                        PacketDistributor.sendToServer(new ServerboundFriendMoonUpdatePacket(FriendMoonUpdate.AWAKEN));
+                                        FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.AWAKEN);
                                 } else
                                     setFriendMoonAnimation(FriendMoonAnimation.PHASES);
                             } else {
@@ -315,7 +331,7 @@ public class FriendMoonRenderer {
         friendMoonPitchAngle = Math.min(friendMoonPitchAngle, pitchClamp - 25f);
     }
 
-    private static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1,
+    public static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1,
         FriendMoonAnimation moonAnimation, float opacity, int animationFrame, boolean trim
     ) {
         float[] shaderColor = RenderSystem.getShaderColor();
@@ -342,8 +358,8 @@ public class FriendMoonRenderer {
 
     public static float NIGHT_TIME_THRESHOLD = 0.3f;
 
-    public static MeetingPointRenderContext meetingPointContext = MeetingPointRenderContext.fromDefault();
-    public static void renderFriendShadow(
+    public MeetingPointRenderContext meetingPointContext = MeetingPointRenderContext.fromDefault();
+    public void renderFriendShadow(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix,
         Tesselator tesselator, PoseStack poseStack, float partialTick
     ) {
@@ -380,23 +396,20 @@ public class FriendMoonRenderer {
             float degrees = (float) Math.toDegrees(Math.atan2(blockPos.getX(), blockPos.getZ()));
             degrees += offsetCalculation;
 
-            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
-            poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(65));
+            poseStack.mulPose(Axis.YP.rotationDegrees(degrees));
+            poseStack.mulPose(Axis.XP.rotationDegrees(65));
 
             RenderSystem.disableCull();
             RenderTarget target = mc.getMainRenderTarget();
             target.enableStencil();
 
-            RenderSystem.blendFuncSeparate(
-                GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.ZERO,
-                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
-            );
+            applyMultiplyBlendFunction();
 
             GL11.glEnable(GL11.GL_STENCIL_TEST);
             GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 
             Matrix4f moonViewMatrix = poseStack.last().pose();
-            boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, partialTick, 0.1f);
+            boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, LOOKING_AT_THRESHOLD);
             FriendMoonAnimation animation = moonIsVisible ? FriendMoonAnimation.HIDDEN : FriendMoonAnimation.HIDDEN_2;
             renderFriendMoonInternal(tesselator, moonViewMatrix, animation, friendShadowOpacity, 0, false);
 
@@ -459,12 +472,26 @@ public class FriendMoonRenderer {
         pose.popPose();
     }
 
+    public static void applySkyBlendFunction() {
+        RenderSystem.blendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
+            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+        );
+    }
+
+    public static void applyMultiplyBlendFunction() {
+        RenderSystem.blendFuncSeparate(
+            GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.ZERO,
+            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+        );
+    }
+
     /*
     * Stencil code will have to be rewritten eventually because I don't trust it but
     * for the most part it's fine and works as intended. eventually with vulkan I know I will have to make things more render agnostic
     * and not use GL calls but for the time being this will have to do
     */
-    public static void renderFriendMoon(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
+    public void renderFriendMoon(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         assert mc.level != null;
 
@@ -472,15 +499,14 @@ public class FriendMoonRenderer {
         poseStack.pushPose();
 
         // Moon Rotation in the sky
-        Quaternionf rotationQuaternion = com.mojang.math.Axis.YP.rotationDegrees(friendMoonYawAngle)
-                .mul(com.mojang.math.Axis.XP.rotationDegrees(friendMoonPitchAngle));
+        Quaternionf rotationQuaternion = Axis.YP.rotationDegrees(friendMoonYawAngle)
+                .mul(Axis.XP.rotationDegrees(friendMoonPitchAngle));
         poseStack.mulPose(rotationQuaternion);
 
-        // Billboarding
         Matrix4f matrix4f1 = poseStack.last().pose();
 
         // Update moon rotation / position
-        updateFriendMoonPosition(mc.getCameraEntity(), rotationQuaternion, matrix4f1, partialTick);
+        updateFriendMoonPosition(mc.getCameraEntity(), rotationQuaternion, matrix4f1, projectionMatrix, partialTick);
         if (getFriendMoonOpacity() <= 0)
             return;
 
@@ -490,10 +516,7 @@ public class FriendMoonRenderer {
         RenderTarget target = mc.getMainRenderTarget();
         target.enableStencil();
 
-        RenderSystem.blendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
-            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
-        );
+        applySkyBlendFunction();
 
         // Render Full Moon
         renderFriendMoonInternal(tesselator, matrix4f1, getFriendMoonAnimation(), getFriendMoonOpacity(), (int) animationProgress, false);
@@ -507,10 +530,6 @@ public class FriendMoonRenderer {
         );
 
         // Rendering moon
-        RenderSystem.blendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
-        );
-
         RenderSystem.colorMask(false, false, false, false);
         renderFriendMoonInternal(tesselator, matrix4f1, getFriendMoonAnimation(), getFriendMoonOpacity(), (int) animationProgress, true);
         RenderSystem.colorMask(true, true, true, true);

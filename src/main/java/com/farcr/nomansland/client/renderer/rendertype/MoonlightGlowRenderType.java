@@ -3,7 +3,6 @@ package com.farcr.nomansland.client.renderer.rendertype;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.blaze3d.shaders.AbstractUniform;
@@ -33,7 +32,7 @@ public class MoonlightGlowRenderType {
                     elapsedTime.set(totalTime);
 
                     AbstractUniform alpha = MOONLIGHT_GLOW_SHADER.safeGetUniform("GlintAlpha");
-                    alpha.set(FriendMoonRenderer.getFriendMoonOpacity());
+                    alpha.set(FriendMoonRenderer.getInstance().getFriendMoonOpacity());
 
                     MOONLIGHT_GLOW_SHADER.apply();
                     return MOONLIGHT_GLOW_SHADER;
@@ -72,7 +71,7 @@ public class MoonlightGlowRenderType {
 
     public static boolean shouldRenderGlow() {
         if (itemContext != null) {
-            boolean validItem = (FriendMoonRenderer.getFriendMoonOpacity() > 0)
+            boolean validItem = (FriendMoonRenderer.getInstance().getFriendMoonOpacity() > 0)
                 && itemCanBeOffered(itemContext.getItem());
             itemContext = null;
             return validItem;

@@ -2,10 +2,7 @@ package com.farcr.nomansland.common.registry.items;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.pots.PotSize;
-import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.google.common.collect.Sets;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
@@ -24,13 +21,11 @@ public class NMLCreativeTabs {
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, NoMansLand.MODID);
 
-    private static final Sets.SetView<ItemDefinition<?>> CREATIVE_TAB_ITEMS = Sets.union(NMLItems.CREATIVE_TAB_ITEMS, NMLBlocks.CREATIVE_TAB_ITEMS);
-
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> NO_MANS_TAB = CREATIVE_TABS.register(NoMansLand.MODID,
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.nomansland"))
                     .icon(NMLItems.NO_MANS_GLOBE::stack)
-                    .displayItems(CREATIVE_TAB_ITEMS)
+                    .displayItems(NMLItems.CREATIVE_TAB_ITEMS)
                     .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ANCIENT_POTS = CREATIVE_TABS.register(NoMansLand.MODID + "_ancient_pots",
@@ -42,7 +37,7 @@ public class NMLCreativeTabs {
 
                         return stack;
                     })
-                    .displayItems((parameters, output) ->
+                    .displayItems((parameters, output) -> {
                         parameters.holders().lookup(NMLRegistries.POT_VARIANT_KEY).ifPresent((lookup) -> {
                             RegistryOps<Tag> registryops = parameters.holders().createSerializationContext(NbtOps.INSTANCE);
                             lookup.listElements().sorted(Comparator.comparing(Holder::value, Comparator.comparingInt((pot) -> pot.size().ordinal()))).forEach((variant) -> {
@@ -50,6 +45,10 @@ public class NMLCreativeTabs {
                                 itemstack.set(NMLDataComponents.POT_VARIANT, variant.key.location());
                                 output.accept(itemstack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
                             });
-                        }))
+                        });
+
+                        // TODO: when ready
+//                        output.accept(NMLItems.ANCIENT_POT_DEBUG_ITEM);
+                    })
                     .build());
 }

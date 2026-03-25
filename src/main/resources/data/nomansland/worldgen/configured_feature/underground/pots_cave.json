@@ -1,28 +1,16 @@
 {
-  "type": "minecraft:random_patch",
+  "type": "nomansland:pot_patch",
   "config": {
-    "feature": {
-      "feature": {
-        "type": "minecraft:simple_block",
-        "config": {
-          "to_place": {
-            "type": "minecraft:simple_state_provider",
-            "state": {
-              "Name": "minecraft:glowstone"
-            }
-          }
-        }
-      },
-      "placement": [
-        {
-          "type": "minecraft:block_predicate_filter",
-          "predicate": {
-            "type": "minecraft:matching_blocks",
-            "blocks": "minecraft:air"
-          }
-        }
-      ]
-    },
+    "variants": [
+      { "variant": "nomansland:ancient_pot_small_1", "weight": 10 },
+      { "variant": "nomansland:ancient_pot_small_1alt", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_2", "weight": 8 },
+      { "variant": "nomansland:ancient_pot_small_3", "weight": 6 },
+      { "variant": "nomansland:ancient_pot_small_4", "weight": 3 },
+      { "variant": "nomansland:ancient_pot_small_5", "weight": 4 },
+      { "variant": "nomansland:ancient_pot_small_6", "weight": 4 },
+      { "variant": "nomansland:ancient_pot_large_1", "weight": 2 }
+    ],
     "tries": 16,
     "xz_spread": 4,
     "y_spread": 3

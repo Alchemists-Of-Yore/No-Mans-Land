@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
@@ -24,7 +25,7 @@ public class SurfaceMushroomBlock extends MushroomBlock {
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockPos lowerPos = pos.below();
         BlockState lowerState = level.getBlockState(lowerPos);
-        TriState soilDecision = lowerState.canSustainPlant(level, lowerPos, net.minecraft.core.Direction.UP, state);
+        TriState soilDecision = lowerState.canSustainPlant(level, lowerPos, Direction.UP, state);
         return lowerState.is(BlockTags.MUSHROOM_GROW_BLOCK) || (soilDecision.isDefault() ? this.mayPlaceOn(lowerState, level, lowerPos) : soilDecision.isTrue());
     }
 }

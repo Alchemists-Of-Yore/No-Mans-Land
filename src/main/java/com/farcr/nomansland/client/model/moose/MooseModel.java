@@ -13,20 +13,20 @@ import java.util.List;
 public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
     private final ModelPart root;
     private final ModelPart head;
-    private final ModelPart right_ear;
     private final ModelPart left_ear;
+    private final ModelPart right_ear;
     private final ModelPart dewlap;
     private final ModelPart saddle_head;
     private final ModelPart saddle_reins;
     private final ModelPart upperbody;
     private final ModelPart lowerbody;
-    private final ModelPart tail;
+    private final ModelPart saddle_lowerbody;
+    private final ModelPart saddle_upperbody;
+    private final ModelPart legs;
     private final ModelPart right_leg_back;
     private final ModelPart left_leg_back;
-    private final ModelPart saddle_lowerbody;
     private final ModelPart right_leg;
     private final ModelPart left_leg;
-    private final ModelPart saddle_upperbody;
 
     protected final List<ModelPart> saddleParts;
 
@@ -34,20 +34,20 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         super(0.5F, 24.0F);
         this.root = root;
         this.head = root.getChild("head");
-        this.right_ear = head.getChild("right_ear");
-        this.left_ear = head.getChild("left_ear");
-        this.dewlap = head.getChild("dewlap");
-        this.saddle_head = head.getChild("saddle_head");
-        this.saddle_reins = head.getChild("saddle_reins");
+        this.left_ear = this.head.getChild("left_ear");
+        this.right_ear = this.head.getChild("right_ear");
+        this.dewlap = this.head.getChild("dewlap");
+        this.saddle_head = this.head.getChild("saddle_head");
+        this.saddle_reins = this.head.getChild("saddle_reins");
         this.upperbody = root.getChild("upperbody");
-        this.lowerbody = upperbody.getChild("lowerbody");
-        this.tail = lowerbody.getChild("tail_r1");
-        this.right_leg_back = lowerbody.getChild("right_leg_back");
-        this.left_leg_back = lowerbody.getChild("left_leg_back");
-        this.saddle_lowerbody = lowerbody.getChild("saddle_lowerbody");
-        this.right_leg = upperbody.getChild("right_leg");
-        this.left_leg = upperbody.getChild("left_leg");
-        this.saddle_upperbody = upperbody.getChild("saddle_upperbody");
+        this.lowerbody = this.upperbody.getChild("lowerbody");
+        this.saddle_lowerbody = this.lowerbody.getChild("saddle_lowerbody");
+        this.saddle_upperbody = this.upperbody.getChild("saddle_upperbody");
+        this.legs = root.getChild("legs");
+        this.right_leg_back = this.legs.getChild("right_leg_back");
+        this.left_leg_back = this.legs.getChild("left_leg_back");
+        this.right_leg = this.legs.getChild("right_leg");
+        this.left_leg = this.legs.getChild("left_leg");
 
         saddleParts = List.of(
                 saddle_head,
@@ -93,21 +93,23 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
 
         PartDefinition tail_r1 = lowerbody.addOrReplaceChild("tail_r1", CubeListBuilder.create().texOffs(0, 41).addBox(-1.0F, -16.5445F, 14.6003F, 2.0F, 2.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -13.0F, -5.0F, -0.829F, 0.0F, 0.0F));
 
-        PartDefinition right_leg_back = lowerbody.addOrReplaceChild("right_leg_back", CubeListBuilder.create().texOffs(68, 60).addBox(-1.0F, -3.0F, -3.0F, 3.0F, 14.0F, 6.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 0).addBox(-1.0F, 11.0F, -1.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-6.0F, -4.0F, 11.0F));
-
-        PartDefinition left_leg_back = lowerbody.addOrReplaceChild("left_leg_back", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-2.0F, 11.0F, -1.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)).mirror(false)
-                .texOffs(68, 60).mirror().addBox(-2.0F, -3.0F, -3.0F, 3.0F, 14.0F, 6.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(6.0F, -4.0F, 11.0F));
-
         PartDefinition saddle_lowerbody = lowerbody.addOrReplaceChild("saddle_lowerbody", CubeListBuilder.create().texOffs(74, 34).addBox(-5.0F, -15.0F, 0.0F, 10.0F, 9.0F, 17.0F, new CubeDeformation(0.4F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
-        PartDefinition right_leg = upperbody.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(54, 41).mirror().addBox(-1.0F, -6.0F, -3.0F, 4.0F, 19.0F, 6.0F, new CubeDeformation(0.0F)).mirror(false)
-                .texOffs(43, 0).addBox(0.0F, 13.0F, -2.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-7.0F, 12.0F, 5.0F));
-
-        PartDefinition left_leg = upperbody.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(54, 41).addBox(-3.0F, -6.0F, -3.0F, 4.0F, 19.0F, 6.0F, new CubeDeformation(0.0F))
-                .texOffs(43, 0).mirror().addBox(-3.0F, 13.0F, -2.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(7.0F, 12.0F, 5.0F));
-
         PartDefinition saddle_upperbody = upperbody.addOrReplaceChild("saddle_upperbody", CubeListBuilder.create().texOffs(70, 80).addBox(-7.0F, 0.0F, 0.0F, 14.0F, 18.0F, 15.0F, new CubeDeformation(0.4F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+
+        PartDefinition legs = partdefinition.addOrReplaceChild("legs", CubeListBuilder.create(), PartPose.offset(0.0F, 1.0F, -0.5F));
+
+        PartDefinition right_leg_back = legs.addOrReplaceChild("right_leg_back", CubeListBuilder.create().texOffs(68, 60).addBox(-1.0F, -3.0F, -3.0F, 3.0F, 14.0F, 6.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 0).addBox(-1.0F, 11.0F, -1.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-6.0F, 1.0F, 10.5F));
+
+        PartDefinition left_leg_back = legs.addOrReplaceChild("left_leg_back", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-2.0F, 11.0F, -1.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)).mirror(false)
+                .texOffs(68, 60).mirror().addBox(-2.0F, -3.0F, -3.0F, 3.0F, 14.0F, 6.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(6.0F, 1.0F, 10.5F));
+
+        PartDefinition right_leg = legs.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(54, 41).mirror().addBox(-1.0F, -6.0F, -3.0F, 4.0F, 19.0F, 6.0F, new CubeDeformation(0.0F)).mirror(false)
+                .texOffs(43, 0).addBox(0.0F, 13.0F, -2.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-7.0F, -1.0F, -10.5F));
+
+        PartDefinition left_leg = legs.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(54, 41).addBox(-3.0F, -6.0F, -3.0F, 4.0F, 19.0F, 6.0F, new CubeDeformation(0.0F))
+                .texOffs(43, 0).mirror().addBox(-3.0F, 13.0F, -2.0F, 3.0F, 11.0F, 4.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(7.0F, -1.0F, -10.5F));
 
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
@@ -126,7 +128,21 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
     @Override
     public void setupAnim(Moose moose, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
+        boolean isMounted = moose.isSaddled() && moose.isVehicle();
         setSaddleVisibility(false);
+        idleAnimations(isMounted, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        if (isMounted) {
+            animateWalk(MooseAnimations.MOUNTED, limbSwing, limbSwingAmount, 1.2f, 1f);
+        }
+        animate(moose.shakeAnimationState, MooseAnimations.SHAKE, ageInTicks);
+        animate(moose.stompAnimationState, MooseAnimations.STOMPING, ageInTicks);
+        animate(moose.attackAnimationState, MooseAnimations.ATTACK, ageInTicks);
+
+        animate(moose.chargedAttackStartAnimationState, MooseAnimations.CHARGING_ATTACK, ageInTicks);
+        animate(moose.chargedAttackEndAnimationState, MooseAnimations.UPPERCUT, ageInTicks);
+    }
+
+    public void idleAnimations(boolean isMounted, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         // IDLE ANIMATION
         {
             float idleTime = ageInTicks * 0.01F;
@@ -171,9 +187,11 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
 
             this.dewlap.xRot -= Math.min(headPitch * Mth.DEG_TO_RAD, 0.1F);
         }
-
+        if (isMounted) {
+            return;
+        }
         // LOCOMOTION
-        float runWeight = Math.clamp((limbSwingAmount - 0.6F) * 7, 0, 1);
+        float runWeight = Math.clamp((limbSwingAmount - 0.8F) * 8, 0, 1);
         float walkWeight = 1 - runWeight;
 
         // WALK ANIMATION
@@ -211,7 +229,7 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
 //            neck.xRot += AnimUtil.wave(walkTime * 2) * walkPower * -0.005F;
             head.y += AnimUtil.wave(walkTime * 2 - 0.4F) * walkPower * -0.1F;
 
-            tail.y += AnimUtil.wave(walkTime * 2 + 0.2F) * walkPower * -0.1F;
+//            tail.y += AnimUtil.wave(walkTime * 2 + 0.2F) * walkPower * -0.1F;
 
             float earZRot = (AnimUtil.wave(walkTime * 2 - 0.4F)/2.0F+0.5F) * walkPower * 0.1F;
             left_ear.zRot  -= earZRot;
@@ -260,8 +278,5 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
             left_ear.xRot  += earXRot;
             right_ear.xRot += earXRot;
         }
-        animate(moose.stompAnimationState, MooseAnimations.STOMPING, ageInTicks);
-        animate(moose.attackAnimationState, MooseAnimations.ATTACK, ageInTicks);
-
     }
 }

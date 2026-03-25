@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
-import net.minecraft.locale.Language;
+import com.farcr.nomansland.client.DialogueLangLoader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -8,21 +9,19 @@ import java.util.List;
 
 public class DialogueState {
     public static final float DIALOGUE_SPEED = (1f / 60f) * 45f;
-    public static final String TRANSLATABLE_COMPONENT = ".friend_moon.";
-    private static String translate(String registryName, ResourceLocation location) {
-        return location.getNamespace() + TRANSLATABLE_COMPONENT + registryName + "." + location.getPath();
-    }
 
     public double progress = 0d;
     public boolean doneTalking = false;
     public DialogueContainer originalDialogue;
     public DialogueContainer translateDialogue;
 
-    public @Nullable Float ticks;
+    public float ticks;
     public static final int FADE_TICKS = 20;
     public void setTicks(float newTicks) {
         this.ticks = newTicks;
     }
+    public static final int GRADIENT_FADE_TICKS = 8;
+    public float elapsedTicks = 0f;
 
     private boolean paused = false;
     public void pause() { paused = true; }
@@ -42,8 +41,11 @@ public class DialogueState {
     ) {
         String defaultText = dialoguePool.text();
         originalDialogue = new DialogueContainer(defaultText);
-        translateDialogue = new DialogueContainer(Language.getInstance()
-                .getOrDefault(translate(registryName, location), defaultText));
+
+        String category = registryName.replace("dialogue_pools.", "");
+        String key = location.getPath().replace("/", ".");
+        String translatedText = DialogueLangLoader.INSTANCE.getString(category, key).orElse(defaultText);
+        translateDialogue = new DialogueContainer(translatedText);
     }
 
     public String currentLatest;
@@ -56,9 +58,16 @@ public class DialogueState {
         return true;
     }
 
+    public void handleTime(float deltaTime) {
+        if (!Minecraft.getInstance().isPaused()) {
+            ticks -= deltaTime;
+            elapsedTicks += deltaTime;
+        }
+    }
+
     public List<String> progressText(float deltaTime) {
         float conversionRate = ((float) translateDialogue.getTextLength() / Math.max(originalDialogue.getTextLength(), 1));
-        progress += (deltaTime * DIALOGUE_SPEED) * conversionRate;
+        if (!isPaused()) progress += (deltaTime * DIALOGUE_SPEED) * conversionRate;
         List<String> stringList = translateDialogue.constructText((int) progress);
 
         // A bit unreliable but it should be fine

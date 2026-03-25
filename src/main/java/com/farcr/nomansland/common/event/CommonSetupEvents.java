@@ -17,6 +17,7 @@ import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
@@ -32,6 +33,8 @@ import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTr
 import com.farcr.nomansland.common.networking.friend.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.dialogue.*;
+import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
+import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
 import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -49,6 +52,7 @@ import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.entity.monster.Monster;
@@ -117,6 +121,7 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.FALLEN_TREE_DECORATOR_TYPE);
         event.register(NMLRegistries.FOG_MODIFIERS);
         event.register(NMLRegistries.CONTEXTUAL_MUSIC);
+        event.register(NMLRegistries.DREAM_TYPE);
         event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
         event.register(NMLRegistries.DIALOGUE_CONDITIONAL_TYPE);
     }
@@ -140,20 +145,22 @@ public class CommonSetupEvents {
     }
 
     @SubscribeEvent
-    public static void createEntityAttributes(final EntityAttributeCreationEvent event) {
-        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
+    public static void createEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(NMLEntities.BILLHOOK_BASS.get(), BillhookBass.createAttributes().build());
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
+        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
+        event.put(NMLEntities.DREAMING_PLAYER.get(), Mob.createMobAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerSpawnPlacements(final RegisterSpawnPlacementsEvent event) {
         event.register(NMLEntities.BILLHOOK_BASS.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BillhookBass::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Deer::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.MOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Moose::checkMooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(EntityType.CAMEL, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Camel::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(EntityType.HUSK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.TORTOISE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Tortoise::checkTortoiseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
@@ -269,17 +276,26 @@ public class CommonSetupEvents {
     public static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
 
+
+        //Ominous Moose Behavior that sadly demands our own networking
+        registrar.playToServer(ServerboundMooseBeginJumpSequencePacket.TYPE, ServerboundMooseBeginJumpSequencePacket.STREAM_CODEC, ServerboundMooseBeginJumpSequencePacket::handleData);
+
         // Dialogue Packet from Server
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
         registrar.playToClient(ClientboundDialogueRegistrySyncPacket.TYPE, ClientboundDialogueRegistrySyncPacket.STREAM_CODEC, ClientboundDialogueRegistrySyncPacket::handleData);
 
         // Friend Moon related packets
-        registrar.playToServer(ServerboundFriendMoonUpdatePacket.TYPE, ServerboundFriendMoonUpdatePacket.STREAM_CODEC, ServerboundFriendMoonUpdatePacket::handleData);
+        registrar.playToServer(FriendMoonUpdatePacket.ToServer.TYPE, FriendMoonUpdatePacket.ToServer.STREAM_CODEC, FriendMoonUpdatePacket.ToServer::handleData);
+        registrar.playToClient(FriendMoonUpdatePacket.ToClient.TYPE, FriendMoonUpdatePacket.ToClient.STREAM_CODEC, FriendMoonUpdatePacket.ToClient::handleData);
 
         registrar.playToClient(ClientboundMoonlightBasinTrackPacket.TYPE, ClientboundMoonlightBasinTrackPacket.STREAM_CODEC, ClientboundMoonlightBasinTrackPacket::handleData);
         registrar.playToClient(ClientboundMeetingPointPacket.TYPE, ClientboundMeetingPointPacket.STREAM_CODEC, ClientboundMeetingPointPacket::handleData);
         registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
+
+        /* Dream Packets */
+        registrar.playToClient(ClientboundDreamStartPacket.TYPE, ClientboundDreamStartPacket.STREAM_CODEC, ClientboundDreamStartPacket::handleData);
+        registrar.playToClient(ClientboundDimensionSyncPacket.TYPE, ClientboundDimensionSyncPacket.STREAM_CODEC, ClientboundDimensionSyncPacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
 

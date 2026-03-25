@@ -1,0 +1,17 @@
+{
+  "size": "small",
+  "model": "nomansland:ancient_pots/alchemist_pot_small_4",
+  "shape": [
+    [4, 0, 4, 12, 4, 12],
+    [2, 4, 2, 14, 13, 14],
+    [5, 13, 5, 11, 14, 11],
+    [4, 14, 4, 12, 16, 12]
+  ],
+  "traits": [
+"regenerates"
+],
+  "modifier_chances": {
+  "alive": 0.15,
+  "oozing": 0.05
+}
+}

@@ -1,0 +1,17 @@
+{
+  "size": "large",
+  "model": "nomansland:ancient_pots/alchemist_pot_large_1_wiggle_gold",
+  "shape": [
+    [2, 0, 2, 14, 2, 14],
+    [0, 2, 0, 16, 21, 16],
+    [4, 21, 4, 12, 22, 12],
+    [3, 22, 3, 13, 25, 13]
+  ],
+  "traits": [
+"regenerates"
+],
+  "modifier_chances": {
+  "alive": 0.15,
+  "oozing": 0.05
+}
+}

@@ -3,6 +3,8 @@ package com.farcr.nomansland.client.event;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -25,6 +27,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
@@ -90,8 +93,10 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onGuiRender(RenderGuiEvent.Post event) {
-        DialogueRenderer.render(event.getGuiGraphics(), event.getPartialTick());
+    public static void onClientLogOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        FriendMoonRenderer.destroy();
+        ClientDreamRenderer.destroy();
+        DialogueRenderer.setCurrentState(null);
     }
 
     @SubscribeEvent

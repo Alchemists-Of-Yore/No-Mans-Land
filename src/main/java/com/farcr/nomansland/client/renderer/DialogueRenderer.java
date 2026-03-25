@@ -1,6 +1,5 @@
 package com.farcr.nomansland.client.renderer;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -35,26 +34,19 @@ public class DialogueRenderer {
             float[] shaderColor = RenderSystem.getShaderColor();
 
             float deltaTime = deltaTracker.getGameTimeDeltaTicks();
-            if (mc.isPaused())
-                deltaTime = 0f;
 
-            float totalOpacity = FriendMoonRenderer.getFriendMoonOpacity();
-            if (currentState.ticks != null) {
-                totalOpacity = Math.min(1, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
-                currentState.ticks -= deltaTime;
-            }
+            float initialFade = Math.min(currentState.elapsedTicks / DialogueState.GRADIENT_FADE_TICKS, 1);
+            float totalOpacity = Math.min(initialFade, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
+            currentState.handleTime(deltaTime);
 
             // Reset Text when the moon goes away
-            if (totalOpacity <= 0.1f) {
+            if (initialFade >= 1 && totalOpacity <= 0.1f) {
                 setCurrentState(null);
                 return;
             }
+
             float lastOpacity = shaderColor[3];
             RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], totalOpacity);
-
-            // additional pause check to stop advancing dialogue on reset
-            if (currentState.isPaused())
-                deltaTime = 0f;
             List<String> constructedText = currentState.progressText(deltaTime);
 
             Font font = mc.gui.getFont();
@@ -67,7 +59,16 @@ public class DialogueRenderer {
             actionBarDisplacement = Mth.lerp(t, actionBarDisplacement, moveTo);
 
             int yShift = Math.max(mc.gui.leftHeight, mc.gui.rightHeight);
-            guiGraphics.pose().translate(0, (float)(guiGraphics.guiHeight() - Math.max(yShift, 72)) - actionBarDisplacement, 100.0F);
+            float yPosition = (guiGraphics.guiHeight() - Math.max(yShift, 72)) - actionBarDisplacement;
+
+            // Background Gradient
+            guiGraphics.fillGradient(0, (int) (yPosition - (TEXT_HEIGHT * 3)),
+                guiGraphics.guiWidth(), guiGraphics.guiHeight(),
+                FastColor.ARGB32.colorFromFloat(0, 0, 0, 0),
+                FastColor.ARGB32.colorFromFloat(totalOpacity, 0, 0, 0)
+            );
+
+            guiGraphics.pose().translate(0, yPosition, 100.0F);
 
             float percentageUsable = .9f;
             float center = (gameWidth / 2f);
@@ -79,7 +80,9 @@ public class DialogueRenderer {
                     StringBuilder stringBuilder = new StringBuilder();
                     String[] splitText = text.split(" ");
                     for (int j = 0; j < splitText.length; j++) {
-                        stringBuilder.append(splitText[j]).append(" ");
+                        stringBuilder.append(splitText[j]);
+                        if (j < splitText.length - 1)
+                            stringBuilder.append(" ");
                         float rightPos = center + font.width(stringBuilder.toString()) / 2f;
                         if (rightPos > (gameWidth * percentageUsable) || (j >= splitText.length - 1)) {
                             totalStringSplits.add(stringBuilder.toString());

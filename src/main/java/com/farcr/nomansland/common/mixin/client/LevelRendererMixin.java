@@ -3,18 +3,24 @@ package com.farcr.nomansland.common.mixin.client;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,7 +31,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(LevelRenderer.class)
-public class LevelRendererMixin {
+public abstract class LevelRendererMixin {
+
+    @Shadow
+    @Final
+    private ObjectArrayList<SectionRenderDispatcher.RenderSection> visibleSections;
+
+    @Shadow
+    @Final
+    private SectionOcclusionGraph sectionOcclusionGraph;
 
     @ModifyArg(method = "levelEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V", ordinal = 4), index = 0)
     private ParticleOptions tryTurnSpawnerFlameMalevolent(ParticleOptions particle) {
@@ -35,11 +49,55 @@ public class LevelRendererMixin {
         return particle;
     }
 
-    @Shadow
-    private ClientLevel level;
+    @Unique private static boolean FRIEND_RENDER_CONTEXT = false;
+    @Unique private static boolean DREAM_RENDER_CONTEXT = false;
 
-    @Unique
-    private static boolean FRIEND_RENDER_CONTEXT = false;
+    @Unique private LevelRenderer nml$Self = (LevelRenderer) (Object) this;
+
+    /*
+    * TODO replace this !!!
+    */
+    @Inject(
+        method = "renderLevel",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void nml$overrideRenderLevel(
+        DeltaTracker deltaTracker, boolean renderBlockOutline,
+        Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
+        Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci
+    ) {
+        ClientDreamRenderer manager = ClientDreamRenderer.getInstance();
+        if (!DREAM_RENDER_CONTEXT && manager.dreamShouldRender()) {
+            DREAM_RENDER_CONTEXT = true;
+            nml$Self.renderLevel(
+                deltaTracker, false,
+                camera, gameRenderer, lightTexture,
+                frustumMatrix, projectionMatrix
+            );
+            DREAM_RENDER_CONTEXT = false;
+            ci.cancel();
+        }
+    }
+
+    @Inject(
+        method = "renderSky",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void nml$renderLevel(
+        Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
+    ) {
+        ClientDreamRenderer clientManager = ClientDreamRenderer.getInstance();
+        if (clientManager.dreamShouldRender() && clientManager.getRenderer() != null) {
+            boolean cancelSkybox = clientManager.getRenderer().render(
+                nml$Self, new PoseStack(),
+                Minecraft.getInstance().getTimer(),
+                frustumMatrix, projectionMatrix
+            );
+            if (cancelSkybox) ci.cancel();
+        }
+    }
 
     @Inject(
         method = "renderSky",
@@ -50,23 +108,21 @@ public class LevelRendererMixin {
             shift = At.Shift.AFTER
         )
     )
-    private void renderFriendMoon(
+    private void nml$renderFriendMoon(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
         Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
-//        // Breakout Condition add more stuff here later
-//        if (this.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL)
-//            return;
         FRIEND_RENDER_CONTEXT = true;
-        FriendMoonRenderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
-        FriendMoonRenderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
+        renderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
+        renderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
     }
 
     @Inject(
         method = "renderSky",
         at = @At(value = "TAIL")
     )
-    private void renderFinalize(
+    private void nml$renderFinalize(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
         Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
@@ -83,7 +139,7 @@ public class LevelRendererMixin {
                     target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;getSunriseColor(FF)[F"
             )
     )
-    private void renderUpperAtmosphericSky(
+    private void nml$renderUpperAtmosphericSky(
             Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
             Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci,
             @Local PoseStack poseStack, @Local Vec3 skyColor) {

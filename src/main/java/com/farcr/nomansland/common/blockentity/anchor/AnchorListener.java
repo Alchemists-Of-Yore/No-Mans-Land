@@ -43,51 +43,11 @@ public class AnchorListener implements GameEventListener {
 
         List<Vec3> pointList = new ArrayList<>();
 
-        // Front face (minZ face)
         for (double x = minX; x <= maxX; x += step) {
             for (double y = minY; y <= maxY; y += step) {
-                Vec3 point = new Vec3(x, y, minZ);
-                pointList.add(point);
-            }
-        }
-
-        // Back face (maxZ face)
-        for (double x = minX; x <= maxX; x += step) {
-            for (double y = minY; y <= maxY; y += step) {
-                Vec3 point = new Vec3(x, y, maxZ);
-                pointList.add(point);
-            }
-        }
-
-        // Left face (minX face)
-        for (double z = minZ; z <= maxZ; z += step) {
-            for (double y = minY; y <= maxY; y += step) {
-                Vec3 point = new Vec3(minX, y, z);
-                pointList.add(point);
-            }
-        }
-
-        // Right face (maxX face)
-        for (double z = minZ; z <= maxZ; z += step) {
-            for (double y = minY; y <= maxY; y += step) {
-                Vec3 point = new Vec3(maxX, y, z);
-                pointList.add(point);
-            }
-        }
-
-        // Top face (maxY face)
-        for (double x = minX; x <= maxX; x += step) {
-            for (double z = minZ; z <= maxZ; z += step) {
-                Vec3 point = new Vec3(x, maxY, z);
-                pointList.add(point);
-            }
-        }
-
-        // Bottom face (minY face)
-        for (double x = minX; x <= maxX; x += step) {
-            for (double z = minZ; z <= maxZ; z += step) {
-                Vec3 point = new Vec3(x, minY, z);
-                pointList.add(point);
+                for (double z = minZ; z <= maxZ; z += step) {
+                    pointList.add(new Vec3(x, y, z));
+                }
             }
         }
 

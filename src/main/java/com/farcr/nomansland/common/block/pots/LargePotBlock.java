@@ -1,0 +1,268 @@
+package com.farcr.nomansland.common.block.pots;
+
+import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.entity.FallingPotEntity;
+import com.farcr.nomansland.common.registry.NMLRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
+
+public class LargePotBlock extends PotBlock {
+
+    public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+
+    public LargePotBlock(Properties properties) {
+        super(PotSize.LARGE, properties);
+        registerDefaultState(defaultBlockState().setValue(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(HALF);
+    }
+
+    public boolean isUpper(BlockState state) {
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER;
+    }
+
+    private BlockPos getLowerPos(BlockState state, BlockPos pos) {
+        return isUpper(state) ? pos.below() : pos;
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockPos pos = context.getClickedPos();
+        Level level = context.getLevel();
+        if (pos.getY() >= level.getMaxBuildHeight() - 1 || !level.getBlockState(pos.above()).canBeReplaced(context)) {
+            return null;
+        }
+        return super.getStateForPlacement(context);
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        if (isUpper(state) && direction == Direction.DOWN && !neighborState.is(this)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        if (isUpper(state)) return;
+        if (!movedByPiston) {
+            level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+        }
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide && isUpper(state)) {
+            BlockPos lowerPos = pos.below();
+            BlockState lowerState = level.getBlockState(lowerPos);
+            if (lowerState.is(this) && !isUpper(lowerState)) {
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
+                level.levelEvent(player, 2001, pos, Block.getId(state));
+                super.playerWillDestroy(level, lowerPos, lowerState, player);
+                if (!player.isCreative()) {
+                    BlockEntity be = level.getBlockEntity(lowerPos);
+                    Block.dropResources(lowerState, level, lowerPos, be, player, player.getMainHandItem());
+                }
+                level.removeBlock(lowerPos, false);
+                return state;
+            }
+        }
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock())) {
+            if (!isUpper(state)) {
+                BlockState above = level.getBlockState(pos.above());
+                if (above.is(this) && isUpper(above)) {
+                    level.removeBlock(pos.above(), false);
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (isUpper(state)) return;
+        if (state.getValue(BlockStateProperties.POWERED)) {
+            level.setBlock(pos, state.setValue(BlockStateProperties.POWERED, false), 2);
+            level.updateNeighborsAt(pos, this);
+        }
+        if (PotBlock.isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+                BlockState above = level.getBlockState(pos.above());
+                if (above.is(this) && isUpper(above)) {
+                    level.removeBlock(pos.above(), false);
+                }
+                pot.wakeUpSilent();
+                return;
+            }
+            CompoundTag beData = null;
+            ResourceLocation variantId = null;
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+                beData = pot.saveCustomOnly(level.registryAccess());
+                if (pot.variant != null) {
+                    variantId = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(pot.variant);
+                }
+                pot.skipBreakEffects = true;
+            }
+            BlockState above = level.getBlockState(pos.above());
+            if (above.is(this) && isUpper(above)) {
+                level.removeBlock(pos.above(), false);
+            }
+            FallingPotEntity falling = FallingPotEntity.fall(level, pos, state.setValue(HALF, DoubleBlockHalf.LOWER));
+            if (beData != null) {
+                falling.blockData = beData;
+            }
+            if (variantId != null) {
+                falling.setVariantId(variantId);
+            }
+        } else {
+            level.scheduleTick(pos, this, this.getDelayAfterPlace());
+        }
+    }
+
+    @Override
+    public void onLand(Level level, BlockPos pos, BlockState state, BlockState replaceableState, FallingBlockEntity fallingBlock) {
+        super.onLand(level, pos, state, replaceableState, fallingBlock);
+        if (level.getBlockState(pos).is(this)) {
+            level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+        }
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        if (isUpper(state)) return null;
+        return super.newBlockEntity(pos, state);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        VoxelShape fullShape = null;
+        if (isUpper(state)) {
+            BlockPos lowerPos = pos.below();
+            if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null) {
+                fullShape = pot.variant.shape();
+            }
+        } else {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+                fullShape = pot.variant.shape();
+            }
+        }
+        if (fullShape == null) return Shapes.block();
+        return isUpper(state) ? offsetShape(fullShape, -1.0) : fullShape;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        VoxelShape shape = getShape(state, level, pos, context);
+        BlockPos lowerPos = getLowerPos(state, pos);
+        if (!(level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot) || !pot.isLiving()) return shape;
+        return shape.isEmpty() ? shape : Shapes.create(shape.bounds().deflate(0.05));
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (isUpper(state)) {
+            return super.useItemOn(stack, level.getBlockState(pos.below()), level, pos.below(), player, hand, hit);
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hit);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (isUpper(state)) {
+            return super.useWithoutItem(level.getBlockState(pos.below()), level, pos.below(), player, hit);
+        }
+        return super.useWithoutItem(state, level, pos, player, hit);
+    }
+
+    @Override
+    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
+        super.attack(state, level, getLowerPos(state, pos), player);
+    }
+
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        super.entityInside(state, level, getLowerPos(state, pos), entity);
+    }
+
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+        super.stepOn(level, getLowerPos(state, pos), state, entity);
+    }
+
+    @Override
+    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+        super.onProjectileHit(level, state, new BlockHitResult(hit.getLocation(), hit.getDirection(), getLowerPos(state, hit.getBlockPos()), hit.isInside()), projectile);
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+        return super.getCloneItemStack(level, getLowerPos(state, pos), state);
+    }
+
+    @Override
+    protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+        return super.getDestroyProgress(state, player, level, getLowerPos(state, pos));
+    }
+
+    @Override
+    public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        return super.isFlammable(state, level, getLowerPos(state, pos), direction);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (!isUpper(state)) return;
+        super.animateTick(state, level, getLowerPos(state, pos), random);
+    }
+
+    private static VoxelShape offsetShape(VoxelShape shape, double yOffset) {
+        final VoxelShape[] holder = { Shapes.empty() };
+        shape.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> {
+            holder[0] = Shapes.or(holder[0], Shapes.box(minX, minY + yOffset, minZ, maxX, maxY + yOffset, maxZ));
+        });
+        return holder[0].isEmpty() ? Shapes.block() : holder[0];
+    }
+}

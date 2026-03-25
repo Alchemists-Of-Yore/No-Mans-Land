@@ -1,16 +1,22 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -27,6 +34,11 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
 
     @Shadow public abstract boolean hasEffect(Holder<MobEffect> effect);
 
+    @Shadow
+    public abstract boolean isSleeping();
+
+    @Unique private LivingEntity nml$Self = (LivingEntity) (Object) this;
+
     @Shadow public abstract void setJumping(boolean jumping);
 
     @Shadow public boolean jumping;
@@ -34,6 +46,35 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     private boolean nomansland$skipDroppingDeathLoot = false;
     @Unique
     private int nml$bellParalysisTimer = 0;
+
+    @Inject(method = "startSleeping", at = @At("TAIL"))
+    private void nml$startSleeping(CallbackInfo ci) {
+        if ((nml$Self instanceof ServerPlayer player) && DreamManager.getOrDefault(player.getServer()).playerShouldDream(player))
+            DreamManager.getOrDefault(player.getServer()).notifyClient(player);
+    }
+
+    @Inject(method = "baseTick", at = @At("TAIL"))
+    private void nml$transferSleep(CallbackInfo ci) {
+        if (this.isSleeping() && nml$Self instanceof ServerPlayer player
+            && DreamManager.getOrDefault(player.getServer()).playerShouldDream(player)
+            && player.isSleepingLongEnough()
+        ) {
+            DreamManager manager = DreamManager.getOrDefault(player.getServer());
+            DreamType dreamType = manager.playerGetDream(player);
+            ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+            // summon fake player
+            manager.createDreamingPlayer(player);
+            // move player to other dimension
+            player.stopSleeping();
+            player.changeDimension(
+                new DimensionTransition(
+                    dreamLevel, dreamType.spawnPoint,
+                    dreamType.spawnPoint, 0, 0,
+                    DimensionTransition.DO_NOTHING
+                )
+            );
+        }
+    }
 
     @Override
     public void nml$skipDroppingDeathLoot() {

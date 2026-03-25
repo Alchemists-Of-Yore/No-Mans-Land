@@ -11,12 +11,14 @@ import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
+import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -224,7 +226,7 @@ public class FriendMoon extends SavedData {
     }
 
     private boolean updatedShadow = false;
-    private HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
+    private final HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
     public void updateMeetingPointInformation(Level level) {
         if (isNightTime(level)) {
             if (!updatedShadow) {
@@ -311,7 +313,7 @@ public class FriendMoon extends SavedData {
                     dialogueTicks = Math.max(dialogueTicks - 1, 0);
                     if (dialogueTicks == 0) {
                         getState().getMoonConsumer().accept(this);
-                        sendRandomDialogue(getState().getDialoguePoolType());
+                        randomDialogue(getState().getDialoguePoolType());
                     }
                 }
             } else if (getState() == FriendMoonState.OFFERING)
@@ -329,7 +331,7 @@ public class FriendMoon extends SavedData {
         dialogueTicks = NEGATIVE_TIME;
     }
 
-    public void packetUpdateEvent(FriendMoonUpdate packetType) {
+    public void packetUpdateEvent(FriendMoonUpdate.ToServer packetType) {
         packetType.getConsumer().accept(this);
         this.setDirty();
     }
@@ -344,7 +346,8 @@ public class FriendMoon extends SavedData {
 
     private DialogueLocation getDialogueFromStream(
         ResourceKey<Registry<DialoguePool>> registryKey,
-        Function<Registry<DialoguePool>, DialoguePool> consumer) {
+        Function<Registry<DialoguePool>, DialoguePool> consumer
+    ) {
         Registry<DialoguePool> registry = DialogueUtil.getDialogueRegistry(level, registryKey);
         DialoguePool resultingPool = consumer.apply(registry);
         return new DialogueLocation(
@@ -435,7 +438,7 @@ public class FriendMoon extends SavedData {
         return null;
     }
 
-    public boolean sendContextualDialogue(ServerPlayer serverPlayer) {
+    public boolean contextualDialogue(ServerPlayer serverPlayer) {
         DialogueLocation dialogueLocation = getDialogueFromStream(NMLRegistries.CONTEXTUAL_DIALOGUE_KEY, (registry) -> {
             List<DialoguePool> filteredDialogue = registry.stream().filter(
                 (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
@@ -477,13 +480,13 @@ public class FriendMoon extends SavedData {
         return (dialogueLength > 0);
     }
 
-    public void sendRandomDialogue(ResourceKey<Registry<DialoguePool>> registryKey) {
+    public void randomDialogue(ResourceKey<Registry<DialoguePool>> registryKey) {
         if (registryKey == null)
             return;
         // Contextual Dialogue
         if (registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY) {
             ServerPlayer contextualPlayer = getContextualPlayer();
-            if (contextualPlayer != null && sendContextualDialogue(contextualPlayer))
+            if (contextualPlayer != null && contextualDialogue(contextualPlayer))
                 return;
         }
         // Passive / Otherwise

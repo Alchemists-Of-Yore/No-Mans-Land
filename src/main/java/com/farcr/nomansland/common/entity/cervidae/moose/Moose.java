@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity.cervidae.moose;
 
+import com.farcr.nomansland.client.NMLMooseChargeAttackHandler;
 import com.farcr.nomansland.common.entity.cervidae.IAntlers;
 import com.farcr.nomansland.common.entity.cervidae.ShedAntlersGoal;
 import com.farcr.nomansland.common.registry.NMLSounds;
@@ -17,7 +18,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,7 +39,9 @@ import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,18 +53,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, IAntlers {
+public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideableJumping, Saddleable, IAntlers {
 
     private static final EntityDataAccessor<Boolean> DATA_HAS_ANTLERS = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_IS_PACIFIED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_SADDLED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
 
-    public static final byte ADD_WARNING_FEEDBACK_EVENT = 12;
-    public static final byte ADD_STOMP_FEEDBACK_EVENT = 11;
-    public static final byte START_STOMP_EVENT = 10;
-    public static final byte ATTACK_EVENT = 9;
-    public static final byte TAME_EVENT = 8;
-    public static final byte EAT_EVENT = 7;
-    public static final byte REJECT_FOOD_EVENT = 6;
+    public static final byte ADD_WARNING_FEEDBACK_EVENT = 15;
+    public static final byte ADD_STOMP_FEEDBACK_EVENT = 14;
+    public static final byte START_STOMP_EVENT = 13;
+
+    public static final byte ATTACK_EVENT = 12;
+    public static final byte CHARGED_ATTACK_START_EVENT = 11;
+    public static final byte CHARGED_ATTACK_END_EVENT = 10;
+
+    public static final byte TAME_EVENT = 9;
+    public static final byte EAT_EVENT = 8;
+    public static final byte REJECT_FOOD_EVENT = 7;
+    public static final byte REJECT_SADDLE_EVENT = 6;
 
     //Controls how long a nearby entity has to stay within the stomp radius in order for the Moose to stomp
     protected static final int STOMP_WINDUP = 30;
@@ -89,6 +100,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     protected static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
     //Multiplies the movement speed of the moose while it is being ridden by a player
     protected static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
+    //Multiplies the movement speed of the moose while it is being commanded to attack by a player
+    protected static final float CHARGING_ATTACK_SPEED_MULTIPLIER = 1.15f;
 
     //Controls how far the moose will try to back away from the nearest target after it stomps, or after it attacks
     protected static final float BACK_OFF_DISTANCE = 12f;
@@ -105,8 +118,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     //Controls the change for the moose to be pacified after being fed a carrot.
     protected static final float SUCCESSFUL_TAME_CHANCE = 0.333f;
 
+    public AnimationState shakeAnimationState = new AnimationState();
     public AnimationState stompAnimationState = new AnimationState();
+    public AnimationState warningAnimationState = new AnimationState();
+
     public AnimationState attackAnimationState = new AnimationState();
+    public AnimationState chargedAttackStartAnimationState = new AnimationState();
+    public AnimationState chargedAttackHoldAnimationState = new AnimationState();
+    public AnimationState chargedAttackEndAnimationState = new AnimationState();
 
     protected final MooseTargetManagementMemory targetMemory = new MooseTargetManagementMemory();
     protected final MooseMovementData movementData = new MooseMovementData();
@@ -145,6 +164,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         super.defineSynchedData(builder);
 
         builder.define(DATA_HAS_ANTLERS, true);
+        builder.define(DATA_IS_PACIFIED, false);
         builder.define(DATA_IS_SADDLED, false);
     }
 
@@ -167,6 +187,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         compound.putInt("SaddleShakeOffTimer", saddleShakeOffTimer);
 
         compound.putInt("PacificationStage", getPacificationStage());
+        compound.putBoolean("IsPacified", isPacified());
+
         compound.putBoolean("IsSaddled", isSaddled());
     }
 
@@ -256,6 +278,17 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     @Override
     public boolean isSaddleable() {
+        if (hasStompedRecently(STOMP_FEAR_DURATION)) {
+            return false;
+        }
+        var target = getTarget();
+        if (target == null || !target.isAlive()) {
+            return true;
+        }
+        //I wish this method gave us a @Nullable LivingEntity saddleHolder
+        if (target instanceof Player player && player.isHolding(Items.SADDLE)) {
+            return !targetMemory.isUpsetAt(player);
+        }
         return true;
     }
 
@@ -353,13 +386,16 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     @Override
     public void handleEntityEvent(byte id) {
         switch (id) {
-            case ADD_WARNING_FEEDBACK_EVENT -> spawnIrritationParticles();
-            case ADD_STOMP_FEEDBACK_EVENT -> spawnStompParticles();
-            case START_STOMP_EVENT -> stompAnimationState.start(tickCount);
-            case ATTACK_EVENT -> attackAnimationState.start(tickCount);
+            case ADD_WARNING_FEEDBACK_EVENT -> addWarningFeedback();
+            case ADD_STOMP_FEEDBACK_EVENT -> addStompFeedback();
+            case START_STOMP_EVENT -> addInitialStompFeedback();
+            case ATTACK_EVENT -> addInitialAttackFeedback();
+            case CHARGED_ATTACK_START_EVENT -> addChargedAttackStartFeedback();
+            case CHARGED_ATTACK_END_EVENT -> addChargedAttackEndFeedback();
             case TAME_EVENT -> spawnTamingParticles(true);
             case EAT_EVENT -> spawnTamingParticles(false);
-            case REJECT_FOOD_EVENT -> spawnRejectedFoodParticles();
+            case REJECT_FOOD_EVENT -> addRejectedFoodFeedback();
+            case REJECT_SADDLE_EVENT -> addRejectedSaddleFeedback();
             default -> super.handleEntityEvent(id);
         }
     }
@@ -386,7 +422,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
      */
     @Override
     public boolean doHurtTarget(Entity target) {
-        float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE);
+        return doHurtTarget(target, 1f);
+    }
+
+    /**
+     * All the logic tied to the Moose hurting anything through any means is handled here.
+     */
+    public boolean doHurtTarget(Entity target, float damageMultiplier) {
+        float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE) * damageMultiplier;
         var damagesource = damageSources().mobAttack(this);
         if (target.hurt(damagesource, damage)) {
             double knockbackResistance = target instanceof LivingEntity living ? living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 0;
@@ -421,7 +464,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         if (tameInteraction.isPresent()) {
             return tameInteraction.get();
         }
-
         return super.mobInteract(player, hand);
     }
 
@@ -439,10 +481,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
     }
 
     /**
-     * Shakes off the equipped saddle, dropping it on the ground.
+     * Shakes off the equipped saddle, dropping it on the ground and playing the appropriate animation
      */
     public void shakeOffSaddle() {
         setIsSaddled(false);
+        level().broadcastEntityEvent(this, REJECT_SADDLE_EVENT);
         ItemEntity itementity = spawnAtLocation(Items.SADDLE, 1);
         if (itementity != null) {
             float x = (random.nextFloat() - random.nextFloat()) * 0.3F;
@@ -603,6 +646,55 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         player.startRiding(this);
     }
 
+    public void onPlayerStartChargingJump() {
+        level().broadcastEntityEvent(this, Moose.CHARGED_ATTACK_START_EVENT);
+    }
+
+    @Override
+    public void onPlayerJump(int jumpPower) {
+    }
+
+    @Override
+    public boolean canJump() {
+        return isPacified() && isSaddled();
+    }
+
+    @Override
+    public void handleStartJump(int jumpPower) {
+        level().broadcastEntityEvent(this, Moose.CHARGED_ATTACK_END_EVENT);
+        float delta = jumpPower / 100f;
+        var look = getLookAngle();
+        float forwards = 0.9f;
+        float upwards = 0.6f;
+        float horizontal = 0.3f;
+        float vertical = 0.4f;
+        var area = getBoundingBox().move(look.x * forwards, upwards, look.z * forwards).inflate(horizontal, vertical, horizontal);
+        var targets = level().getEntitiesOfClass(LivingEntity.class, area,
+                target -> {
+                    if (target == this) {
+                        return false;
+                    }
+                    if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target)) {
+                        return false;
+                    }
+                    var owner = getControllingPassenger();
+                    if (owner != null) {
+                        if (target == owner || target.isAlliedTo(owner)) {
+                            return false;
+                        }
+                    }
+                    return target.isAlive() && hasLineOfSight(target);
+                });
+        for (LivingEntity target : targets) {
+            doHurtTarget(target, delta * delta);
+        }
+    }
+
+    @Override
+    public void handleStopJump() {
+
+    }
+
     /**
      * Partially Matches behavior from {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
      * All non-jump-mechanic related code is brought over without changes.
@@ -642,7 +734,13 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
      */
     @Override
     protected float getRiddenSpeed(@NotNull Player player) {
-        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED) * RIDDEN_SPEED_MULTIPLIER;
+        float baseSpeed = (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
+        if (level().isClientSide) {
+            if (NMLMooseChargeAttackHandler.shouldMoveSlower(this)) {
+                return baseSpeed * CHARGING_ATTACK_SPEED_MULTIPLIER;
+            }
+        }
+        return baseSpeed * RIDDEN_SPEED_MULTIPLIER;
     }
 
     /**
@@ -724,31 +822,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         setYRot(getMoveControl().rotlerp(getYRot(), toTarget, 30.0F));
     }
 
-    /**
-     * Copied From & Matches {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
-     */
-    protected void spawnTamingParticles(boolean tamed) {
-        var particle = tamed ? ParticleTypes.HEART : ParticleTypes.SMOKE;
-        double motion = 0.02;
-        for (int i = 0; i < 7; i++) {
-            double x = random.nextGaussian() * motion;
-            double y = random.nextGaussian() * motion;
-            double z = random.nextGaussian() * motion;
-            level().addParticle(particle, getRandomX(1.0F), getRandomY() + (double) 0.5F, getRandomZ(1.0F), x, y, z);
-        }
-    }
-
-    protected void spawnRejectedFoodParticles() {
-        double motion = 0.04;
-        for (int i = 0; i < 10; i++) {
-            double x = random.nextGaussian() * motion;
-            double y = random.nextGaussian() * motion;
-            double z = random.nextGaussian() * motion;
-            level().addParticle(ParticleTypes.SMOKE, getRandomX(1.0F), getRandomY() + (double) 0.5F, getRandomZ(1.0F), x, y, z);
-        }
-    }
-
-    protected void spawnIrritationParticles() {
+    protected void addWarningFeedback() {
+        warningAnimationState.start(tickCount);
         float forwardsYaw = yBodyRot - 180F;
         float x = Mth.sin(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
         float z = Mth.cos(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
@@ -770,7 +845,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         }
     }
 
-    protected void spawnStompParticles() {
+    protected void addStompFeedback() {
         float forwardsYaw = yBodyRot - 180F;
         float x = Mth.sin(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
         float z = Mth.cos(-forwardsYaw * (float) (Math.PI / 180.0) - (float) Math.PI);
@@ -791,6 +866,46 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
             double zVelocity = random.nextGaussian() * 0.05F;
             level().addParticle(particle, xPos, yPos, zPos, xVelocity, yVelocity, zVelocity);
         }
+    }
+
+    protected void addInitialStompFeedback() {
+        stompAnimationState.start(tickCount);
+    }
+
+    protected void addInitialAttackFeedback() {
+        attackAnimationState.start(tickCount);
+    }
+
+    protected void addChargedAttackStartFeedback() {
+        chargedAttackStartAnimationState.start(tickCount);
+    }
+
+    protected void addChargedAttackEndFeedback() {
+        chargedAttackStartAnimationState.stop();
+        chargedAttackHoldAnimationState.stop();
+        chargedAttackEndAnimationState.start(tickCount);
+    }
+
+    /**
+     * Copied From & Matches {@link net.minecraft.world.entity.animal.horse.AbstractHorse}
+     */
+    protected void spawnTamingParticles(boolean tamed) {
+        var particle = tamed ? ParticleTypes.HEART : ParticleTypes.SMOKE;
+        double motion = 0.02;
+        for (int i = 0; i < 7; i++) {
+            double x = random.nextGaussian() * motion;
+            double y = random.nextGaussian() * motion;
+            double z = random.nextGaussian() * motion;
+            level().addParticle(particle, getRandomX(1.0F), getRandomY() + (double) 0.5F, getRandomZ(1.0F), x, y, z);
+        }
+    }
+
+    protected void addRejectedFoodFeedback() {
+        spawnTamingParticles(false);
+    }
+
+    protected void addRejectedSaddleFeedback() {
+        shakeAnimationState.start(tickCount);
     }
 
     /**
@@ -841,10 +956,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
 
     public void setPacificationStage(int stage) {
         pacificationStage = stage;
-    }
-
-    public boolean isPacified() {
-        return getPacificationStage() == MINIMUM_TAME_ATTEMPTS;
+        if (stage == MINIMUM_TAME_ATTEMPTS) {
+            setIsPacified(true);
+        }
     }
 
     @Override
@@ -852,7 +966,26 @@ public class Moose extends PathfinderMob implements PlayerRideable, Saddleable, 
         return entityData.get(DATA_IS_SADDLED);
     }
 
+    public boolean isPacified() {
+        return entityData.get(DATA_IS_PACIFIED);
+    }
+
     public void setIsSaddled(boolean isSaddled) {
         entityData.set(DATA_IS_SADDLED, isSaddled);
+    }
+
+    public void setIsPacified(boolean isPacified) {
+        entityData.set(DATA_IS_PACIFIED, isPacified);
+    }
+
+    public static boolean checkMooseSpawnRules(
+            EntityType<? extends Moose> moose, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random
+    ) {
+        boolean flag = MobSpawnType.ignoresLightRequirements(spawnType) || isBrightEnoughToSpawn(level, pos);
+        return level.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON) && flag;
+    }
+
+    protected static boolean isBrightEnoughToSpawn(BlockAndTintGetter level, BlockPos pos) {
+        return level.getRawBrightness(pos, 0) > 8;
     }
 }

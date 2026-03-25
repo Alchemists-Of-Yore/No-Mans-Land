@@ -33,4 +33,10 @@ public class NMLDataComponents {
             "inverted_bell_target", builder -> builder
                     .persistent(BlockPos.CODEC)
     );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.List<String>>> POT_MODIFIERS = DATA_COMPONENTS.registerComponentType(
+            "pot_modifiers", builder -> builder
+                    .persistent(Codec.STRING.listOf())
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()))
+    );
 }

@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,8 +35,9 @@ public record ClientboundMeetingPointPacket(
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
                 boolean shadowIsVisible = lastTrackedPosition.isPresent() && meetingPointPosition.isPresent();
+                FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
                 if (shadowIsVisible) {
-                    FriendMoonRenderer.meetingPointContext =
+                    renderer.meetingPointContext =
                         new MeetingPointRenderContext(
                             true,
                             lastTrackedPosition.get(),
@@ -45,7 +45,7 @@ public record ClientboundMeetingPointPacket(
                         );
                     return;
                 }
-                FriendMoonRenderer.meetingPointContext = MeetingPointRenderContext.fromDefault();
+                renderer.meetingPointContext = MeetingPointRenderContext.fromDefault();
             });
         }
     }

@@ -1,19 +1,19 @@
 package com.farcr.nomansland.common.entity.living_pot;
 
-import com.farcr.nomansland.common.block.pots.PotData;
-import com.farcr.nomansland.common.block.pots.PotSize;
-import com.farcr.nomansland.common.block.pots.PotTrait;
-import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.block.pots.*;
+import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,33 +27,39 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.Container;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.monster.Silverfish;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ThrowablePotionItem;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.ticks.ContainerSingleItem;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class LivingPot extends PathfinderMob implements NeutralMob {
 
@@ -66,18 +72,31 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
     @Nullable private UUID persistentAngerTarget;
 
-    public BlockState blockState;
-    public PotVariant variant;
     protected @Nullable ResourceKey<LootTable> lootTable;
     protected long lootTableSeed = 0L;
     public ItemStack storedItem = ItemStack.EMPTY;
+    private PotionContents storedPotion = PotionContents.EMPTY;
 
     @Nullable private BlockPos homePos;
-    private int returnTimer = 24000;
+    private int returnTimer = 12000;
 
+    private static final int MELEE_IMPACT_DELAY = 11;
+    private static final int MELEE_COOLDOWN = 20;
+    @Nullable private LivingEntity pendingMeleeTarget = null;
+    private int pendingMeleeTickAt = -1;
+    public int meleeCooldownTicks = 0;
+
+    @Nullable private Vec3 lastKnownTargetPos = null;
+    private int lastKnownTargetAge = 0;
+    private static final int LAST_KNOWN_TARGET_EXPIRY = 400;
+    @Nullable private LivingEntity bumpTarget = null;
+    private int bumpTargetTicks = 0;
     public boolean isDashing = false;
     public boolean hasWokenLargePot = false;
-    private int wakeUpTicks = 30;
+    private int wakeUpCooldownTicks = 0;
+    private static final int WAKE_UP_COOLDOWN = 6000;
+    private int wakeUpTicks = 0;
+    private final EnumSet<PotModifier> modifiers = EnumSet.noneOf(PotModifier.class);
 
     public final AnimationState dashStartAnimState = new AnimationState();
     public final AnimationState dashLoopAnimState = new AnimationState();
@@ -86,12 +105,23 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     public final AnimationState sleepAnimState = new AnimationState();
     public final AnimationState attackAnimState = new AnimationState();
 
-    private boolean hasPlayedWakeUpAnim = false;
     private int lastKnownAttackTick = -1;
 
     public LivingPot(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
-        this.blockState = NMLBlocks.ANCIENT_POT.get().defaultBlockState();
+    }
+
+    @Nullable
+    public PotVariant getVariant() {
+        String key = entityData.get(VARIANT);
+        if (key.isEmpty()) return null;
+        return level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY)
+                .getOptional(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, ResourceLocation.parse(key)))
+                .orElse(null);
+    }
+
+    public BlockState getBlockState() {
+        return entityData.get(BLOCKSTATE);
     }
 
     @Override
@@ -107,7 +137,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     public static AttributeSupplier.Builder createAttributes() {
         return PathfinderMob.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 30)
-                .add(Attributes.MOVEMENT_SPEED, 0.3)
+                .add(Attributes.MOVEMENT_SPEED, 0.20)
                 .add(Attributes.ATTACK_DAMAGE, 6)
                 .add(Attributes.FOLLOW_RANGE, 20)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0);
@@ -116,44 +146,62 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new LivingPotWakeUpLargeGoal(this));
+        goalSelector.addGoal(1, new LivingPotFindHelpGoal(this));
         goalSelector.addGoal(1, new LivingPotDashGoal(this));
         goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false) {
-            @Override public boolean canUse() { return isLarge() && super.canUse(); }
-            @Override public boolean canContinueToUse() { return isLarge() && super.canContinueToUse(); }
+            @Override public boolean canUse() { return isLarge() && meleeCooldownTicks <= 0 && super.canUse() && getTarget() != null && getTarget().canBeSeenAsEnemy() && (!getTarget().isInvisible() || getTarget() == bumpTarget); }
+            @Override public boolean canContinueToUse() { return isLarge() && meleeCooldownTicks <= 0 && super.canContinueToUse() && getTarget() != null && getTarget().canBeSeenAsEnemy() && (!getTarget().isInvisible() || getTarget() == bumpTarget); }
         });
-        goalSelector.addGoal(2, new AvoidEntityGoal<>(this, Player.class, 12.0F, 1.5, 1.8) {
-            @Override public boolean canUse() { return isSmall() && hasWokenLargePot && super.canUse(); }
-            @Override public boolean canContinueToUse() { return isSmall() && hasWokenLargePot && super.canContinueToUse(); }
-        });
+        goalSelector.addGoal(2, new LivingPotFleeGoal(this, 1.4));
         goalSelector.addGoal(4, new LivingPotReturnHomeGoal(this));
         goalSelector.addGoal(5, new LivingPotWanderGoal(this, 1.0));
-        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 12.0F));
+        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 12.0F) {
+            @Override public boolean canUse() { return super.canUse() && lookAt instanceof Player p && p.canBeSeenAsEnemy() && !p.isInvisible(); }
+            @Override public boolean canContinueToUse() { return super.canContinueToUse() && lookAt instanceof Player p && p.canBeSeenAsEnemy() && !p.isInvisible(); }
+        });
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
-        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
-        targetSelector.addGoal(2, new HurtByTargetGoal(this));
+        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false,
+                living -> living instanceof Player p && p.canBeSeenAsEnemy() && !p.isInvisible() && isAngryAt(p)));
+        targetSelector.addGoal(2, new HurtByTargetGoal(this) {
+            @Override
+            public void start() {
+                super.start();
+                if (getTarget() instanceof Player p) {
+                    if (!p.canBeSeenAsEnemy() || (p.isInvisible() && p != bumpTarget)) {
+                        setTarget(null);
+                    }
+                }
+            }
+        });
         targetSelector.addGoal(5, new ResetUniversalAngerTargetGoal<>(this, true));
     }
 
+    private static final float LEG_HEIGHT = 5.0F / 16.0F;
+
     @Override
     protected EntityDimensions getDefaultDimensions(Pose pose) {
-        if (isLarge()) return EntityDimensions.fixed(1.0F, 1.2F);
-        return EntityDimensions.fixed(0.7F, 0.8F);
+        PotVariant variant = getVariant();
+        if (variant != null) {
+            AABB bounds = variant.shape().bounds();
+            float width = (float) Math.max(bounds.getXsize(), bounds.getZsize());
+            float height = (float) bounds.getYsize() + LEG_HEIGHT;
+            return EntityDimensions.fixed(width, height);
+        }
+        if (isLarge()) return EntityDimensions.fixed(1.0F, 1.5625F + LEG_HEIGHT);
+        return EntityDimensions.fixed(0.75F, 1.0F + LEG_HEIGHT);
     }
 
     public void setVariant(PotVariant variant, BlockState state) {
-        this.variant = variant;
-        this.blockState = state;
         entityData.set(VARIANT, level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant).toString());
-        entityData.set(BLOCKSTATE, blockState);
+        entityData.set(BLOCKSTATE, state);
         if (isSmall()) {
             Objects.requireNonNull(getAttribute(Attributes.MAX_HEALTH)).setBaseValue(10);
-            Objects.requireNonNull(getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(0.3);
+            Objects.requireNonNull(getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(0.16);
             Objects.requireNonNull(getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(0.0);
         } else {
             Objects.requireNonNull(getAttribute(Attributes.MAX_HEALTH)).setBaseValue(30);
-            Objects.requireNonNull(getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(0.15);
+            Objects.requireNonNull(getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(0.1);
             Objects.requireNonNull(getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(6);
             Objects.requireNonNull(getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(1.0);
         }
@@ -172,12 +220,56 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
     @Override
     public boolean canBeCollidedWith() {
-        return true;
+        return false;
+    }
+
+    @Override
+    protected void doPush(Entity other) {
+        if (isLarge() && other instanceof Player player) {
+            double dx = player.getX() - getX();
+            double dz = player.getZ() - getZ();
+            double dist = Math.sqrt(dx * dx + dz * dz);
+            if (dist > 0.01) {
+                double strength = 0.4;
+                player.push(dx / dist * strength, 0, dz / dist * strength);
+            }
+        } else {
+            super.doPush(other);
+        }
+    }
+
+    @Override
+    public void playerTouch(Player player) {
+        super.playerTouch(player);
+        if (!level().isClientSide && player.canBeSeenAsEnemy() && isAngryAt(player) && player.isInvisible()) {
+            if (isLarge() && bumpTarget == null) {
+                bumpTarget = player;
+                bumpTargetTicks = 40;
+                setTarget(player);
+            }
+            if (isSmall()) {
+                lastKnownTargetPos = player.position();
+                lastKnownTargetAge = 0;
+            }
+        }
     }
 
     @Override
     public boolean fireImmune() {
+        PotVariant variant = getVariant();
         return variant == null || !variant.traits().contains(PotTrait.FLAMMABLE);
+    }
+
+    @Override
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
+        if (fallDistance > 1.0F && !level().isClientSide) {
+            int count = (int) Math.min(fallDistance * (isLarge() ? 4 : 2), isLarge() ? 20 : 10);
+            spawnShatterParticles(count, isLarge() ? 0.3 : 0.15);
+            level().playSound(null, getX(), getY(), getZ(),
+                    SoundEvents.DECORATED_POT_HIT, SoundSource.HOSTILE,
+                    Math.min(fallDistance * 0.2F, 1.2F), 0.7F + random.nextFloat() * 0.3F);
+        }
+        return super.causeFallDamage(fallDistance, multiplier, source);
     }
 
     @Override
@@ -187,7 +279,8 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
     @Override
     public boolean shouldDropExperience() {
-        return variant != null && variant.traits().contains(PotTrait.DROPS_EXPERIENCE);
+        PotVariant variant = getVariant();
+        return variant != null && variant.traits().contains(PotTrait.DROPS_EXPERIENCE) && !hasModifier(PotModifier.WAXED);
     }
 
     @Override
@@ -200,10 +293,32 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
         }
         boolean hurt = super.hurt(source, amount);
         if (hurt && !level().isClientSide) {
+            spawnShatterParticles(isLarge() ? 12 : 3, isLarge() ? 0.3 : 0.15);
             Entity attacker = source.getEntity();
-            if (attacker instanceof Player player) {
+            if (attacker instanceof Player player && player.canBeSeenAsEnemy()) {
                 startPersistentAngerTimer();
                 setPersistentAngerTarget(player.getUUID());
+                if (!player.isInvisible()) {
+                    setTarget(player);
+                } else {
+                    setLastKnownTargetPos(player.position());
+                }
+                for (LivingPot other : level().getEntitiesOfClass(LivingPot.class, getBoundingBox().inflate(20),
+                        p -> p != this && p.isAlive())) {
+                    if (!other.isAngryAt(player)) {
+                        other.startPersistentAngerTimer();
+                        other.setPersistentAngerTarget(player.getUUID());
+                    }
+                    if (!player.isInvisible()) {
+                        other.setTarget(player);
+                    } else {
+                        other.setLastKnownTargetPos(player.position());
+                    }
+                }
+                if (isSmall() && hasWokenLargePot) {
+                    hasWokenLargePot = false;
+                    wakeUpCooldownTicks = 0;
+                }
             }
         }
         return hurt;
@@ -211,40 +326,150 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
     @Override
     public boolean doHurtTarget(Entity target) {
-        boolean hit = super.doHurtTarget(target);
-        if (hit && !level().isClientSide) {
-//            setLastAttackTick(tickCount);
+        if (!level().isClientSide && target instanceof LivingEntity living) {
+            getLookControl().setLookAt(target, 30.0F, 30.0F);
+            pendingMeleeTarget = living;
+            pendingMeleeTickAt = tickCount + MELEE_IMPACT_DELAY;
+            meleeCooldownTicks = MELEE_COOLDOWN;
+            setLastAttackTick(tickCount);
+            if (bumpTarget != null && target == bumpTarget) {
+                bumpTarget = null;
+                bumpTargetTicks = 0;
+            }
+            level().playSound(null, getX(), getY(), getZ(),
+                    SoundEvents.DECORATED_POT_HIT, SoundSource.HOSTILE,
+                    1.0F, 0.6F + random.nextFloat() * 0.2F);
         }
-        return hit;
+        return true;
     }
 
     public void setLastAttackTick(int tick) {
         entityData.set(DATA_LAST_ATTACK_TICK, tick);
     }
 
+    private static final byte WAKE_UP_EVENT = 72;
+    private static final byte DASH_START_EVENT = 76;
+    private static final byte DASH_LOOP_EVENT = 81;
+    private static final byte DASH_END_EVENT = 85;
+    private static final byte DASH_STOP_EVENT = 89;
+
+    public void startWakeUp() {
+        this.wakeUpTicks = 30;
+        setDeltaMovement(Vec3.ZERO);
+        level().broadcastEntityEvent(this, WAKE_UP_EVENT);
+    }
+
+    public void startDashStart() {
+        level().broadcastEntityEvent(this, DASH_START_EVENT);
+    }
+
+    public void startDashLoop() {
+        level().broadcastEntityEvent(this, DASH_LOOP_EVENT);
+    }
+
+    public void startDashEnd() {
+        level().broadcastEntityEvent(this, DASH_END_EVENT);
+    }
+
+    public void stopDashAnims() {
+        level().broadcastEntityEvent(this, DASH_STOP_EVENT);
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        switch (id) {
+            case WAKE_UP_EVENT -> wakeUpAnimState.start(tickCount);
+            case DASH_START_EVENT -> {
+                dashStartAnimState.start(tickCount);
+                dashLoopAnimState.stop();
+                dashEndAnimState.stop();
+            }
+            case DASH_LOOP_EVENT -> {
+                dashStartAnimState.stop();
+                dashLoopAnimState.start(tickCount);
+            }
+            case DASH_END_EVENT -> {
+                dashStartAnimState.stop();
+                dashLoopAnimState.stop();
+                dashEndAnimState.start(tickCount);
+            }
+            case DASH_STOP_EVENT -> {
+                dashStartAnimState.stop();
+                dashLoopAnimState.stop();
+                dashEndAnimState.stop();
+            }
+            default -> super.handleEntityEvent(id);
+        }
+    }
+
+    public Set<PotModifier> getModifiers() {
+        return modifiers;
+    }
+
+    public boolean hasModifier(PotModifier modifier) {
+        return modifiers.contains(modifier);
+    }
+
+    public void setModifiers(Set<PotModifier> mods) {
+        modifiers.clear();
+        modifiers.addAll(mods);
+    }
+
+    public void removeModifier(PotModifier modifier) {
+        modifiers.remove(modifier);
+    }
+
+    public PotionContents getStoredPotion() {
+        return storedPotion;
+    }
+
+    public void setStoredPotion(PotionContents potion) {
+        this.storedPotion = potion;
+    }
+
+    public void placeAsBlock(BlockPos pos) {
+        PotVariant variant = getVariant();
+        if (variant == null || level().isClientSide) return;
+
+        level().setBlockAndUpdate(pos, getBlockState());
+        if (level().getBlockEntity(pos) instanceof PotBlockEntity be) {
+            be.variant = variant;
+            for (PotModifier mod : modifiers) {
+                be.addModifier(mod);
+            }
+            if (!storedPotion.equals(PotionContents.EMPTY)) {
+                be.setStoredPotion(storedPotion);
+            }
+            if (getPotLootTable() != null) {
+                be.setLootTable(getPotLootTable());
+                be.setLootTableSeed(getLootTableSeed());
+            } else if (!storedItem.isEmpty()) {
+                be.setTheItem(storedItem);
+            }
+        }
+        if (hasModifier(PotModifier.TRAPPED) && level() instanceof ServerLevel serverLevel) {
+            BlockState placed = level().getBlockState(pos);
+            level().setBlock(pos, placed.setValue(BlockStateProperties.POWERED, true), 2);
+            level().updateNeighborsAt(pos, placed.getBlock());
+            level().scheduleTick(pos, placed.getBlock(), 4);
+            for (int i = 0; i < 6; i++) {
+                double x = pos.getX() + 0.25 + random.nextDouble() * 0.5;
+                double y = pos.getY() + 0.5 + random.nextDouble() * 0.5;
+                double z = pos.getZ() + 0.25 + random.nextDouble() * 0.5;
+                serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z, 1, 0, 0, 0, 0);
+            }
+        }
+        discard();
+    }
+
     public void setSleeping(boolean sleeping) {
         entityData.set(DATA_IS_SLEEPING, sleeping);
     }
 
-    @Override
-    protected void doPush(Entity other) {
-        if (isSmall() && other instanceof Player player) {
-            Vec3 motion = player.getDeltaMovement();
-            double horizontalSpeed = motion.horizontalDistance();
-            if (horizontalSpeed > 0.01) {
-                Vec3 right = new Vec3(-motion.z / horizontalSpeed, 0, motion.x / horizontalSpeed);
-                Vec3 toSelf = position().subtract(other.position());
-                double dot = right.dot(toSelf);
-                Vec3 lateral = dot >= 0 ? right : right.scale(-1);
-                push(lateral.x * 0.5, 0.1, lateral.z * 0.5);
-                return;
-            }
-        }
-        super.doPush(other);
-    }
 
     @Override
     public boolean isNoAi() {
+        if (level().isClientSide) return super.isNoAi();
         return super.isNoAi() || wakeUpTicks > 0;
     }
 
@@ -256,14 +481,43 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide && wakeUpTicks > 0) {
-            wakeUpTicks--;
+        if (!level().isClientSide) {
+            if (wakeUpTicks > 0) {
+                wakeUpTicks--;
+                if (wakeUpTicks == 0) {
+                    setDeltaMovement(Vec3.ZERO);
+                }
+            }
+            if (meleeCooldownTicks > 0) {
+                meleeCooldownTicks--;
+            }
+            if (pendingMeleeTarget != null && tickCount >= pendingMeleeTickAt) {
+                if (pendingMeleeTarget.isAlive() && distanceToSqr(pendingMeleeTarget) <= 6.0) {
+                    float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE);
+                    pendingMeleeTarget.hurt(damageSources().mobAttack(this), damage);
+                }
+                pendingMeleeTarget = null;
+                pendingMeleeTickAt = -1;
+            }
+            if (isDashing && level() instanceof ServerLevel serverLevel) {
+                BlockPos below = BlockPos.containing(getX(), getY() - 0.1, getZ());
+                BlockState groundState = level().getBlockState(below);
+                if (!groundState.isAir()) {
+                    serverLevel.sendParticles(
+                            new BlockParticleOption(ParticleTypes.BLOCK, groundState),
+                            getX(), getY(), getZ(),
+                            2, 0.2, 0.0, 0.2, 0.1);
+                }
+            }
+            if (bumpTarget != null && (bumpTargetTicks <= 0 || !bumpTarget.isAlive())) {
+                bumpTarget = null;
+                bumpTargetTicks = 0;
+            }
+            if (bumpTargetTicks > 0) {
+                bumpTargetTicks--;
+            }
         }
         if (level().isClientSide) {
-            if (!hasPlayedWakeUpAnim) {
-                wakeUpAnimState.start(tickCount);
-                hasPlayedWakeUpAnim = true;
-            }
 
             if (entityData.get(DATA_IS_SLEEPING)) {
                 sleepAnimState.startIfStopped(tickCount);
@@ -283,35 +537,130 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     protected void customServerAiStep() {
         updatePersistentAnger((ServerLevel) level(), false);
 
-        if (isIdle() && homePos != null && returnTimer > 0) {
+        if (getTarget() instanceof Player p && p.isInvisible()) {
+            setTarget(null);
+        }
+
+        if (lastKnownTargetPos != null) {
+            lastKnownTargetAge++;
+            if (lastKnownTargetAge >= LAST_KNOWN_TARGET_EXPIRY) {
+                setLastKnownTargetPos(null);
+            }
+        }
+
+        if (homePos == null) {
+            homePos = blockPosition();
+        }
+
+        if (isIdle() && returnTimer > 0) {
             returnTimer--;
         }
+        if (isSmall() && hasWokenLargePot) {
+            wakeUpCooldownTicks++;
+            if (wakeUpCooldownTicks >= WAKE_UP_COOLDOWN) {
+                hasWokenLargePot = false;
+                wakeUpCooldownTicks = 0;
+            }
+        }
         super.customServerAiStep();
+    }
+
+    public void spawnShatterParticles(int count, double spread) {
+        PotVariant variant = getVariant();
+        if (level() instanceof ServerLevel serverLevel && variant != null) {
+            serverLevel.sendParticles(
+                    new PotShatterParticleOption(variant.model()),
+                    getX(), getY() + (isLarge() ? 0.8 : 0.5), getZ(),
+                    count, spread, 0.3, spread, 0.15
+            );
+        }
     }
 
     @Override
     public void die(DamageSource damageSource) {
         if (!level().isClientSide) {
-            BlockState shatterState = blockState != null ? blockState : NMLBlocks.ANCIENT_POT.get().defaultBlockState();
-            ((ServerLevel) level()).sendParticles(
-                    new BlockParticleOption(ParticleTypes.BLOCK, shatterState),
-                    getX(), getY() + 0.5, getZ(),
-                    14, 0.25, 0.3, 0.25, 0.15
-            );
+            spawnShatterParticles(isLarge() ? 40 : 14, isLarge() ? 0.5 : 0.25);
+            float pitch = isLarge() ? 0.5F + random.nextFloat() * 0.2F : 0.8F + random.nextFloat() * 0.4F;
             level().playSound(null, getX(), getY(), getZ(),
-                    SoundEvents.DECORATED_POT_BREAK, SoundSource.HOSTILE,
-                    1.0F, 0.8F + random.nextFloat() * 0.4F);
+                    SoundEvents.DECORATED_POT_SHATTER, SoundSource.HOSTILE,
+                    1.2F, pitch);
 
-            if (variant != null && variant.traits().contains(PotTrait.REGENERATES)) {
-                ServerLevel serverLevel = (ServerLevel) level();
-                ResourceLocation variantKey = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
-                if (variantKey != null && blockState != null) {
-                    int delay = random.nextInt(20, 40) * 20;
-                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(blockPosition(), new PotData(blockState, variantKey), delay);
+            ServerLevel serverLevel = (ServerLevel) level();
+
+            if (hasModifier(PotModifier.INFESTED)) {
+                int count = random.nextInt(2, 4);
+                for (int i = 0; i < count; i++) {
+                    Silverfish silverfish = EntityType.SILVERFISH.create(serverLevel);
+                    if (silverfish != null) {
+                        silverfish.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
+                        serverLevel.addFreshEntity(silverfish);
+                        silverfish.spawnAnim();
+                    }
                 }
+                removeModifier(PotModifier.INFESTED);
+            }
+
+            if (hasModifier(PotModifier.OOZING)) {
+                int count = random.nextInt(2, 4);
+                for (int i = 0; i < count; i++) {
+                    Slime slime = EntityType.SLIME.create(serverLevel);
+                    if (slime != null) {
+                        slime.setSize(random.nextInt(1, 3), true);
+                        slime.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
+                        serverLevel.addFreshEntity(slime);
+                    }
+                }
+                removeModifier(PotModifier.OOZING);
+            }
+
+            removeModifier(PotModifier.TRAPPED);
+
+            if (!storedPotion.equals(PotionContents.EMPTY)) {
+                PotBlock.spawnPotionCloud(serverLevel, blockPosition(), storedPotion);
+            }
+
+            PotVariant variant = getVariant();
+            if (variant != null && variant.traits().contains(PotTrait.REGENERATES)) {
+                ResourceLocation variantKey = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
+                if (variantKey != null) {
+                    int delay = random.nextInt(20, 40) * 20;
+                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(blockPosition(), new PotData(getBlockState(), variantKey, getModifiers()), delay);
+                    BlockPos bPos = blockPosition();
+                    serverLevel.sendParticles(
+                            new PotShatterParticleOption(variant.model(), delay, PotShatterParticleOption.extractBoxes(variant.shape()), bPos.getX(), bPos.getY(), bPos.getZ()),
+                            getX(), getY() + (isLarge() ? 0.8 : 0.5), getZ(),
+                            isLarge() ? 270 : 135, isLarge() ? 0.4 : 0.25, 0.3, isLarge() ? 0.4 : 0.25, 0.1);
+                }
+            }
+
+            if (hasModifier(PotModifier.WAXED)) {
+                removeModifier(PotModifier.WAXED);
+                ItemStack potItem = getBlockState().getBlock().asItem().getDefaultInstance();
+                PotVariant waxedVariant = getVariant();
+                if (waxedVariant != null) {
+                    ResourceLocation waxedKey = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(waxedVariant);
+                    if (waxedKey != null) {
+                        potItem.set(NMLDataComponents.POT_VARIANT, waxedKey);
+                    }
+                    List<String> modList = modifiers.stream().map(PotModifier::getSerializedName).toList();
+                    if (!modList.isEmpty()) {
+                        potItem.set(NMLDataComponents.POT_MODIFIERS, modList);
+                    }
+                }
+                if (!storedPotion.equals(PotionContents.EMPTY)) {
+                    potItem.set(DataComponents.POTION_CONTENTS, storedPotion);
+                }
+                if (!storedItem.isEmpty()) {
+                    potItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(storedItem)));
+                }
+                spawnAtLocation(potItem);
+                spawnAtLocation(new ItemStack(Items.HONEYCOMB));
             }
         }
         super.die(damageSource);
+        if (!level().isClientSide) {
+            discard();
+        }
     }
 
     @Override
@@ -326,21 +675,28 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
         return SoundEvents.DECORATED_POT_BREAK;
     }
 
-    @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
-        playSound(SoundType.WOOD.getStepSound(), 0.1F, 0.8F + random.nextFloat() * 0.1F);
-    }
-
     public boolean isIdle() {
         return getTarget() == null && !isAngry();
     }
 
     public boolean isSmall() {
+        PotVariant variant = getVariant();
         return variant != null && variant.size() == PotSize.SMALL;
     }
 
     public boolean isLarge() {
+        PotVariant variant = getVariant();
         return variant != null && variant.size() == PotSize.LARGE;
+    }
+
+    public void setLastKnownTargetPos(@Nullable Vec3 pos) {
+        this.lastKnownTargetPos = pos;
+        this.lastKnownTargetAge = 0;
+    }
+
+    @Nullable
+    public Vec3 getLastKnownTargetPos() {
+        return lastKnownTargetPos;
     }
 
     public void setHomePos(BlockPos pos) {
@@ -363,20 +719,21 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
         ItemStack stack = unpackLootTable(damageSource.getEntity() instanceof Player player ? player : null);
-        if (!stack.isEmpty()) spawnAtLocation(stack);
-        if (!storedItem.isEmpty()) spawnAtLocation(storedItem);
-        if (variant != null && variant.traits().contains(PotTrait.INFESTED)) {
-            int amount = random.nextInt(1, 4);
-            for (int i = 0; i < amount; i++) {
-                Silverfish silverfish = EntityType.SILVERFISH.create(level);
-                if (silverfish != null) {
-                    silverfish.moveTo(getX(), getY(), getZ(), 0, 0);
-                    level.addFreshEntity(silverfish);
-                    silverfish.spawnAnim();
-                }
-            }
+        if (!stack.isEmpty()) spawnOrThrowPotion(level, stack);
+        if (!storedItem.isEmpty()) {
+            spawnOrThrowPotion(level, storedItem);
         }
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+    }
+
+    private void spawnOrThrowPotion(ServerLevel level, ItemStack stack) {
+        if (stack.getItem() instanceof ThrowablePotionItem potionItem) {
+            Projectile projectile = potionItem.asProjectile(level, new Vec3(getX(), getY() + 0.5, getZ()), stack, Direction.UP);
+            projectile.setDeltaMovement(0, 0.05, 0);
+            level.addFreshEntity(projectile);
+        } else {
+            spawnAtLocation(stack);
+        }
     }
 
     @Override
@@ -399,6 +756,27 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
             storedItem = ItemStack.parseOptional(level().registryAccess(), tag.getCompound("StoredItem"));
         }
         hasWokenLargePot = tag.getBoolean("HasWokenLargePot");
+        if (tag.contains("WakeUpCooldown")) {
+            wakeUpCooldownTicks = tag.getInt("WakeUpCooldown");
+        }
+        if (tag.contains("WakeUpTicks")) {
+            wakeUpTicks = tag.getInt("WakeUpTicks");
+        }
+        modifiers.clear();
+        if (tag.contains("Modifiers")) {
+            ListTag modList = tag.getList("Modifiers", Tag.TAG_STRING);
+            for (int i = 0; i < modList.size(); i++) {
+                try {
+                    modifiers.add(PotModifier.valueOf(modList.getString(i).toUpperCase()));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        storedPotion = PotionContents.EMPTY;
+        if (tag.contains("StoredPotion")) {
+            PotionContents.CODEC.parse(
+                    level().registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.get("StoredPotion"))
+                    .resultOrPartial().ifPresent(p -> storedPotion = p);
+        }
     }
 
     @Override
@@ -407,10 +785,11 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
         trySaveLootTable(tag);
         addPersistentAngerSaveData(tag);
 
-        if (variant != null && blockState != null) {
+        PotVariant variant = getVariant();
+        if (variant != null) {
             Optional.ofNullable(level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant))
                     .ifPresent(key -> tag.putString("Variant", key.toString()));
-            tag.put("BlockState", NbtUtils.writeBlockState(this.blockState));
+            tag.put("BlockState", NbtUtils.writeBlockState(getBlockState()));
         }
         if (homePos != null) {
             tag.put("HomePos", NbtUtils.writeBlockPos(homePos));
@@ -420,6 +799,20 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
             tag.put("StoredItem", storedItem.save(level().registryAccess()));
         }
         tag.putBoolean("HasWokenLargePot", hasWokenLargePot);
+        tag.putInt("WakeUpCooldown", wakeUpCooldownTicks);
+        tag.putInt("WakeUpTicks", wakeUpTicks);
+        if (!modifiers.isEmpty()) {
+            ListTag modList = new ListTag();
+            for (PotModifier mod : modifiers) {
+                modList.add(StringTag.valueOf(mod.getSerializedName()));
+            }
+            tag.put("Modifiers", modList);
+        }
+        if (!storedPotion.equals(PotionContents.EMPTY)) {
+            Tag potionTag = PotionContents.CODEC.encodeStart(
+                    level().registryAccess().createSerializationContext(NbtOps.INSTANCE), storedPotion).getOrThrow();
+            tag.put("StoredPotion", potionTag);
+        }
     }
 
     public boolean tryLoadLootTable(CompoundTag tag) {
@@ -452,20 +845,13 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                 CriteriaTriggers.GENERATE_LOOT.trigger((ServerPlayer) player, resourcekey);
             }
             this.setLootTable(null);
-            LootParams.Builder lootparams$builder = new LootParams.Builder((ServerLevel) level())
+            LootParams.Builder builder = new LootParams.Builder((ServerLevel) level())
                     .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPosition()));
             if (player != null) {
-                lootparams$builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
+                builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
             }
-            Container container = new ContainerSingleItem.BlockContainerSingleItem() {
-                ItemStack item;
-                @Override public BlockEntity getContainerBlockEntity() { return null; }
-                @Override public ItemStack getTheItem() { return this.item; }
-                @Override public void setTheItem(ItemStack itemStack) { this.item = itemStack; }
-                @Override public void setChanged() {}
-            };
-            loottable.fill(container, lootparams$builder.create(LootContextParamSets.CHEST), this.getLootTableSeed());
-            return container.getItem(0);
+            var items = loottable.getRandomItems(builder.create(LootContextParamSets.CHEST), this.getLootTableSeed());
+            return items.isEmpty() ? ItemStack.EMPTY : items.getFirst();
         }
         return ItemStack.EMPTY;
     }

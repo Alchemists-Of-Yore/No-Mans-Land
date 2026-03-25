@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.*;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
@@ -49,9 +50,13 @@ public class NMLEntities {
             ENTITIES.register("living_urn", () -> EntityType.Builder.<LivingUrn>of(LivingUrn::new, MobCategory.MISC)
                     .sized(0.375F, 0.375F).clientTrackingRange(4).updateInterval(20).build("living_urn"));
 
+    public static final Supplier<EntityType<FallingPotEntity>> FALLING_POT =
+            ENTITIES.register("falling_pot", () -> EntityType.Builder.<FallingPotEntity>of(FallingPotEntity::new, MobCategory.MISC)
+                    .sized(0.98F, 0.98F).clientTrackingRange(10).updateInterval(20).build("falling_pot"));
+
     public static final Supplier<EntityType<LivingPot>> LIVING_POT =
             ENTITIES.register("living_pot", () -> EntityType.Builder.<LivingPot>of(LivingPot::new, MobCategory.MISC)
-                    .fireImmune().sized(0.7F, 0.8F).eyeHeight(0.5F).clientTrackingRange(10).build("living_pot"));
+                    .fireImmune().clientTrackingRange(10).build("living_pot"));
 
 
     public static final Supplier<EntityType<IncendiaryArrow>> INCENDIARY_ARROW =
@@ -87,7 +92,7 @@ public class NMLEntities {
 //
     public static final Supplier<EntityType<Moose>> MOOSE =
             ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
-                    .sized(1.25F, 1.75F)
+                    .sized(1.5F, 1.75F)
                     .eyeHeight(2.0F)
                     .passengerAttachments(new Vec3(0.0F, 2.05F, -0.5F))
                     .build("moose"));
@@ -104,6 +109,10 @@ public class NMLEntities {
             .sized(.75f, 2.05f)
             .ridingOffset(-0.7F)
             .build("buddy"));
+
+    public static final Supplier<EntityType<DreamingPlayer>> DREAMING_PLAYER =
+        ENTITIES.register("dreaming_player", () -> EntityType.Builder.of(DreamingPlayer::new, MobCategory.MISC)
+            .build("dreaming_player"));
 
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, EntityType.EntityFactory<T> entity, MobCategory category, float width, float height) {
         return ENTITIES.register(name, () -> EntityType.Builder.of(entity, category).sized(width, height).build(name));
