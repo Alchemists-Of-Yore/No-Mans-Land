@@ -5,7 +5,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"bottom": "nomansland:block/dungeon/ancient_pots/alchemist_pot_base",
-		"side": "nomansland:block/dungeon/ancient_pots/alchemist_pot_large_1",
+		"side": "nomansland:block/dungeon/ancient_pots/alchemist_pot_large_1_wiggle_green",
 		"front": "nomansland:block/dungeon/ancient_pots/alchemist_pot_large_1_wiggle_green",
 		"particle": "nomansland:block/dungeon/ancient_pots/alchemist_pot_particle"
 	},
