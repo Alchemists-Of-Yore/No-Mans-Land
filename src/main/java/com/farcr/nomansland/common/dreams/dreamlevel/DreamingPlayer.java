@@ -8,10 +8,13 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 import java.util.Set;
@@ -25,14 +28,15 @@ public class DreamingPlayer extends Mob {
 
     public void setTetheredPlayer(ServerPlayer serverPlayer) {
         entityData.set(DREAM_PLAYER_SNAPSHOT, new DreamPlayerSnapshot(
-            serverPlayer.getUUID()
+            serverPlayer.getUUID(), serverPlayer.saveWithoutId(new CompoundTag()),
+            serverPlayer.getEntityData().get(Player.DATA_PLAYER_MODE_CUSTOMISATION)
         ));
         this.setXRot(serverPlayer.getXRot());
         this.setYRot(serverPlayer.getYRot());
         this.setYBodyRot(serverPlayer.yBodyRot);
         this.setYHeadRot(serverPlayer.yHeadRot);
         this.setPos(serverPlayer.position());
-        serverPlayer.getSleepingPos().ifPresent(this::setSleepingPos);
+        serverPlayer.getSleepingPos().ifPresent(this::startSleeping);
     }
 
     public DreamPlayerSnapshot getClientSnapshot() {
@@ -54,7 +58,7 @@ public class DreamingPlayer extends Mob {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DREAM_PLAYER_SNAPSHOT,
-            new DreamPlayerSnapshot(this.getUUID())
+            new DreamPlayerSnapshot(this.getUUID(), new CompoundTag(), (byte) 0)
         );
         super.defineSynchedData(builder);
     }
@@ -71,8 +75,8 @@ public class DreamingPlayer extends Mob {
             Player player = getTetheredPlayer();
             this.remove(RemovalReason.DISCARDED);
             player.teleportTo(level, this.getX(), this.getY(), this.getZ(), Set.of(), this.getXRot(), this.getYRot());
-            NoMansLand.LOGGER.info("teleporting player to tether");
-            return Optional.of(player);
+            // Recalculate player since old player doesn't exist anymore
+            return Optional.ofNullable(getTetheredPlayer());
         }
         return Optional.empty();
     }
@@ -92,6 +96,32 @@ public class DreamingPlayer extends Mob {
     public Player clientOnlyRemotePlayer;
 
     @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        entityData.set(DREAM_PLAYER_SNAPSHOT, new DreamPlayerSnapshot(
+            compound.getUUID("PlayerTether"),
+            compound.getCompound("PlayerData"),
+            compound.getByte("PlayerCustomization")
+        ));
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+
+        DreamPlayerSnapshot snapshot = getClientSnapshot();
+        compound.putUUID("PlayerTether", snapshot.uuid());
+        compound.put("PlayerData", snapshot.compoundTag());
+        compound.putByte("PlayerCustomization", snapshot.playerModelCustomization());
+    }
+
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        return InteractionResult.FAIL;
+    }
+
+    @Override
     public void tick() {
         if (!level().isClientSide && getTetheredPlayer() == null)
             this.remove(RemovalReason.DISCARDED);
@@ -100,9 +130,19 @@ public class DreamingPlayer extends Mob {
                 discardTether();
         }
 
-        // hackily obtained from the renderer only on the client as to not . crash the server
-        if (clientOnlyRemotePlayer != null) clientOnlyRemotePlayer.tick();
+        this.setDeltaMovement(Vec3.ZERO);
+        if (!isSleeping()) discardTether();
 
+        // hackily obtained from the renderer only on the client as to not . crash the server
+        if (clientOnlyRemotePlayer != null) {
+            clientOnlyRemotePlayer.setDeltaMovement(this.getDeltaMovement());
+            clientOnlyRemotePlayer.walkAnimation.setSpeed(0f);
+            clientOnlyRemotePlayer.setXRot(getXRot());
+            clientOnlyRemotePlayer.setYRot(getYRot());
+            clientOnlyRemotePlayer.setYBodyRot(yBodyRot);
+            clientOnlyRemotePlayer.setYHeadRot(yHeadRot);
+            clientOnlyRemotePlayer.tick();
+        }
         super.tick();
     }
 }

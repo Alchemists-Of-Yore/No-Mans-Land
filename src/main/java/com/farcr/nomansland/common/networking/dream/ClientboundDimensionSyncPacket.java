@@ -1,6 +1,9 @@
 package com.farcr.nomansland.common.networking.dream;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -16,6 +19,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,7 +49,27 @@ public record ClientboundDimensionSyncPacket(
                     (levelKey) -> !newLevelSet.contains(levelKey)
                 ).collect(Collectors.toSet()));
                 // should add in order hopefully !!!
-                dimensionList.addAll(newLevelSet);
+                for (ResourceKey<Level> level : newLevelSet) {
+                    dimensionList.add(level);
+                    // Handle Dimension Type Registration (if possible)
+                    Optional<DreamType> potentialDream = DreamLevelHandler.keyToDream(level);
+                    potentialDream.ifPresent(
+                        (dreamType) -> {
+                            DreamLevelHandler.registerDimensionType(
+                                context.player().registryAccess(), dreamType,
+                                context.player(), level.location()
+                            );
+                        }
+                    );
+                    /*
+                        This can and will fail if other mods dynamically add dimensions without
+                        properly registering themselves! but this is not my fault. just please
+                        keep in mind you need to register both the dimension AND DimensionType
+                        else desyncs will happen in multiplayer.
+
+                        this is an important note to leave in case anyone is having compatibility issues / respawn crashes
+                    */
+                }
             });
         }
     }

@@ -72,6 +72,7 @@
     "client.GameRendererInvoker",
     "client.GameRendererMixin",
     "client.GuiMixin",
+    "client.BlockItemMixin",
     "client.HumanoidModelMixin",
     "client.ItemRendererMixin",
     "client.ItemStackMixin",

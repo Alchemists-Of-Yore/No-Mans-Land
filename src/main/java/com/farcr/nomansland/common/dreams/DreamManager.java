@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -64,7 +65,9 @@ public class DreamManager extends SavedData {
     }
 
     public DreamingPlayer getDreamingPlayer(ServerPlayer player) {
-        return dreamerMap.get(player.getUUID());
+        DreamingPlayer dreamingPlayer = dreamerMap.get(player.getUUID());
+        if (dreamingPlayer != null && dreamingPlayer.isAlive()) return dreamingPlayer;
+        return null;
     }
 
     public void notifyClient(ServerPlayer player) {
@@ -86,6 +89,24 @@ public class DreamManager extends SavedData {
                 return dreamType;
         }
         return null;
+    }
+
+    public static boolean innerDreaming(DreamType dreamType, Player player) {
+        return player.level().dimension().equals(
+            DreamLevelHandler.resourceKey(
+                Registries.DIMENSION,
+                NMLDreamTypes.DREAM_TYPES_REGISTRY
+                    .getRegistry().get().getKey(dreamType),
+                player
+            )
+        );
+    }
+
+    public boolean playerIsDreaming(ServerPlayer player) {
+        DreamType dreamType = playerGetDream(player);
+        if (dreamType == null)
+            return false;
+        return innerDreaming(dreamType, player);
     }
 
     public boolean playerShouldDream(ServerPlayer player) {

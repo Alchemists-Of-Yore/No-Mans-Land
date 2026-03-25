@@ -40,6 +40,7 @@ import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
 import net.minecraft.world.level.storage.WorldData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,22 @@ public class DreamLevelHandler implements AutoCloseable {
                 dreamLocation.getPath() + "_" + player.getStringUUID()
             )
         );
+    }
+    public static <T> ResourceKey<T> resourceKeyNoPlayer(ResourceKey<? extends Registry<T>> resourceKey, ResourceLocation dreamLocation) {
+        return ResourceKey.create(resourceKey,
+            ResourceLocation.fromNamespaceAndPath(
+                dreamLocation.getNamespace(),
+                dreamLocation.getPath()
+            )
+        );
+    }
+
+    public static Optional<DreamType> keyToDream(ResourceKey<Level> resourceKey) {
+        Registry<DreamType> dreamRegistry = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get();
+        return dreamRegistry.stream().filter(
+            (dreamType) -> resourceKey.location()
+                .getPath().contains(dreamRegistry.getKey(dreamType).getPath())
+        ).findFirst();
     }
 
     public static ServerLevel getDreamLevel(MinecraftServer server, DreamType dreamType, ServerPlayer serverPlayer) {
@@ -123,7 +140,10 @@ public class DreamLevelHandler implements AutoCloseable {
     *
     * also has to be separate to register on both client and server !!!
     */
-    public static Holder<DimensionType> registerDimensionType(RegistryAccess registryAccess, DreamType dreamType, Player player) {
+    public static Holder<DimensionType> registerDimensionType(
+        RegistryAccess registryAccess, DreamType dreamType,
+        Player player, @Nullable ResourceLocation optionalKey
+    ) {
         Registry<DimensionType> dimensionRegistry =
             registryAccess.registryOrThrow(Registries.DIMENSION_TYPE);
 
@@ -138,6 +158,7 @@ public class DreamLevelHandler implements AutoCloseable {
 
         ResourceLocation dreamLocation = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get().getKey(dreamType);
         ResourceKey<DimensionType> dimensionKey = resourceKey(Registries.DIMENSION_TYPE, dreamLocation, player);
+        if (optionalKey != null) dimensionKey = resourceKeyNoPlayer(Registries.DIMENSION_TYPE, optionalKey);
         if (!dimensionRegistry.containsKey(dimensionKey) && dimensionRegistry instanceof MappedRegistry<DimensionType> writableRegistry) {
             writableRegistry.unfreeze();
             writableRegistry.register(dimensionKey, dimensionType,
@@ -145,5 +166,8 @@ public class DreamLevelHandler implements AutoCloseable {
             );
         }
         return dimensionRegistry.getHolderOrThrow(dimensionKey);
+    }
+    public static Holder<DimensionType> registerDimensionType(RegistryAccess registryAccess, DreamType dreamType, Player player) {
+        return registerDimensionType(registryAccess, dreamType, player, null);
     }
 }

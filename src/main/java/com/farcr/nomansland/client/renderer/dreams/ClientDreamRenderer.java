@@ -1,5 +1,6 @@
 package com.farcr.nomansland.client.renderer.dreams;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
@@ -78,16 +79,11 @@ public class ClientDreamRenderer implements AutoCloseable {
     public boolean dreamShouldRender() {
         if (clientIsDreaming()) {
             LocalPlayer player = Minecraft.getInstance().player;
-            if (Minecraft.getInstance().screen instanceof ReceivingLevelScreen receivingLevelScreen) {
+            if (Minecraft.getInstance().screen instanceof ReceivingLevelScreen) {
                 storedTicks = 0f;
                 return true;
             }
-
-            return player.level()
-                .dimension().equals(DreamLevelHandler.resourceKey(
-                    Registries.DIMENSION, NMLRegistries.DREAM_TYPE.getKey(dream),
-                    player
-                ));
+            return DreamManager.innerDreaming(dream, player);
         }
         return false;
     }

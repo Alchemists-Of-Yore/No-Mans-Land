@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -35,17 +36,21 @@ public class DreamingPlayerRenderer extends EntityRenderer<DreamingPlayer> {
         if (player.clientOnlyRemotePlayer == null) {
             assert Minecraft.getInstance().player != null;
             ClientPacketListener clientpacketlistener = Minecraft.getInstance().player.connection;
-            if (player.getClientSnapshot() == null)
+            DreamPlayerSnapshot snapshot = player.getClientSnapshot();
+            if (snapshot == null)
                 return null;
 
-            PlayerInfo playerinfo = clientpacketlistener.getPlayerInfo(player.getClientSnapshot().uuid());
+            PlayerInfo playerinfo = clientpacketlistener.getPlayerInfo(snapshot.uuid());
             if (playerinfo == null)
                 return null;
             player.clientOnlyRemotePlayer = new RemotePlayer(
                 (ClientLevel) player.level(),
                 playerinfo.getProfile()
             );
-            player.clientOnlyRemotePlayer.setPose(Pose.SLEEPING);
+
+            player.clientOnlyRemotePlayer.load(snapshot.compoundTag());
+            player.getSleepingPos().ifPresent(player.clientOnlyRemotePlayer::startSleeping);
+            player.clientOnlyRemotePlayer.getEntityData().set(Player.DATA_PLAYER_MODE_CUSTOMISATION, snapshot.playerModelCustomization());
         }
         return player.clientOnlyRemotePlayer;
     }
@@ -56,12 +61,6 @@ public class DreamingPlayerRenderer extends EntityRenderer<DreamingPlayer> {
         RemotePlayer remotePlayer = (RemotePlayer) getRemotePlayer(p_entity);
         if (remotePlayer == null)
             return;
-
-        remotePlayer.setXRot(p_entity.getXRot());
-        remotePlayer.setYRot(p_entity.getYRot());
-        remotePlayer.setYBodyRot(p_entity.yBodyRot);
-        remotePlayer.setYHeadRot(p_entity.yHeadRot);
-        p_entity.getSleepingPos().ifPresent(remotePlayer::setSleepingPos);
 
         dispatcher.render(
             remotePlayer, 0, 0, 0, entityYaw,

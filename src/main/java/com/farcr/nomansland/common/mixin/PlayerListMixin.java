@@ -2,9 +2,8 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.registry.NMLDreamTypes;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.core.Registry;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,11 +32,7 @@ public class PlayerListMixin {
         CommonListenerCookie cookie, CallbackInfo ci,
         @Local ResourceKey<Level> resourceKey
     ) {
-        Registry<DreamType> dreamRegistry = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get();
-        Optional<DreamType> previousDream = dreamRegistry.stream().filter(
-            (dreamType) -> resourceKey.location()
-                .getPath().contains(dreamRegistry.getKey(dreamType).getPath())
-        ).findFirst();
+        Optional<DreamType> previousDream = DreamLevelHandler.keyToDream(resourceKey);
         previousDream.ifPresent((dreamType) -> {
             NoMansLand.LOGGER.info("Teleporting " + player.getGameProfile().getName() + " from " + previousDream + " to Respawn Point as a last resort! Did the server crash previously?");
             player.setPos(player.getRespawnPosition().getCenter());
