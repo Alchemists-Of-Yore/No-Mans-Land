@@ -1,0 +1,11 @@
+{
+  "size": "small",
+  "model": "nomansland:ancient_pots/alchemist_pot_small_2_face_happy",
+  "shape": [
+    [4, 0, 4, 12, 9, 12],
+    [6, 9, 6, 10, 11, 10]
+  ],
+  "traits": [
+"regenerates"
+]
+}
