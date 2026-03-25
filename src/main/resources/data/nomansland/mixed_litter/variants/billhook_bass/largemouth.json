@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:billhook_bass",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_largemouth_bass"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_largemouth_bass"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/billhook_bass/billhook_bass_largemouth"
+    "texture": "nomansland:billhook_bass/billhook_bass_largemouth.png"
   }
 }

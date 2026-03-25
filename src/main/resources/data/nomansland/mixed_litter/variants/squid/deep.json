@@ -2,11 +2,14 @@
   "type": "mixed_litter:simple_texture",
   "group": "mixed_litter:remodeled_squid",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_deep_squid"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_deep_squid"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/squid/squid_deep"
+    "texture": "nomansland:mob_variants/squid/squid_deep.png",
+    "remodel": "squid"
   }
 }

@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:husk",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_red_sand_husks"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_red_sand_husks"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/zombie/red_husk"
+    "texture": "nomansland:mob_variants/zombie/red_husk.png"
   }
 }

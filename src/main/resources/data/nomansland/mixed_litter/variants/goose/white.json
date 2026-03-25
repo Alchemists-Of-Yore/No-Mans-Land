@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "nomansland:goose",
   "arguments": {
-    "texture": "nomansland:entity/goose/goose_white",
-    "baby_texture": "nomansland:entity/goose/goose_baby"
+    "texture": "nomansland:goose/goose_white.png",
+    "baby_texture": "nomansland:goose/goose_baby.png"
   }
 }

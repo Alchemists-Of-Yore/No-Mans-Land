@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:dolphin",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_river_dolphins"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_river_dolphins"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/dolphin/river_dolphin"
+    "texture": "nomansland:mob_variants/dolphin/river_dolphin.png"
   }
 }

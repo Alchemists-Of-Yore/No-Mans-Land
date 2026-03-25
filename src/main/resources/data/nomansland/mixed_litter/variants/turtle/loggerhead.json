@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:turtle",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_loggerhead_turtles"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_loggerhead_turtles"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/turtle/loggerhead_sea_turtle"
+    "texture": "nomansland:mob_variants/turtle/loggerhead_sea_turtle.png"
   }
 }

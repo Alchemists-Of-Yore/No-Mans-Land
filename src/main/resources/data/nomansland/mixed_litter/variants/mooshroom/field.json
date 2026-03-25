@@ -2,8 +2,9 @@
   "type": "mixed_litter:mooshroom",
   "group": "mixed_litter:remodeled_mooshrooms",
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/mooshroom/mooshroom_field",
-    "baby_texture": "nomansland:entity/mob_variants/mooshroom/mooshroom_field_baby",
-    "mushroom": "nomansland:field_mushroom"
+    "texture": "nomansland:mob_variants/mooshroom/mooshroom_field.png",
+    "baby_texture": "nomansland:mob_variants/mooshroom/mooshroom_field_baby.png",
+    "mushroom": "nomansland:field_mushroom",
+    "remodel": "cow"
   }
 }

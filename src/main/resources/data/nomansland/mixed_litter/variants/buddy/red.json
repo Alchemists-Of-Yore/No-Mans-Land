@@ -2,6 +2,6 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:buddy",
   "arguments": {
-    "texture": "nomansland:entity/buddy/red"
+    "texture": "nomansland:buddy/red.png"
   }
 }

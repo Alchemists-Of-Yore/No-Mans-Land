@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:donkey",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_zebra_donkeys"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_zebra_donkeys"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/donkey/zebra"
+    "texture": "nomansland:mob_variants/donkey/zebra.png"
   }
 }

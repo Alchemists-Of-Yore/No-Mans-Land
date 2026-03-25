@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:tortoise",
   "conditions": {
-    "spawning_location": {
-      "biomes": "minecraft:desert"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "minecraft:desert"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/tortoise/yellow"
+    "texture": "nomansland:tortoise/yellow.png"
   }
 }
