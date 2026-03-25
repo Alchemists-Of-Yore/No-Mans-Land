@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -20,6 +21,11 @@ public class PotShatterParticle extends TextureSheetParticle {
 
     private final float uo;
     private final float vo;
+    private final double originX;
+    private final double originY;
+    private final double originZ;
+    private final boolean persistent;
+    private static final int GROUP_UP_TICKS = 20;
 
     PotShatterParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite, int persistTicks) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
@@ -33,6 +39,10 @@ public class PotShatterParticle extends TextureSheetParticle {
         this.hasPhysics = true;
         this.uo = random.nextFloat() * 3.0F;
         this.vo = random.nextFloat() * 3.0F;
+        this.originX = x;
+        this.originY = y;
+        this.originZ = z;
+        this.persistent = persistTicks > 0;
     }
 
     @Override
@@ -58,10 +68,36 @@ public class PotShatterParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        if (this.onGround) {
-            this.xd = 0;
-            this.zd = 0;
-            this.yd = 0;
+
+        if (persistent) {
+            BlockPos originPos = BlockPos.containing(originX, originY, originZ);
+            if (!level.getBlockState(originPos).isAir()) {
+                remove();
+                return;
+            }
+
+            int ticksLeft = lifetime - age;
+
+            if (random.nextFloat() < 0.03F) {
+                this.yd += 0.04 + random.nextDouble() * 0.06;
+                this.xd += (random.nextDouble() - 0.5) * 0.02;
+                this.zd += (random.nextDouble() - 0.5) * 0.02;
+            }
+
+            if (ticksLeft <= GROUP_UP_TICKS) {
+                double progress = 1.0 - (double) ticksLeft / GROUP_UP_TICKS;
+                double pullStrength = 0.05 * progress;
+                this.xd += (originX - this.x) * pullStrength;
+                this.yd += (originY - this.y) * pullStrength;
+                this.zd += (originZ - this.z) * pullStrength;
+                this.gravity = 0;
+            }
+        } else {
+            if (this.onGround) {
+                this.xd = 0;
+                this.zd = 0;
+                this.yd = 0;
+            }
         }
     }
 

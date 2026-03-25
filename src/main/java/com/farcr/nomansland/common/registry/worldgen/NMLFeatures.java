@@ -48,6 +48,9 @@ public class NMLFeatures {
     public static final Supplier<Feature<NoneFeatureConfiguration>> ANCIENT_TREE = FEATURES.register("ancient_tree",
             () -> new AncientTreeFeature(NoneFeatureConfiguration.CODEC));
 
+    public static final Supplier<Feature<PotPatchConfiguration>> POT_PATCH = FEATURES.register("pot_patch",
+            () -> new PotPatchFeature(PotPatchConfiguration.CODEC));
+
     public static final ResourceKey<ConfiguredFeature<?, ?>> HUGE_FIELD_MUSHROOM = register("huge_field_mushroom");
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> OAK_APPLE_01 = register("oak_apple_01");
