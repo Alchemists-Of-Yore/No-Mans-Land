@@ -543,7 +543,7 @@ public class NMLBlocks {
             () -> new SlabBlock((ofFullCopy(Blocks.BROWN_MUSHROOM_BLOCK).sound(NMLSounds.MUSHROOM_CAP))));
 
     public static final BlockDefinition<RotatedPillarBlock> VERMILION_FROGLIGHT = register("vermilion_froglight",
-            () -> new RotatedPillarBlock(ofFullCopy(Blocks.OCHRE_FROGLIGHT).mapColor(MapColor.COLOR_PINK)));
+            () -> new RotatedPillarBlock(ofFullCopy(Blocks.OCHRE_FROGLIGHT).mapColor(MapColor.COLOR_PINK)), BlockProperties.froglight());
 
     // Fruity Stuff
     public static final BlockDefinition<Block> APPLE_FRUIT = registerNoItem("apple",

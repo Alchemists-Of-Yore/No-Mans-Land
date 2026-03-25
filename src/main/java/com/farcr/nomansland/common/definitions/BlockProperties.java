@@ -32,6 +32,9 @@ public record BlockProperties(BlockLootType lootType, boolean customLang) {
     public static BlockProperties icicles() {
         return new BlockProperties(new CustomBlockLootType(), false);
     } // icicles
+    public static BlockProperties froglight() {
+        return new BlockProperties(new SelfBlockLootType(), false);
+    } // froglights
 
     // PLANTS
     public static BlockProperties smallFlower() {
