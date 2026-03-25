@@ -9,5 +9,9 @@
   ],
   "traits": [
 "regenerates"
-]
+],
+  "modifier_chances": {
+  "alive": 0.15,
+  "oozing": 0.05
+}
 }
