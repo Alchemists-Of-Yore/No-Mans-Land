@@ -9,15 +9,23 @@ import net.minecraft.client.model.geom.builders.*;
 public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
 
     private final ModelPart root;
-    private final ModelPart bone;
     private final ModelPart body;
-    private final ModelPart legs;
+    private final ModelPart smallLeft;
+    private final ModelPart smallRight;
+    private final ModelPart largeLeft;
+    private final ModelPart largeRight;
 
     public LivingPotModel(ModelPart root) {
         this.root = root;
-        this.bone = root.getChild("bone");
-        this.body = this.bone.getChild("body");
-        this.legs = this.bone.getChild("legs");
+        ModelPart bone = root.getChild("bone");
+        this.body = bone.getChild("body");
+        ModelPart legs = bone.getChild("legs");
+        ModelPart left = legs.getChild("Left");
+        ModelPart right = legs.getChild("Right");
+        this.smallLeft = left.getChild("small");
+        this.smallRight = right.getChild("small");
+        this.largeLeft = left.getChild("large");
+        this.largeRight = right.getChild("large");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -30,9 +38,13 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
 
         PartDefinition legs = bone.addOrReplaceChild("legs", CubeListBuilder.create(), PartPose.offset(3, -5, 0));
 
-        legs.addOrReplaceChild("Left", CubeListBuilder.create().texOffs(0, 9).addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)), PartPose.offset(0, 0, 0));
+        PartDefinition left = legs.addOrReplaceChild("Left", CubeListBuilder.create(), PartPose.offset(0, 0, 0));
+        left.addOrReplaceChild("small", CubeListBuilder.create().texOffs(0, 9).addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)), PartPose.ZERO);
+        left.addOrReplaceChild("large", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0F, -1.0F, 7.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offset(5.0F, 0.0F, -8.0F));
 
-        legs.addOrReplaceChild("Right", CubeListBuilder.create().texOffs(0, 9).mirror().addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)).mirror(false), PartPose.offset(-6, 0, 0));
+        PartDefinition right = legs.addOrReplaceChild("Right", CubeListBuilder.create(), PartPose.offset(-6, 0, 0));
+        right.addOrReplaceChild("small", CubeListBuilder.create().texOffs(0, 9).mirror().addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)).mirror(false), PartPose.ZERO);
+        right.addOrReplaceChild("large", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-13.0F, -1.0F, 7.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(11.0F, 0.0F, -8.0F));
 
         return LayerDefinition.create(meshdefinition, 16, 16);
     }
@@ -40,10 +52,6 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
     @Override
     public ModelPart root() {
         return root;
-    }
-
-    public ModelPart getBone() {
-        return bone;
     }
 
     public ModelPart getBody() {
@@ -54,13 +62,18 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root.getAllParts().forEach(ModelPart::resetPose);
 
+        smallLeft.visible = entity.isSmall();
+        smallRight.visible = entity.isSmall();
+        largeLeft.visible = entity.isLarge();
+        largeRight.visible = entity.isLarge();
+
         boolean isDashing = entity.dashStartAnimState.isStarted() || entity.dashLoopAnimState.isStarted();
         if (!isDashing) {
             if (entity.isSmall()) {
                 if (limbSwingAmount > 0.6F) {
                     animateWalk(LivingPotAnimation.RUN, limbSwing, limbSwingAmount, 2, 3);
                 } else {
-                    animateWalk(LivingPotAnimation.WALK, limbSwing, limbSwingAmount, 4, 5);
+                    animateWalk(LivingPotAnimation.WALK, limbSwing, limbSwingAmount, 4, 6);
                 }
             } else {
                 animateWalk(LivingPotAnimation.WALK2, limbSwing, limbSwingAmount, 4, 5);

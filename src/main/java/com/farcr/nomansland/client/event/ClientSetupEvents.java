@@ -124,6 +124,7 @@ public class ClientSetupEvents {
 
         event.registerBlockEntityRenderer(NMLBlockEntities.POT.get(), PotRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_POT.get(), LivingPotRenderer::new);
+        event.registerEntityRenderer(NMLEntities.FALLING_POT.get(), FallingPotRenderer::new);
     }
 
     @SubscribeEvent

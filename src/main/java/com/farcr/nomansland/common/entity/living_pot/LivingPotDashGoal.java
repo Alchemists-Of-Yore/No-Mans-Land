@@ -57,7 +57,7 @@ public class LivingPotDashGoal extends Goal {
             return true;
         }
         LivingEntity target = pot.getTarget();
-        if (target == null || !target.isAlive() || target.isInvisible()) return false;
+        if (target == null || !target.isAlive() || !target.canBeSeenAsEnemy() || target.isInvisible()) return false;
         return pot.distanceToSqr(target) <= DASH_RANGE * DASH_RANGE;
     }
 

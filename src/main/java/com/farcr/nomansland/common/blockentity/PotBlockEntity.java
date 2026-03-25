@@ -107,6 +107,10 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         }
     }
 
+    public void restoreFromFallingBlock(CompoundTag tag, HolderLookup.Provider registries) {
+        loadAdditional(tag, registries);
+    }
+
     public ItemStack getPotAsItem() {
         ItemStack itemstack = getBlockState().getBlock().asItem().getDefaultInstance();
         itemstack.applyComponents(this.collectComponents());
@@ -120,7 +124,17 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             components.set(NMLDataComponents.POT_VARIANT, key);
         });
 
-        components.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(this.item)));
+        if (!this.item.isEmpty()) {
+            components.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(this.item)));
+        }
+
+        if (!modifiers.isEmpty()) {
+            components.set(NMLDataComponents.POT_MODIFIERS, modifiers.stream().map(PotModifier::getSerializedName).toList());
+        }
+
+        if (!storedPotion.equals(PotionContents.EMPTY)) {
+            components.set(DataComponents.POTION_CONTENTS, storedPotion);
+        }
     }
 
     @Override
@@ -132,6 +146,19 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         });
 
         this.item = componentInput.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).copyOne();
+
+        modifiers.clear();
+        java.util.List<String> modList = componentInput.getOrDefault(NMLDataComponents.POT_MODIFIERS, List.of());
+        for (String name : modList) {
+            try {
+                modifiers.add(PotModifier.valueOf(name.toUpperCase()));
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        PotionContents potion = componentInput.get(DataComponents.POTION_CONTENTS);
+        if (potion != null) {
+            storedPotion = potion;
+        }
     }
 
     @Override
@@ -139,6 +166,8 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         super.removeComponentsFromTag(tag);
         tag.remove("Variant");
         tag.remove("Item");
+        tag.remove("Modifiers");
+        tag.remove("StoredPotion");
     }
 
     public ClientboundBlockEntityDataPacket getUpdatePacket() {

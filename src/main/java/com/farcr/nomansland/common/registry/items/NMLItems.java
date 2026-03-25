@@ -3,7 +3,6 @@ package com.farcr.nomansland.common.registry.items;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NMLEnumParams;
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.item.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -96,9 +95,9 @@ public class NMLItems {
             () -> new StandingAndWallBlockItem(NMLBlocks.SCONCE_SOUL_TORCH.get(), NMLBlocks.SCONCE_SOUL_WALL_TORCH.get(), new Properties(), Direction.DOWN));
 
     public static final ItemDefinition<AncientPotItem> ANCIENT_POT = registerWithoutTab("ancient_pot",
-            () -> new AncientPotItem(PotSize.SMALL, NMLBlocks.ANCIENT_POT.get(), new Properties()));
+            () -> new AncientPotItem(NMLBlocks.ANCIENT_POT.get(), new Properties()));
     public static final ItemDefinition<AncientPotItem> LARGE_ANCIENT_POT = registerWithoutTab("large_ancient_pot",
-            () -> new AncientPotItem(PotSize.LARGE, NMLBlocks.LARGE_ANCIENT_POT.get(), new Properties()));
+            () -> new AncientPotItem(NMLBlocks.LARGE_ANCIENT_POT.get(), new Properties()));
 
     public static final ItemDefinition<AncientPotDebugItem> ANCIENT_POT_DEBUG_ITEM = registerWithoutTab("ancient_pot_debug", () -> new AncientPotDebugItem(new Properties().stacksTo(1)));
 

@@ -83,7 +83,7 @@ public class RegeneratingPotsData extends SavedData {
                         pot.variant = variants.get(entry.getValue().getFirst().variant());
                     }
                 }
-                regeneratingPots.remove(entry.getKey());
+                removePot(entry.getKey());
             }
 
             regeneratingPots.replace(entry.getKey(), Pair.of(entry.getValue().getFirst(), entry.getValue().getSecond() - 1));
@@ -94,5 +94,11 @@ public class RegeneratingPotsData extends SavedData {
     public void addPot(BlockPos pos, PotData data, Integer delay) {
         regeneratingPots.put(pos, Pair.of(data, delay));
         setDirty();
+    }
+
+    public void removePot(BlockPos pos) {
+        if (regeneratingPots.remove(pos) != null) {
+            setDirty();
+        }
     }
 }

@@ -61,15 +61,15 @@ public class LivingPotReturnHomeGoal extends Goal {
                 pot.setPos(placePos.getX() + 0.5, placePos.getY(), placePos.getZ() + 0.5);
                 pot.setDeltaMovement(0, 0, 0);
                 pot.getNavigation().stop();
-                pot.setNoAi(true);
                 pot.setSleeping(true);
                 this.targetPos = placePos;
             }
         } else {
+            pot.getNavigation().stop();
+            pot.setDeltaMovement(0, pot.getDeltaMovement().y, 0);
             sleepTicks++;
             if (sleepTicks >= SLEEP_DURATION) {
                 pot.setSleeping(false);
-                pot.setNoAi(false);
                 if (targetPos != null) {
                     placeBlockAt(targetPos);
                 }
@@ -80,7 +80,6 @@ public class LivingPotReturnHomeGoal extends Goal {
     @Override
     public void stop() {
         pot.setSleeping(false);
-        pot.setNoAi(false);
         phase = Phase.WALKING;
         sleepTicks = 0;
         targetPos = null;

@@ -7,7 +7,8 @@ public enum PotModifier implements StringRepresentable {
     ALIVE("alive"),
     INFESTED("infested"),
     OOZING("oozing"),
-    TRAPPED("trapped");
+    TRAPPED("trapped"),
+    WAXED("waxed");
 
     private final String name;
 

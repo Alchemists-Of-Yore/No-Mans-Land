@@ -42,7 +42,7 @@ public class LivingPotFleeGoal extends Goal {
         Player target = pot.getPersistentAngerTarget() != null
                 ? pot.level().getPlayerByUUID(pot.getPersistentAngerTarget())
                 : null;
-        return target != null && !target.isInvisible();
+        return target != null && target.canBeSeenAsEnemy() && !target.isInvisible();
     }
 
     @Override

@@ -3,12 +3,13 @@ package com.farcr.nomansland.common.item;
 import com.farcr.nomansland.common.block.pots.PotBlock;
 import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -67,11 +68,22 @@ public class AncientPotDebugItem extends Item {
 
     @Override
     public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        if (!(state.getBlock() instanceof PotBlock)) return true;
-        if (level.isClientSide) return false;
-        if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot)) return false;
+        return !(state.getBlock() instanceof PotBlock);
+    }
 
-        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+    public void handleLeftClick(Level level, BlockPos pos, Player player, ItemStack stack) {
+        if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot)) return;
+
+        if (player.isShiftKeyDown()) {
+            pot.variant = null;
+            level.destroyBlock(pos, false);
+            if (level instanceof ServerLevel serverLevel) {
+                RegeneratingPotsData.getOrDefault(serverLevel).removePot(pos);
+            }
+            message(player, "pot removed (no regeneration)", ChatFormatting.YELLOW);
+            return;
+        }
+
         int next = (getSelectedIndex(stack) + 1) % MODIFIERS.length;
         setSelectedIndex(stack, next);
 
@@ -79,8 +91,6 @@ public class AncientPotDebugItem extends Item {
         boolean active = pot.hasModifier(modifier);
         message(player, "selected: " + modifier.getSerializedName() + (active ? " [ON]" : " [OFF]"),
                 active ? ChatFormatting.GREEN : ChatFormatting.GRAY);
-
-        return false;
     }
 
     private static void message(Player player, String text, ChatFormatting color) {

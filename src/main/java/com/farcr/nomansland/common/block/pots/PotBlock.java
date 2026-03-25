@@ -1,7 +1,11 @@
 package com.farcr.nomansland.common.block.pots;
 
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.entity.FallingPotEntity;
+import com.farcr.nomansland.common.item.AncientPotDebugItem;
+import com.farcr.nomansland.common.item.AncientPotItem;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,6 +18,9 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -41,6 +48,7 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -79,8 +87,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     private static final BooleanProperty BRITTLE = BooleanProperty.create("brittle");
     private static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-
-    private final PotSize size;
+    protected final PotSize size;
 
     public PotBlock(PotSize size, Properties properties) {
         super(properties);
@@ -97,7 +104,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
 
-        level.scheduleTick(pos, this, this.getDelayAfterPlace());
+        if (!state.getValue(POWERED)) {
+            level.scheduleTick(pos, this, this.getDelayAfterPlace());
+        }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
@@ -114,7 +123,22 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         }
 
         if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
-            FallingBlockEntity.fall(level, pos, state);
+            CompoundTag beData = null;
+            ResourceLocation variantId = null;
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+                beData = pot.saveCustomOnly(level.registryAccess());
+                if (pot.variant != null) {
+                    variantId = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(pot.variant);
+                }
+                pot.variant = null;
+            }
+            FallingPotEntity falling = FallingPotEntity.fall(level, pos, state);
+            if (beData != null) {
+                falling.blockData = beData;
+            }
+            if (variantId != null) {
+                falling.setVariantId(variantId);
+            }
         }
     }
 
@@ -142,11 +166,12 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         spawnRedstoneParticles(level, pos);
     }
 
-    private void spawnRedstoneParticles(Level level, BlockPos pos) {
+    protected void spawnRedstoneParticles(Level level, BlockPos pos) {
         if (level instanceof ServerLevel serverLevel) {
-            for (int i = 0; i < 6; i++) {
+            double height = size == PotSize.LARGE ? 1.5 : 0.5;
+            for (int i = 0; i < (size == PotSize.LARGE ? 10 : 6); i++) {
                 double x = pos.getX() + 0.25 + level.getRandom().nextDouble() * 0.5;
-                double y = pos.getY() + 0.5 + level.getRandom().nextDouble() * 0.5;
+                double y = pos.getY() + level.getRandom().nextDouble() * height;
                 double z = pos.getZ() + 0.25 + level.getRandom().nextDouble() * 0.5;
                 serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z, 1, 0, 0, 0, 0);
             }
@@ -160,12 +185,17 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
+        if (stack.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get())
+                || stack.getItem() instanceof AncientPotItem) {
+            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        }
+
         if (pot.hasModifier(PotModifier.TRAPPED)) {
             startSignal(level, pos);
         }
 
         if (pot.isLiving()) {
-            pot.wakeUp(player);
+            pot.wakeUp(null);
             return ItemInteractionResult.SUCCESS;
         }
 
@@ -201,6 +231,19 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
         if (stack.isEmpty()) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+
+        if (stack.is(Items.HONEYCOMB) && !pot.hasModifier(PotModifier.WAXED)) {
+            pot.addModifier(PotModifier.WAXED);
+            pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
+            player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+            stack.shrink(1);
+            level.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.levelEvent(3003, pos, 0);
+            pot.setChanged();
+            level.sendBlockUpdated(pos, state, state, 3);
+            level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return ItemInteractionResult.SUCCESS;
         }
 
         if (stack.getItem() instanceof PotionItem && !(stack.getItem() instanceof ThrowablePotionItem) && pot.getStoredPotion().equals(PotionContents.EMPTY)) {
@@ -255,7 +298,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         pot.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
 
         if (pot.isLiving()) {
-            pot.wakeUp(player);
+            pot.wakeUp(null);
         }
 
         return InteractionResult.SUCCESS;
@@ -333,7 +376,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
                 }
 
-                if (pot.hasModifier(PotModifier.INFESTED)) {
+                if (pot.hasModifier(PotModifier.INFESTED) && !level.isClientSide) {
                     int amount = level.getRandom().nextInt(1, 4);
                     for (int i = 0; i < amount; i++) {
                         Silverfish silverfish = EntityType.SILVERFISH.create(level);
@@ -345,7 +388,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     }
                 }
 
-                if (pot.hasModifier(PotModifier.OOZING)) {
+                if (pot.hasModifier(PotModifier.OOZING) && !level.isClientSide) {
                     int amount = level.getRandom().nextInt(1, 4);
                     for (int i = 0; i < amount; i++) {
                         Slime slime = EntityType.SLIME.create(level);
@@ -357,13 +400,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     }
                 }
 
-                if (pot.hasModifier(PotModifier.TRAPPED)) {
-                    spawnRedstoneParticles(level, pos);
-                }
-
                 if (level instanceof ServerLevel serverLevel && pot.variant.traits().contains(PotTrait.REGENERATES)) {
                     Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant)), level.getRandom().nextInt(20, 40)*20);
+                    int delay = level.getRandom().nextInt(20, 40) * 20;
+                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant)), delay);
+                    serverLevel.sendParticles(
+                            new PotShatterParticleOption(pot.variant.model(), delay),
+                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                            size == PotSize.LARGE ? 270 : 135, 0.3, 0.3, 0.3, 0.1);
                 }
 
                 level.updateNeighbourForOutputSignal(pos, state.getBlock());
@@ -391,29 +435,95 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            if (pot.hasModifier(PotModifier.INFESTED)) {
+                int amount = level.getRandom().nextInt(1, 4);
+                for (int i = 0; i < amount; i++) {
+                    Silverfish silverfish = EntityType.SILVERFISH.create(level);
+                    if (silverfish != null) {
+                        silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                        level.addFreshEntity(silverfish);
+                        silverfish.spawnAnim();
+                    }
+                }
+                pot.removeModifier(PotModifier.INFESTED);
+            }
+            if (pot.hasModifier(PotModifier.OOZING)) {
+                int amount = level.getRandom().nextInt(1, 4);
+                for (int i = 0; i < amount; i++) {
+                    Slime slime = EntityType.SLIME.create(level);
+                    if (slime != null) {
+                        slime.setSize(1, true);
+                        slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                        level.addFreshEntity(slime);
+                    }
+                }
+                pot.removeModifier(PotModifier.OOZING);
+            }
+            pot.removeModifier(PotModifier.TRAPPED);
+            if (pot.hasModifier(PotModifier.WAXED)) {
+                pot.removeModifier(PotModifier.WAXED);
+                pot.setChanged();
+                Block.popResource(level, pos, pot.getPotAsItem());
+                Block.popResource(level, pos, new ItemStack(Items.HONEYCOMB));
+                pot.variant = null;
+            } else if (dropsItself(player.getMainHandItem(), level)) {
+                pot.variant = null;
+            }
+            pot.setChanged();
+        }
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
-        return (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) || player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG) ? 1 : super.getDestroyProgress(state, player, level, pos);
+        BlockPos lowerPos = pos;
+        return (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) || player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG) ? 1 : super.getDestroyProgress(state, player, level, pos);
     }
 
     @Override
     public void attack(BlockState state, Level level, BlockPos pos, Player player) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
-            pot.wakeUp(player);
+        BlockPos lowerPos = pos;
+        if (!level.isClientSide) {
+            ItemStack held = player.getMainHandItem();
+            if (held.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get()) && held.getItem() instanceof AncientPotDebugItem debug) {
+                debug.handleLeftClick(level, pos, player, held);
+                return;
+            }
+            if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving() && !hasSilkTouch(player, level)) {
+                pot.wakeUp(player);
+            }
         }
+    }
+
+    private static boolean hasSilkTouch(Player player, Level level) {
+        return hasSilkTouch(player.getMainHandItem(), level);
+    }
+
+    private static boolean hasSilkTouch(ItemStack tool, Level level) {
+        return tool.getEnchantmentLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.SILK_TOUCH)) > 0;
+    }
+
+    private static boolean dropsItself(ItemStack tool, Level level) {
+        return tool.isEmpty() || tool.is(Items.BRUSH) || hasSilkTouch(tool, level);
     }
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        BlockPos lowerPos = pos;
         if (!level.isClientSide && size == PotSize.SMALL
-                && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
+                && level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving()) {
             pot.wakeUp(null);
         }
     }
 
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
-            pot.wakeUp(entity instanceof LivingEntity le ? le : null);
+        BlockPos lowerPos = pos;
+        if (!level.isClientSide && level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving()) {
+            pot.wakeUp(null);
         }
         super.stepOn(level, pos, state, entity);
     }
@@ -430,7 +540,8 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
+        BlockPos lowerPos = pos;
+        BlockEntity blockEntity = level.getBlockEntity(lowerPos);
         return blockEntity instanceof PotBlockEntity pot ? pot.getPotAsItem() : super.getCloneItemStack(level, pos, state);
     }
 
@@ -450,23 +561,47 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         return state.rotate(mirror.getRotation(state.getValue(HORIZONTAL_FACING)));
     }
 
+    public void onBrokenAfterFall(Level level, BlockPos pos, FallingBlockEntity fallingBlock) {
+        if (fallingBlock instanceof FallingPotEntity fpe) {
+            fpe.spawnShatterParticles();
+        }
+    }
+
     public void onLand(Level level, BlockPos pos, BlockState state, BlockState replaceableState, FallingBlockEntity fallingBlock) {
-        if (fallingBlock.getBlockState().getValue(BRITTLE) || fallingBlock.fallDistance > 4) {
+        double fallen = fallingBlock instanceof FallingPotEntity fpe ? fpe.getFallDistance() : fallingBlock.fallDistance;
+        if (fallingBlock.getBlockState().getValue(BRITTLE) || fallen > 4) {
+            if (fallingBlock instanceof FallingPotEntity fpe) {
+                fpe.spawnShatterParticles();
+            }
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+                pot.variant = null;
+            }
             level.destroyBlock(pos, true);
+            return;
+        }
+        if (fallingBlock.blockData != null && level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+            pot.restoreFromFallingBlock(fallingBlock.blockData, level.registryAccess());
+            pot.setChanged();
         }
     }
 
     public int getExpDrop(BlockState state, LevelAccessor level, BlockPos pos, BlockEntity blockEntity, Entity breaker, ItemStack tool) {
         if (blockEntity instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.DROPS_EXPERIENCE)) {
-            return level.getRandom().nextInt(2, 6);
+            boolean dropsItself = tool.isEmpty()
+                    || tool.is(Items.BRUSH)
+                    || tool.getEnchantmentLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.SILK_TOUCH)) > 0;
+            if (!dropsItself) {
+                return level.getRandom().nextInt(2, 6);
+            }
         }
-
         return 0;
     }
 
     @Override
     public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.FLAMMABLE);
+        BlockPos lowerPos = pos;
+        return level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.FLAMMABLE);
     }
 
     @Override
