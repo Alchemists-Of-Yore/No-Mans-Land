@@ -1,6 +1,10 @@
 package com.farcr.nomansland.common.block.pots;
 
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.entity.FallingPotEntity;
+import com.farcr.nomansland.common.registry.NMLRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -71,9 +75,6 @@ public class LargePotBlock extends PotBlock {
         if (isUpper(state) && direction == Direction.DOWN && !neighborState.is(this)) {
             return Blocks.AIR.defaultBlockState();
         }
-        if (!isUpper(state) && direction == Direction.UP && !neighborState.is(this)) {
-            return Blocks.AIR.defaultBlockState();
-        }
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
@@ -117,10 +118,34 @@ public class LargePotBlock extends PotBlock {
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (isUpper(state)) return;
-        if (PotBlock.isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
-            level.removeBlock(pos.above(), false);
+        if (state.getValue(BlockStateProperties.POWERED)) {
+            level.setBlock(pos, state.setValue(BlockStateProperties.POWERED, false), 2);
+            level.updateNeighborsAt(pos, this);
         }
-        super.tick(state, level, pos, random);
+        if (PotBlock.isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
+            CompoundTag beData = null;
+            ResourceLocation variantId = null;
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+                beData = pot.saveCustomOnly(level.registryAccess());
+                if (pot.variant != null) {
+                    variantId = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(pot.variant);
+                }
+                pot.variant = null;
+            }
+            BlockState above = level.getBlockState(pos.above());
+            if (above.is(this) && isUpper(above)) {
+                level.removeBlock(pos.above(), false);
+            }
+            FallingPotEntity falling = FallingPotEntity.fall(level, pos, state.setValue(HALF, DoubleBlockHalf.LOWER));
+            if (beData != null) {
+                falling.blockData = beData;
+            }
+            if (variantId != null) {
+                falling.setVariantId(variantId);
+            }
+        } else {
+            level.scheduleTick(pos, this, this.getDelayAfterPlace());
+        }
     }
 
     @Override

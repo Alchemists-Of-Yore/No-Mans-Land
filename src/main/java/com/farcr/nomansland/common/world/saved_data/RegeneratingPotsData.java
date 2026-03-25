@@ -75,18 +75,24 @@ public class RegeneratingPotsData extends SavedData {
 
     public void tick() {
         for (Map.Entry<BlockPos, Pair<PotData, Integer>> entry : new HashSet<>(regeneratingPots.entrySet())) {
-            if (entry.getValue().getSecond() < 0) {
-                if (level.getBlockState(entry.getKey()).isAir()) {
-                    level.setBlockAndUpdate(entry.getKey(), entry.getValue().getFirst().state());
-                    if (level.getBlockEntity(entry.getKey()) instanceof PotBlockEntity pot) {
-                        Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-                        pot.variant = variants.get(entry.getValue().getFirst().variant());
-                    }
-                }
-                removePot(entry.getKey());
+            BlockPos pos = entry.getKey();
+
+            if (!level.getBlockState(pos).isAir()) {
+                removePot(pos);
+                continue;
             }
 
-            regeneratingPots.replace(entry.getKey(), Pair.of(entry.getValue().getFirst(), entry.getValue().getSecond() - 1));
+            if (entry.getValue().getSecond() <= 0) {
+                level.setBlockAndUpdate(pos, entry.getValue().getFirst().state());
+                if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
+                    Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
+                    pot.variant = variants.get(entry.getValue().getFirst().variant());
+                }
+                removePot(pos);
+                continue;
+            }
+
+            regeneratingPots.replace(pos, Pair.of(entry.getValue().getFirst(), entry.getValue().getSecond() - 1));
             if (!isDirty()) setDirty();
         }
     }

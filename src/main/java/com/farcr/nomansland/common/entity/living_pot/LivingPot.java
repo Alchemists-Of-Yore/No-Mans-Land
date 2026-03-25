@@ -217,7 +217,22 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
     @Override
     public boolean canBeCollidedWith() {
-        return isLarge();
+        return false;
+    }
+
+    @Override
+    protected void doPush(Entity other) {
+        if (isLarge() && other instanceof Player player) {
+            double dx = player.getX() - getX();
+            double dz = player.getZ() - getZ();
+            double dist = Math.sqrt(dx * dx + dz * dz);
+            if (dist > 0.01) {
+                double strength = 0.4;
+                player.push(dx / dist * strength, 0, dz / dist * strength);
+            }
+        } else {
+            super.doPush(other);
+        }
     }
 
     @Override
@@ -250,7 +265,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     @Override
     public boolean shouldDropExperience() {
         PotVariant variant = getVariant();
-        return variant != null && variant.traits().contains(PotTrait.DROPS_EXPERIENCE);
+        return variant != null && variant.traits().contains(PotTrait.DROPS_EXPERIENCE) && !hasModifier(PotModifier.WAXED);
     }
 
     @Override
@@ -613,6 +628,12 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                     if (!modList.isEmpty()) {
                         potItem.set(NMLDataComponents.POT_MODIFIERS, modList);
                     }
+                }
+                if (!storedPotion.equals(PotionContents.EMPTY)) {
+                    potItem.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, storedPotion);
+                }
+                if (!storedItem.isEmpty()) {
+                    potItem.set(net.minecraft.core.component.DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.fromItems(java.util.List.of(storedItem)));
                 }
                 spawnAtLocation(potItem);
                 spawnAtLocation(new ItemStack(net.minecraft.world.item.Items.HONEYCOMB));

@@ -321,16 +321,6 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     @Override
-    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return Shapes.empty();
-    }
-
-    @Override
-    protected boolean useShapeForLightOcclusion(BlockState state) {
-        return false;
-    }
-
-    @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
@@ -479,7 +469,11 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
         BlockPos lowerPos = pos;
-        return (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) || player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG) ? 1 : super.getDestroyProgress(state, player, level, pos);
+        if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) {
+            return 1;
+        }
+        float base = super.getDestroyProgress(state, player, level, pos);
+        return player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG) ? base * 3.0F : base;
     }
 
     @Override
