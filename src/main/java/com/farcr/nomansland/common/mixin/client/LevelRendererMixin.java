@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.mixin.client;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -66,7 +67,7 @@ public abstract class LevelRendererMixin {
         Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci
     ) {
-        DreamManager.Client manager = DreamManager.Client.getInstance();
+        ClientDreamRenderer manager = ClientDreamRenderer.getInstance();
         if (!DREAM_RENDER_CONTEXT && manager.dreamShouldRender()) {
             DREAM_RENDER_CONTEXT = true;
             nml$Self.renderLevel(
@@ -87,7 +88,7 @@ public abstract class LevelRendererMixin {
     private void nml$renderLevel(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci
     ) {
-        DreamManager.Client clientManager = DreamManager.Client.getInstance();
+        ClientDreamRenderer clientManager = ClientDreamRenderer.getInstance();
         if (clientManager.dreamShouldRender() && clientManager.getRenderer() != null) {
             boolean cancelSkybox = clientManager.getRenderer().render(
                 nml$Self, new PoseStack(),

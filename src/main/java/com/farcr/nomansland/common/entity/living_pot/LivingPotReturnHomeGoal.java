@@ -1,15 +1,8 @@
 package com.farcr.nomansland.common.entity.living_pot;
 
-import com.farcr.nomansland.common.block.pots.PotTrait;
-import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.EnumSet;
 
@@ -23,6 +16,7 @@ public class LivingPotReturnHomeGoal extends Goal {
     private final LivingPot pot;
     private Phase phase = Phase.WALKING;
     private int sleepTicks = 0;
+    private BlockPos targetPos;
 
     public LivingPotReturnHomeGoal(LivingPot pot) {
         this.pot = pot;
@@ -63,18 +57,22 @@ public class LivingPotReturnHomeGoal extends Goal {
             if (pot.distanceToSqr(home.getX() + 0.5, home.getY(), home.getZ() + 0.5) <= ARRIVE_RANGE_SQ || pot.getNavigation().isDone()) {
                 phase = Phase.SLEEPING;
                 sleepTicks = 0;
+                BlockPos placePos = choosePlacePos(home);
+                pot.setPos(placePos.getX() + 0.5, placePos.getY(), placePos.getZ() + 0.5);
+                pot.setDeltaMovement(0, 0, 0);
                 pot.getNavigation().stop();
                 pot.setSleeping(true);
+                this.targetPos = placePos;
             }
         } else {
+            pot.getNavigation().stop();
+            pot.setDeltaMovement(0, pot.getDeltaMovement().y, 0);
             sleepTicks++;
             if (sleepTicks >= SLEEP_DURATION) {
                 pot.setSleeping(false);
-                BlockPos home = pot.getHomePos();
-                if (home != null) {
-                    placeBlockAt(pot.level(), choosePlacePos(home));
+                if (targetPos != null) {
+                    placeBlockAt(targetPos);
                 }
-                pot.remove(Entity.RemovalReason.DISCARDED);
             }
         }
     }
@@ -84,6 +82,7 @@ public class LivingPotReturnHomeGoal extends Goal {
         pot.setSleeping(false);
         phase = Phase.WALKING;
         sleepTicks = 0;
+        targetPos = null;
     }
 
     private BlockPos choosePlacePos(BlockPos home) {
@@ -109,34 +108,7 @@ public class LivingPotReturnHomeGoal extends Goal {
                 && level.getBlockState(pos.below()).isSolid();
     }
 
-    private void placeBlockAt(Level level, BlockPos pos) {
-        if (pot.variant == null) return;
-
-        BlockState state = pot.blockState;
-        level.setBlockAndUpdate(pos, state);
-
-        if (level.getBlockEntity(pos) instanceof PotBlockEntity be) {
-            be.variant = pot.variant;
-            if (pot.getPotLootTable() != null) {
-                be.setLootTable(pot.getPotLootTable());
-                be.setLootTableSeed(pot.getLootTableSeed());
-            } else if (!pot.storedItem.isEmpty()) {
-                be.setTheItem(pot.storedItem);
-            }
-        }
-        if (pot.variant.traits().contains(PotTrait.TRAPPED) && !level.isClientSide()) {
-            BlockState placed = level.getBlockState(pos);
-            level.setBlock(pos, placed.setValue(BlockStateProperties.POWERED, true), 2);
-            level.updateNeighborsAt(pos, placed.getBlock());
-            level.scheduleTick(pos, placed.getBlock(), 4);
-            if (level instanceof ServerLevel serverLevel) {
-                for (int i = 0; i < 6; i++) {
-                    double x = pos.getX() + 0.25 + level.getRandom().nextDouble() * 0.5;
-                    double y = pos.getY() + 0.5 + level.getRandom().nextDouble() * 0.5;
-                    double z = pos.getZ() + 0.25 + level.getRandom().nextDouble() * 0.5;
-                    serverLevel.sendParticles(DustParticleOptions.REDSTONE, x, y, z, 1, 0, 0, 0, 0);
-                }
-            }
-        }
+    private void placeBlockAt(BlockPos pos) {
+        pot.placeAsBlock(pos);
     }
 }

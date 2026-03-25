@@ -1,15 +1,11 @@
 package com.farcr.nomansland.common.entity.living_pot;
 
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -18,13 +14,14 @@ import java.util.EnumSet;
 
 public class LivingPotDashGoal extends Goal {
 
-    private static final double DASH_RANGE = 10.0;
+    private static final double DASH_RANGE = 4.0;
     private static final double DASH_SPEED = 4.0;
     private static final int DASH_COOLDOWN = 60;
-    private static final int WINDUP_TICKS = 10;
+    private static final int WINDUP_TICKS = 4;
     private static final int MAX_CHARGE_TICKS = 20;
-    private static final double DASH_DISTANCE = 3.0;
+    private static final double DASH_DISTANCE = 4.0;
     private static final double HIT_RANGE_SQ = 1.8 * 1.8;
+    private static final int POST_DASH_LOCK_TICKS = 5;
 
     private final LivingPot pot;
     private Vec3 dashDir = Vec3.ZERO;
@@ -34,6 +31,8 @@ public class LivingPotDashGoal extends Goal {
     private int cooldown = 0;
     private boolean charging = false;
     private boolean hasHitTarget = false;
+    private float lockedYaw;
+    private int postDashLockTicks = 0;
 
     public LivingPotDashGoal(LivingPot pot) {
         this.pot = pot;
@@ -43,12 +42,22 @@ public class LivingPotDashGoal extends Goal {
     @Override
     public boolean canUse() {
         if (!pot.isLarge()) return false;
+        if (postDashLockTicks > 0) {
+            pot.setYRot(lockedYaw);
+            pot.setYBodyRot(lockedYaw);
+            postDashLockTicks--;
+            cooldown--;
+            return false;
+        }
         if (cooldown > 0) {
             cooldown--;
             return false;
         }
+        if (pot.getLastKnownTargetPos() != null) {
+            return true;
+        }
         LivingEntity target = pot.getTarget();
-        if (target == null || !target.isAlive()) return false;
+        if (target == null || !target.isAlive() || !target.canBeSeenAsEnemy() || target.isInvisible()) return false;
         return pot.distanceToSqr(target) <= DASH_RANGE * DASH_RANGE;
     }
 
@@ -59,23 +68,30 @@ public class LivingPotDashGoal extends Goal {
 
     @Override
     public void start() {
-        LivingEntity target = pot.getTarget();
-        if (target == null) return;
+        Vec3 targetPos;
+        if (pot.getLastKnownTargetPos() != null) {
+            targetPos = pot.getLastKnownTargetPos();
+            pot.setLastKnownTargetPos(null);
+        } else {
+            LivingEntity target = pot.getTarget();
+            if (target == null) return;
+            targetPos = target.position();
+        }
 
         pot.isDashing = true;
         charging = false;
         hasHitTarget = false;
         dashTick = 0;
 
-        dashDir = target.position().subtract(pot.position()).normalize();
+        dashDir = targetPos.subtract(pot.position()).normalize();
 
-        float yaw = (float) Math.toDegrees(Math.atan2(-dashDir.x, dashDir.z));
-        pot.setYRot(yaw);
-        pot.yRotO = yaw;
-        pot.setYBodyRot(yaw);
+        lockedYaw = (float) Math.toDegrees(Math.atan2(-dashDir.x, dashDir.z));
+        pot.setYRot(lockedYaw);
+        pot.yRotO = lockedYaw;
+        pot.setYBodyRot(lockedYaw);
 
         pot.getNavigation().stop();
-        pot.dashStartAnimState.start(pot.tickCount);
+        pot.startDashStart();
 
         pot.level().playSound(null, pot.getX(), pot.getY(), pot.getZ(),
                 SoundEvents.DECORATED_POT_HIT, SoundSource.HOSTILE,
@@ -87,9 +103,8 @@ public class LivingPotDashGoal extends Goal {
         dashTick++;
 
         if (!charging) {
-            float yaw = (float) Math.toDegrees(Math.atan2(-dashDir.x, dashDir.z));
-            pot.setYRot(yaw);
-            pot.setYBodyRot(yaw);
+            pot.setYRot(lockedYaw);
+            pot.setYBodyRot(lockedYaw);
 
             if (dashTick >= WINDUP_TICKS) {
                 charging = true;
@@ -97,8 +112,7 @@ public class LivingPotDashGoal extends Goal {
                 dashDest = chargeStart.add(dashDir.scale(DASH_DISTANCE));
                 dashTick = 0;
 
-                pot.dashStartAnimState.stop();
-                pot.dashLoopAnimState.start(pot.tickCount);
+                pot.startDashLoop();
 
                 pot.level().playSound(null, pot.getX(), pot.getY(), pot.getZ(),
                         SoundEvents.IRON_GOLEM_ATTACK, SoundSource.HOSTILE,
@@ -107,20 +121,17 @@ public class LivingPotDashGoal extends Goal {
             return;
         }
 
+        pot.setYRot(lockedYaw);
+        pot.setYBodyRot(lockedYaw);
         pot.getMoveControl().setWantedPosition(dashDest.x, dashDest.y, dashDest.z, DASH_SPEED);
 
         if (hitWall()) {
             pot.hurt(pot.damageSources().fall(), 3.0F);
 
-            if (pot.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(
-                        new BlockParticleOption(ParticleTypes.BLOCK, Blocks.TERRACOTTA.defaultBlockState()),
-                        pot.getX(), pot.getY() + 0.5, pot.getZ(),
-                        10, 0.3, 0.3, 0.3, 0.05);
-            }
+            pot.spawnShatterParticles(20, 0.4);
             pot.level().playSound(null, pot.getX(), pot.getY(), pot.getZ(),
                     SoundEvents.DECORATED_POT_SHATTER, SoundSource.HOSTILE,
-                    1.0F, 0.7F);
+                    1.2F, 0.5F + pot.getRandom().nextFloat() * 0.2F);
             stop();
             return;
         }
@@ -149,12 +160,11 @@ public class LivingPotDashGoal extends Goal {
         pot.isDashing = false;
         pot.meleeCooldownTicks = 20;
         cooldown = DASH_COOLDOWN;
+        postDashLockTicks = POST_DASH_LOCK_TICKS;
         dashTick = 0;
         charging = false;
         hasHitTarget = false;
-        pot.dashStartAnimState.stop();
-        pot.dashLoopAnimState.stop();
-        pot.dashEndAnimState.start(pot.tickCount);
+        pot.startDashEnd();
     }
 
     private boolean hitWall() {

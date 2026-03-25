@@ -21,6 +21,15 @@ import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
+import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
+import com.farcr.nomansland.common.networking.ClientboundDistantChunkPacket;
+import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
+import com.farcr.nomansland.common.networking.ClientboundSunDogStatePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
+import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.dialogue.*;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
@@ -82,8 +91,6 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            DreamManager.buildDreamTypeContext();
-
             if (NMLConfig.BIOMES.get()) NMLBiomePlacements.register();
             NMLDensityModifications.register();
             NMLSurfaceRules.register();
@@ -293,6 +300,9 @@ public class CommonSetupEvents {
 
         // sun dog update packet
         registrar.playToClient(ClientboundSunDogStatePacket.TYPE, ClientboundSunDogStatePacket.STREAM_CODEC, ClientboundSunDogStatePacket::handleData);
+
+        registrar.playToClient(ClientboundInvertedBellPacket.TYPE, ClientboundInvertedBellPacket.STREAM_CODEC, ClientboundInvertedBellPacket::handleData);
+        registrar.playToClient(ClientboundDistantChunkPacket.TYPE, ClientboundDistantChunkPacket.STREAM_CODEC, ClientboundDistantChunkPacket::handleData);
     }
 
     @SubscribeEvent

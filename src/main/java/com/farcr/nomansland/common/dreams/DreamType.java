@@ -108,11 +108,4 @@ public class DreamType {
         this.hideHUD = hudHidden;
         return this;
     }
-
-    public static class DreamTypeInstance {
-        public DreamTypeInstance(DreamType dreamType) {
-            this.dreamType = dreamType;
-        }
-        public DreamType dreamType;
-    }
 }

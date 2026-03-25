@@ -92,12 +92,7 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
                 }, Util.backgroundExecutor()
         );
 
-        return task.thenApply(meetingPointPosition -> {
-            double elapsedSeconds = stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000.0;
-            NoMansLand.LOGGER.debug("Calculation for {} took {}s", structureSet, elapsedSeconds);
-            NoMansLand.LOGGER.debug("Meeting Point Position is: {} {}", SectionPos.sectionToBlockCoord(meetingPointPosition.x), SectionPos.sectionToBlockCoord(meetingPointPosition.z));
-            return meetingPointPosition;
-        });
+        return task.thenApply(meetingPointPosition -> meetingPointPosition);
     }
 
     private Pair<BlockPos, Holder<Biome>> findBiome(int x, int z, HolderSet<Biome> preferredBiomes, RandomSource biomeSearchGenerator) {

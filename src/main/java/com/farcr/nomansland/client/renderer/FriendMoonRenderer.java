@@ -16,6 +16,7 @@ import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Camera;
@@ -395,8 +396,8 @@ public class FriendMoonRenderer implements AutoCloseable {
             float degrees = (float) Math.toDegrees(Math.atan2(blockPos.getX(), blockPos.getZ()));
             degrees += offsetCalculation;
 
-            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(degrees));
-            poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(65));
+            poseStack.mulPose(Axis.YP.rotationDegrees(degrees));
+            poseStack.mulPose(Axis.XP.rotationDegrees(65));
 
             RenderSystem.disableCull();
             RenderTarget target = mc.getMainRenderTarget();
@@ -498,8 +499,8 @@ public class FriendMoonRenderer implements AutoCloseable {
         poseStack.pushPose();
 
         // Moon Rotation in the sky
-        Quaternionf rotationQuaternion = com.mojang.math.Axis.YP.rotationDegrees(friendMoonYawAngle)
-                .mul(com.mojang.math.Axis.XP.rotationDegrees(friendMoonPitchAngle));
+        Quaternionf rotationQuaternion = Axis.YP.rotationDegrees(friendMoonYawAngle)
+                .mul(Axis.XP.rotationDegrees(friendMoonPitchAngle));
         poseStack.mulPose(rotationQuaternion);
 
         Matrix4f matrix4f1 = poseStack.last().pose();

@@ -6,12 +6,13 @@ import com.farcr.nomansland.client.NMLArmorModels;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.extensions.NMLClientExtensions;
+import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
-import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
+import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
@@ -19,7 +20,10 @@ import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -30,11 +34,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 import java.io.IOException;
@@ -64,6 +64,8 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BELL_MODEL.id()));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BEAM_MODEL.id()));
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
 
         //Load all the pot models here otherwise you die
@@ -73,9 +75,32 @@ public class ClientSetupEvents {
         }
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_1alt")));
         for (int i = 0; i < 1; i++) {
-            var path = "block/ancient_pots/ancient_pot_large_" + (i+1);
+            var path = "block/ancient_pots/ancient_pot_large_" + (i + 1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
+            for (int i = 0; i < 6; i++) {
+                var path = "block/ancient_pots/alchemist_pot_small_" + (i+1);
+                event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+            }
+            event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1alt")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_face_stern")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_face_happy")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_gold")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_green")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_white")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_stern")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_happy")));
+            for (int i = 0; i < 1; i++) {
+                var path = "block/ancient_pots/alchemist_pot_large_" + (i+1);
+                event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+        }
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_stern")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_happy")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle_gold")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle_green")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_wiggle_white")));
     }
 
     @SubscribeEvent
@@ -105,6 +130,9 @@ public class ClientSetupEvents {
 
         event.registerBlockEntityRenderer(NMLBlockEntities.POT.get(), PotRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_POT.get(), LivingPotRenderer::new);
+        event.registerEntityRenderer(NMLEntities.FALLING_POT.get(), FallingPotRenderer::new);
+
+        event.registerBlockEntityRenderer(NMLBlockEntities.INVERTED_BELL.get(), InvertedBellRenderer::new);
     }
 
     @SubscribeEvent
@@ -188,6 +216,7 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_SPARK.get(), sprites
             -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
             -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));
+        event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
     }
 
     @SubscribeEvent
@@ -232,5 +261,17 @@ public class ClientSetupEvents {
             ),
             shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
         );
+        try {
+            InvertedBellClientHandler.instance.postChain = new PostChain(
+                    Minecraft.getInstance().getTextureManager(),
+                    Minecraft.getInstance().getResourceManager(),
+                    Minecraft.getInstance().getMainRenderTarget(),
+                    InvertedBellClientHandler.INVERTED_BELL_SHADER
+            );
+        } catch (IOException e) {
+            NoMansLand.LOGGER.warn("Failed to load shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
+        } catch (JsonSyntaxException e) {
+            NoMansLand.LOGGER.warn("Failed to parse shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
+        }
     }
 }

@@ -1,9 +1,7 @@
-package com.farcr.nomansland.client.renderer.entity;
+package com.farcr.nomansland.client.model.living_pot;
 
-import com.farcr.nomansland.client.model.living_pot.LivingPotModel;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
-import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,7 +11,6 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -34,12 +31,10 @@ public class LivingPotBodyLayer extends RenderLayer<LivingPot, LivingPotModel<Li
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, LivingPot entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        ResourceLocation variantLoc = ResourceLocation.tryParse(entity.getEntityData().get(LivingPot.VARIANT));
-        if (variantLoc == null) return;
-        PotVariant variant = entity.level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).get(variantLoc);
-        BlockState state = entity.getEntityData().get(LivingPot.BLOCKSTATE);
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, LivingPot pot, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        PotVariant variant = pot.getVariant();
         if (variant == null) return;
+        BlockState state = pot.getBlockState();
 
         LivingPotModel<LivingPot> model = getParentModel();
 
@@ -48,14 +43,15 @@ public class LivingPotBodyLayer extends RenderLayer<LivingPot, LivingPotModel<Li
         model.getBody().translateAndRotate(poseStack);
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
         poseStack.mulPose(Axis.XP.rotationDegrees(180));
-        poseStack.translate(-0.5, -1.2, -0.5);
+        double yOffset = pot.isLarge() ? -1.0 / 16.0 : 0;
+        poseStack.translate(-0.5, yOffset, -0.5);
 
         ResourceLocation modelLoc = variant.model();
         ModelManager manager = blockRenderer.getBlockModelShaper().getModelManager();
         ModelResourceLocation mrl = ModelResourceLocation.standalone(modelLoc.withPrefix("block/"));
         BakedModel bakedModel = manager.getModel(mrl);
 
-        int overlay = LivingEntityRenderer.getOverlayCoords(entity, 0.0F);
+        int overlay = LivingEntityRenderer.getOverlayCoords(pot, 0.0F);
 
         blockRenderer.getModelRenderer().renderModel(
                 poseStack.last(),

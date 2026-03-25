@@ -2,10 +2,13 @@ package com.farcr.nomansland.common.event;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.mixin.MobInvoker;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
@@ -71,10 +74,12 @@ import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
@@ -580,9 +585,10 @@ public class MiscellaneousEvents {
             FriendMoon.getOrDefault(serverLevel).tick();
             RegeneratingPotsData.getOrDefault(serverLevel).tick();
             SunDog.getOrDefault(serverLevel).tick();
+            InvertedBellServerHandler.get(serverLevel).tick(serverLevel);
         } else {
             SunDog.Client.INSTANCE.tick();
-            DreamManager.Client.getInstance().tick();
+            ClientDreamRenderer.getInstance().tick();
         }
     }
 
@@ -592,7 +598,16 @@ public class MiscellaneousEvents {
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDimensionSyncPacket(serverPlayer.server.levelKeys()));
             SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);
             FriendMoon.getOrDefault(serverPlayer.serverLevel()).updatePlayerFriendShadow(serverPlayer);
-            DreamManager.getOrDefault(serverPlayer.serverLevel()).notifyClient(serverPlayer);
+            DreamManager.getOrDefault(serverPlayer.getServer()).notifyClient(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            DreamManager manager = DreamManager.getOrDefault(event.getEntity().getServer());
+            DreamingPlayer dreamingPlayer = manager.getDreamingPlayer(serverPlayer);
+            if (dreamingPlayer != null) dreamingPlayer.discardTether();
         }
     }
 

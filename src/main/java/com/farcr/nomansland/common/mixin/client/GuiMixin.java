@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.mixin.client;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLMooseChargeAttackHandler;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -30,9 +31,9 @@ public class GuiMixin {
 
     @Inject(method = "renderSleepOverlay", at = @At("HEAD"), cancellable = true)
     private void nml$renderSleepOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        DreamManager.Client clientRenderer = DreamManager.Client.getInstance();
+        ClientDreamRenderer clientRenderer = ClientDreamRenderer.getInstance();
         if (clientRenderer.clientIsDreaming()) {
-            clientRenderer.renderOverlay(guiGraphics, deltaTracker);
+            ClientDreamRenderer.renderOverlay(guiGraphics, deltaTracker);
             ci.cancel();
         }
     }
@@ -45,15 +46,18 @@ public class GuiMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        DreamManager.Client clientRenderer = DreamManager.Client.getInstance();
-        if (clientRenderer.getDream() != null && clientRenderer.getDream().hideHUD())
+        ClientDreamRenderer clientRenderer = ClientDreamRenderer.getInstance();
+        if (clientRenderer.getDream() != null && clientRenderer.dreamShouldRender() && clientRenderer.getDream().hideHUD()) {
+            // manually render regardless !!!
+            ClientDreamRenderer.renderOverlay(guiGraphics, deltaTracker);
             ci.cancel();
+        }
     }
 
     @SuppressWarnings("UnstableApiUsage")
     @Inject(method = "<init>", at = @At("TAIL"))
     private void nml$injectDialogueRenderer(Minecraft minecraft, CallbackInfo ci) {
         layerManager.add(NoMansLand.location("dialogue"), DialogueRenderer::render);
-        layerManager.add(NoMansLand.location("dream_overlay"), DreamManager.Client::renderOverlay);
+        layerManager.add(NoMansLand.location("dream_overlay"), ClientDreamRenderer::renderOverlay);
     }
 }

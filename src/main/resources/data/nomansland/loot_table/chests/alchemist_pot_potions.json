@@ -1,0 +1,339 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 12,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:awkward_residue",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:water"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:thick"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:leaping"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:swiftness"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:thick"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:long_weakness"
+            }
+          ],
+          "name": "minecraft:splash_potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:long_weakness"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:mundane"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:long_poison"
+            }
+          ],
+          "name": "minecraft:lingering_potion",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:long_poison"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:long_poison"
+            }
+          ],
+          "name": "minecraft:splash_potion",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:awkward"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:harming"
+            }
+          ],
+          "name": "minecraft:splash_potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:strong_harming"
+            }
+          ],
+          "name": "minecraft:splash_potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:strong_harming"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:harming"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:fire_resistance"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:strong_regeneration"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:long_regeneration"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:regeneration"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:strong_healing"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:healing"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 1,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:ancient_bronze_mask",
+          "weight": 7
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:living_urn",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:warding_effigy",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:ender_pearl",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [],
+          "name": "minecraft:map",
+          "weight": 7
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

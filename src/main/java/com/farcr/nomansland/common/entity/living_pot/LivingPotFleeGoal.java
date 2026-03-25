@@ -30,12 +30,19 @@ public class LivingPotFleeGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return pot.isSmall() && pot.isAngry();
+        return pot.isSmall() && pot.isAngry() && (canSeeAngerTarget() || pot.getLastKnownTargetPos() != null);
     }
 
     @Override
     public boolean canContinueToUse() {
-        return pot.isSmall() && pot.isAngry();
+        return pot.isSmall() && pot.isAngry() && (canSeeAngerTarget() || pot.getLastKnownTargetPos() != null);
+    }
+
+    private boolean canSeeAngerTarget() {
+        Player target = pot.getPersistentAngerTarget() != null
+                ? pot.level().getPlayerByUUID(pot.getPersistentAngerTarget())
+                : null;
+        return target != null && target.canBeSeenAsEnemy() && !target.isInvisible();
     }
 
     @Override
@@ -52,16 +59,25 @@ public class LivingPotFleeGoal extends Goal {
             allyPot = findNearestLargeAlly();
         }
 
-        Player target = pot.getPersistentAngerTarget() != null
+        Player player = pot.getPersistentAngerTarget() != null
                 ? pot.level().getPlayerByUUID(pot.getPersistentAngerTarget())
                 : null;
 
-        if (allyPot != null && allyPot.isAlive() && target != null) {
-            Vec3 playerToAlly = allyPot.position().subtract(target.position()).normalize();
+        Vec3 threatPos;
+        if (player != null && !player.isInvisible()) {
+            threatPos = player.position();
+        } else if (pot.getLastKnownTargetPos() != null) {
+            threatPos = pot.getLastKnownTargetPos();
+        } else {
+            return;
+        }
+
+        if (allyPot != null && allyPot.isAlive()) {
+            Vec3 playerToAlly = allyPot.position().subtract(threatPos).normalize();
             Vec3 hidePos = allyPot.position().add(playerToAlly.scale(BEHIND_DISTANCE));
             pot.getNavigation().moveTo(hidePos.x, hidePos.y, hidePos.z, speed);
-        } else if (target != null) {
-            Vec3 fleeDir = pot.position().subtract(target.position()).normalize();
+        } else {
+            Vec3 fleeDir = pot.position().subtract(threatPos).normalize();
             Vec3 fleeTarget = pot.position().add(fleeDir.scale(8));
             Vec3 pos = DefaultRandomPos.getPosTowards(pot, 10, 7, fleeTarget, Math.PI / 3);
             if (pos != null) {

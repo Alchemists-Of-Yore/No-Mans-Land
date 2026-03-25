@@ -66,6 +66,8 @@ public abstract class EntityMixin implements EntityExtension {
     * Offering Injection
     */
 
+    @Shadow public abstract float getYRot();
+
     @Unique private boolean NML$offering = false;
     @Unique private boolean NML$previouslyInspected = false;
     public void NML$setInspectionState(boolean isInspecting) {

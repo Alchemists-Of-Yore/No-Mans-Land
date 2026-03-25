@@ -40,7 +40,7 @@ public class MoonlightDreamType extends DreamType {
         super((player, level) -> true);
 
         this.setCanSprint(false)
-            .setHUDHidden(false)
+            .setHUDHidden(true)
             .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
             .setChunkGenerator(this::moonlightChunkGenerator)
             .setRenderer(MoonlightDreamRenderer::new);

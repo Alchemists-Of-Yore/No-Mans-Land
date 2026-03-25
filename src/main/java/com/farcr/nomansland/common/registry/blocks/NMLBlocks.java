@@ -8,6 +8,7 @@ import com.farcr.nomansland.common.block.fruit_trees.FruitLeavesBlock;
 import com.farcr.nomansland.common.block.fruit_trees.FruitType;
 import com.farcr.nomansland.common.block.moonlight.MoonlightBasinBlock;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
+import com.farcr.nomansland.common.block.pots.LargePotBlock;
 import com.farcr.nomansland.common.block.pots.PotBlock;
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.tap.TapBlock;
@@ -20,7 +21,6 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
 import com.farcr.nomansland.common.registry.worldgen.NMLTreeGrowers;
 import com.farcr.nomansland.datagen.loot.*;
-import com.google.common.collect.Sets;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -40,7 +39,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -50,7 +48,6 @@ import static net.minecraft.world.level.block.state.BlockBehaviour.Properties.of
 @SuppressWarnings("unused")
 public class NMLBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(NoMansLand.MODID);
-    public static LinkedHashSet<ItemDefinition<?>> CREATIVE_TAB_ITEMS = Sets.newLinkedHashSet();
     public static List<BlockDefinition<?>> BLOCK_DEFINITIONS = new ArrayList<>();
     public static List<Woodset> WOODSETS = new ArrayList<>();
 
@@ -300,17 +297,17 @@ public class NMLBlocks {
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
 
     public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
-    public static final BlockDefinition<PotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new PotBlock(PotSize.LARGE, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
+    public static final BlockDefinition<LargePotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new LargePotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
 
     // Moonlight
     /* Farcr doesn't want these to show up in the Creative Tabs, so I'm just manually registering the items. */
     public static final BlockDefinition<MoonlightBasinBlock> MOONLIGHT_BASIN = registerNoItem("moonlight_basin",
         () -> new MoonlightBasinBlock(ofFullCopy(Blocks.BEDROCK).dynamicShape().sound(SoundType.COPPER)));
-    public static final ItemDefinition<BlockItem> MOONLIGHT_BASIN_ITEM = registerBlockItem("moonlight_basin", MOONLIGHT_BASIN);
     public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
         () -> new MoonlightCandleBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.CANDLE).offsetType(OffsetType.XZ).dynamicShape()));
-    public static final ItemDefinition<BlockItem> MOONLIGHT_CANDLE_ITEM = registerBlockItem("moonlight_candle", MOONLIGHT_CANDLE);
 
+    public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
@@ -594,16 +591,12 @@ public class NMLBlocks {
 
     public static <T extends Block> BlockDefinition<T> register(String name, Supplier<T> block, BlockProperties properties) {
         BlockDefinition<T> definition = registerNoItem(name, block, properties);
-        CREATIVE_TAB_ITEMS.add(registerBlockItem(name, definition));
+        NMLItems.register(name, () -> new BlockItem(definition.get(), new Item.Properties()));
         return definition;
     }
 
     public static <T extends Block> BlockDefinition<T> register(String name, Supplier<T> block) {
         return register(name, block, BlockProperties.custom(false));
-    }
-
-    public static ItemDefinition<BlockItem> registerBlockItem(String name, BlockDefinition<? extends Block> blockDefinition) {
-        return NMLItems.registerWithoutTab(name, () -> new BlockItem(blockDefinition.get(), new Item.Properties()));
     }
 
     public static class Woodset {

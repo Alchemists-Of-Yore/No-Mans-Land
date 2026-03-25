@@ -3,7 +3,6 @@ package com.farcr.nomansland.common.registry.items;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NMLEnumParams;
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.item.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -95,10 +94,20 @@ public class NMLItems {
     public static final ItemDefinition<Item> SCONCE_SOUL_TORCH = register("sconce_soul_torch",
             () -> new StandingAndWallBlockItem(NMLBlocks.SCONCE_SOUL_TORCH.get(), NMLBlocks.SCONCE_SOUL_WALL_TORCH.get(), new Properties(), Direction.DOWN));
 
-    public static final ItemDefinition<AncientPotItem> ANCIENT_POT = register("ancient_pot",
-            () -> new AncientPotItem(PotSize.SMALL, NMLBlocks.ANCIENT_POT.get(), new Properties()));
-    public static final ItemDefinition<AncientPotItem> LARGE_ANCIENT_POT = register("large_ancient_pot",
-            () -> new AncientPotItem(PotSize.LARGE, NMLBlocks.LARGE_ANCIENT_POT.get(), new Properties()));
+    public static final ItemDefinition<AncientPotItem> ANCIENT_POT = registerWithoutTab("ancient_pot",
+            () -> new AncientPotItem(NMLBlocks.ANCIENT_POT.get(), new Properties()));
+    public static final ItemDefinition<AncientPotItem> LARGE_ANCIENT_POT = registerWithoutTab("large_ancient_pot",
+            () -> new AncientPotItem(NMLBlocks.LARGE_ANCIENT_POT.get(), new Properties()));
+
+    public static final ItemDefinition<AncientPotDebugItem> ANCIENT_POT_DEBUG_ITEM = registerWithoutTab("ancient_pot_debug", () -> new AncientPotDebugItem(new Properties().stacksTo(1)));
+
+    // TODO: do they even need items??? I do not think they do
+    public static final ItemDefinition<BlockItem> MOONLIGHT_BASIN = registerWithoutTab("moonlight_basin",
+            () -> new BlockItem(NMLBlocks.MOONLIGHT_BASIN.get(), new Properties()));
+    public static final ItemDefinition<BlockItem> MOONLIGHT_CANDLE = registerWithoutTab("moonlight_candle",
+            () -> new BlockItem(NMLBlocks.MOONLIGHT_CANDLE.get(), new Properties()));
+    public static final ItemDefinition<BlockItem> INVERTED_BELL = registerWithoutTab("inverted_bell",
+            () -> new BlockItem(NMLBlocks.INVERTED_BELL.get(), new Properties()));
 
     public static final ItemDefinition<Item> FIREBOMB = register("firebomb",
             () -> new FirebombItem(new Properties().stacksTo(8)));
