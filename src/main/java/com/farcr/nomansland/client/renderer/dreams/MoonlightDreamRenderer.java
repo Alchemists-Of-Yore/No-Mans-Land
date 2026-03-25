@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexBuffer;
+import com.mojang.math.Axis;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -24,9 +25,9 @@ public class MoonlightDreamRenderer extends AbstractDreamRenderer {
     ) {
         RenderSystem.depthMask(false);
         poseStack.mulPose(frustumMatrix);
-        poseStack.pushPose();
 
-        renderDream(levelRenderer, poseStack, deltaTracker, projectionMatrix);
+        poseStack.mulPose(Axis.XP.rotationDegrees(35));
+        renderDream(poseStack, deltaTracker, projectionMatrix);
 
         if (levelRenderer.starBuffer == null)
             levelRenderer.createStars();
@@ -48,10 +49,10 @@ public class MoonlightDreamRenderer extends AbstractDreamRenderer {
 
     public float elapsedTime = 0.0f;
     public void renderDream(
-        LevelRenderer levelRenderer, PoseStack poseStack,
-        DeltaTracker deltaTracker, Matrix4f projectionMatrix
+        PoseStack poseStack, DeltaTracker deltaTracker, Matrix4f projectionMatrix
     ) {
         RenderSystem.defaultBlendFunc();
+        poseStack.pushPose();
         poseStack.scale(100f, 100f, 100f);
 
         RenderSystem.enableBlend();
@@ -59,7 +60,7 @@ public class MoonlightDreamRenderer extends AbstractDreamRenderer {
         VertexBuffer skyBuffer = getSkyMesh();
 
         elapsedTime += (deltaTracker.getGameTimeDeltaTicks() / 40) ;
-        DREAM_SKY_SHADER.safeGetUniform("Intensity").set(.1f);
+        DREAM_SKY_SHADER.safeGetUniform("Intensity").set(.5f);
         DREAM_SKY_SHADER.safeGetUniform("Time").set(elapsedTime);
 
         skyBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, DREAM_SKY_SHADER);
@@ -87,7 +88,8 @@ public class MoonlightDreamRenderer extends AbstractDreamRenderer {
         if (skyMesh == null) {
             skyMesh = new VertexBuffer(VertexBuffer.Usage.STATIC);
             skyMesh.bind();
-            skyMesh.upload(Meshes.texturelessHemisphere(Tesselator.getInstance(), 24, 24, Mth.PI * 0.55F, 1,
+            skyMesh.upload(Meshes.texturelessHemisphere(Tesselator.getInstance(),
+                24, 24, Mth.PI * 0.55F, 1,
                 1F, 1F, 1F, 0F,
                 0.3F, 0.3F, 0.4F, 1F,
                 0.2F, -0.25F));

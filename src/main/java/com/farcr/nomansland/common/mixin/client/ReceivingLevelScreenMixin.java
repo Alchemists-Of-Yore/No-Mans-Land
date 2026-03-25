@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,8 +15,8 @@ public class ReceivingLevelScreenMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void nml$InjectRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (DreamManager.Client.getInstance().dreamShouldRender()) {
-            DreamManager.Client.renderOverlay(guiGraphics, Minecraft.getInstance().getTimer());
+        if (ClientDreamRenderer.getInstance().dreamShouldRender()) {
+            ClientDreamRenderer.renderOverlay(guiGraphics, Minecraft.getInstance().getTimer());
             Minecraft.getInstance().mouseHandler.grabMouse();
         }
     }

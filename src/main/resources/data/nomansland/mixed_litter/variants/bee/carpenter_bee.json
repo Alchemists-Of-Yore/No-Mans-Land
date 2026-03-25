@@ -2,17 +2,19 @@
   "type": "mixed_litter:replace_textures_with_default",
   "group": "nomansland:bee",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_carpenter_bees"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_carpenter_bees"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/bee/carpenter_bee",
+    "texture": "nomansland:mob_variants/bee/carpenter_bee.png",
     "replacements": {
-      "entity/bee/bee_angry": "nomansland:entity/mob_variants/bee/carpenter_bee_angry",
-      "entity/bee/bee_nectar": "nomansland:entity/mob_variants/bee/carpenter_bee_nectar",
-      "entity/bee/bee_angry_nectar": "nomansland:entity/mob_variants/bee/carpenter_bee_angry_nectar",
-      "entity/bee/bee_stinger": "nomansland:entity/mob_variants/bee/carpenter_bee_stinger"
+      "bee/bee_angry.png": "nomansland:mob_variants/bee/carpenter_bee_angry.png",
+      "bee/bee_nectar.png": "nomansland:mob_variants/bee/carpenter_bee_nectar.png",
+      "bee/bee_angry_nectar.png": "nomansland:mob_variants/bee/carpenter_bee_angry_nectar.png",
+      "bee/bee_stinger.png": "nomansland:mob_variants/bee/carpenter_bee_stinger.png"
     }
   }
 }

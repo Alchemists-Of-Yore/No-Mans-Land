@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:moose",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#c:is_snowy"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#c:is_snowy"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/moose/moose_leucistic"
+    "texture": "nomansland:moose/moose_leucistic.png"
   }
 }

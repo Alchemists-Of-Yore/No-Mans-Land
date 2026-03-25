@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:husk",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_silt_husks"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_silt_husks"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/zombie/silt_husk"
+    "texture": "nomansland:mob_variants/zombie/silt_husk.png"
   }
 }

@@ -2,12 +2,15 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_cows",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_fluffy_cows"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_fluffy_cows"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/cow/cow_wild",
-    "baby_texture": "nomansland:entity/mob_variants/cow/cow_wild_baby"
+    "texture": "nomansland:mob_variants/cow/cow_wild.png",
+    "baby_texture": "nomansland:mob_variants/cow/cow_wild_baby.png",
+    "remodel": "cow"
   }
 }

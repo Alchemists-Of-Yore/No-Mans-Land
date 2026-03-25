@@ -1,11 +1,13 @@
 package com.farcr.nomansland.common.dreams.dreamlevel;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.world.RandomSequences;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -35,6 +37,10 @@ public class DreamServerLevel extends ServerLevel {
             tickTime, randomSequences
         );
     }
+
+    @Override public void tickPrecipitation(BlockPos blockPos) {}
+
+    @Override public boolean mayInteract(Player player, BlockPos pos) { return false; }
 
     @Override public void save(@Nullable ProgressListener progress, boolean flush, boolean skipSave) {}
 }

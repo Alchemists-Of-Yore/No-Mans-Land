@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:cat",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_wild_cats"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_wild_cats"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/cat/wild"
+    "texture": "nomansland:mob_variants/cat/wild.png"
   }
 }

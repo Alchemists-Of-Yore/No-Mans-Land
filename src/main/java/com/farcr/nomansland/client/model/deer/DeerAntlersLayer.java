@@ -35,7 +35,7 @@ public class DeerAntlersLayer extends RenderLayer<Deer, DeerModel<Deer>> {
                 for (Action action : variantType.actions()) {
                     VariantActionType actionType = action.type();
 
-                    actionType.initialize(action.arguments(), variant.arguments(), variantType.defaults());
+                    actionType.resolve(action.arguments(), variant.arguments(), variantType.defaults());
 
                     if (actionType instanceof SetAntlerLayer setAntlerLayer) {
                         texture = setAntlerLayer.texture;

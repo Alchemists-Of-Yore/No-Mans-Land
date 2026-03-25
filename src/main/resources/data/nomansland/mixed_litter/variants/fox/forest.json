@@ -2,14 +2,16 @@
   "type": "mixed_litter:replace_textures_with_default",
   "group": "nomansland:fox",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_forest_foxes"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_forest_foxes"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/fox/forest_fox",
+    "texture": "nomansland:mob_variants/fox/forest_fox.png",
     "replacements": {
-      "entity/fox/fox_sleep": "nomansland:entity/mob_variants/fox/forest_fox_sleep"
+      "fox/fox_sleep.png": "nomansland:mob_variants/fox/forest_fox_sleep.png"
     }
   }
 }

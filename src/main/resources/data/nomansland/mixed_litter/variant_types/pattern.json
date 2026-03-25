@@ -1,7 +1,7 @@
 {
   "defaults": {
-    "texture": "nomansland:entity/deer/pattern_nothing",
-    "baby_texture": "nomansland:entity/deer/pattern_nothing"
+    "texture": "nomansland:deer/pattern_nothing.png",
+    "baby_texture": "nomansland:deer/pattern_nothing.png"
   },
   "actions": [
     {

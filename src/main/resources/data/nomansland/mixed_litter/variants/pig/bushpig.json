@@ -2,12 +2,15 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_pigs",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#nomansland:entity/spawns_warm_pigs"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#nomansland:entity/spawns_warm_pigs"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/pig/pig_bushpig",
-    "baby_texture": "nomansland:entity/mob_variants/pig/pig_bushpig_baby"
+    "texture": "nomansland:mob_variants/pig/pig_bushpig.png",
+    "baby_texture": "nomansland:mob_variants/pig/pig_bushpig_baby.png",
+    "remodel": "pig"
   }
 }

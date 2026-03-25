@@ -18,4 +18,16 @@ public abstract class AbstractSoundInstanceMixin implements SoundInstanceExtensi
     public float NML$getContextualVolume() {
         return NML$contextualVolume;
     }
+
+    @Unique boolean nml$bypassDeafening = false;
+
+    @Override
+    public boolean nml$getBypassDeafening() {
+        return this.nml$bypassDeafening;
+    }
+
+    @Override
+    public void nml$setBypassDeafening(boolean newBypassDeafening) {
+        this.nml$bypassDeafening = newBypassDeafening;
+    }
 }

@@ -2,11 +2,13 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:moose",
   "conditions": {
-    "spawning_location": {
-      "biomes": "#c:is_spooky"
+    "spawn_predicate": {
+      "location": {
+        "biomes": "#c:is_spooky"
+      }
     }
   },
   "arguments": {
-    "texture": "nomansland:entity/moose/moose_black"
+    "texture": "nomansland:moose/moose_black.png"
   }
 }

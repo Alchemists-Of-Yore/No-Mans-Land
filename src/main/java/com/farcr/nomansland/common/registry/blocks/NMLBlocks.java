@@ -15,6 +15,7 @@ import com.farcr.nomansland.common.block.tap.TapBlock;
 import com.farcr.nomansland.common.block.torches.*;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.BlockProperties;
+import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
@@ -305,6 +306,8 @@ public class NMLBlocks {
     public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
         () -> new MoonlightCandleBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.CANDLE).offsetType(OffsetType.XZ).dynamicShape()));
 
+    public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
@@ -540,7 +543,7 @@ public class NMLBlocks {
             () -> new SlabBlock((ofFullCopy(Blocks.BROWN_MUSHROOM_BLOCK).sound(NMLSounds.MUSHROOM_CAP))));
 
     public static final BlockDefinition<RotatedPillarBlock> VERMILION_FROGLIGHT = register("vermilion_froglight",
-            () -> new RotatedPillarBlock(ofFullCopy(Blocks.OCHRE_FROGLIGHT).mapColor(MapColor.COLOR_PINK)));
+            () -> new RotatedPillarBlock(ofFullCopy(Blocks.OCHRE_FROGLIGHT).mapColor(MapColor.COLOR_PINK)), BlockProperties.froglight());
 
     // Fruity Stuff
     public static final BlockDefinition<Block> APPLE_FRUIT = registerNoItem("apple",

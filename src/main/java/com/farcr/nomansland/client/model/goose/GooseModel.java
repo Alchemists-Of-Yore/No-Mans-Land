@@ -66,7 +66,7 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
 
         body.addOrReplaceChild("right_flight_wing", CubeListBuilder.create().texOffs(0, 15).mirror().addBox(-17, -0.5F, -1.5F, 17, 1, 7, new CubeDeformation(0.01F)).mirror(false), PartPose.offset(-3.5F, -2.5F, -3));
 
-        PartDefinition bodyBaby = partdefinition.addOrReplaceChild("body_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-2, -1.5F, -1, 4, 3, 4), PartPose.offset(0, 20.5F, -0.5F));
+        PartDefinition bodyBaby = partdefinition.addOrReplaceChild("body_baby", CubeListBuilder.create().texOffs(0, 0).addBox(-2, -1.5F, -1, 4, 3, 4), PartPose.offset(0, 18.5F, -0.5F));
 
         bodyBaby.addOrReplaceChild("head_baby", CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2, -3, 3, 3, 3)
                 .texOffs(12, 0).addBox(-0.5F, -1, -4, 1, 1, 1), PartPose.offset(0, -0.5F, 0));

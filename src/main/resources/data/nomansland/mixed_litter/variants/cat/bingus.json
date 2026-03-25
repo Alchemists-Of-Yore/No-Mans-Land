@@ -5,6 +5,6 @@
     "unobtainable": true
   },
   "arguments": {
-    "texture": "nomansland:entity/mob_variants/cat/bingus"
+    "texture": "nomansland:mob_variants/cat/bingus.png"
   }
 }

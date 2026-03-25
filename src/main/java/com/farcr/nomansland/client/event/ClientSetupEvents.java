@@ -6,6 +6,7 @@ import com.farcr.nomansland.client.NMLArmorModels;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.extensions.NMLClientExtensions;
+import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
@@ -19,7 +20,10 @@ import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -60,6 +64,8 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BELL_MODEL.id()));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BEAM_MODEL.id()));
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
 
         //Load all the pot models here otherwise you die
@@ -125,6 +131,8 @@ public class ClientSetupEvents {
         event.registerBlockEntityRenderer(NMLBlockEntities.POT.get(), PotRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_POT.get(), LivingPotRenderer::new);
         event.registerEntityRenderer(NMLEntities.FALLING_POT.get(), FallingPotRenderer::new);
+
+        event.registerBlockEntityRenderer(NMLBlockEntities.INVERTED_BELL.get(), InvertedBellRenderer::new);
     }
 
     @SubscribeEvent
@@ -253,5 +261,17 @@ public class ClientSetupEvents {
             ),
             shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
         );
+        try {
+            InvertedBellClientHandler.instance.postChain = new PostChain(
+                    Minecraft.getInstance().getTextureManager(),
+                    Minecraft.getInstance().getResourceManager(),
+                    Minecraft.getInstance().getMainRenderTarget(),
+                    InvertedBellClientHandler.INVERTED_BELL_SHADER
+            );
+        } catch (IOException e) {
+            NoMansLand.LOGGER.warn("Failed to load shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
+        } catch (JsonSyntaxException e) {
+            NoMansLand.LOGGER.warn("Failed to parse shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
+        }
     }
 }

@@ -34,7 +34,7 @@ public class DeerPatternLayer extends RenderLayer<Deer, DeerModel<Deer>> {
             for (Action action : variantType.actions()) {
                 VariantActionType actionType = action.type();
 
-                actionType.initialize(action.arguments(), variant.arguments(), variantType.defaults());
+                actionType.resolve(action.arguments(), variant.arguments(), variantType.defaults());
 
                 if (actionType instanceof SetPatternLayer setPatternLayer) {
                     texture = deer.isBaby() ? setPatternLayer.babyTexture : setPatternLayer.texture;

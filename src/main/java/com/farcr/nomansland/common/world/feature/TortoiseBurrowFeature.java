@@ -88,7 +88,7 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                                 tortoise.moveTo(tortoiseSpawnPos.getX(), tortoiseSpawnPos.getY(), tortoiseSpawnPos.getZ(), 0, 0);
                                 tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
                                 tortoise.setHomePos(tortoiseSpawnPos);
-                                tortoise.setData(MLDataAttachmentTypes.SPAWN_LOCATION, GlobalPos.of(tortoise.level().dimension(), tortoise.blockPosition()));
+//                                tortoise.setData(MLDataAttachmentTypes.SPAWN_LOCATION, GlobalPos.of(tortoise.level().dimension(), tortoise.blockPosition()));
                                 VariantUtil.applySuitableVariants(tortoise);
                                 worldgenlevel.addFreshEntityWithPassengers(tortoise);
                             }

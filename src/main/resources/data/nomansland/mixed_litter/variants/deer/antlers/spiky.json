@@ -2,6 +2,6 @@
   "type": "nomansland:antlers",
   "group": "nomansland:deer_antlers",
   "arguments": {
-    "texture": "nomansland:entity/deer/antlers_spiky"
+    "texture": "nomansland:deer/antlers_spiky.png"
   }
 }

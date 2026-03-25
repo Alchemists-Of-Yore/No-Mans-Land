@@ -1,10 +1,7 @@
 package com.farcr.nomansland.common.registry.worldgen;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.common.world.structure.processor.BlockRemoverProcessor;
-import com.farcr.nomansland.common.world.structure.processor.CandleProcessor;
-import com.farcr.nomansland.common.world.structure.processor.PrefixProcessor;
-import com.farcr.nomansland.common.world.structure.processor.TallBlockRemoverProcessor;
+import com.farcr.nomansland.common.world.structure.processor.*;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
@@ -24,6 +21,8 @@ public class NMLStructureProcessorTypes {
             TALL_BLOCK_REMOVER = register("tall_block_remover", TallBlockRemoverProcessor.CODEC);
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<BlockRemoverProcessor>>
             BLOCK_REMOVER = register("block_remover", BlockRemoverProcessor.CODEC);
+    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<InvertedBellProcessor>>
+            BELL_PROCESSOR = register("inverted_bell", InvertedBellProcessor.CODEC);
     
     private static <P extends StructureProcessor> DeferredHolder<StructureProcessorType<?>, StructureProcessorType<P>> register (String name, MapCodec<P> codec) {
         return STRUCTURE_PROCESSOR_TYPES.register(name, () -> () -> codec);

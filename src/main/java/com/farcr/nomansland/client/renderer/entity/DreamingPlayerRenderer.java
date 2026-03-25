@@ -19,6 +19,8 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -30,33 +32,35 @@ public class DreamingPlayerRenderer extends EntityRenderer<DreamingPlayer> {
     @Override
     public ResourceLocation getTextureLocation(DreamingPlayer entity) { return null; }
 
-    private RemotePlayer remotePlayer;
-
-    @Override
-    public void render(DreamingPlayer p_entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        DreamPlayerSnapshot snapshot = p_entity.getClientSnapshot();
-        if (snapshot == null)
-            return;
-
-        if (remotePlayer == null) {
+    public Player getRemotePlayer(DreamingPlayer player) {
+        if (player.clientOnlyRemotePlayer == null) {
+            assert Minecraft.getInstance().player != null;
             ClientPacketListener clientpacketlistener = Minecraft.getInstance().player.connection;
+            DreamPlayerSnapshot snapshot = player.getClientSnapshot();
+            if (snapshot == null)
+                return null;
+
             PlayerInfo playerinfo = clientpacketlistener.getPlayerInfo(snapshot.uuid());
             if (playerinfo == null)
-                return;
-
-            remotePlayer = new RemotePlayer(
-                (ClientLevel) p_entity.level(),
+                return null;
+            player.clientOnlyRemotePlayer = new RemotePlayer(
+                (ClientLevel) player.level(),
                 playerinfo.getProfile()
             );
-            remotePlayer.setPose(Pose.SLEEPING);
-        }
 
-        remotePlayer.setXRot(p_entity.getXRot());
-        remotePlayer.setYRot(p_entity.getYRot());
-        remotePlayer.setYBodyRot(p_entity.yBodyRot);
-        remotePlayer.setYHeadRot(p_entity.yHeadRot);
-        p_entity.getSleepingPos().ifPresent(remotePlayer::setSleepingPos);
+            player.clientOnlyRemotePlayer.load(snapshot.compoundTag());
+            player.getSleepingPos().ifPresent(player.clientOnlyRemotePlayer::startSleeping);
+            player.clientOnlyRemotePlayer.getEntityData().set(Player.DATA_PLAYER_MODE_CUSTOMISATION, snapshot.playerModelCustomization());
+        }
+        return player.clientOnlyRemotePlayer;
+    }
+
+    @Override
+    public void render(@NotNull DreamingPlayer p_entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        RemotePlayer remotePlayer = (RemotePlayer) getRemotePlayer(p_entity);
+        if (remotePlayer == null)
+            return;
 
         dispatcher.render(
             remotePlayer, 0, 0, 0, entityYaw,

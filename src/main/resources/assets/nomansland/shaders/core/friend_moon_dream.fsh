@@ -59,7 +59,7 @@ void main() {
     vec3 adjustedPosition = vec3(vertexPosition);
     adjustedPosition.x += Time / 6.;
 
-    float colorIntensity = 1. + sin(Time * pi) / 32.;
+    float colorIntensity = Intensity + ((sin(Time * pi) / 32.) * Intensity);
     colorIntensity = max(colorIntensity, 0.01);
     vec4 darkness = vec4(0.0, 0.0, 0.0, 1.0);
 
@@ -102,4 +102,5 @@ void main() {
     darkness.xyz += yIntensity * colorHaze;
     darkness = min(darkness, vec4(colorHaze, 1.0));
     fragColor = darkness * vec4(colorLine, 1.);
+    fragColor = mix(fragColor, vec4(0.), 1. - adjustedPosition.y);
 }
