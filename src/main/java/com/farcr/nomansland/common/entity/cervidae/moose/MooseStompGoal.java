@@ -34,6 +34,9 @@ public class MooseStompGoal extends Goal {
     }
 
     public boolean shouldStomp(Entity entity) {
+        if (moose.isVehicle()) {
+            return false;
+        }
         if (moose.targetMemory.isUpsetAt(entity)) {
             return false;
         }

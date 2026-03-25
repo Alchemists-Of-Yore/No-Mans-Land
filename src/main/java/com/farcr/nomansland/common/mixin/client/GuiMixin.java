@@ -1,12 +1,17 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.NMLMooseChargeAttackHandler;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.PlayerRideableJumping;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +19,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(Gui.class)
 public class GuiMixin {
@@ -28,6 +35,12 @@ public class GuiMixin {
             clientRenderer.renderOverlay(guiGraphics, deltaTracker);
             ci.cancel();
         }
+    }
+
+    @WrapOperation(method = "renderJumpMeter", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getJumpRidingScale()F"))
+    private float nml$renderMooseAttackOverlay(LocalPlayer instance, Operation<Float> original, PlayerRideableJumping rideable) {
+        Optional<Float> optional = NMLMooseChargeAttackHandler.replaceVanillaGuiValue(rideable);
+        return optional.orElseGet(() -> original.call(instance));
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)

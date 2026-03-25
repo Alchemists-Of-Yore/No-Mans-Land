@@ -94,6 +94,11 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitles.entity.moose.ambient", "Moose breathes in deeply");
         add("nomansland.subtitles.entity.moose.eat", "Moose eats");
         add("nomansland.subtitles.entity.moose.reject_food", "Moose rejects food");
+        add("nomansland.subtitles.entity.moose.reject_saddle", "Moose rejects saddle");
+        add("nomansland.subtitles.entity.moose.swing", "Moose swings wildly");
+        add("nomansland.subtitles.entity.moose.swing_blunder", "Moose tires aimlessly");
+        add("nomansland.subtitles.entity.moose.swing_perfect", "Moose bashes marvelously");
+        add("nomansland.subtitles.entity.moose.uppercut", "Moose deals damage");
         add("nomansland.subtitles.entity.moose.stomp", "Moose stomps in frustration");
         add("nomansland.subtitles.entity.moose.warn", "Moose huffs out air in frustration");
         add("nomansland.subtitles.entity.moose.shed_antlers", "Moose sheds it's antlers");

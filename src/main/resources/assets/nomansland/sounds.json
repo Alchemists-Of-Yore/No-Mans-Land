@@ -794,23 +794,23 @@
     "sounds": [
       {
         "name": "entity/horse/eat1",
-        "pitch": 0.5
+        "pitch": 0.85
       },
       {
         "name": "entity/horse/eat2",
-        "pitch": 0.5
+        "pitch": 0.85
       },
       {
         "name": "entity/horse/eat3",
-        "pitch": 0.5
+        "pitch": 0.85
       },
       {
         "name": "entity/horse/eat4",
-        "pitch": 0.5
+        "pitch": 0.85
       },
       {
         "name": "entity/horse/eat5",
-        "pitch": 0.5
+        "pitch": 0.85
       }
     ],
     "subtitle": "nomansland.subtitles.entity.moose.eat"
@@ -818,19 +818,94 @@
   "entity.moose.reject_food": {
     "sounds": [
       {
-        "name": "entity/mob/breathe1",
-        "pitch": 0.5
+        "name": "mob/horse/breathe1",
+        "pitch": 0.85
       },
       {
-        "name": "entity/mob/breathe2",
-        "pitch": 0.5
+        "name": "mob/horse/breathe2",
+        "pitch": 0.85
       },
       {
-        "name": "entity/mob/breathe3",
-        "pitch": 0.5
+        "name": "mob/horse/breathe3",
+        "pitch": 0.85
       }
     ],
     "subtitle": "nomansland.subtitles.entity.moose.reject_food"
+  },
+  "entity.moose.reject_saddle": {
+    "sounds": [
+      {
+        "name": "mob/horse/donkey/idle1",
+        "pitch": 0.7
+      },
+      {
+        "name": "mob/horse/donkey/idle1",
+        "pitch": 0.6
+      },
+      {
+        "name": "mob/horse/breathe1",
+        "pitch": 0.85
+      },
+      {
+        "name": "mob/horse/breathe2",
+        "pitch": 0.85
+      },
+      {
+        "name": "mob/horse/breathe3",
+        "pitch": 0.85
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.reject_saddle"
+  },
+  "entity.moose.swing": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/moose/swing1"
+      },
+      {
+        "name": "nomansland:entity/moose/swing2"
+      },
+      {
+        "name": "nomansland:entity/moose/swing3"
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.swing"
+  },
+  "entity.moose.swing_blunder": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/moose/swing1",
+        "pitch": 0.5
+      },
+      {
+        "name": "nomansland:entity/moose/swing2",
+        "pitch": 0.5
+      },
+      {
+        "name": "nomansland:entity/moose/swing3",
+        "pitch": 0.5
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.swing_blunder"
+  },
+  "entity.moose.swing_perfect": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/moose/swing_perfect1"
+      },
+      {
+        "name": "nomansland:entity/moose/swing_perfect2"
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.swing_perfect"
+  },
+  "entity.moose.hit": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/moose/hit"
+      }
+    ],
+    "subtitle": "nomansland.subtitles.entity.moose.hit"
   },
   "entity.moose.stomp": {
     "sounds": [

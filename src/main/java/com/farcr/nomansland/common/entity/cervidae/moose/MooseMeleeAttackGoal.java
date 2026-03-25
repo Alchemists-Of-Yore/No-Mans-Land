@@ -1,9 +1,11 @@
 package com.farcr.nomansland.common.entity.cervidae.moose;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 
 public class MooseMeleeAttackGoal extends MeleeAttackGoal {
 
@@ -120,10 +122,42 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
         this.ticksUntilNextAttack = this.adjustedTickDelay(60);
     }
 
+    @Override
+    protected boolean canPerformAttack(LivingEntity target) {
+        if (moose.isVehicle()) {
+            return false;
+        }
+        if (!isTimeToAttack()) {
+            return false;
+        }
+        if (!moose.getSensing().hasLineOfSight(target)) {
+            return false;
+        }
+        var vehicle = target.getVehicle();
+        if (vehicle != null) {
+            var aabb1 = vehicle.getBoundingBox();
+            var aabb2 = target.getBoundingBox();
+            var area = new AABB(
+                    Math.min(aabb2.minX, aabb1.minX),
+                    aabb2.minY,
+                    Math.min(aabb2.minZ, aabb1.minZ),
+                    Math.max(aabb2.maxX, aabb1.maxX),
+                    aabb2.maxY,
+                    Math.max(aabb2.maxZ, aabb1.maxZ));
+            if (area.intersects(moose.getHitbox())) {
+                return true;
+            }
+        }
+        return moose.isWithinMeleeAttackRange(target);
+    }
+
     protected boolean canDamageCachedTarget(LivingEntity cachedTarget) {
         if (!isTimeToAttack()) {
             return false;
         }
-        return cachedTarget.distanceTo(moose) < 6f && moose.getSensing().hasLineOfSight(cachedTarget);
+        if (!moose.getSensing().hasLineOfSight(cachedTarget)) {
+            return false;
+        }
+        return cachedTarget.distanceTo(moose) < 6f || moose.isWithinMeleeAttackRange(cachedTarget);
     }
 }

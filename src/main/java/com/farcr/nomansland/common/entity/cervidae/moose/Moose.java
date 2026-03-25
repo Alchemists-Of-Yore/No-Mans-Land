@@ -58,6 +58,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     private static final EntityDataAccessor<Boolean> DATA_HAS_ANTLERS = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_PACIFIED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_SADDLED = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_CAN_CHARGE_ATTACK = SynchedEntityData.defineId(Moose.class, EntityDataSerializers.BOOLEAN);
 
     public static final byte ADD_WARNING_FEEDBACK_EVENT = 15;
     public static final byte ADD_STOMP_FEEDBACK_EVENT = 14;
@@ -71,6 +72,13 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     public static final byte EAT_EVENT = 8;
     public static final byte REJECT_FOOD_EVENT = 7;
     public static final byte REJECT_SADDLE_EVENT = 6;
+
+    //Controls how long the cooldown period lasts after a player-initiated charge attack
+    protected static final int CHARGE_ATTACK_COOLDOWN = 40;
+    //Controls how long the cooldown period lasts after a perfectly-timed player-initiated charge attack
+    protected static final int CHARGE_ATTACK_PERFECT_COOLDOWN = 20;
+    //Controls the multiplier applied to damage dealt when the moose performs a perfectly-timed player-initiated charge attack
+    protected static final float CHARGE_ATTACK_PERFECT_DAMAGE = 1.5f;
 
     //Controls how long a nearby entity has to stay within the stomp radius in order for the Moose to stomp
     protected static final int STOMP_WINDUP = 30;
@@ -101,7 +109,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     //Multiplies the movement speed of the moose while it is being ridden by a player
     protected static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
     //Multiplies the movement speed of the moose while it is being commanded to attack by a player
-    protected static final float CHARGING_ATTACK_SPEED_MULTIPLIER = 1.15f;
+    protected static final float CHARGING_ATTACK_SPEED_MULTIPLIER = 0.9f;
 
     //Controls how far the moose will try to back away from the nearest target after it stomps, or after it attacks
     protected static final float BACK_OFF_DISTANCE = 12f;
@@ -144,6 +152,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     public int saddleShakeOffTimer;
 
     private int pacificationStage;
+    private int chargeAttackCooldown;
 
     public Moose(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -166,6 +175,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         builder.define(DATA_HAS_ANTLERS, true);
         builder.define(DATA_IS_PACIFIED, false);
         builder.define(DATA_IS_SADDLED, false);
+        builder.define(DATA_CAN_CHARGE_ATTACK, true);
     }
 
     @Override
@@ -187,7 +197,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         compound.putInt("SaddleShakeOffTimer", saddleShakeOffTimer);
 
         compound.putInt("PacificationStage", getPacificationStage());
-        compound.putBoolean("IsPacified", isPacified());
+        compound.putInt("ChargeAttackCooldown", getChargeAttackCooldown());
 
         compound.putBoolean("IsSaddled", isSaddled());
     }
@@ -211,6 +221,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         saddleShakeOffTimer = compound.getInt("SaddleShakeOffTimer");
 
         setPacificationStage(compound.getInt("PacificationStage"));
+        setChargeAttackCooldown(compound.getInt("ChargeAttackCooldown"));
         setIsSaddled(compound.getBoolean("IsSaddled"));
     }
 
@@ -295,6 +306,15 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     @Override
     public void equipSaddle(@NotNull ItemStack itemStack, @Nullable SoundSource soundSource) {
         setIsSaddled(true);
+        playSound(getSaddleSoundEvent(), 0.5F, 1.0F);
+    }
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (chargeAttackCooldown > 0) {
+            setChargeAttackCooldown(chargeAttackCooldown-1);
+        }
     }
 
     @Override
@@ -388,8 +408,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         switch (id) {
             case ADD_WARNING_FEEDBACK_EVENT -> addWarningFeedback();
             case ADD_STOMP_FEEDBACK_EVENT -> addStompFeedback();
-            case START_STOMP_EVENT -> addInitialStompFeedback();
-            case ATTACK_EVENT -> addInitialAttackFeedback();
+            case START_STOMP_EVENT -> addStompSequenceStartFeedback();
+            case ATTACK_EVENT -> addAttackSequenceStartFeedback();
             case CHARGED_ATTACK_START_EVENT -> addChargedAttackStartFeedback();
             case CHARGED_ATTACK_END_EVENT -> addChargedAttackEndFeedback();
             case TAME_EVENT -> spawnTamingParticles(true);
@@ -409,6 +429,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         boolean hurt = super.hurt(source, amount);
         var attacker = source.getEntity();
         if (attacker instanceof LivingEntity living) {
+            if (living.isVehicle()) {
+                for (Entity passenger : living.getPassengers()) {
+                    if ((isPacified() && passenger instanceof Player) || !isPacified()) {
+                        targetMemory.addTarget(passenger);
+                    }
+                }
+                return hurt;
+            }
             if (isPacified() && living instanceof Player) {
                 return hurt;
             }
@@ -422,24 +450,26 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
      */
     @Override
     public boolean doHurtTarget(Entity target) {
+        playSound(NMLSounds.MOOSE_SWINGS.get(), 0.5f, 1.5F);
         return doHurtTarget(target, 1f);
     }
 
     /**
      * All the logic tied to the Moose hurting anything through any means is handled here.
      */
-    public boolean doHurtTarget(Entity target, float damageMultiplier) {
-        float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE) * damageMultiplier;
-        var damagesource = damageSources().mobAttack(this);
-        if (target.hurt(damagesource, damage)) {
+    public boolean doHurtTarget(Entity target, float attackStrength) {
+        var damageSource = damageSources().mobAttack(this);
+        float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE) * attackStrength;
+        if (target.hurt(damageSource, damage)) {
             double knockbackResistance = target instanceof LivingEntity living ? living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 0;
-            target.setDeltaMovement(target.getDeltaMovement().add(0, 0.4F * Math.max(0, 1 - knockbackResistance), 0));
+            double knockup = attackStrength * 0.4F * Math.max(0, 1 - knockbackResistance);
+            target.setDeltaMovement(target.getDeltaMovement().add(getDeltaMovement()).add(0, knockup, 0));
             if (target instanceof ServerPlayer player) {
                 targetMemory.clearAggression(player);
                 player.connection.send(new ClientboundSetEntityMotionPacket(player));
             }
             if (level() instanceof ServerLevel serverLevel) {
-                EnchantmentHelper.doPostAttackEffects(serverLevel, target, damagesource);
+                EnchantmentHelper.doPostAttackEffects(serverLevel, target, damageSource);
             }
             mostRecentAttack = level().getGameTime();
             return true;
@@ -485,7 +515,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
      */
     public void shakeOffSaddle() {
         setIsSaddled(false);
-        level().broadcastEntityEvent(this, REJECT_SADDLE_EVENT);
         ItemEntity itementity = spawnAtLocation(Items.SADDLE, 1);
         if (itementity != null) {
             float x = (random.nextFloat() - random.nextFloat()) * 0.3F;
@@ -493,6 +522,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
             float z = (random.nextFloat() - random.nextFloat()) * 0.3F;
             itementity.setDeltaMovement(itementity.getDeltaMovement().add(x, y, z));
         }
+        level().broadcastEntityEvent(this, REJECT_SADDLE_EVENT);
+        playSound(NMLSounds.MOOSE_REJECTS_SADDLE.get(), 1f, 1f);
     }
 
     /**
@@ -533,14 +564,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         boolean isMooseFood = stack.is(NMLTags.MOOSE_FOOD);
         if (getTarget() != null || (!isMooseFood && stack.getFoodProperties(player) != null)) {
             level.broadcastEntityEvent(this, REJECT_FOOD_EVENT);
-            playSound(NMLSounds.MOOSE_REJECTS_FOOD.get(), 0.2F, 1.0F);
+            playSound(NMLSounds.MOOSE_REJECTS_FOOD.get(), 1f, 1f);
             return Optional.of(InteractionResult.FAIL);
         }
         if (isMooseFood) {
             var isClientSide = level.isClientSide;
             if (!isClientSide) {
                 stack.shrink(1);
-                playSound(NMLSounds.MOOSE_EAT.get(), 0.2F, 1.0F);
+                playSound(NMLSounds.MOOSE_EAT.get(), 1f, 1f);
                 int stage = getPacificationStage();
                 if (stage < MINIMUM_TAME_ATTEMPTS) {
                     stage++;
@@ -660,14 +691,24 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     }
 
     @Override
+    public int getJumpCooldown() {
+        if (level().isClientSide) {
+            return entityData.get(DATA_CAN_CHARGE_ATTACK) ? 0 : 1;
+        }
+        return chargeAttackCooldown;
+    }
+
+    /**
+     * Handles the release of the jump-key by the controlling player, dealing damage to all appropriately found nearby entities.
+     */
+    @Override
     public void handleStartJump(int jumpPower) {
-        level().broadcastEntityEvent(this, Moose.CHARGED_ATTACK_END_EVENT);
         float delta = jumpPower / 100f;
         var look = getLookAngle();
-        float forwards = 0.9f;
+        float forwards = 1.2f;
         float upwards = 0.6f;
-        float horizontal = 0.3f;
-        float vertical = 0.4f;
+        float horizontal = 0.6f;
+        float vertical = 0.8f;
         var area = getBoundingBox().move(look.x * forwards, upwards, look.z * forwards).inflate(horizontal, vertical, horizontal);
         var targets = level().getEntitiesOfClass(LivingEntity.class, area,
                 target -> {
@@ -685,9 +726,27 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
                     }
                     return target.isAlive() && hasLineOfSight(target);
                 });
-        for (LivingEntity target : targets) {
-            doHurtTarget(target, delta * delta);
+        float hurtVolume = 1.5f;
+        float attackStrength = delta;
+        int cooldown = CHARGE_ATTACK_COOLDOWN;
+        var sound = NMLSounds.MOOSE_SWINGS;
+        if (attackStrength >= 0.95f && !targets.isEmpty()) {
+            attackStrength = CHARGE_ATTACK_PERFECT_DAMAGE;
+            cooldown = CHARGE_ATTACK_PERFECT_COOLDOWN;
+            sound = NMLSounds.MOOSE_SWINGS_PERFECT;
         }
+        else if (targets.isEmpty()) {
+            sound = NMLSounds.MOOSE_SWINGS_BLUNDER;
+        }
+        for (LivingEntity target : targets) {
+            if (doHurtTarget(target, attackStrength)) {
+                playSound(NMLSounds.MOOSE_HITS_TARGET.get(), hurtVolume, 1.2f + random.nextFloat() * 0.4f);
+                hurtVolume *= 0.65f;
+            }
+        }
+        playSound(sound.get(), 0.5f, 0.8f + delta*0.3f);
+        setChargeAttackCooldown(cooldown);
+        level().broadcastEntityEvent(this, Moose.CHARGED_ATTACK_END_EVENT);
     }
 
     @Override
@@ -868,11 +927,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         }
     }
 
-    protected void addInitialStompFeedback() {
+    protected void addStompSequenceStartFeedback() {
         stompAnimationState.start(tickCount);
     }
 
-    protected void addInitialAttackFeedback() {
+    protected void addAttackSequenceStartFeedback() {
         attackAnimationState.start(tickCount);
     }
 
@@ -956,9 +1015,20 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
     public void setPacificationStage(int stage) {
         pacificationStage = stage;
-        if (stage == MINIMUM_TAME_ATTEMPTS) {
+        if (stage >= MINIMUM_TAME_ATTEMPTS) {
             setIsPacified(true);
         }
+    }
+
+    public int getChargeAttackCooldown() {
+        return chargeAttackCooldown;
+    }
+
+    public void setChargeAttackCooldown(int cooldown) {
+        if ((chargeAttackCooldown == 0) != (cooldown == 0)) {
+            entityData.set(DATA_CAN_CHARGE_ATTACK, cooldown == 0);
+        }
+        chargeAttackCooldown = cooldown;
     }
 
     @Override
