@@ -30,7 +30,6 @@ import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegist
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
-import com.farcr.nomansland.common.networking.friend.ServerboundFriendMoonUpdatePacket;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.dialogue.*;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
