@@ -15,6 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
@@ -66,7 +68,7 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
             if (variant.size() == PotSize.LARGE && !level.getBlockState(pos.above()).isAir()) continue;
 
             Direction facing = Direction.Plane.HORIZONTAL.getRandomDirection(random);
-            potState = potState.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING, facing);
+            potState = potState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
 
             level.setBlock(pos, potState, 2);
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
@@ -81,8 +83,8 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
 
             if (variant.size() == PotSize.LARGE) {
                 BlockState upperState = potState.setValue(
-                        net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF,
-                        net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER);
+                        BlockStateProperties.DOUBLE_BLOCK_HALF,
+                        DoubleBlockHalf.UPPER);
                 level.setBlock(pos.above(), upperState, 2);
             }
 

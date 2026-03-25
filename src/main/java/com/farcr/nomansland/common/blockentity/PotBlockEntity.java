@@ -44,6 +44,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     public PotVariant variant;
     private final EnumSet<PotModifier> modifiers = EnumSet.noneOf(PotModifier.class);
     private PotionContents storedPotion = PotionContents.EMPTY;
+    public boolean skipBreakEffects;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
     private ItemStack item = ItemStack.EMPTY;
@@ -57,9 +58,11 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
 
-        Optional.ofNullable(level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant)).ifPresent(key -> {
-            tag.putString("Variant", key.toString());
-        });
+        if (variant != null && level != null) {
+            Optional.ofNullable(level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant)).ifPresent(key -> {
+                tag.putString("Variant", key.toString());
+            });
+        }
 
         if (!modifiers.isEmpty()) {
             ListTag modList = new ListTag();
@@ -120,9 +123,11 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        Optional.ofNullable(level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant)).ifPresent(key -> {
-            components.set(NMLDataComponents.POT_VARIANT, key);
-        });
+        if (level != null && variant != null) {
+            Optional.ofNullable(level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant)).ifPresent(key -> {
+                components.set(NMLDataComponents.POT_VARIANT, key);
+            });
+        }
 
         if (!this.item.isEmpty()) {
             components.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(this.item)));
@@ -301,7 +306,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         }
         level.addFreshEntity(pot);
         pot.startWakeUp();
-        this.variant = null;
+        this.skipBreakEffects = true;
         level.removeBlock(pos, false);
 
         level.playSound(null, pos, SoundEvents.DECORATED_POT_STEP, SoundSource.HOSTILE, 1.0F, 0.8F);
@@ -311,6 +316,34 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
                     pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5,
                     8, 0.3, 0.05, 0.3, 0.02);
         }
+    }
+
+    public void wakeUpSilent() {
+        if (level == null || level.isClientSide) return;
+        BlockPos pos = getBlockPos();
+
+        LivingPot pot = new LivingPot(NMLEntities.LIVING_POT.get(), level);
+        pot.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        float yaw = getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
+        pot.setYRot(yaw);
+        pot.yRotO = yaw;
+        pot.setYBodyRot(yaw);
+        pot.setYHeadRot(yaw);
+        pot.setVariant(variant, getBlockState());
+        pot.setModifiers(modifiers);
+        if (!storedPotion.equals(PotionContents.EMPTY)) {
+            pot.setStoredPotion(storedPotion);
+        }
+        pot.setHomePos(pos);
+        if (this.lootTable != null) {
+            pot.setLootTable(this.lootTable);
+            pot.setLootTableSeed(this.lootTableSeed);
+        } else if (!item.isEmpty()) {
+            pot.setStoredItem(item);
+        }
+        level.addFreshEntity(pot);
+        this.skipBreakEffects = true;
+        level.removeBlock(pos, false);
     }
 
     public float getFullness() {

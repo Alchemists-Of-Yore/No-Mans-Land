@@ -51,18 +51,27 @@ public class AncientPotDebugItem extends Item {
         if (!(state.getBlock() instanceof PotBlock)) return InteractionResult.PASS;
         if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot)) return InteractionResult.PASS;
 
-        PotModifier modifier = MODIFIERS[getSelectedIndex(context.getItemInHand())];
+        ItemStack stack = context.getItemInHand();
 
-        if (pot.hasModifier(modifier)) {
-            pot.removeModifier(modifier);
-            message(player, modifier.getSerializedName() + ": OFF", ChatFormatting.RED);
+        if (player.isShiftKeyDown()) {
+            int next = (getSelectedIndex(stack) + 1) % MODIFIERS.length;
+            setSelectedIndex(stack, next);
+            PotModifier modifier = MODIFIERS[next];
+            boolean active = pot.hasModifier(modifier);
+            message(player, "selected: " + modifier.getSerializedName() + (active ? " [ON]" : " [OFF]"),
+                    active ? ChatFormatting.GREEN : ChatFormatting.GRAY);
         } else {
-            pot.addModifier(modifier);
-            message(player, modifier.getSerializedName() + ": ON", ChatFormatting.GREEN);
+            PotModifier modifier = MODIFIERS[getSelectedIndex(stack)];
+            if (pot.hasModifier(modifier)) {
+                pot.removeModifier(modifier);
+                message(player, modifier.getSerializedName() + ": OFF", ChatFormatting.RED);
+            } else {
+                pot.addModifier(modifier);
+                message(player, modifier.getSerializedName() + ": ON", ChatFormatting.GREEN);
+            }
+            pot.setChanged();
+            level.sendBlockUpdated(pos, state, state, 3);
         }
-
-        pot.setChanged();
-        level.sendBlockUpdated(pos, state, state, 3);
         return InteractionResult.SUCCESS;
     }
 
@@ -71,26 +80,14 @@ public class AncientPotDebugItem extends Item {
         return !(state.getBlock() instanceof PotBlock);
     }
 
-    public void handleLeftClick(Level level, BlockPos pos, Player player, ItemStack stack) {
+    public void handleLeftClick(Level level, BlockPos pos, Player player) {
         if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot)) return;
-
-        if (player.isShiftKeyDown()) {
-            pot.variant = null;
-            level.destroyBlock(pos, false);
-            if (level instanceof ServerLevel serverLevel) {
-                RegeneratingPotsData.getOrDefault(serverLevel).removePot(pos);
-            }
-            message(player, "pot removed (no regeneration)", ChatFormatting.YELLOW);
-            return;
+        pot.variant = null;
+        level.destroyBlock(pos, false);
+        if (level instanceof ServerLevel serverLevel) {
+            RegeneratingPotsData.getOrDefault(serverLevel).removePot(pos);
         }
-
-        int next = (getSelectedIndex(stack) + 1) % MODIFIERS.length;
-        setSelectedIndex(stack, next);
-
-        PotModifier modifier = MODIFIERS[next];
-        boolean active = pot.hasModifier(modifier);
-        message(player, "selected: " + modifier.getSerializedName() + (active ? " [ON]" : " [OFF]"),
-                active ? ChatFormatting.GREEN : ChatFormatting.GRAY);
+        message(player, "pot removed (no regeneration)", ChatFormatting.YELLOW);
     }
 
     private static void message(Player player, String text, ChatFormatting color) {

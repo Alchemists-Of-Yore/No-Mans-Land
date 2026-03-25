@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.world.saved_data;
 
 import com.farcr.nomansland.common.block.pots.PotData;
+import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -83,10 +84,14 @@ public class RegeneratingPotsData extends SavedData {
             }
 
             if (entry.getValue().getSecond() <= 0) {
-                level.setBlockAndUpdate(pos, entry.getValue().getFirst().state());
+                PotData potData = entry.getValue().getFirst();
+                level.setBlockAndUpdate(pos, potData.state());
                 if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
                     Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-                    pot.variant = variants.get(entry.getValue().getFirst().variant());
+                    pot.variant = variants.get(potData.variant());
+                    for (PotModifier mod : potData.modifiers()) {
+                        pot.addModifier(mod);
+                    }
                 }
                 removePot(pos);
                 continue;
