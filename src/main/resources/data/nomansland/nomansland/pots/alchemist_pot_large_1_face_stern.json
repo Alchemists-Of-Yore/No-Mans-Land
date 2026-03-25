@@ -8,6 +8,7 @@
     [3, 22, 3, 13, 25, 13]
   ],
   "traits": [
-"regenerates"
+"regenerates",
+"drops_experience"
 ]
 }
