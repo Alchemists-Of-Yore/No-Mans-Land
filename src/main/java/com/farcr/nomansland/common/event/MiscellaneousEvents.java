@@ -8,6 +8,7 @@ import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.mixin.MobInvoker;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
@@ -584,6 +585,7 @@ public class MiscellaneousEvents {
             FriendMoon.getOrDefault(serverLevel).tick();
             RegeneratingPotsData.getOrDefault(serverLevel).tick();
             SunDog.getOrDefault(serverLevel).tick();
+            InvertedBellServerHandler.get(serverLevel).tick(serverLevel);
         } else {
             SunDog.Client.INSTANCE.tick();
             ClientDreamRenderer.getInstance().tick();

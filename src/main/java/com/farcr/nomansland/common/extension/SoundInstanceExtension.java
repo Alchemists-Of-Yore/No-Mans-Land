@@ -10,4 +10,9 @@ public interface SoundInstanceExtension {
     default void NML$setContextualVolume(float newVolume) throws NotImplementedException {
         throw new NotImplementedException();
     };
+
+    default boolean nml$getBypassDeafening() {
+        return false;
+    }
+    default void nml$setBypassDeafening(boolean newBypassDeafening) {}
 }

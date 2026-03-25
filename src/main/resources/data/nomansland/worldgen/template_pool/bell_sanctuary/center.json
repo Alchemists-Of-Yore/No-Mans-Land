@@ -1,0 +1,14 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "nomansland:centered_single_pool_element",
+        "location": "nomansland:bell_sanctuary/bell_sanctuary_center",
+        "processors": "nomansland:bell_sanctuary",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

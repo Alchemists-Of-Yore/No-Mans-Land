@@ -106,6 +106,8 @@ public class NMLItems {
             () -> new BlockItem(NMLBlocks.MOONLIGHT_BASIN.get(), new Properties()));
     public static final ItemDefinition<BlockItem> MOONLIGHT_CANDLE = registerWithoutTab("moonlight_candle",
             () -> new BlockItem(NMLBlocks.MOONLIGHT_CANDLE.get(), new Properties()));
+    public static final ItemDefinition<BlockItem> INVERTED_BELL = registerWithoutTab("inverted_bell",
+            () -> new BlockItem(NMLBlocks.INVERTED_BELL.get(), new Properties()));
 
     public static final ItemDefinition<Item> FIREBOMB = register("firebomb",
             () -> new FirebombItem(new Properties().stacksTo(8)));

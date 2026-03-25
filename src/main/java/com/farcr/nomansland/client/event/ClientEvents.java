@@ -1,10 +1,12 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -26,6 +28,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.function.Function;
@@ -92,5 +97,19 @@ public class ClientEvents {
         FriendMoonRenderer.destroy();
         ClientDreamRenderer.destroy();
         DialogueRenderer.setCurrentState(null);
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Pre event) {
+        if (Minecraft.getInstance().player == null) return;
+        InvertedBellClientHandler.instance.tick();
+    }
+
+    @SubscribeEvent
+    public static void onClickEvent(InputEvent.InteractionKeyMappingTriggered event) {
+        if (((LivingEntityExtension)Minecraft.getInstance().player).nml$getBellParalysis() > 0) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
+        }
     }
 }

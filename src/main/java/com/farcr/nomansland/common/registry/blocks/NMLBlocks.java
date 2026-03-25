@@ -15,6 +15,7 @@ import com.farcr.nomansland.common.block.tap.TapBlock;
 import com.farcr.nomansland.common.block.torches.*;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.BlockProperties;
+import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
@@ -305,6 +306,8 @@ public class NMLBlocks {
     public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
         () -> new MoonlightCandleBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.CANDLE).offsetType(OffsetType.XZ).dynamicShape()));
 
+    public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
