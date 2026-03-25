@@ -1,5 +1,5 @@
 {
-  "feature": "nomansland:underground/pots_cave",
+  "feature": "nomansland:underground/pots_cave_sparse",
   "placement": [
     {
       "type": "minecraft:count",
@@ -7,7 +7,7 @@
     },
     {
       "type": "minecraft:rarity_filter",
-      "chance": 3
+      "chance": 2
     },
     {
       "type": "minecraft:in_square"

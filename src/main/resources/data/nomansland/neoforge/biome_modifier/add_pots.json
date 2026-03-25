@@ -3,6 +3,8 @@
   "biomes": "#c:is_overworld",
   "features": [
     "nomansland:underground/pots_cave",
-    "nomansland:underground/pots_cave_depths"],
+    "nomansland:underground/pots_cave_sparse",
+    "nomansland:underground/pots_cave_depths",
+    "nomansland:underground/pots_cave_depths_sparse"],
   "step": "underground_structures"
 }

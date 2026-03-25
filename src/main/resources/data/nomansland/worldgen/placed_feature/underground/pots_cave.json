@@ -5,6 +5,10 @@
       "type": "minecraft:in_square"
     },
     {
+      "type": "minecraft:rarity_filter",
+      "chance": 3
+    },
+    {
       "type": "minecraft:height_range",
       "height": {
         "type": "minecraft:uniform",

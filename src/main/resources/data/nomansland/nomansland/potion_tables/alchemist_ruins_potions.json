@@ -1,0 +1,8 @@
+{
+  "potions": [
+    { "potion": { "potion": "minecraft:regeneration" }, "weight": 9 },
+    { "potion": { "potion": "minecraft:healing" }, "weight": 6 },
+    { "potion": { "potion": "minecraft:luck" }, "weight": 3 },
+    { "potion": { "potion": "nomansland:pacified" }, "weight": 3 }
+  ]
+}
