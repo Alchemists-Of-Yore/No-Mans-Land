@@ -1,6 +1,8 @@
 package com.farcr.nomansland.common.dreams.dreamlevel;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -52,9 +54,7 @@ public class DreamingPlayer extends Mob {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DREAM_PLAYER_SNAPSHOT,
-            new DreamPlayerSnapshot(
-                this.getUUID()
-            )
+            new DreamPlayerSnapshot(this.getUUID())
         );
         super.defineSynchedData(builder);
     }
@@ -64,13 +64,14 @@ public class DreamingPlayer extends Mob {
         return SLEEPING_DIMENSIONS;
     }
 
-    private Optional<Player> discardTether() {
+    public Optional<Player> discardTether() {
         if (this.level() instanceof ServerLevel level) {
             if (getTetheredPlayer() == null)
                 return Optional.empty();
             Player player = getTetheredPlayer();
             this.remove(RemovalReason.DISCARDED);
             player.teleportTo(level, this.getX(), this.getY(), this.getZ(), Set.of(), this.getXRot(), this.getYRot());
+            NoMansLand.LOGGER.info("teleporting player to tether");
             return Optional.of(player);
         }
         return Optional.empty();
@@ -88,6 +89,8 @@ public class DreamingPlayer extends Mob {
         return super.getUUID();
     }
 
+    public Player clientOnlyRemotePlayer;
+
     @Override
     public void tick() {
         if (!level().isClientSide && getTetheredPlayer() == null)
@@ -96,6 +99,10 @@ public class DreamingPlayer extends Mob {
             if (getTetheredPlayer().level().dimension().equals(this.level().dimension()))
                 discardTether();
         }
+
+        // hackily obtained from the renderer only on the client as to not . crash the server
+        if (clientOnlyRemotePlayer != null) clientOnlyRemotePlayer.tick();
+
         super.tick();
     }
 }

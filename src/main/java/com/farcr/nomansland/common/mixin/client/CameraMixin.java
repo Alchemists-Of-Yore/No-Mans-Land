@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.Camera;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +16,7 @@ public abstract class CameraMixin {
         )
     )
     private static boolean nml$redirectSleeping(boolean original) {
-        if (DreamManager.Client.getInstance().dreamShouldRender())
+        if (ClientDreamRenderer.getInstance().dreamShouldRender())
             return false;
         return original;
     }

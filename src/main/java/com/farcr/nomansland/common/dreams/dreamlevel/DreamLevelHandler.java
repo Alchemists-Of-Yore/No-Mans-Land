@@ -129,7 +129,7 @@ public class DreamLevelHandler implements AutoCloseable {
 
         DimensionType dimensionType = new DimensionType(
             OptionalLong.of(18000),
-            true, false, false, true,
+            false, false, false, true,
             1d, false, false, 0,
             128, 128, BlockTags.INFINIBURN_OVERWORLD,
             BuiltinDimensionTypes.OVERWORLD_EFFECTS, 0.0F,
@@ -138,8 +138,7 @@ public class DreamLevelHandler implements AutoCloseable {
 
         ResourceLocation dreamLocation = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get().getKey(dreamType);
         ResourceKey<DimensionType> dimensionKey = resourceKey(Registries.DIMENSION_TYPE, dreamLocation, player);
-        if (!dimensionRegistry.containsKey(dimensionKey)
-        && dimensionRegistry instanceof MappedRegistry<DimensionType> writableRegistry) {
+        if (!dimensionRegistry.containsKey(dimensionKey) && dimensionRegistry instanceof MappedRegistry<DimensionType> writableRegistry) {
             writableRegistry.unfreeze();
             writableRegistry.register(dimensionKey, dimensionType,
                 new RegistrationInfo(Optional.empty(), Lifecycle.stable())

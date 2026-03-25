@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;

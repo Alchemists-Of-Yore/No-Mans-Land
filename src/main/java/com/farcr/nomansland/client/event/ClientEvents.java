@@ -3,8 +3,8 @@ package com.farcr.nomansland.client.event;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
-import com.farcr.nomansland.common.dreams.DreamManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -90,7 +90,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onClientLogOut(ClientPlayerNetworkEvent.LoggingOut event) {
         FriendMoonRenderer.destroy();
-        DreamManager.Client.destroy();
+        ClientDreamRenderer.destroy();
         DialogueRenderer.setCurrentState(null);
     }
 }

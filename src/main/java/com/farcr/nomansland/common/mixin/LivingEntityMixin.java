@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -27,6 +28,9 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
 
     @Shadow public abstract boolean hasEffect(Holder<MobEffect> effect);
 
+    @Shadow
+    public abstract boolean isSleeping();
+
     @Unique private LivingEntity nml$Self = (LivingEntity) (Object) this;
 
     @Unique
@@ -34,25 +38,21 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
 
     @Inject(method = "startSleeping", at = @At("TAIL"))
     private void nml$startSleeping(CallbackInfo ci) {
-        if ((nml$Self instanceof ServerPlayer player
-        && nml$Self.level() instanceof ServerLevel level)
-        && DreamManager.getOrDefault(level).playerShouldDream(player))
-            DreamManager.getOrDefault(level).notifyClient(player);
+        if ((nml$Self instanceof ServerPlayer player) && DreamManager.getOrDefault(player.getServer()).playerShouldDream(player))
+            DreamManager.getOrDefault(player.getServer()).notifyClient(player);
     }
 
     @Inject(method = "baseTick", at = @At("TAIL"))
     private void nml$transferSleep(CallbackInfo ci) {
-
-        if ((nml$Self instanceof ServerPlayer player
-            && nml$Self.level() instanceof ServerLevel level)
-            && DreamManager.getOrDefault(level).playerShouldDream(player)
+        if (this.isSleeping() && nml$Self instanceof ServerPlayer player
+            && DreamManager.getOrDefault(player.getServer()).playerShouldDream(player)
             && player.isSleepingLongEnough()
         ) {
-            DreamManager manager = DreamManager.getOrDefault(level);
+            DreamManager manager = DreamManager.getOrDefault(player.getServer());
             DreamType dreamType = manager.playerGetDream(player);
             ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
             // summon fake player
-            manager.getDreamingPlayer(player);
+            manager.createDreamingPlayer(player);
             // move player to other dimension
             player.stopSleeping();
             player.changeDimension(

@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.LightTexture;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,7 +45,7 @@ public class LightTextureMixin {
         )
     )
     private void nml$trueDarknessUpload(float partialTicks, CallbackInfo ci) {
-        if (DreamManager.Client.getInstance().dreamShouldRender() && lightPixels != null) {
+        if (ClientDreamRenderer.getInstance().dreamShouldRender() && lightPixels != null) {
             for (int b = 0; b < 16; b++) {
                 for (int s = 0; s < 16; s++) {
                     final int color = nml$darken(lightPixels.getPixelRGBA(b, s), b);

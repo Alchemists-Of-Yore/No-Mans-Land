@@ -82,8 +82,6 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            DreamManager.buildDreamTypeContext();
-
             if (NMLConfig.BIOMES.get()) NMLBiomePlacements.register();
             NMLDensityModifications.register();
             NMLSurfaceRules.register();
