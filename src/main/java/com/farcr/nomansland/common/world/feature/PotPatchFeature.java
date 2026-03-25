@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.world.feature;
 import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -10,6 +11,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -39,6 +41,11 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
 
         int totalWeight = config.variants().stream().mapToInt(PotPatchConfiguration.WeightedVariant::weight).sum();
         if (totalWeight <= 0) return false;
+
+        PotionTable potionTable = config.potionTable().map(id -> {
+            Registry<PotionTable> registry = level.registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
+            return registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, id)).orElse(null);
+        }).orElse(null);
 
         int placed = 0;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -78,6 +85,14 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
                         pot.addModifier(entry.getKey());
                     }
                 }
+
+                config.lootTable().ifPresent(id ->
+                        pot.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id)));
+
+                if (potionTable != null && random.nextFloat() < config.potionChance()) {
+                    pot.setStoredPotion(potionTable.select(random));
+                }
+
                 pot.setChanged();
             }
 

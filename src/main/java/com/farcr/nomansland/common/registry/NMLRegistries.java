@@ -4,6 +4,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.ambience.fogmodifiers.FogModifier;
 import com.farcr.nomansland.client.music.condition.MusicCondition;
 import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
@@ -41,6 +42,7 @@ public class NMLRegistries {
 
     public static final ResourceKey<Registry<TapInteraction>> TAP_INTERACTION_KEY = ResourceKey.createRegistryKey(NoMansLand.location("tapping"));
     public static final ResourceKey<Registry<PotVariant>> POT_VARIANT_KEY = ResourceKey.createRegistryKey(NoMansLand.location("pots"));
+    public static final ResourceKey<Registry<PotionTable>> POTION_TABLE_KEY = ResourceKey.createRegistryKey(NoMansLand.location("potion_tables"));
 
     public static final ResourceKey<Registry<OreVeinType>> ORE_VEIN_KEY = ResourceKey.createRegistryKey(NoMansLand.location("worldgen/ore_vein"));
 

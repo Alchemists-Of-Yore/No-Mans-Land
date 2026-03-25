@@ -1,0 +1,12 @@
+{
+  "potions": [
+    { "potion": { "potion": "minecraft:healing" }, "weight": 10 },
+    { "potion": { "potion": "minecraft:regeneration" }, "weight": 8 },
+    { "potion": { "potion": "minecraft:swiftness" }, "weight": 8 },
+    { "potion": { "potion": "minecraft:fire_resistance" }, "weight": 6 },
+    { "potion": { "potion": "minecraft:leaping" }, "weight": 6 },
+    { "potion": { "potion": "minecraft:poison" }, "weight": 4 },
+    { "potion": { "potion": "minecraft:harming" }, "weight": 3 },
+    { "potion": { "potion": "minecraft:weakness" }, "weight": 3 }
+  ]
+}
