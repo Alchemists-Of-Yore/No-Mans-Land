@@ -6,9 +6,9 @@
     }
   ],
   "placement": {
-    "salt": 5387593,
+    "salt": 538759,
     "separation": 6,
     "spacing": 33,
-    "type": "nomansland:bell_sanctuary"
+    "type": "minecraft:random_spread"
   }
 }
