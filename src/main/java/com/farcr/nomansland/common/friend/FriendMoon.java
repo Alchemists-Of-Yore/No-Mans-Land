@@ -21,7 +21,6 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
@@ -41,7 +40,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -94,27 +92,40 @@ public class FriendMoon extends SavedData {
     private int rewardDelayTicks = -1;
     private BlockPos rewardBasinPos = null;
     private UUID ascendingBuddyUUID = null;
+    private int ascendingBuddyEntityId = -1;
 
     public boolean isAscensionActive() { return ascensionTicks >= 0; }
 
-    public void startAscension(UUID buddyUUID) {
+    public void startAscension(Buddy buddy) {
         ascensionTicks = 0;
-        ascendingBuddyUUID = buddyUUID;
+        ascendingBuddyUUID = buddy.getUUID();
+        ascendingBuddyEntityId = buddy.getId();
         setDirty();
     }
 
     public void abortAscension() {
         if (!isAscensionActive())
             return;
-        if (level != null && ascendingBuddyUUID != null) {
-            Entity entity = level.getEntity(ascendingBuddyUUID);
-            if (entity instanceof Buddy buddy) {
+        if (level != null) {
+            Buddy buddy = null;
+            if (ascendingBuddyEntityId >= 0) {
+                Entity entity = level.getEntity(ascendingBuddyEntityId);
+                if (entity instanceof Buddy b)
+                    buddy = b;
+            }
+            if (buddy == null && ascendingBuddyUUID != null) {
+                Entity entity = level.getEntity(ascendingBuddyUUID);
+                if (entity instanceof Buddy b)
+                    buddy = b;
+            }
+            if (buddy != null) {
                 buddy.setAscensionTicks(-1);
                 buddy.setHealth(buddy.getMaxHealth());
             }
         }
         ascensionTicks = -1;
         ascendingBuddyUUID = null;
+        ascendingBuddyEntityId = -1;
         setDirty();
     }
 
@@ -263,7 +274,7 @@ public class FriendMoon extends SavedData {
             return false;
 
         if (!isAscensionActive()) {
-            startAscension(buddy.getUUID());
+            startAscension(buddy);
         } else if (ascendingBuddyUUID != null && !ascendingBuddyUUID.equals(buddy.getUUID())) {
             return true;
         }
@@ -293,7 +304,7 @@ public class FriendMoon extends SavedData {
             double offsetX = (level.getRandom().nextDouble() - 0.5) * 0.6;
             double offsetZ = (level.getRandom().nextDouble() - 0.5) * 0.6;
             level.addParticle(
-                new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MYCELIUM.defaultBlockState()),
+                ParticleTypes.MYCELIUM,
                 buddy.getX() + offsetX, buddy.getY() + level.getRandom().nextDouble() * 1.8, buddy.getZ() + offsetZ,
                 0, 0.05, 0
             );
@@ -326,7 +337,7 @@ public class FriendMoon extends SavedData {
             return;
 
         String variantName = buddy.getVariantName();
-        BuddyStar star = BuddyStar.fromVariant(variantName, level.getRandom());
+        BuddyStar star = BuddyStar.fromVariant(variantName, level.getRandom(), buddyStars.size());
         addBuddyStar(star);
 
         rewardDelayTicks = ASCENSION_REWARD_DELAY;

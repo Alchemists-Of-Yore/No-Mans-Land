@@ -9,6 +9,8 @@ public record BuddyStar(
     float hueOffset,
     float saturationOffset,
     float lightnessOffset,
+    float angle,
+    float distance,
     long seed
 ) {
     public static final Codec<BuddyStar> CODEC = RecordCodecBuilder.create(instance ->
@@ -17,27 +19,17 @@ public record BuddyStar(
             Codec.FLOAT.fieldOf("hue_offset").forGetter(BuddyStar::hueOffset),
             Codec.FLOAT.fieldOf("saturation_offset").forGetter(BuddyStar::saturationOffset),
             Codec.FLOAT.fieldOf("lightness_offset").forGetter(BuddyStar::lightnessOffset),
+            Codec.FLOAT.fieldOf("angle").forGetter(BuddyStar::angle),
+            Codec.FLOAT.fieldOf("distance").forGetter(BuddyStar::distance),
             Codec.LONG.fieldOf("seed").forGetter(BuddyStar::seed)
         ).apply(instance, BuddyStar::new)
     );
 
-    public static final int FIRST_RING_SIZE = 6;
-    public static final float FIRST_RING_DISTANCE = 8f;
-    public static final float RING_DISTANCE_STEP = 5f;
-    public static final float MAX_RANDOMNESS = 0.3f;
+    public static final float MIN_DISTANCE = 12f;
+    public static final float BASE_RANGE = 8f;
+    public static final float DISTANCE_PER_STAR = 0.3f;
 
-    private static int ringSize(int ring) {
-        float circumference = (float) (2 * Math.PI * (FIRST_RING_DISTANCE + ring * RING_DISTANCE_STEP));
-        float firstCircumference = (float) (2 * Math.PI * FIRST_RING_DISTANCE);
-        return Math.max(FIRST_RING_SIZE, Math.round(FIRST_RING_SIZE * (circumference / firstCircumference)));
-    }
-
-    private static float ringRandomness(int ring) {
-        if (ring == 0) return 0f;
-        return Math.min(ring * 0.1f, MAX_RANDOMNESS);
-    }
-
-    public static BuddyStar fromVariant(String variantName, RandomSource random) {
+    public static BuddyStar fromVariant(String variantName, RandomSource random, int existingStarCount) {
         BuddyStarColor color = BuddyStarColor.fromVariantName(variantName);
 
         float variation = 0.05f;
@@ -45,40 +37,19 @@ public record BuddyStar(
         float sOff = (random.nextFloat() * 2 - 1) * variation;
         float lOff = (random.nextFloat() * 2 - 1) * variation;
 
-        return new BuddyStar(color, hOff, sOff, lOff, random.nextLong());
-    }
+        float angle = random.nextFloat() * 360f;
+        float minDist = MIN_DISTANCE + existingStarCount * DISTANCE_PER_STAR;
+        float distance = minDist + random.nextFloat() * BASE_RANGE;
 
-    public float[] getPosition(int index) {
-        int ring = 0;
-        int ringStart = 0;
-        int currentRingSize = ringSize(0);
-        while (index >= ringStart + currentRingSize) {
-            ringStart += currentRingSize;
-            ring++;
-            currentRingSize = ringSize(ring);
-        }
-        int indexInRing = index - ringStart;
-
-        float spacing = 360f / currentRingSize;
-        float angle = spacing * indexInRing;
-        float distance = FIRST_RING_DISTANCE + ring * RING_DISTANCE_STEP;
-
-        float randomness = ringRandomness(ring);
-        RandomSource jitterRandom = RandomSource.create(seed);
-        angle += (jitterRandom.nextFloat() * 2 - 1) * spacing * randomness;
-        distance += (jitterRandom.nextFloat() * 2 - 1) * RING_DISTANCE_STEP * randomness;
-
-        return new float[]{angle, distance};
+        return new BuddyStar(color, hOff, sOff, lOff, angle, distance, random.nextLong());
     }
 
     public float getFlickerAlpha(long timeMs) {
-        double t = timeMs / 1000.0;
-        double v = Math.sin(t * 0.7 + seed)
-            + Math.sin(t * 1.3 + seed * 0.7)
-            + Math.sin(t * 2.1 + seed * 1.3);
-        v /= 3.0;
-        float normalized = (float) (v * 0.5 + 0.5);
-        return 0.6f + normalized * 0.4f;
+        RandomSource random = RandomSource.create(seed ^ (timeMs / 80));
+        float roll = random.nextFloat();
+        if (roll < 0.06f)
+            return 0.3f + random.nextFloat() * 0.2f;
+        return 1.0f;
     }
 
     public float[] getRgb() {

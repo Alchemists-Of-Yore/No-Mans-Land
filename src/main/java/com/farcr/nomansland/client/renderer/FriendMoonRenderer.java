@@ -577,9 +577,8 @@ public class FriendMoonRenderer implements AutoCloseable {
         float[] prevColor = RenderSystem.getShaderColor();
         for (int i = 0; i < stars.size(); i++) {
             BuddyStar star = stars.get(i);
-            float[] position = star.getPosition(i);
-            float angleRad = (float) Math.toRadians(position[0]);
-            float distRad = (float) Math.toRadians(position[1]);
+            float angleRad = (float) Math.toRadians(star.angle());
+            float distRad = (float) Math.toRadians(star.distance());
 
             float x = (float) (Math.sin(angleRad) * Math.cos(distRad)) * STAR_DISTANCE_FROM_MOON;
             float y = MOON_DISTANCE + (float) (Math.sin(distRad)) * STAR_DISTANCE_FROM_MOON;
