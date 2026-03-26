@@ -1,9 +1,9 @@
 package com.farcr.nomansland.common.world.feature;
 
+import com.farcr.nomansland.common.block.pots.PotBlock;
 import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.pots.PotVariant;
-import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -42,10 +42,7 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
         int totalWeight = config.variants().stream().mapToInt(PotPatchConfiguration.WeightedVariant::weight).sum();
         if (totalWeight <= 0) return false;
 
-        PotionTable potionTable = config.potionTable().map(id -> {
-            Registry<PotionTable> registry = level.registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
-            return registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, id)).orElse(null);
-        }).orElse(null);
+        ResourceLocation potionTableId = config.potionTable().orElse(null);
 
         int placed = 0;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -60,7 +57,9 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
             if (pos.getY() == Integer.MIN_VALUE) continue;
 
             if (!level.getBlockState(pos).isAir()) continue;
-            if (!level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)) continue;
+            BlockState belowState = level.getBlockState(pos.below());
+            if (!belowState.isFaceSturdy(level, pos.below(), Direction.UP)) continue;
+            if (belowState.getBlock() instanceof PotBlock) continue;
 
             PotPatchConfiguration.WeightedVariant selected = selectWeighted(config, random, totalWeight);
             ResourceLocation variantId = selected.variant();
@@ -87,10 +86,11 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
                 }
 
                 config.lootTable().ifPresent(id ->
-                        pot.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id)));
+                        pot.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id), random.nextLong())
+                );
 
-                if (potionTable != null && random.nextFloat() < config.potionChance()) {
-                    pot.setStoredPotion(potionTable.select(random));
+                if (potionTableId != null && random.nextFloat() < config.potionChance()) {
+                    pot.setPotionTable(potionTableId, random.nextLong());
                 }
 
                 pot.setChanged();

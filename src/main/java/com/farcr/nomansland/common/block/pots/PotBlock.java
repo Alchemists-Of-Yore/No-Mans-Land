@@ -413,11 +413,11 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     public static void spawnPotionCloud(ServerLevel level, BlockPos pos, PotionContents contents) {
         AreaEffectCloud cloud = new AreaEffectCloud(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        cloud.setPotionContents(contents);
         cloud.setRadius(3.0F);
         cloud.setRadiusOnUse(-0.5F);
         cloud.setWaitTime(10);
         cloud.setRadiusPerTick(-cloud.getRadius() / (float) cloud.getDuration());
-        cloud.setPotionContents(contents);
         level.addFreshEntity(cloud);
     }
 

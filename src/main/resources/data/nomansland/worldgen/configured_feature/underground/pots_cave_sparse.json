@@ -14,7 +14,7 @@
     "tries": 8,
     "xz_spread": 4,
     "y_spread": 3,
-    "loot_table": "nomansland:chests/ancient_pots_cave",
+    "loot_table": "nomansland:chests/ancient_pot_cave",
     "potion_table": "nomansland:cave_potions",
     "potion_chance": 0.075
   }

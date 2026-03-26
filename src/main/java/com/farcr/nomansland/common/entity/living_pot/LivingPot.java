@@ -2,11 +2,12 @@ package com.farcr.nomansland.common.entity.living_pot;
 
 import com.farcr.nomansland.common.block.pots.*;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import net.minecraft.core.Registry;
+import net.minecraft.util.RandomSource;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -20,7 +21,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -55,13 +55,14 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.ticks.ContainerSingleItem;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class LivingPot extends PathfinderMob implements NeutralMob {
+public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSingleItem {
 
     private static final EntityDataAccessor<Integer> DATA_REMAINING_ANGER_TIME = SynchedEntityData.defineId(LivingPot.class, EntityDataSerializers.INT);
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(290, 310);
@@ -76,6 +77,8 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     protected long lootTableSeed = 0L;
     public ItemStack storedItem = ItemStack.EMPTY;
     private PotionContents storedPotion = PotionContents.EMPTY;
+    private @Nullable ResourceLocation potionTableId;
+    private long potionTableSeed = 0L;
 
     @Nullable private BlockPos homePos;
     private int returnTimer = 12000;
@@ -420,11 +423,30 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     }
 
     public PotionContents getStoredPotion() {
+        unpackPotionTable();
         return storedPotion;
     }
 
     public void setStoredPotion(PotionContents potion) {
         this.storedPotion = potion;
+        this.potionTableId = null;
+    }
+
+    public void setPotionTable(ResourceLocation potionTableId, long seed) {
+        this.potionTableId = potionTableId;
+        this.potionTableSeed = seed;
+    }
+
+    private void unpackPotionTable() {
+        if (potionTableId != null && level() != null && !level().isClientSide) {
+            Registry<PotionTable> registry = level().registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
+            PotionTable table = registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, potionTableId)).orElse(null);
+            if (table != null) {
+                RandomSource random = potionTableSeed != 0L ? RandomSource.create(potionTableSeed) : level().getRandom();
+                storedPotion = table.select(random);
+            }
+            potionTableId = null;
+        }
     }
 
     public void placeAsBlock(BlockPos pos) {
@@ -437,7 +459,9 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
             for (PotModifier mod : modifiers) {
                 be.addModifier(mod);
             }
-            if (!storedPotion.equals(PotionContents.EMPTY)) {
+            if (this.potionTableId != null) {
+                be.setPotionTable(this.potionTableId, this.potionTableSeed);
+            } else if (!storedPotion.equals(PotionContents.EMPTY)) {
                 be.setStoredPotion(storedPotion);
             }
             if (getPotLootTable() != null) {
@@ -615,8 +639,8 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
             removeModifier(PotModifier.TRAPPED);
 
-            if (!storedPotion.equals(PotionContents.EMPTY)) {
-                PotBlock.spawnPotionCloud(serverLevel, blockPosition(), storedPotion);
+            if (!getStoredPotion().equals(PotionContents.EMPTY)) {
+                PotBlock.spawnPotionCloud(serverLevel, blockPosition(), getStoredPotion());
             }
 
             PotVariant variant = getVariant();
@@ -647,10 +671,14 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                         potItem.set(NMLDataComponents.POT_MODIFIERS, modList);
                     }
                 }
-                if (!storedPotion.equals(PotionContents.EMPTY)) {
+                if (this.potionTableId != null) {
+                    potItem.set(NMLDataComponents.POT_POTION_TABLE, new SeededPotionTable(this.potionTableId, this.potionTableSeed));
+                } else if (!storedPotion.equals(PotionContents.EMPTY)) {
                     potItem.set(DataComponents.POTION_CONTENTS, storedPotion);
                 }
-                if (!storedItem.isEmpty()) {
+                if (this.lootTable != null) {
+                    potItem.set(DataComponents.CONTAINER_LOOT, new net.minecraft.world.item.component.SeededContainerLoot(this.lootTable, this.lootTableSeed));
+                } else if (!storedItem.isEmpty()) {
                     potItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(storedItem)));
                 }
                 spawnAtLocation(potItem);
@@ -718,10 +746,10 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
 
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
-        ItemStack stack = unpackLootTable(damageSource.getEntity() instanceof Player player ? player : null);
-        if (!stack.isEmpty()) spawnOrThrowPotion(level, stack);
+        this.unpackLootTable(damageSource.getEntity() instanceof Player player ? player : null);
         if (!storedItem.isEmpty()) {
             spawnOrThrowPotion(level, storedItem);
+            storedItem = ItemStack.EMPTY;
         }
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
     }
@@ -739,7 +767,6 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        tryLoadLootTable(tag);
         readPersistentAngerSaveData(level(), tag);
 
         if (tag.contains("Variant") && tag.contains("BlockState")) {
@@ -752,7 +779,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
         if (tag.contains("ReturnTimer")) {
             returnTimer = tag.getInt("ReturnTimer");
         }
-        if (tag.contains("StoredItem")) {
+        if (!this.tryLoadLootTable(tag) && tag.contains("StoredItem")) {
             storedItem = ItemStack.parseOptional(level().registryAccess(), tag.getCompound("StoredItem"));
         }
         hasWokenLargePot = tag.getBoolean("HasWokenLargePot");
@@ -771,8 +798,12 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        potionTableId = null;
         storedPotion = PotionContents.EMPTY;
-        if (tag.contains("StoredPotion")) {
+        if (tag.contains("PotionTable")) {
+            potionTableId = ResourceLocation.parse(tag.getString("PotionTable"));
+            potionTableSeed = tag.contains("PotionTableSeed", Tag.TAG_LONG) ? tag.getLong("PotionTableSeed") : 0L;
+        } else if (tag.contains("StoredPotion")) {
             PotionContents.CODEC.parse(
                     level().registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.get("StoredPotion"))
                     .resultOrPartial().ifPresent(p -> storedPotion = p);
@@ -782,7 +813,6 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        trySaveLootTable(tag);
         addPersistentAngerSaveData(tag);
 
         PotVariant variant = getVariant();
@@ -795,7 +825,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
             tag.put("HomePos", NbtUtils.writeBlockPos(homePos));
         }
         tag.putInt("ReturnTimer", returnTimer);
-        if (!storedItem.isEmpty()) {
+        if (!this.trySaveLootTable(tag) && !storedItem.isEmpty()) {
             tag.put("StoredItem", storedItem.save(level().registryAccess()));
         }
         tag.putBoolean("HasWokenLargePot", hasWokenLargePot);
@@ -808,58 +838,76 @@ public class LivingPot extends PathfinderMob implements NeutralMob {
             }
             tag.put("Modifiers", modList);
         }
-        if (!storedPotion.equals(PotionContents.EMPTY)) {
+        if (potionTableId != null) {
+            tag.putString("PotionTable", potionTableId.toString());
+            if (potionTableSeed != 0L) tag.putLong("PotionTableSeed", potionTableSeed);
+        } else if (!storedPotion.equals(PotionContents.EMPTY)) {
             Tag potionTag = PotionContents.CODEC.encodeStart(
                     level().registryAccess().createSerializationContext(NbtOps.INSTANCE), storedPotion).getOrThrow();
             tag.put("StoredPotion", potionTag);
         }
     }
 
+    public void setLootTable(@Nullable ResourceKey<LootTable> lootTable) { this.lootTable = lootTable; }
+    public void setLootTableSeed(long seed) { this.lootTableSeed = seed; }
+    @Nullable public ResourceKey<LootTable> getPotLootTable() { return lootTable; }
+    public long getLootTableSeed() { return lootTableSeed; }
+
     public boolean tryLoadLootTable(CompoundTag tag) {
         if (tag.contains("LootTable", 8)) {
-            this.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString("LootTable"))));
-            if (tag.contains("LootTableSeed", 4)) {
-                this.setLootTableSeed(tag.getLong("LootTableSeed"));
-            } else {
-                this.setLootTableSeed(0L);
-            }
+            this.lootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString("LootTable")));
+            this.lootTableSeed = tag.contains("LootTableSeed", 4) ? tag.getLong("LootTableSeed") : 0L;
             return true;
         }
         return false;
     }
 
     public boolean trySaveLootTable(CompoundTag tag) {
-        ResourceKey<LootTable> resourcekey = this.getPotLootTable();
-        if (resourcekey == null) return false;
-        tag.putString("LootTable", resourcekey.location().toString());
-        long i = this.getLootTableSeed();
-        if (i != 0L) tag.putLong("LootTableSeed", i);
+        if (this.lootTable == null) return false;
+        tag.putString("LootTable", this.lootTable.location().toString());
+        if (this.lootTableSeed != 0L) tag.putLong("LootTableSeed", this.lootTableSeed);
         return true;
     }
 
-    public ItemStack unpackLootTable(@Nullable Player player) {
-        ResourceKey<LootTable> resourcekey = this.getPotLootTable();
-        if (resourcekey != null && level() != null && level().getServer() != null) {
-            LootTable loottable = level().getServer().reloadableRegistries().getLootTable(resourcekey);
-            if (player instanceof ServerPlayer) {
-                CriteriaTriggers.GENERATE_LOOT.trigger((ServerPlayer) player, resourcekey);
-            }
-            this.setLootTable(null);
+    public void unpackLootTable(@Nullable Player player) {
+        if (this.lootTable != null && level() != null && level().getServer() != null) {
+            LootTable loottable = level().getServer().reloadableRegistries().getLootTable(this.lootTable);
+            this.lootTable = null;
             LootParams.Builder builder = new LootParams.Builder((ServerLevel) level())
                     .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPosition()));
             if (player != null) {
                 builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
             }
-            var items = loottable.getRandomItems(builder.create(LootContextParamSets.CHEST), this.getLootTableSeed());
-            return items.isEmpty() ? ItemStack.EMPTY : items.getFirst();
+            loottable.fill(this, builder.create(LootContextParamSets.CHEST), this.lootTableSeed);
         }
-        return ItemStack.EMPTY;
     }
 
-    public void setLootTable(@Nullable ResourceKey<LootTable> lootTable) { this.lootTable = lootTable; }
-    public void setLootTableSeed(long seed) { this.lootTableSeed = seed; }
-    @Nullable public ResourceKey<LootTable> getPotLootTable() { return lootTable; }
-    public long getLootTableSeed() { return lootTableSeed; }
+    @Override
+    public ItemStack getTheItem() {
+        this.unpackLootTable(null);
+        return this.storedItem;
+    }
+
+    @Override
+    public ItemStack splitTheItem(int amount) {
+        this.unpackLootTable(null);
+        ItemStack itemstack = this.storedItem.split(amount);
+        if (this.storedItem.isEmpty()) this.storedItem = ItemStack.EMPTY;
+        return itemstack;
+    }
+
+    @Override
+    public void setTheItem(ItemStack item) {
+        this.unpackLootTable(null);
+        this.storedItem = item;
+    }
+
+    @Override
+    public void setChanged() {}
+    @Override
+    public boolean stillValid(Player player) { return true; }
+    @Override
+    public void clearContent() { this.storedItem = ItemStack.EMPTY; }
 
     @Override
     public int getRemainingPersistentAngerTime() { return entityData.get(DATA_REMAINING_ANGER_TIME); }

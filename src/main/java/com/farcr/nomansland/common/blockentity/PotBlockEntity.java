@@ -7,9 +7,12 @@ import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
+import com.farcr.nomansland.common.block.pots.PotionTable;
+import com.farcr.nomansland.common.block.pots.SeededPotionTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,12 +23,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.SeededContainerLoot;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -44,6 +49,8 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     public PotVariant variant;
     private final EnumSet<PotModifier> modifiers = EnumSet.noneOf(PotModifier.class);
     private PotionContents storedPotion = PotionContents.EMPTY;
+    private @Nullable ResourceLocation potionTableId;
+    private long potionTableSeed = 0L;
     public boolean skipBreakEffects;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
@@ -72,7 +79,10 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             tag.put("Modifiers", modList);
         }
 
-        if (!storedPotion.equals(PotionContents.EMPTY)) {
+        if (potionTableId != null) {
+            tag.putString("PotionTable", potionTableId.toString());
+            if (potionTableSeed != 0L) tag.putLong("PotionTableSeed", potionTableSeed);
+        } else if (!storedPotion.equals(PotionContents.EMPTY)) {
             Tag potionTag = PotionContents.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), storedPotion).getOrThrow();
             tag.put("StoredPotion", potionTag);
         }
@@ -99,8 +109,12 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             }
         }
 
+        potionTableId = null;
         storedPotion = PotionContents.EMPTY;
-        if (tag.contains("StoredPotion")) {
+        if (tag.contains("PotionTable")) {
+            potionTableId = ResourceLocation.parse(tag.getString("PotionTable"));
+            potionTableSeed = tag.contains("PotionTableSeed", Tag.TAG_LONG) ? tag.getLong("PotionTableSeed") : 0L;
+        } else if (tag.contains("StoredPotion")) {
             PotionContents.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("StoredPotion"))
                     .resultOrPartial().ifPresent(p -> storedPotion = p);
         }
@@ -129,7 +143,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             });
         }
 
-        if (!this.item.isEmpty()) {
+        if (this.lootTable != null) {
+            components.set(DataComponents.CONTAINER_LOOT, new SeededContainerLoot(this.lootTable, this.lootTableSeed));
+        } else if (!this.item.isEmpty()) {
             components.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(this.item)));
         }
 
@@ -137,7 +153,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             components.set(NMLDataComponents.POT_MODIFIERS, modifiers.stream().map(PotModifier::getSerializedName).toList());
         }
 
-        if (!storedPotion.equals(PotionContents.EMPTY)) {
+        if (potionTableId != null) {
+            components.set(NMLDataComponents.POT_POTION_TABLE, new SeededPotionTable(potionTableId, potionTableSeed));
+        } else if (!storedPotion.equals(PotionContents.EMPTY)) {
             components.set(DataComponents.POTION_CONTENTS, storedPotion);
         }
     }
@@ -150,7 +168,13 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             variant = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getOptional(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, key)).orElse(null);
         });
 
-        this.item = componentInput.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).copyOne();
+        SeededContainerLoot containerLoot = componentInput.get(DataComponents.CONTAINER_LOOT);
+        if (containerLoot != null) {
+            this.lootTable = containerLoot.lootTable();
+            this.lootTableSeed = containerLoot.seed();
+        } else {
+            this.item = componentInput.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).copyOne();
+        }
 
         modifiers.clear();
         java.util.List<String> modList = componentInput.getOrDefault(NMLDataComponents.POT_MODIFIERS, List.of());
@@ -160,9 +184,15 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
             } catch (IllegalArgumentException ignored) {}
         }
 
-        PotionContents potion = componentInput.get(DataComponents.POTION_CONTENTS);
-        if (potion != null) {
-            storedPotion = potion;
+        SeededPotionTable potionTableComponent = componentInput.get(NMLDataComponents.POT_POTION_TABLE);
+        if (potionTableComponent != null) {
+            this.potionTableId = potionTableComponent.potionTable();
+            this.potionTableSeed = potionTableComponent.seed();
+        } else {
+            PotionContents potion = componentInput.get(DataComponents.POTION_CONTENTS);
+            if (potion != null) {
+                storedPotion = potion;
+            }
         }
     }
 
@@ -171,6 +201,10 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         super.removeComponentsFromTag(tag);
         tag.remove("Variant");
         tag.remove("Item");
+        tag.remove("LootTable");
+        tag.remove("LootTableSeed");
+        tag.remove("PotionTable");
+        tag.remove("PotionTableSeed");
         tag.remove("Modifiers");
         tag.remove("StoredPotion");
     }
@@ -266,12 +300,32 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     }
 
     public PotionContents getStoredPotion() {
+        unpackPotionTable();
         return storedPotion;
     }
 
     public void setStoredPotion(PotionContents potion) {
         this.storedPotion = potion;
+        this.potionTableId = null;
         setChanged();
+    }
+
+    public void setPotionTable(ResourceLocation potionTableId, long seed) {
+        this.potionTableId = potionTableId;
+        this.potionTableSeed = seed;
+    }
+
+    private void unpackPotionTable() {
+        if (potionTableId != null && level != null && !level.isClientSide) {
+            Registry<PotionTable> registry = level.registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
+            PotionTable table = registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, potionTableId)).orElse(null);
+            if (table != null) {
+                RandomSource random = potionTableSeed != 0L ? RandomSource.create(potionTableSeed) : level.getRandom();
+                storedPotion = table.select(random);
+            }
+            potionTableId = null;
+            setChanged();
+        }
     }
 
     public void wakeUp(@Nullable LivingEntity disturber) {
@@ -287,7 +341,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         pot.setYHeadRot(yaw);
         pot.setVariant(variant, getBlockState());
         pot.setModifiers(modifiers);
-        if (!storedPotion.equals(PotionContents.EMPTY)) {
+        if (this.potionTableId != null) {
+            pot.setPotionTable(this.potionTableId, this.potionTableSeed);
+        } else if (!storedPotion.equals(PotionContents.EMPTY)) {
             pot.setStoredPotion(storedPotion);
         }
         pot.setHomePos(pos);
@@ -331,7 +387,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         pot.setYHeadRot(yaw);
         pot.setVariant(variant, getBlockState());
         pot.setModifiers(modifiers);
-        if (!storedPotion.equals(PotionContents.EMPTY)) {
+        if (this.potionTableId != null) {
+            pot.setPotionTable(this.potionTableId, this.potionTableSeed);
+        } else if (!storedPotion.equals(PotionContents.EMPTY)) {
             pot.setStoredPotion(storedPotion);
         }
         pot.setHomePos(pos);

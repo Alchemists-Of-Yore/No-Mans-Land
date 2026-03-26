@@ -10,18 +10,21 @@
     { "potion": { "potion": "minecraft:slowness" }, "weight": 3 },
     { "potion": { "potion": "minecraft:strong_slowness" }, "weight": 3 },
     { "potion": { "potion": "minecraft:long_slowness" }, "weight": 3 },
-    {"potion": {
-  "custom_color": 16711680,
-  "custom_effects":
-    [{
-      "id": "minecraft:mining_fatigue",
-      "amplifier": 1,
-      "duration": 600,
-      "ambient": false,
-      "show_particles": true,
-      "show_icon": true
-    }]
-  }
-}
+    {
+      "potion": {
+        "custom_color": 16711680,
+        "custom_effects": [
+          {
+            "id": "minecraft:mining_fatigue",
+            "amplifier": 1,
+            "duration": 600,
+            "ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        ]
+      },
+      "weight": 3
+    }
   ]
 }

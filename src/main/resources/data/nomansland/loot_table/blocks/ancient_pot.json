@@ -10,10 +10,7 @@
           "functions": [
             {
               "function": "minecraft:copy_components",
-              "source": "block_entity",
-              "exclude": [
-                "minecraft:container_loot"
-              ]
+              "source": "block_entity"
             }
           ]
         }

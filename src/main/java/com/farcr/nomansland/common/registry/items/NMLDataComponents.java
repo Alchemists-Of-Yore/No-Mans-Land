@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry.items;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.pots.SeededPotionTable;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
@@ -32,6 +33,11 @@ public class NMLDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> INVERTED_BELL_TARGET = DATA_COMPONENTS.registerComponentType(
             "inverted_bell_target", builder -> builder
                     .persistent(BlockPos.CODEC)
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SeededPotionTable>> POT_POTION_TABLE = DATA_COMPONENTS.registerComponentType(
+            "pot_potion_table", builder -> builder
+                    .persistent(SeededPotionTable.CODEC)
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.List<String>>> POT_MODIFIERS = DATA_COMPONENTS.registerComponentType(
