@@ -469,8 +469,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
-        BlockPos lowerPos = pos;
-        if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) {
+        if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.BRITTLE)) {
             return 1;
         }
         float base = super.getDestroyProgress(state, player, level, pos);
@@ -479,14 +478,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     public void attack(BlockState state, Level level, BlockPos pos, Player player) {
-        BlockPos lowerPos = pos;
         if (!level.isClientSide) {
             ItemStack held = player.getMainHandItem();
             if (held.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get()) && held.getItem() instanceof AncientPotDebugItem debug) {
                 debug.handleLeftClick(level, pos, player);
                 return;
             }
-            if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving() && !hasSilkTouch(player, level)) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving() && !hasSilkTouch(player, level)) {
                 pot.wakeUp(player);
             }
         }
@@ -507,16 +505,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        BlockPos lowerPos = pos;
-        if (!level.isClientSide && level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving()) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
             pot.wakeUp(null);
         }
     }
 
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        BlockPos lowerPos = pos;
-        if (!level.isClientSide && level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.isLiving()) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
             pot.wakeUp(null);
         }
         super.stepOn(level, pos, state, entity);
@@ -534,8 +530,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
-        BlockPos lowerPos = pos;
-        BlockEntity blockEntity = level.getBlockEntity(lowerPos);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
         return blockEntity instanceof PotBlockEntity pot ? pot.getPotAsItem() : super.getCloneItemStack(level, pos, state);
     }
 
@@ -594,8 +589,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        BlockPos lowerPos = pos;
-        return level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.FLAMMABLE);
+        return level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && pot.variant.traits().contains(PotTrait.FLAMMABLE);
     }
 
     @Override

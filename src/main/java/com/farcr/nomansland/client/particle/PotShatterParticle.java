@@ -27,7 +27,7 @@ public class PotShatterParticle extends TextureSheetParticle {
 
     private final float uo;
     private final float vo;
-    private final boolean persistent;
+    private boolean persistent;
     private final int persistTicks;
     private final double targetX;
     private final double targetY;
@@ -143,6 +143,11 @@ public class PotShatterParticle extends TextureSheetParticle {
     public void tick() {
         if (!persistent) {
             super.tick();
+            if (this.persistTicks > 0 && this.onGround && random.nextFloat() < 0.001F) {
+                this.yd = 0.12 + random.nextDouble() * 0.08;
+                this.xd += (random.nextDouble() - 0.5) * 0.03;
+                this.zd += (random.nextDouble() - 0.5) * 0.03;
+            }
             return;
         }
 
@@ -155,7 +160,12 @@ public class PotShatterParticle extends TextureSheetParticle {
         }
 
         if (!level.getBlockState(originBlockPos).isAir()) {
-            remove();
+            if (settled) {
+                remove();
+                return;
+            }
+            this.lifetime = this.age + (int) (4.0 / (Math.random() * 0.9 + 0.1)) + 2;
+            this.persistent = false;
             return;
         }
 
