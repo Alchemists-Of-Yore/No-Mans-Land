@@ -4,25 +4,23 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
-import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.common.block.pots.LargePotBlock;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -136,5 +134,15 @@ public abstract class LevelRendererMixin {
             Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci,
             @Local PoseStack poseStack, @Local Vec3 skyColor) {
         UpperAtmosphericRenderer.INSTANCE.render(poseStack, projectionMatrix, (float) skyColor.x, (float) skyColor.y, (float) skyColor.z, partialTick);
+    }
+
+    @Inject(method = "destroyBlockProgress", at = @At("HEAD"), cancellable = true)
+    private void nml$redirectUpperPotBreaking(int breakerId, BlockPos pos, int progress, CallbackInfo ci) {
+        if (Minecraft.getInstance().level == null) return;
+        BlockState state = Minecraft.getInstance().level.getBlockState(pos);
+        if (state.getBlock() instanceof LargePotBlock pot && pot.isUpper(state)) {
+            nml$Self.destroyBlockProgress(breakerId, pos.below(), progress);
+            ci.cancel();
+        }
     }
 }
