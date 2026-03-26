@@ -1,5 +1,5 @@
 {
-  "feature": "nomansland:underground/pots_cave",
+  "feature": "nomansland:pots/pots_cave",
   "placement": [
     {
       "type": "minecraft:count",

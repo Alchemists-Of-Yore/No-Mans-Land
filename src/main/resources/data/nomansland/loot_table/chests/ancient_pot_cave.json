@@ -43,6 +43,22 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
+                "max": 8,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:arrow",
+          "weight": 200
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
                 "max": 3,
                 "min": 1
               },
@@ -296,13 +312,13 @@
           "type": "minecraft:item",
           "functions": [],
           "name": "minecraft:music_disc_13",
-          "weight": 3
+          "weight": 20
         },
         {
           "type": "minecraft:item",
           "functions": [],
           "name": "minecraft:music_disc_11",
-          "weight": 5
+          "weight": 25
         },
         {
           "type": "minecraft:item",
@@ -373,7 +389,7 @@
             }
           ],
           "name": "minecraft:map",
-          "weight": 10
+          "weight": 25
         }
       ],
       "rolls": 1
