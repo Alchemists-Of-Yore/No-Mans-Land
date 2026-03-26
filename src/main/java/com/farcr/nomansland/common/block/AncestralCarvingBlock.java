@@ -51,10 +51,10 @@ public class AncestralCarvingBlock extends DirectionalBlock {
         Direction facing;
         int rotation;
 
-        BlockState neighbor = findNeighborCarving(level, placedPos);
-        if (neighbor != null) {
-            facing = neighbor.getValue(FACING);
-            rotation = neighbor.getValue(ROTATION);
+        BlockState clicked = level.getBlockState(context.getClickedPos().relative(context.getClickedFace().getOpposite()));
+        if (clicked.getBlock() instanceof AncestralCarvingBlock) {
+            facing = clicked.getValue(FACING);
+            rotation = clicked.getValue(ROTATION);
         } else {
             float pitch = context.getPlayer() != null ? context.getPlayer().getXRot() : 0;
             if (pitch > 60) {
@@ -73,14 +73,6 @@ public class AncestralCarvingBlock extends DirectionalBlock {
                 .setValue(FACING, facing)
                 .setValue(FORMATION, CarvingFormation.SINGLE)
                 .setValue(ROTATION, rotation);
-    }
-
-    private BlockState findNeighborCarving(Level level, BlockPos pos) {
-        for (Direction dir : Direction.values()) {
-            BlockState state = level.getBlockState(pos.relative(dir));
-            if (state.getBlock() instanceof AncestralCarvingBlock) return state;
-        }
-        return null;
     }
 
     protected int getRotationForPlayer(BlockPlaceContext context) {
@@ -120,7 +112,13 @@ public class AncestralCarvingBlock extends DirectionalBlock {
         for (int col = 0; col < size; col++) {
             for (int row = 0; row < size; row++) {
                 BlockPos p = origin.relative(right, col).relative(down, row);
-                CarvingFormation formation = CarvingFormation.getForPosition(size, col, row);
+                int texCol = col, texRow = row;
+                if (facing.getAxis() == Direction.Axis.Y) {
+                    int[] t = rotateFormationCoords(col, row, size, rotation);
+                    texCol = t[0];
+                    texRow = t[1];
+                }
+                CarvingFormation formation = CarvingFormation.getForPosition(size, texCol, texRow);
                 level.setBlock(p, this.defaultBlockState()
                         .setValue(FACING, facing)
                         .setValue(FORMATION, formation)
@@ -128,6 +126,16 @@ public class AncestralCarvingBlock extends DirectionalBlock {
             }
         }
         return true;
+    }
+
+    public static int[] rotateFormationCoords(int col, int row, int size, int rotation) {
+        return switch (rotation) {
+            case 0 -> new int[]{size - 1 - col, size - 1 - row};
+            case 1 -> new int[]{size - 1 - row, col};
+            case 2 -> new int[]{col, row};
+            case 3 -> new int[]{row, size - 1 - col};
+            default -> new int[]{col, row};
+        };
     }
 
     private static Direction rotateCW(Direction dir) {

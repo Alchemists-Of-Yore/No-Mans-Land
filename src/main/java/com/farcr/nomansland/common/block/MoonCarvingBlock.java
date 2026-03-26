@@ -59,7 +59,7 @@ public class MoonCarvingBlock extends AncestralCarvingBlock {
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (level.isClientSide || oldState.is(this) || state.getValue(FORMATION) != CarvingFormation.THREE_0_0) return;
+        if (level.isClientSide || oldState.is(this) || state.getValue(FORMATION) != CarvingFormation.SINGLE) return;
 
         Direction facing = state.getValue(FACING);
         int rotation = state.getValue(ROTATION);
@@ -68,9 +68,14 @@ public class MoonCarvingBlock extends AncestralCarvingBlock {
 
         for (int col = 0; col < 3; col++) {
             for (int row = 0; row < 3; row++) {
-                if (col == 0 && row == 0) continue;
                 BlockPos target = pos.relative(right, col).relative(down, row);
-                CarvingFormation formation = CarvingFormation.getForPosition(3, col, row);
+                int texCol = col, texRow = row;
+                if (facing.getAxis() == Direction.Axis.Y) {
+                    int[] t = AncestralCarvingBlock.rotateFormationCoords(col, row, 3, rotation);
+                    texCol = t[0];
+                    texRow = t[1];
+                }
+                CarvingFormation formation = CarvingFormation.getForPosition(3, texCol, texRow);
                 level.setBlock(target, this.defaultBlockState()
                         .setValue(FACING, facing)
                         .setValue(FORMATION, formation)

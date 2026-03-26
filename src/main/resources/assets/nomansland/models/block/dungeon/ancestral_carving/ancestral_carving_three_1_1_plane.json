@@ -1,0 +1,32 @@
+{
+  "textures": {
+    "carving": "nomansland:block/dungeon/ancestral_carving_large",
+    "particle": "minecraft:block/stone"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "south": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#carving",
+          "cullface": "south"
+        }
+      }
+    }
+  ]
+}
