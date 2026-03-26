@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "nomansland:alchemist_ruins",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 5387593,
+    "separation": 6,
+    "spacing": 33,
+    "type": "nomansland:bell_sanctuary"
+  }
+}

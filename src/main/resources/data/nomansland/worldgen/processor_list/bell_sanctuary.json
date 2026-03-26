@@ -20,6 +20,9 @@
         }
       ],
       "processor_type": "minecraft:rule"
+    },
+    {
+      "processor_type": "nomansland:candles"
     }
   ]
 }

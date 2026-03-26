@@ -1,0 +1,14 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "nomansland:centered_single_pool_element",
+        "location": "nomansland:debug",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}
