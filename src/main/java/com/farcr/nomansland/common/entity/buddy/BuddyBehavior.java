@@ -2,10 +2,13 @@ package com.farcr.nomansland.common.entity.buddy;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.networking.ClientboundBuddyCrouchPacket;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.player.Player;
@@ -79,6 +82,12 @@ public class BuddyBehavior extends Behavior<Buddy> {
             }
         }
         crouchTimer = 0;
+
+        if (buddy.hasEffect(NMLEffects.HAPPINESS) && brain.getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
+            Vec3 pos = BehaviorUtils.getRandomSwimmablePos(buddy, 10, 7);
+            if (pos != null) BehaviorUtils.setWalkAndLookTargetMemories(buddy, BlockPos.containing(pos), 0.3F, 2);
+            return;
+        }
 
         // Look back at players who are staring
         NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES)
