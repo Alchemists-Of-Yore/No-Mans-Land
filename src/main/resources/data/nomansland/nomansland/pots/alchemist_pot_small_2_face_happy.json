@@ -6,8 +6,7 @@
     [6, 9, 6, 10, 11, 10]
   ],
   "traits": [
-    "regenerates",
-    "drops_experience"
+    "regenerates"
   ],
   "modifier_chances": {
     "alive": 0.66,
