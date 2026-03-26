@@ -32,7 +32,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
     public int getGradientColor() {
         return FastColor.ARGB32.color(
-            168, 143, 87
+                175, 220, 135
         );
     }
 
