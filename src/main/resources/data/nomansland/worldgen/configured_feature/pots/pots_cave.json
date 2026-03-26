@@ -16,6 +16,6 @@
     "y_spread": 3,
     "loot_table": "nomansland:chests/ancient_pot_cave",
     "potion_table": "nomansland:cave_potions",
-    "potion_chance": 0.075
+    "potion_chance": 0.033
   }
 }

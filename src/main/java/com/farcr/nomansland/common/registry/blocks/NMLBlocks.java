@@ -297,8 +297,6 @@ public class NMLBlocks {
           () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
     public static final BlockDefinition<AncestralCarvingBlock> ANCESTRAL_CARVING = register("ancestral_carving",
           () -> new AncestralCarvingBlock(ofFullCopy(Blocks.STONE)));
-    public static final BlockDefinition<MoonCarvingBlock> MOON_CARVING = register("moon_carving",
-          () -> new MoonCarvingBlock(ofFullCopy(Blocks.STONE)));
 
     public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
     public static final BlockDefinition<LargePotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new LargePotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
@@ -309,6 +307,9 @@ public class NMLBlocks {
         () -> new MoonlightBasinBlock(ofFullCopy(Blocks.BEDROCK).dynamicShape().sound(SoundType.COPPER)));
     public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
         () -> new MoonlightCandleBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.CANDLE).offsetType(OffsetType.XZ).dynamicShape()));
+
+    public static final BlockDefinition<MoonCarvingBlock> MOON_CARVING = registerNoItem("moon_carving",
+            () -> new MoonCarvingBlock(ofFullCopy(Blocks.STONE)));
 
     public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
             () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));

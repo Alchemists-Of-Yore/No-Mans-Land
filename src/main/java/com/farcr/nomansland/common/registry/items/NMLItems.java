@@ -101,11 +101,13 @@ public class NMLItems {
 
     public static final ItemDefinition<AncientPotDebugItem> ANCIENT_POT_DEBUG_ITEM = registerWithoutTab("ancient_pot_debug", () -> new AncientPotDebugItem(new Properties().stacksTo(1)));
 
-    // TODO: do they even need items??? I do not think they do
+    // Moonlight Items
     public static final ItemDefinition<BlockItem> MOONLIGHT_BASIN = registerWithoutTab("moonlight_basin",
             () -> new BlockItem(NMLBlocks.MOONLIGHT_BASIN.get(), new Properties()));
     public static final ItemDefinition<BlockItem> MOONLIGHT_CANDLE = registerWithoutTab("moonlight_candle",
             () -> new BlockItem(NMLBlocks.MOONLIGHT_CANDLE.get(), new Properties()));
+    public static final ItemDefinition<BlockItem> MOON_CARVING = registerWithoutTab("moon_carving",
+            () -> new BlockItem(NMLBlocks.MOON_CARVING.get(), new Properties()));
     public static final ItemDefinition<BlockItem> INVERTED_BELL = registerWithoutTab("inverted_bell",
             () -> new BlockItem(NMLBlocks.INVERTED_BELL.get(), new Properties()));
 

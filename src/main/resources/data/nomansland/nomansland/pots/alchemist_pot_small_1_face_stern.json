@@ -10,7 +10,7 @@
     "regenerates"
   ],
   "modifier_chances": {
-    "alive": 0.66,
+    "alive": 0.33,
     "oozing": 0.05
   }
 }

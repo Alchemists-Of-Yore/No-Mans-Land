@@ -1,0 +1,35 @@
+{
+  "type": "nomansland:pot_patch",
+  "config": {
+    "variants": [
+      { "variant": "nomansland:ancient_pot_small_1", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_1_face_happy", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_small_1_face_stern", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_small_1_wiggle", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_1_wiggle_gold", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_1_wiggle_white", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_1_wiggle_green", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_1alt", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_2", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_2_face_happy", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_small_2_face_stern", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_small_3", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_4", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_5", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_small_6", "weight": 5 },
+      { "variant": "nomansland:ancient_pot_large_1", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_large_1_face_happy", "weight": 30 },
+      { "variant": "nomansland:ancient_pot_large_1_face_stern", "weight": 30 },
+      { "variant": "nomansland:ancient_pot_large_1_wiggle", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_large_1_wiggle_gold", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_large_1_wiggle_green", "weight": 15 },
+      { "variant": "nomansland:ancient_pot_large_1_wiggle_white", "weight": 15 }
+    ],
+    "tries": 16,
+    "xz_spread": 4,
+    "y_spread": 3,
+    "loot_table": "nomansland:chests/alchemist_pot_potions",
+    "potion_table": "nomansland:alchemist_ruins_potions",
+    "potion_chance": 0.33
+  }
+}
