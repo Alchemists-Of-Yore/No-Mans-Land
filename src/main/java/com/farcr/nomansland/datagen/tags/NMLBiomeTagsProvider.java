@@ -45,8 +45,7 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.DESERT_RIVER,
                 NMLBiomes.MUD_BEACH,
                 NMLBiomes.FROZEN_SHORE,
-                NMLBiomes.TROPICAL_BEACH,
-                NMLBiomes.DOWNFALL_ISLE
+                NMLBiomes.TROPICAL_BEACH
         );
 
         tag(NMLTags.IS_CRAGLAND).add(
@@ -76,8 +75,6 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
         addToTags(NMLBiomes.FROZEN_WOODS, Tags.Biomes.IS_RARE, Tags.Biomes.IS_CONIFEROUS_TREE, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, BiomeTags.IS_TAIGA, Tags.Biomes.IS_DEAD, BiomeTags.HAS_IGLOO);
         addToTags(NMLBiomes.PRAIRIE, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_HOT, Tags.Biomes.IS_DRY, Tags.Biomes.IS_SPARSE_VEGETATION, BiomeTags.HAS_VILLAGE_PLAINS);
         addToTags(NMLBiomes.LAVENDER_FIELD, Tags.Biomes.IS_PLAINS, Tags.Biomes.IS_DECIDUOUS_TREE, Tags.Biomes.IS_FLORAL, BiomeTags.IS_HILL, BiomeTags.HAS_VILLAGE_PLAINS);
-
-        addToTags(NMLBiomes.DOWNFALL_ISLE, Tags.Biomes.IS_RARE, Tags.Biomes.IS_TEMPERATE);
 
         addToTags(NMLBiomes.LUSH_RIVER, BiomeTags.IS_RIVER, BiomeTags.IS_JUNGLE, Tags.Biomes.IS_HOT, Tags.Biomes.IS_DENSE_VEGETATION, Tags.Biomes.IS_JUNGLE_TREE);
         addToTags(NMLBiomes.BLACKWATER_RIVER, BiomeTags.IS_RIVER, Tags.Biomes.IS_TEMPERATE, Tags.Biomes.IS_SWAMP, Tags.Biomes.IS_DENSE_VEGETATION);
