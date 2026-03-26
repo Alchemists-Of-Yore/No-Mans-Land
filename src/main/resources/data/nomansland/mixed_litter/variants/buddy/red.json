@@ -1,7 +1,8 @@
 {
-  "type": "mixed_litter:simple_texture",
+  "type": "nomansland:buddy",
   "group": "nomansland:buddy",
   "arguments": {
-    "texture": "nomansland:buddy/red.png"
+    "texture": "nomansland:buddy/red.png",
+    "mushroom": "minecraft:red_mushroom"
   }
 }

@@ -5,6 +5,6 @@
     }
   },
   "exclusive": true,
-  "selection": "weighted",
-  "conflicts": "mixed_litter:default"
+  "replace_default": true,
+  "selection": "weighted"
 }

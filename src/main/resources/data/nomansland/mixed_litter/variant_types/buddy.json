@@ -1,0 +1,16 @@
+{
+  "actions": [
+    {
+      "type": "mixed_litter:set_texture",
+      "arguments": {
+        "texture": "texture"
+      }
+    },
+    {
+      "type": "nomansland:set_buddy_mushroom",
+      "arguments": {
+        "mushroom": "mushroom"
+      }
+    }
+  ]
+}
