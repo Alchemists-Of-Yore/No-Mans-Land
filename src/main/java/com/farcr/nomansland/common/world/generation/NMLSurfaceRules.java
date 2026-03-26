@@ -143,13 +143,6 @@ public class NMLSurfaceRules {
                 SurfaceRules.ifTrue(BEACH, SILT)
         );
 
-        SurfaceRules.RuleSource downfall_isle = SurfaceRules.ifTrue(
-                SurfaceRules.isBiome(NMLBiomes.DOWNFALL_ISLE),
-                SurfaceRules.ifTrue(BEACH, GRAVEL)
-
-                //TODO: Steep surfaces are stone, beach is gravel, silt streaks and water stuff? death stranding
-        );
-
     //River Biomes
         SurfaceRules.RuleSource lush_river = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.LUSH_RIVER),
@@ -225,7 +218,6 @@ public class NMLSurfaceRules {
                                         gravel_shores,
                                         mud_shores,
                                         mushroom_fields,
-                                        downfall_isle,
                                         desert_river,
                                         mud_beach,
                                         tropical_beach),
