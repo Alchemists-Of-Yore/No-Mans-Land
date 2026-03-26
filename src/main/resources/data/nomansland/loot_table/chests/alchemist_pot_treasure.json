@@ -18,7 +18,7 @@
             }
           ],
           "name": "nomansland:ancient_bronze_mask",
-          "weight": 5
+          "weight": 10
         },
         {
           "type": "minecraft:item",
@@ -34,7 +34,23 @@
             }
           ],
           "name": "nomansland:living_urn",
-          "weight": 20
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 6,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:warding_effigy",
+          "weight": 50
         },
         {
           "type": "minecraft:item",

@@ -290,7 +290,7 @@
             }
           ],
           "name": "nomansland:living_urn",
-          "weight": 15
+          "weight": 50
         },
         {
           "type": "minecraft:item",
@@ -306,7 +306,7 @@
             }
           ],
           "name": "nomansland:warding_effigy",
-          "weight": 15
+          "weight": 45
         },
         {
           "type": "minecraft:item",
