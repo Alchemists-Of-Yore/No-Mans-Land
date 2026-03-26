@@ -49,7 +49,7 @@ public class FriendMoonUpdatePacket {
                 context.enqueueWork(() -> {
                     FriendMoon friendMoon = FriendMoon.getOrDefault(context.player().getServer().overworld());
                     if (context.player().hasEffect(FriendMoon.FRIENDSHIP))
-                        friendMoon.packetUpdateEvent(packetType());
+                        friendMoon.packetUpdateEvent(packetType(), (ServerPlayer) context.player());
                 });
             }
         }

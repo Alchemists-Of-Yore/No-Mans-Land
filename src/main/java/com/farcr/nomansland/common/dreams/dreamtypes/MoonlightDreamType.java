@@ -4,6 +4,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,10 +13,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.commands.PlaceCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.*;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -31,8 +34,10 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 public class MoonlightDreamType extends DreamType {
@@ -46,12 +51,48 @@ public class MoonlightDreamType extends DreamType {
             .setRenderer(MoonlightDreamRenderer::new);
     }
 
-    @Override public void tick() {
-        super.tick();
+    private boolean hasSeenMoon = false;
+    public void hasSeenMoon() {
+        hasSeenMoon = true;
     }
 
+    private float moonGazeTime = 0f;
+    public static final int MAX_MOON_GAZE_TIME = 200;
+
+    public float moonPresenceTime;
+    @Override public void tick(Level level) {
+        super.tick(level);
+
+        int size = 4;
+        AABB boundingBox = new AABB(BASIN_POSITION.subtract(new Vec3i(size, 0, size)))
+            .inflate(size, level.getMaxBuildHeight(), size);
+
+        List<? extends Player> playerList = level.players();
+        if (!playerList.isEmpty()) {
+            Player player = playerList.getFirst();
+            if (!boundingBox.contains(player.position())) {
+                hasSeenMoon = false;
+                moonPresenceTime = 0f;
+                moonGazeTime = 0f;
+                // force player exit if out of bounds
+                if (level instanceof DreamServerLevel dreamLevel) {
+                    if (Math.abs(player.position().x) > 36
+                    || Math.abs(player.position().z) > 200)
+                        dreamLevel.endDream(false);
+                }
+                return;
+            }
+            moonPresenceTime++;
+            if (level instanceof DreamServerLevel serverLevel && hasSeenMoon) {
+                if (moonGazeTime > MAX_MOON_GAZE_TIME) serverLevel.endDream(true);
+                moonGazeTime++;
+            }
+        }
+    }
+
+    private static final int CHUNK_SIZE = 16;
     public static final int MONOLITH_HEIGHT = 18;
-    private static final int chunkSize = 16;
+    public static final BlockPos BASIN_POSITION = new BlockPos(4, 0, 116);
 
     @Override
     public void createStructures(
@@ -62,7 +103,7 @@ public class MoonlightDreamType extends DreamType {
         StructureTemplateManager structureTemplateManager
     ) {
         ChunkPos chunkPos = chunk.getPos();
-        if (new ChunkPos(new BlockPos(4, 0, 116)).equals(chunkPos)) {
+        if (new ChunkPos(BASIN_POSITION).equals(chunkPos)) {
             Structure structure = registryAccess.registryOrThrow(Registries.STRUCTURE).getOrThrow(
                 ResourceKey.create(Registries.STRUCTURE, NoMansLand.location("dream_meeting_point"))
             );
@@ -77,11 +118,11 @@ public class MoonlightDreamType extends DreamType {
 
     public void moonlightChunkGenerator(ChunkAccess chunk, StructureManager manager, WorldGenRegion level) {
         ChunkPos chunkPos = chunk.getPos();
-        int startingX = chunkPos.x * chunkSize;
-        int startingZ = chunkPos.z * chunkSize;
+        int startingX = chunkPos.x * CHUNK_SIZE;
+        int startingZ = chunkPos.z * CHUNK_SIZE;
 
-        for (int x = 0; x < chunkSize; x++) {
-            for (int z = 0; z < chunkSize; z++) {
+        for (int x = 0; x < CHUNK_SIZE; x++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
                 BlockPos blockPos = new BlockPos(startingX + x, 0, startingZ + z);
                 chunk.setBlockState(blockPos.above(MONOLITH_HEIGHT + 1), Blocks.BARRIER.defaultBlockState(), false);
 

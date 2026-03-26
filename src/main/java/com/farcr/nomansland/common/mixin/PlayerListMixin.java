@@ -33,9 +33,6 @@ public class PlayerListMixin {
         @Local ResourceKey<Level> resourceKey
     ) {
         Optional<DreamType> previousDream = DreamLevelHandler.keyToDream(resourceKey);
-        previousDream.ifPresent((dreamType) -> {
-            NoMansLand.LOGGER.info("Teleporting " + player.getGameProfile().getName() + " from " + previousDream + " to Respawn Point as a last resort! Did the server crash previously?");
-            player.setPos(player.getRespawnPosition().getCenter());
-        });
+        previousDream.ifPresent((dreamType) -> DreamLevelHandler.playerTeleportFallback(player, true));
     }
 }

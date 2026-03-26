@@ -33,14 +33,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
 
-    @Shadow
-    @Final
-    private ObjectArrayList<SectionRenderDispatcher.RenderSection> visibleSections;
-
-    @Shadow
-    @Final
-    private SectionOcclusionGraph sectionOcclusionGraph;
-
     @ModifyArg(method = "levelEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V", ordinal = 4), index = 0)
     private ParticleOptions tryTurnSpawnerFlameMalevolent(ParticleOptions particle) {
         if (NMLConfig.MALEVOLENT_SPAWNER.get()) {

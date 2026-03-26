@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.dreams;
 
-import com.farcr.nomansland.client.renderer.dreams.AbstractDreamRenderer;
+import com.farcr.nomansland.client.renderer.dreams.IDreamRenderer;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -11,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Blocks;
@@ -73,13 +74,13 @@ public class DreamType {
 
     }
 
-    public Supplier<AbstractDreamRenderer> dreamRenderer;
-    public DreamType setRenderer(Supplier<AbstractDreamRenderer> dreamRenderer) {
+    public Supplier<IDreamRenderer> dreamRenderer;
+    public DreamType setRenderer(Supplier<IDreamRenderer> dreamRenderer) {
         this.dreamRenderer = dreamRenderer;
         return this;
     }
 
-    public void tick() {}
+    public void tick(Level level) {}
 
     public TriConsumer<ChunkAccess, StructureManager, WorldGenRegion> chunkGenerator = this::defaultChunkGenerator;
     public DreamType setChunkGenerator(TriConsumer<ChunkAccess, StructureManager, WorldGenRegion> chunkGenerator) {

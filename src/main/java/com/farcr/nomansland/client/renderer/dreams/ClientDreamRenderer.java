@@ -44,8 +44,8 @@ public class ClientDreamRenderer implements AutoCloseable {
         this.dream = dream;
     }
 
-    private AbstractDreamRenderer renderer;
-    public AbstractDreamRenderer getRenderer() {
+    private IDreamRenderer renderer;
+    public IDreamRenderer getRenderer() {
         if (dream.dreamRenderer != null && renderer == null)
             renderer = dream.dreamRenderer.get();
         return renderer;
@@ -60,6 +60,8 @@ public class ClientDreamRenderer implements AutoCloseable {
             // Clear Dreams
             if (!player.isAlive())
                 clientEndDream();
+
+            if (dream != null) dream.tick(Minecraft.getInstance().level);
         }
     }
 
@@ -102,6 +104,8 @@ public class ClientDreamRenderer implements AutoCloseable {
         ClientDreamRenderer manager = ClientDreamRenderer.getInstance();
         if (manager.clientIsDreaming()) {
             float alpha = (manager.getSleepTicks(deltaTracker) / MAX_SLEEP_TICKS);
+            if (manager.getRenderer() != null && manager.dreamShouldRender())
+                alpha = manager.getRenderer().getFadeAlpha(alpha);
             int i = FastColor.ARGB32.colorFromFloat(alpha, 0f, 0f, 0f);
             guiGraphics.fill(RenderType.guiOverlay(), 0, 0,
                 guiGraphics.guiWidth(), guiGraphics.guiHeight(), i);

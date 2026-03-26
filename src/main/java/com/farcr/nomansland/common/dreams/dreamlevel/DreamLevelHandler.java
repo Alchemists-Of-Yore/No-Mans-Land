@@ -89,7 +89,33 @@ public class DreamLevelHandler implements AutoCloseable {
         ).findFirst();
     }
 
-    public static ServerLevel getDreamLevel(MinecraftServer server, DreamType dreamType, ServerPlayer serverPlayer) {
+    public static void playerTeleportFallback(ServerPlayer serverPlayer, boolean load) {
+        NoMansLand.LOGGER.info(
+            "Teleporting " + serverPlayer.getGameProfile().getName() +
+            " from a Dream to Respawn Point as a last resort! Did the server crash previously?"
+        );
+
+        MinecraftServer server = serverPlayer.getServer();
+        BlockPos respawnPosition = serverPlayer.getRespawnPosition();
+        if (respawnPosition == null) respawnPosition = server.overworld().getSharedSpawnPos();
+        ServerLevel respawnDimension = server.getLevel(serverPlayer.getRespawnDimension());
+        if (respawnDimension == null) respawnDimension = server.overworld();
+
+        if (load) {
+            serverPlayer.setPos(respawnPosition.getCenter());
+            return;
+        }
+
+        serverPlayer.changeDimension(new DimensionTransition(
+            respawnDimension,
+            respawnPosition.getCenter(),
+            respawnPosition.getCenter(),
+            0, 0,
+            DimensionTransition.DO_NOTHING
+        ));
+    }
+
+    public static DreamServerLevel getDreamLevel(MinecraftServer server, DreamType dreamType, ServerPlayer serverPlayer) {
         ResourceLocation dreamLocation = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get().getKey(dreamType);
         ResourceKey<Level> dreamKey = resourceKey(Registries.DIMENSION, dreamLocation, serverPlayer);
 
@@ -108,7 +134,7 @@ public class DreamLevelHandler implements AutoCloseable {
             ChunkProgressListener chunkprogresslistener = ((MinecraftServerExtension) server).nml$getProgressListener();
             Holder<DimensionType> dreamHolder = registerDimensionType(server.registryAccess(), dreamType, serverPlayer);
 
-            ServerLevel newLevel = new DreamServerLevel(
+            DreamServerLevel newLevel = new DreamServerLevel(
                 server, executor, storageAccess,
                 new DerivedLevelData(worldData, worldData.overworldData()),
                 dreamKey, new LevelStem(
@@ -116,7 +142,7 @@ public class DreamLevelHandler implements AutoCloseable {
                 ),
                 chunkprogresslistener, worldData.isDebugWorld(),
                 overworld.getSeed(), List.of(), false,
-                overworld.getRandomSequences()
+                overworld.getRandomSequences(), dreamType
             );
 
             if (dreamType.worldBorder > 0) newLevel.getWorldBorder().setSize(dreamType.worldBorder);
@@ -131,7 +157,7 @@ public class DreamLevelHandler implements AutoCloseable {
             PacketDistributor.sendToAllPlayers(
                 new ClientboundDimensionSyncPacket(server.levelKeys()));
         }
-        return levelList.get(dreamKey);
+        return (DreamServerLevel) levelList.get(dreamKey);
     }
 
     /*

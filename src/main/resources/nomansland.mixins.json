@@ -63,7 +63,6 @@
   "client": [
     "client.AbstractSoundInstanceMixin",
     "client.BrewingStandScreenMixin",
-    "client.CameraMixin",
     "client.CameraTypeMixin",
     "client.CapeRenderLayerMixin",
     "client.ClientChunkCacheMixin",

@@ -331,8 +331,8 @@ public class FriendMoon extends SavedData {
         dialogueTicks = NEGATIVE_TIME;
     }
 
-    public void packetUpdateEvent(FriendMoonUpdate.ToServer packetType) {
-        packetType.getConsumer().accept(this);
+    public void packetUpdateEvent(FriendMoonUpdate.ToServer packetType, ServerPlayer player) {
+        packetType.getConsumer().accept(this, player);
         this.setDirty();
     }
 

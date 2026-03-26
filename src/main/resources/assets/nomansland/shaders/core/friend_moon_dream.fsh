@@ -5,12 +5,11 @@
 in vec3 vertexPosition;
 
 uniform vec4 ColorModulator;
+uniform float CornerFade;
 uniform float Intensity;
 uniform float Time;
 
 out vec4 fragColor;
-
-vec3 colorHaze = vec3(168., 143., 87.) / vec3(255.);
 
 // https://thebookofshaders.com/13/
 float random (in vec2 st) {
@@ -99,8 +98,9 @@ void main() {
     float minValue = .1;
     colorLine *= clamp(fbm(xz - timeAdjust), minValue, min(.75 * sqrt(adjustedPosition.y / yIntensity), .75));
 
-    darkness.xyz += yIntensity * colorHaze;
-    darkness = min(darkness, vec4(colorHaze, 1.0));
+    darkness.xyz += yIntensity * ColorModulator.rgb;
+    darkness = min(darkness, vec4(ColorModulator.rgb, 1.0));
     fragColor = darkness * vec4(colorLine, 1.);
-    fragColor = mix(fragColor, vec4(0.), 1. - adjustedPosition.y);
+    fragColor = mix(fragColor, vec4(0.), (1. - (adjustedPosition.y)) * max(1. - CornerFade, 0));
+    fragColor *= ColorModulator.a;
 }

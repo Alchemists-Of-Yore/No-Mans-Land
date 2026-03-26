@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.mixin;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
 import com.farcr.nomansland.common.registry.NMLDamageTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
@@ -40,6 +41,13 @@ public abstract class PlayerMixin {
         if (isLocalPlayer() && ClientDreamRenderer.getInstance().dreamShouldRender())
             return ClientDreamRenderer.getInstance().getDream();
         return null;
+    }
+
+    @Inject(method = "isImmobile", at = @At("RETURN"), cancellable = true)
+    private void nml$playerImmobile(CallbackInfoReturnable<Boolean> cir) {
+        DreamType dreamType = nml$getAmbiguousDreamType();
+        if (dreamType instanceof MoonlightDreamType moonlightDreamType
+        && moonlightDreamType.moonPresenceTime > 0) cir.setReturnValue(true);
     }
 
     @Inject(method = "mayUseItemAt", at = @At("RETURN"), cancellable = true)

@@ -6,6 +6,7 @@ import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
+import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -26,11 +27,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.function.Function;
@@ -111,5 +108,14 @@ public class ClientEvents {
             event.setCanceled(true);
             event.setSwingHand(false);
         }
+    }
+
+    @SubscribeEvent
+    public static void calculatePlayerTurn(CalculatePlayerTurnEvent event) {
+        if (ClientDreamRenderer.getInstance().dreamShouldRender()
+        && ClientDreamRenderer.getInstance().getDream()
+            instanceof MoonlightDreamType moonlightDreamType
+        && moonlightDreamType.moonPresenceTime > 0)
+            event.setCinematicCameraEnabled(true);
     }
 }

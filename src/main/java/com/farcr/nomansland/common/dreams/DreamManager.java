@@ -39,13 +39,15 @@ public class DreamManager extends SavedData {
     }
 
     Map<UUID, DreamStorage> storageMap = new HashMap<>();
-    public DreamStorage getPlayer(ServerPlayer player) {
-        return storageMap.getOrDefault(player.getUUID(), new DreamStorage());
+    public DreamStorage getPlayerStorage(ServerPlayer player) {
+        UUID uuid = player.getUUID();
+        if (!storageMap.containsKey(uuid)) storageMap.put(uuid, new DreamStorage());
+        return storageMap.get(uuid);
     }
 
     // eventually this will be changed to (player, dream)
     public boolean playerHasExperiencedDream(ServerPlayer player, DreamType dreamType) {
-        return getPlayer(player).getHasExperiencedDream();
+        return getPlayerStorage(player).getHasExperiencedDream();
     }
 
     // should not be serialized or stored as when the server starts unloading all players should return to their dreaming players

@@ -74,7 +74,7 @@ public class DreamingPlayer extends Mob {
                 return Optional.empty();
             Player player = getTetheredPlayer();
             this.remove(RemovalReason.DISCARDED);
-            player.teleportTo(level, this.getX(), this.getY(), this.getZ(), Set.of(), this.getXRot(), this.getYRot());
+            player.teleportTo(level, this.getX(), this.getY(), this.getZ(), Set.of(), player.getXRot(), player.getYRot());
             // Recalculate player since old player doesn't exist anymore
             return Optional.ofNullable(getTetheredPlayer());
         }

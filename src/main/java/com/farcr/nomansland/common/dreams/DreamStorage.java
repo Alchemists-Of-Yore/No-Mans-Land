@@ -12,8 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class DreamStorage {
     public static DreamStorage fromCodec(boolean experiencedDream) {
         DreamStorage dreamInfo = new DreamStorage();
-        if (experiencedDream)
-            dreamInfo.setDreamExperienced();
+        if (experiencedDream) dreamInfo.setDreamExperienced();
         return dreamInfo;
     }
 

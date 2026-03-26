@@ -1,32 +1,45 @@
 package com.farcr.nomansland.common.friend;
 
+import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
+import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 /* A list of events the client can update the server with */
 public class FriendMoonUpdate {
     public enum ToServer {
-        AWAKEN(0, (moon) -> {
+        AWAKEN(0, (moon, player) -> {
             moon.awake = true;
+        }),
+        SAW_MOON_IN_DREAM(1, (moon, player) -> {
+            DreamType dreamType = DreamManager.getOrDefault(player.getServer()).playerGetDream(player);
+            if (dreamType instanceof MoonlightDreamType moonlightDreamType)
+                moonlightDreamType.hasSeenMoon();
         });
 
         private final int id;
-        private final Consumer<FriendMoon> consumer;
+        private final BiConsumer<FriendMoon, ServerPlayer> consumer;
 
-        ToServer(int id, Consumer<FriendMoon> consumer) {
+        ToServer(int id, BiConsumer<FriendMoon, ServerPlayer> consumer) {
             this.id = id;
             this.consumer = consumer;
         }
 
         public int getId() { return id;}
 
-        public Consumer<FriendMoon> getConsumer() { return consumer; }
+        public BiConsumer<FriendMoon, ServerPlayer> getConsumer() { return consumer; }
 
         public static final IntFunction<ToServer> BY_ID = ByIdMap.continuous(ToServer::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final StreamCodec<ByteBuf, ToServer> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, ToServer::getId);
