@@ -11,7 +11,7 @@
     },
     "frame": "task"
   },
-  "parent": "minecraft:adventure/root",
+  "parent": "nomansland:main/dream_friend_moon",
   "criteria": {
     "meet_friend_moon_trigger": {
       "trigger": "nomansland:meet_friend_moon_trigger"

@@ -368,6 +368,12 @@
               "destination": "nomansland:bell_sanctuary"
             },
             {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:map_color": 5861946
+              }
+            },
+            {
               "function": "minecraft:set_name",
               "name": {
                 "translate": "nomansland.filled_map.bell_sanctuary"

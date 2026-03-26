@@ -1,0 +1,20 @@
+{
+  "display": {
+    "description": {
+      "translate": "nomansland.advancements.dream_friend_moon.description"
+    },
+    "icon": {
+      "id": "nomansland:warding_effigy"
+    },
+    "title": {
+      "translate": "nomansland.advancements.dream_friend_moon.title"
+    },
+    "frame": "task"
+  },
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "meet_friend_moon_trigger": {
+      "trigger": "nomansland:meet_friend_moon_trigger"
+    }
+  }
+}

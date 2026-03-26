@@ -11,30 +11,14 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 7,
+                "max": 8,
                 "min": 1
               },
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:gold_nugget",
-          "weight": 30
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 3,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:honey_bottle",
-          "weight": 25
+          "name": "minecraft:stick",
+          "weight": 200
         },
         {
           "type": "minecraft:item",
@@ -49,40 +33,8 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "nomansland:resin",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 8,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:clay_ball",
-          "weight": 35
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 2,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:golden_apple",
-          "weight": 25
+          "name": "minecraft:coal",
+          "weight": 200
         },
         {
           "type": "minecraft:item",
@@ -97,40 +49,8 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:fermented_spider_eye",
-          "weight": 30
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 12,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:lapis_lazuli",
-          "weight": 45
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 14,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:redstone",
-          "weight": 45
+          "name": "minecraft:raw_iron",
+          "weight": 100
         },
         {
           "type": "minecraft:item",
@@ -145,8 +65,24 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:rabbit_foot",
-          "weight": 35
+          "name": "minecraft:raw_gold",
+          "weight": 75
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 6,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:raw_copper",
+          "weight": 100
         },
         {
           "type": "minecraft:item",
@@ -162,7 +98,7 @@
             }
           ],
           "name": "minecraft:emerald",
-          "weight": 20
+          "weight": 150
         },
         {
           "type": "minecraft:item",
@@ -171,14 +107,30 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 6,
+                "max": 3,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:poisonous_potato",
+          "weight": 100
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 5,
                 "min": 1
               },
               "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:slime_ball",
-          "weight": 40
+          "weight": 100
         },
         {
           "type": "minecraft:item",
@@ -187,14 +139,14 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 12,
+                "max": 3,
                 "min": 1
               },
               "function": "minecraft:set_count"
             }
           ],
-          "name": "nomansland:awkward_residue",
-          "weight": 60
+          "name": "nomansland:antidote_bandage",
+          "weight": 100
         },
         {
           "type": "minecraft:item",
@@ -203,110 +155,62 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 7,
+                "max": 3,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:medicinal_bandage",
+          "weight": 100
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:bandage",
+          "weight": 150
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:rotten_flesh",
+          "weight": 150
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3,
                 "min": 1
               },
               "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:gunpowder",
-          "weight": 40
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 6,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:red_mushroom",
-          "weight": 40
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 3,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:glistering_melon_slice",
-          "weight": 20
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 6,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "minecraft:golden_carrot",
-          "weight": 30
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 1,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "nomansland:ancient_bronze_mask",
-          "weight": 7
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 3,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "nomansland:living_urn",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 3,
-                "min": 1
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "nomansland:warding_effigy",
-          "weight": 15
+          "weight": 125
         },
         {
           "type": "minecraft:item",
@@ -321,30 +225,106 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "nomansland:ender_pearl",
-          "weight": 20
+          "name": "minecraft:bone",
+          "weight": 125
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:string",
+          "weight": 150
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "nomansland:firebomb",
+          "weight": 125
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:redstone",
+          "weight": 75
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 8,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:lapis_lazuli",
+          "weight": 75
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [],
+          "name": "minecraft:music_disc_13",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [],
+          "name": "minecraft:music_disc_11",
+          "weight": 5
         },
         {
           "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_potion",
-              "id": "minecraft:healing"
+              "id": "minecraft:poison"
             }
           ],
-          "name": "minecraft:potion",
-          "weight": 20
+          "name": "minecraft:splash_potion",
+          "weight": 75
         },
         {
           "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_potion",
-              "id": "minecraft:awkward"
+              "id": "minecraft:weakness"
             }
           ],
-          "name": "minecraft:potion",
-          "weight": 20
+          "name": "minecraft:splash_potion",
+          "weight": 75
         },
         {
           "type": "minecraft:item",
@@ -355,7 +335,18 @@
             }
           ],
           "name": "minecraft:potion",
-          "weight": 20
+          "weight": 75
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:healing"
+            }
+          ],
+          "name": "minecraft:potion",
+          "weight": 75
         },
         {
           "type": "minecraft:item",
@@ -365,21 +356,28 @@
               "function": "minecraft:exploration_map",
               "skip_existing_chunks": false,
               "zoom": 1,
-              "destination": "nomansland:bell_sanctuary"
+              "destination": "minecraft:mineshaft"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:map_color": 4336408
+              }
             },
             {
               "function": "minecraft:set_name",
               "name": {
-                "translate": "nomansland.filled_map.bell_sanctuary"
+                "translate": "nomansland.filled_map.mineshaft"
               },
               "target": "item_name"
             }
           ],
           "name": "minecraft:map",
-          "weight": 7
+          "weight": 10
         }
       ],
       "rolls": 1
     }
-  ]
+  ],
+  "random_sequence": "minecraft:pots/trial_chambers/corridor"
 }
