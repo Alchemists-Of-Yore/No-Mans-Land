@@ -10,7 +10,6 @@ import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
-import com.farcr.nomansland.common.mixin.MobInvoker;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -353,24 +352,6 @@ public class MiscellaneousEvents {
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
 
             event.setSpawnCancelled(wardedSpacesData.isWarded(event.getEntity().blockPosition()));
-        }
-    }
-
-    @SubscribeEvent
-    public static void onEffectRemoved(MobEffectEvent.Remove event) {
-        if (event.getEntity() instanceof Mob mob && event.getEffect().value().equals(NMLEffects.PACIFIED.get())) {
-            mob.targetSelector.removeAllGoals(goal -> true);
-            mob.goalSelector.removeAllGoals(goal -> true);
-            ((MobInvoker) mob).invokeRegisterGoals();
-        }
-    }
-
-    @SubscribeEvent
-    public static void onEffectExpired(MobEffectEvent.Expired event) {
-        if (event.getEffectInstance() != null && event.getEntity() instanceof Mob mob && event.getEffectInstance().getEffect().value().equals(NMLEffects.PACIFIED.get())) {
-            mob.targetSelector.removeAllGoals(goal -> true);
-            mob.goalSelector.removeAllGoals(goal -> true);
-            ((MobInvoker) mob).invokeRegisterGoals();
         }
     }
 

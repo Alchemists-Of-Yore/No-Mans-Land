@@ -18,6 +18,16 @@ public class BuddyModel<T extends Buddy> extends PlayerModel<T> {
     public float ascensionAlpha = 1.0f;
 
     @Override
+    public void setupAnim(T buddy, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        super.setupAnim(buddy, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        float tilt = buddy.getHeadTiltAmount();
+        if (tilt != 0) {
+            this.head.zRot = tilt;
+            this.hat.zRot = tilt;
+        }
+    }
+
+    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         if (ascensionAlpha < 1.0f) {
             int originalAlpha = FastColor.ARGB32.alpha(color);

@@ -1,13 +1,10 @@
 package com.farcr.nomansland.common.entity.buddy;
 
-import com.farcr.nomansland.common.entity.goose.Goose;
-import com.farcr.nomansland.common.entity.goose.GooseCoreBehavior;
-import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -71,6 +68,21 @@ public class BuddyAI {
             )
         );
 
+        brain.addActivity(
+            Activity.PLAY,
+            0,
+            ImmutableList.of(
+                new RandomLookAround(UniformInt.of(30, 60), 30.0F, -20.0F, 20.0F),
+                new BuddyJumpBehavior(),
+                new RunOne<>(
+                    ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
+                    ImmutableList.of(
+                        Pair.of(RandomStroll.stroll(0.4F), 3)
+                    )
+                )
+            )
+        );
+
         brain.setCoreActivities(Set.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.useDefaultActivity();
@@ -78,6 +90,10 @@ public class BuddyAI {
     }
 
     public static void updateActivity(Buddy buddy) {
-        buddy.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.IDLE));
+        if (buddy.hasEffect(NMLEffects.HAPPINESS)) {
+            buddy.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.PLAY));
+        } else {
+            buddy.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.IDLE));
+        }
     }
 }

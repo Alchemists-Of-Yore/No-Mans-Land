@@ -141,8 +141,7 @@ public class FriendMoon extends SavedData {
     public FriendMoonState getState() { return this.state; }
     public void setState(FriendMoonState newState) {
         if (newState != state) {
-            if (state == FriendMoonState.OFFERING && newState != FriendMoonState.OFFERING)
-                abortAscension();
+            if (state == FriendMoonState.OFFERING) abortAscension();
             this.state = newState;
             setDirty();
         }
@@ -656,7 +655,7 @@ public class FriendMoon extends SavedData {
 
     public void resetDialogue(boolean clientSide) {
         if (!clientSide)
-           forFriendshipPlayers((serverPlayer) -> {PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialogueResetPacket());});
+           forFriendshipPlayers((serverPlayer) -> PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDialogueResetPacket()));
         dialogueTicks = -1;
     }
 }

@@ -1,12 +1,9 @@
 package com.farcr.nomansland.common.entity.buddy;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.networking.ClientboundBuddyCrouchPacket;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -67,9 +64,13 @@ public class BuddyBehavior extends Behavior<Buddy> {
         }
     }
 
+    private static long moonGazeUntil = -1;
+    private static long moonGazeNextRoll = 0;
+
     @Override
     protected void start(ServerLevel level, Buddy buddy, long gameTime) {
         var brain = buddy.getBrain();
+
         Optional<List<Player>> playerList = brain.getMemory(MemoryModuleType.NEAREST_PLAYERS);
         if (playerList.isPresent()) {
             Optional<Player> playerFocus = playerList.get().stream().filter(
@@ -78,23 +79,85 @@ public class BuddyBehavior extends Behavior<Buddy> {
             if (playerFocus.isPresent()) {
                 mimicPlayerGreeting(playerFocus.get(), buddy);
                 buddy.getLookControl().setLookAt(playerFocus.get().getEyePosition(gameTime));
+                buddy.setHeadTilted(false);
                 return;
             }
         }
         crouchTimer = 0;
 
-        if (buddy.hasEffect(NMLEffects.HAPPINESS) && brain.getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
-            Vec3 pos = BehaviorUtils.getRandomSwimmablePos(buddy, 10, 7);
-            if (pos != null) BehaviorUtils.setWalkAndLookTargetMemories(buddy, BlockPos.containing(pos), 0.3F, 2);
+        if (buddy.followTarget != null && buddy.followTimer > 0) {
+            buddy.followTimer--;
+            if (buddy.followTarget.isAlive() && buddy.distanceTo(buddy.followTarget) < 20) {
+                if (brain.getMemory(MemoryModuleType.WALK_TARGET).isEmpty() && buddy.distanceTo(buddy.followTarget) > 5) {
+                    BehaviorUtils.setWalkAndLookTargetMemories(buddy, buddy.followTarget.blockPosition(), 0.2f, 4);
+                }
+                buddy.getLookControl().setLookAt(buddy.followTarget.getEyePosition(gameTime));
+            } else {
+                buddy.followTarget = null;
+                buddy.followTimer = 0;
+            }
+            buddy.setHeadTilted(false);
             return;
         }
 
-        // Look back at players who are staring
         NearestVisibleLivingEntities entities = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES)
             .orElse(NearestVisibleLivingEntities.empty());
-        Optional<LivingEntity> entity = entities.findClosest(player -> staringAt(player, buddy) && !boredOfStaring(player));
-        entity.ifPresentOrElse(livingEntity -> {
-            buddy.getLookControl().setLookAt(livingEntity.getEyePosition(gameTime));
-        }, stareTime::clear);
+
+        Optional<LivingEntity> staringPlayer = entities.findClosest(player -> staringAt(player, buddy) && !boredOfStaring(player));
+        if (staringPlayer.isPresent()) {
+            buddy.getLookControl().setLookAt(staringPlayer.get().getEyePosition(gameTime));
+            buddy.setHeadTilted(false);
+            buddy.headTiltTimer = 0;
+            return;
+        }
+
+        Optional<LivingEntity> unwatchingPlayer = entities.findClosest(
+            player -> player instanceof Player && !staringAt(player, buddy) && buddy.distanceTo(player) < 10
+        );
+        if (unwatchingPlayer.isPresent()) {
+            if (buddy.headTiltTimer <= 0 && buddy.getRandom().nextInt(150) == 0)
+                buddy.headTiltTimer = 40 + buddy.getRandom().nextInt(40);
+            if (buddy.headTiltTimer > 0) {
+                buddy.headTiltTimer--;
+                buddy.getLookControl().setLookAt(unwatchingPlayer.get().getEyePosition(gameTime));
+                buddy.setHeadTilted(true);
+                return;
+            }
+        } else {
+            buddy.headTiltTimer = 0;
+        }
+        buddy.setHeadTilted(false);
+
+        for (var entry : stareTime.entrySet()) {
+            if (entry.getValue() >= 30 && entry.getKey().isAlive() && buddy.getRandom().nextInt(3) == 0) {
+                buddy.followTarget = entry.getKey();
+                buddy.followTimer = 100 + buddy.getRandom().nextInt(100);
+                break;
+            }
+        }
+        stareTime.clear();
+
+        long dayTime = level.getDayTime() % 24000L;
+        boolean isNight = dayTime >= 13000 && dayTime <= 23000;
+        if (isNight && brain.getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
+            if (gameTime > moonGazeUntil && gameTime >= moonGazeNextRoll) {
+                moonGazeNextRoll = gameTime + 250;
+                if (buddy.getRandom().nextInt(250) == 0)
+                    moonGazeUntil = gameTime + 60 + buddy.getRandom().nextInt(60);
+            }
+            if (gameTime <= moonGazeUntil) {
+                float timeOfDay = dayTime / 24000.0f;
+                float moonAngle = (float) (timeOfDay * Math.PI * 2 + Math.PI / 2.0);
+                buddy.getLookControl().setLookAt(
+                    buddy.getX() + Math.cos(moonAngle) * 100,
+                    buddy.getY() + Math.sin(moonAngle) * 100,
+                    buddy.getZ()
+                );
+                buddy.setHeadTilted(false);
+                return;
+            }
+        }
+
+        buddy.setHeadTilted(false);
     }
 }
