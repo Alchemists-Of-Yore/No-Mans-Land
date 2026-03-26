@@ -7,10 +7,10 @@
     [4, 14, 4, 12, 16, 12]
   ],
   "traits": [
-"regenerates"
-],
+    "regenerates"
+  ],
   "modifier_chances": {
-  "alive": 0.15,
-  "oozing": 0.05
-}
+    "alive": 0.15,
+    "oozing": 0.05
+  }
 }

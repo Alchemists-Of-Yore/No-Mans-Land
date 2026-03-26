@@ -78,11 +78,11 @@ public class ClientSetupEvents {
             var path = "block/ancient_pots/ancient_pot_large_" + (i + 1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
-            for (int i = 0; i < 6; i++) {
-                var path = "block/ancient_pots/alchemist_pot_small_" + (i+1);
-                event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
-            }
-            event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1alt")));
+        for (int i = 0; i < 6; i++) {
+            var path = "block/ancient_pots/alchemist_pot_small_" + (i+1);
+            event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+        }
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1alt")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_face_stern")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_face_happy")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle")));
@@ -91,9 +91,9 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1_wiggle_white")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_stern")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_happy")));
-            for (int i = 0; i < 1; i++) {
-                var path = "block/ancient_pots/alchemist_pot_large_" + (i+1);
-                event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
+        for (int i = 0; i < 1; i++) {
+            var path = "block/ancient_pots/alchemist_pot_large_" + (i+1);
+            event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_stern")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_happy")));
@@ -209,33 +209,33 @@ public class ClientSetupEvents {
                 -> (translucentDustParticleOptions, clientLevel, d, e, f, g, h, i)
                 -> new TranslucentDustParticle(clientLevel, d, e, f, g, h, i, translucentDustParticleOptions, sprites));
         event.registerSpecial(NMLParticleTypes.MOONLIGHT_RAY.get(), (type, clientLevel, d, e, f, g, h, i)
-            -> new MoonlightRayParticle(clientLevel, d, e, f, g, h, i));
+                -> new MoonlightRayParticle(clientLevel, d, e, f, g, h, i));
         event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_FLAME.get(), sprites
-            -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-            -> new FlameParticle(clientLevel, d, e, f, g, h, i, sprites));
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new FlameParticle(clientLevel, d, e, f, g, h, i, sprites));
         event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_SPARK.get(), sprites
-            -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-            -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));
         event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
     }
 
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         event.registerShader(
-            new ShaderInstance(
-                event.getResourceProvider(),
-                NoMansLand.location("rendertype_moonlight"),
-                DefaultVertexFormat.NEW_ENTITY
-            ),
-            shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        NoMansLand.location("rendertype_moonlight"),
+                        DefaultVertexFormat.NEW_ENTITY
+                ),
+                shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
         );
         event.registerShader(
-            new ShaderInstance(
-                event.getResourceProvider(),
-                NoMansLand.location("rendertype_moonlight_glow"),
-                DefaultVertexFormat.POSITION_TEX
-            ),
-            shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        NoMansLand.location("rendertype_moonlight_glow"),
+                        DefaultVertexFormat.POSITION_TEX
+                ),
+                shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
         );
         event.registerShader(
                 new ShaderInstance(
@@ -254,12 +254,12 @@ public class ClientSetupEvents {
                 shader -> UpperAtmosphericRenderer.UPPER_ATMOSPHERE_SHADER = shader
         );
         event.registerShader(
-            new ShaderInstance(
-                event.getResourceProvider(),
-                NoMansLand.location("friend_moon_dream"),
-                DefaultVertexFormat.POSITION_COLOR
-            ),
-            shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        NoMansLand.location("friend_moon_dream"),
+                        DefaultVertexFormat.POSITION_COLOR
+                ),
+                shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
         );
         try {
             InvertedBellClientHandler.instance.postChain = new PostChain(

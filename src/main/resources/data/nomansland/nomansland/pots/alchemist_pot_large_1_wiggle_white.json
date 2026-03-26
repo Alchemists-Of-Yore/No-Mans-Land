@@ -8,10 +8,10 @@
     [3, 22, 3, 13, 25, 13]
   ],
   "traits": [
-"regenerates"
-],
+    "regenerates"
+  ],
   "modifier_chances": {
-  "alive": 0.15,
-  "oozing": 0.05
-}
+    "alive": 0.15,
+    "oozing": 0.05
+  }
 }

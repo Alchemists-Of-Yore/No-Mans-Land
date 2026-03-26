@@ -6,10 +6,10 @@
     [6, 9, 6, 10, 11, 10]
   ],
   "traits": [
-"regenerates"
-],
+    "regenerates"
+  ],
   "modifier_chances": {
-  "alive": 0.15,
-  "oozing": 0.05
-}
+    "alive": 0.15,
+    "oozing": 0.05
+  }
 }

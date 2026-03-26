@@ -184,13 +184,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (!(be instanceof PotBlockEntity pot) || pot.variant == null) {
+        if (!(level instanceof ServerLevel serverLevel)) return ItemInteractionResult.CONSUME;
+
+        if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot) || pot.variant == null) {
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (stack.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get())
-                || stack.getItem() instanceof AncientPotItem) {
+        if (stack.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get()) || stack.getItem() instanceof AncientPotItem) {
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -260,11 +260,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
             }
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-            if (level instanceof ServerLevel serverLevel) {
-                int color = contents.getColor();
-                ParticleOptions particle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(255, color));
-                serverLevel.sendParticles(particle, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 10, 0.2, 0.1, 0.2, 0);
-            }
+            int color = contents.getColor();
+            ParticleOptions particle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(255, color));
+            serverLevel.sendParticles(particle, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 10, 0.2, 0.1, 0.2, 0);
             pot.setChanged();
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             return ItemInteractionResult.SUCCESS;
@@ -282,9 +280,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
         level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT, SoundSource.BLOCKS, 1, 0.7F + 0.5F * pot.getFullness());
 
-        if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 7, 0, 0, 0, 0);
-        }
+        serverLevel.sendParticles(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 7, 0, 0, 0, 0);
 
         pot.setChanged();
         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
