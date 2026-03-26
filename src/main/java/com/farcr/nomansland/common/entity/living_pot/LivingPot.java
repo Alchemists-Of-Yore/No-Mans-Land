@@ -2,11 +2,11 @@ package com.farcr.nomansland.common.entity.living_pot;
 
 import com.farcr.nomansland.common.block.pots.*;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.Registry;
 import net.minecraft.util.RandomSource;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,11 +43,8 @@ import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -195,6 +192,33 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
         return EntityDimensions.fixed(0.75F, 1.0F + LEG_HEIGHT);
     }
 
+    public static LivingPot fromPot(PotBlockEntity be) {
+        Level level = be.getLevel();
+        BlockPos pos = be.getBlockPos();
+        LivingPot pot = new LivingPot(NMLEntities.LIVING_POT.get(), level);
+        pot.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        float yaw = be.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
+        pot.setYRot(yaw);
+        pot.yRotO = yaw;
+        pot.setYBodyRot(yaw);
+        pot.setYHeadRot(yaw);
+        pot.setVariant(be.variant, be.getBlockState());
+        pot.setModifiers(be.getModifiers());
+        if (be.getPotionTableId() != null) {
+            pot.setPotionTable(be.getPotionTableId(), be.getPotionTableSeed());
+        } else if (!be.getStoredPotion().equals(PotionContents.EMPTY)) {
+            pot.setStoredPotion(be.getStoredPotion());
+        }
+        pot.setHomePos(pos);
+        if (be.getLootTable() != null) {
+            pot.setLootTable(be.getLootTable());
+            pot.setLootTableSeed(be.getLootTableSeed());
+        } else if (!be.getTheItem().isEmpty()) {
+            pot.setStoredItem(be.getTheItem());
+        }
+        return pot;
+    }
+
     public void setVariant(PotVariant variant, BlockState state) {
         entityData.set(VARIANT, level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant).toString());
         entityData.set(BLOCKSTATE, state);
@@ -283,7 +307,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
     @Override
     public boolean shouldDropExperience() {
         PotVariant variant = getVariant();
-        return variant != null && variant.traits().contains(PotTrait.DROPS_EXPERIENCE) && !hasModifier(PotModifier.WAXED);
+        return variant != null && variant.traits().contains(PotTrait.DROPS_EXPERIENCE);
     }
 
     @Override
@@ -656,35 +680,8 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                             isLarge() ? 270 : 135, isLarge() ? 0.4 : 0.25, 0.3, isLarge() ? 0.4 : 0.25, 0.1);
                 }
             }
-
-            if (hasModifier(PotModifier.WAXED)) {
-                removeModifier(PotModifier.WAXED);
-                ItemStack potItem = getBlockState().getBlock().asItem().getDefaultInstance();
-                PotVariant waxedVariant = getVariant();
-                if (waxedVariant != null) {
-                    ResourceLocation waxedKey = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(waxedVariant);
-                    if (waxedKey != null) {
-                        potItem.set(NMLDataComponents.POT_VARIANT, waxedKey);
-                    }
-                    List<String> modList = modifiers.stream().map(PotModifier::getSerializedName).toList();
-                    if (!modList.isEmpty()) {
-                        potItem.set(NMLDataComponents.POT_MODIFIERS, modList);
-                    }
-                }
-                if (this.potionTableId != null) {
-                    potItem.set(NMLDataComponents.POT_POTION_TABLE, new SeededPotionTable(this.potionTableId, this.potionTableSeed));
-                } else if (!storedPotion.equals(PotionContents.EMPTY)) {
-                    potItem.set(DataComponents.POTION_CONTENTS, storedPotion);
-                }
-                if (this.lootTable != null) {
-                    potItem.set(DataComponents.CONTAINER_LOOT, new net.minecraft.world.item.component.SeededContainerLoot(this.lootTable, this.lootTableSeed));
-                } else if (!storedItem.isEmpty()) {
-                    potItem.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(List.of(storedItem)));
-                }
-                spawnAtLocation(potItem);
-                spawnAtLocation(new ItemStack(Items.HONEYCOMB));
-            }
         }
+
         super.die(damageSource);
         if (!level().isClientSide) {
             discard();

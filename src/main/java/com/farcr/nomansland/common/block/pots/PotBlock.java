@@ -359,52 +359,65 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null && !pot.skipBreakEffects) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            if (pot.skipBreakEffects) {
+                pot.dropStoredItem(level, pos);
+                if (pot.hasModifier(PotModifier.WAXED)) {
+                    pot.removeModifier(PotModifier.WAXED);
+                    pot.setChanged();
+                    Block.popResource(level, pos, pot.getPotAsItem());
+                    Block.popResource(level, pos, new ItemStack(Items.HONEYCOMB));
+                }
+            } else {
                 Containers.dropContents(level, pos, pot);
-
-                if (!pot.getStoredPotion().equals(PotionContents.EMPTY) && !level.isClientSide) {
-                    spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
-                }
-
-                if (pot.hasModifier(PotModifier.INFESTED) && !level.isClientSide) {
-                    int amount = level.getRandom().nextInt(1, 4);
-                    for (int i = 0; i < amount; i++) {
-                        Silverfish silverfish = EntityType.SILVERFISH.create(level);
-                        if (silverfish != null) {
-                            silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                            level.addFreshEntity(silverfish);
-                            silverfish.spawnAnim();
-                        }
+                if (!level.isClientSide) {
+                    if (!pot.getStoredPotion().equals(PotionContents.EMPTY)) {
+                        spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
+                    }
+                    spawnModifierMobs(level, pos, pot);
+                    if (pot.variant.traits().contains(PotTrait.REGENERATES)) {
+                        scheduleRegeneration((ServerLevel) level, pos, state, pot);
                     }
                 }
-
-                if (pot.hasModifier(PotModifier.OOZING) && !level.isClientSide) {
-                    int amount = level.getRandom().nextInt(1, 4);
-                    for (int i = 0; i < amount; i++) {
-                        Slime slime = EntityType.SLIME.create(level);
-                        if (slime != null) {
-                            slime.setSize(1, true);
-                            slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                            level.addFreshEntity(slime);
-                        }
-                    }
-                }
-
-                if (level instanceof ServerLevel serverLevel && pot.variant.traits().contains(PotTrait.REGENERATES)) {
-                    Registry<PotVariant> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-                    int delay = level.getRandom().nextInt(20, 40) * 20;
-                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant), pot.getModifiers()), delay);
-                    serverLevel.sendParticles(
-                            new PotShatterParticleOption(pot.variant.model(), delay, PotShatterParticleOption.extractBoxes(pot.variant.shape()), pos.getX(), pos.getY(), pos.getZ()),
-                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                            size == PotSize.LARGE ? 270 : 135, 0.3, 0.3, 0.3, 0.1);
-                }
-
                 level.updateNeighbourForOutputSignal(pos, state.getBlock());
             }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    private void spawnModifierMobs(Level level, BlockPos pos, PotBlockEntity pot) {
+        if (pot.hasModifier(PotModifier.INFESTED)) {
+            int amount = level.getRandom().nextInt(1, 4);
+            for (int i = 0; i < amount; i++) {
+                Silverfish silverfish = EntityType.SILVERFISH.create(level);
+                if (silverfish != null) {
+                    silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    level.addFreshEntity(silverfish);
+                    silverfish.spawnAnim();
+                }
+            }
+        }
+        if (pot.hasModifier(PotModifier.OOZING)) {
+            int amount = level.getRandom().nextInt(1, 4);
+            for (int i = 0; i < amount; i++) {
+                Slime slime = EntityType.SLIME.create(level);
+                if (slime != null) {
+                    slime.setSize(1, true);
+                    slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    level.addFreshEntity(slime);
+                }
+            }
+        }
+    }
+
+    private void scheduleRegeneration(ServerLevel serverLevel, BlockPos pos, BlockState state, PotBlockEntity pot) {
+        Registry<PotVariant> variants = serverLevel.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
+        int delay = serverLevel.getRandom().nextInt(20, 40) * 20;
+        RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant), pot.getModifiers()), delay);
+        serverLevel.sendParticles(
+                new PotShatterParticleOption(pot.variant.model(), delay, PotShatterParticleOption.extractBoxes(pot.variant.shape()), pos.getX(), pos.getY(), pos.getZ()),
+                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                size == PotSize.LARGE ? 270 : 135, 0.3, 0.3, 0.3, 0.1);
     }
 
     public static void spawnPotionCloud(ServerLevel level, BlockPos pos, PotionContents contents) {
@@ -428,41 +441,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
-            if (pot.hasModifier(PotModifier.INFESTED)) {
-                int amount = level.getRandom().nextInt(1, 4);
-                for (int i = 0; i < amount; i++) {
-                    Silverfish silverfish = EntityType.SILVERFISH.create(level);
-                    if (silverfish != null) {
-                        silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                        level.addFreshEntity(silverfish);
-                        silverfish.spawnAnim();
-                    }
-                }
-                pot.removeModifier(PotModifier.INFESTED);
-            }
-            if (pot.hasModifier(PotModifier.OOZING)) {
-                int amount = level.getRandom().nextInt(1, 4);
-                for (int i = 0; i < amount; i++) {
-                    Slime slime = EntityType.SLIME.create(level);
-                    if (slime != null) {
-                        slime.setSize(1, true);
-                        slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                        level.addFreshEntity(slime);
-                    }
-                }
-                pot.removeModifier(PotModifier.OOZING);
-            }
-            pot.removeModifier(PotModifier.TRAPPED);
-            if (pot.hasModifier(PotModifier.WAXED)) {
-                pot.removeModifier(PotModifier.WAXED);
+            if (pot.hasModifier(PotModifier.WAXED) || dropsItself(player.getMainHandItem(), level)) {
+                pot.skipBreakEffects = true;
                 pot.setChanged();
-                Block.popResource(level, pos, pot.getPotAsItem());
-                Block.popResource(level, pos, new ItemStack(Items.HONEYCOMB));
-                pot.skipBreakEffects = true;
-            } else if (dropsItself(player.getMainHandItem(), level)) {
-                pot.skipBreakEffects = true;
             }
-            pot.setChanged();
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
