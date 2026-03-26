@@ -3,6 +3,7 @@ package com.farcr.nomansland.client.renderer;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.friend.BuddyStar;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.FriendMoonUpdate;
 import com.farcr.nomansland.client.renderer.context.MeetingPointRenderContext;
@@ -42,6 +43,7 @@ import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
 import java.lang.Math;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
@@ -541,8 +543,60 @@ public class FriendMoonRenderer implements AutoCloseable {
             GL11.GL_KEEP
         );
 
+        renderBuddyStars(tesselator, matrix4f1, getFriendMoonOpacity());
+
         RenderSystem.enableCull();
         poseStack.popPose();
+    }
+
+    private static final ResourceLocation BUDDY_STAR_TEXTURE = NoMansLand.location("textures/misc/buddy_star.png");
+    public static final float STAR_SIZE = 1.0f;
+    public static final float STAR_DISTANCE_FROM_MOON = 12f;
+
+    public void renderBuddyStars(Tesselator tesselator, Matrix4f moonMatrix, float opacity) {
+        if (clientBlockPos == null || opacity <= 0)
+            return;
+
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player == null)
+            return;
+
+        Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
+        if (optionalBasin.isEmpty() || optionalBasin.get().clientMoon == null)
+            return;
+
+        List<BuddyStar> stars = optionalBasin.get().clientMoon.getBuddyStars();
+        if (stars.isEmpty())
+            return;
+
+        RenderSystem.setShaderTexture(0, BUDDY_STAR_TEXTURE);
+
+        long timeMs = System.currentTimeMillis();
+
+        float[] prevColor = RenderSystem.getShaderColor();
+        for (int i = 0; i < stars.size(); i++) {
+            BuddyStar star = stars.get(i);
+            float[] position = star.getPosition(i);
+            float angleRad = (float) Math.toRadians(position[0]);
+            float distRad = (float) Math.toRadians(position[1]);
+
+            float x = (float) (Math.sin(angleRad) * Math.cos(distRad)) * STAR_DISTANCE_FROM_MOON;
+            float y = MOON_DISTANCE + (float) (Math.sin(distRad)) * STAR_DISTANCE_FROM_MOON;
+            float z = (float) (Math.cos(angleRad) * Math.cos(distRad)) * STAR_DISTANCE_FROM_MOON;
+
+            float[] rgb = star.getRgb();
+            float flicker = star.getFlickerAlpha(timeMs);
+            RenderSystem.setShaderColor(rgb[0], rgb[1], rgb[2], opacity * flicker);
+
+            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            buffer.addVertex(moonMatrix, x - STAR_SIZE, y, z - STAR_SIZE).setUv(0, 1);
+            buffer.addVertex(moonMatrix, x + STAR_SIZE, y, z - STAR_SIZE).setUv(1, 1);
+            buffer.addVertex(moonMatrix, x + STAR_SIZE, y, z + STAR_SIZE).setUv(1, 0);
+            buffer.addVertex(moonMatrix, x - STAR_SIZE, y, z + STAR_SIZE).setUv(0, 0);
+            BufferUploader.drawWithShader(buffer.buildOrThrow());
+        }
+        RenderSystem.setShaderColor(prevColor[0], prevColor[1], prevColor[2], prevColor[3]);
     }
 
     public static void renderFinalize(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, float partialTick) {

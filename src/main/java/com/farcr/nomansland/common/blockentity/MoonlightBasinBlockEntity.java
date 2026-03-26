@@ -228,12 +228,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         if (friendMoon.getState() == FriendMoonState.OFFERING) {
             OfferingContext inspectionContext = blockEntity.inspectionContext;
             if (inspectionContext != null && inspectionContext.entity() != null) {
-                boolean specialOffering = false;
-                if (FriendMoon.isSpecialInteraction(inspectionContext)) {
-                    if (friendMoon.specialInteraction(level, inspectionContext.entity()))
-                        specialOffering = true;
-                    else blockEntity.setInspectionContext(null, friendMoon);
-                }
+                boolean specialOffering = FriendMoon.isSpecialInteraction(inspectionContext);
 
                 Entity entity = inspectionContext.entity();
                 Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
@@ -244,7 +239,6 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
                 entity.addDeltaMovement(approachSpeed);
                 if (approachSpeed.lengthSqr() <= 0.001f) {
-                    // Levitate object
                     int raiseDistance = specialOffering ? 4 : 2;
                     Vec3 raisedPosition = pos.above(raiseDistance).getCenter();
                     Vec3 dist = raisedPosition.subtract(entity.position());
@@ -253,13 +247,19 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     entity.setDeltaMovement(
                         dist.multiply(new Vec3(new Vector3f(speed))));
 
-                    if ((dist.lengthSqr() <= 0.1f) && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) && !specialOffering) {
-                        int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
-                            .dispatch(level, friendMoon.getFriendshipPlayers());
-                        friendMoon.applyDialogueLength(dialogueLength - 80);
+                    if (dist.lengthSqr() <= 0.1f) {
+                        if (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) {
+                            int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
+                                .dispatch(level, friendMoon.getFriendshipPlayers());
+                            friendMoon.applyDialogueLength(dialogueLength - 80);
+                        }
+                        if (specialOffering) {
+                            if (friendMoon.specialInteraction(level, entity))
+                                return;
+                            else blockEntity.setInspectionContext(null, friendMoon);
+                            return;
+                        }
                     }
-                    if (specialOffering)
-                        return;
                 }
             }
         } else

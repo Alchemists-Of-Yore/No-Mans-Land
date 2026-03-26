@@ -7,38 +7,36 @@ import com.farcr.nomansland.common.friend.condition.MoonlightContextualCondition
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
 import com.farcr.nomansland.common.friend.dialogue.*;
-import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
-import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
@@ -54,7 +52,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class FriendMoon extends SavedData {
     @Nullable private final ServerLevel level;
@@ -87,10 +84,54 @@ public class FriendMoon extends SavedData {
         this.candleTimer = candleTime;
     }
 
+    public static final int ASCENSION_DURATION = 300;
+    public static final int ASCENSION_TRANSPARENCY_START = 140;
+    public static final int ASCENSION_DAMAGE_INTERVAL = 60;
+    public static final int ASCENSION_DAMAGE_END = 180;
+    public static final int ASCENSION_REWARD_DELAY = 20;
+
+    private int ascensionTicks = -1;
+    private int rewardDelayTicks = -1;
+    private BlockPos rewardBasinPos = null;
+    private UUID ascendingBuddyUUID = null;
+
+    public boolean isAscensionActive() { return ascensionTicks >= 0; }
+
+    public void startAscension(UUID buddyUUID) {
+        ascensionTicks = 0;
+        ascendingBuddyUUID = buddyUUID;
+        setDirty();
+    }
+
+    public void abortAscension() {
+        if (!isAscensionActive())
+            return;
+        if (level != null && ascendingBuddyUUID != null) {
+            Entity entity = level.getEntity(ascendingBuddyUUID);
+            if (entity instanceof Buddy buddy) {
+                buddy.setAscensionTicks(-1);
+                buddy.setHealth(buddy.getMaxHealth());
+            }
+        }
+        ascensionTicks = -1;
+        ascendingBuddyUUID = null;
+        setDirty();
+    }
+
+    private final List<BuddyStar> buddyStars = new ArrayList<>();
+    public List<BuddyStar> getBuddyStars() { return buddyStars; }
+
+    public void addBuddyStar(BuddyStar star) {
+        buddyStars.add(star);
+        setDirty();
+    }
+
     private FriendMoonState state = FriendMoonState.GREETING;
     public FriendMoonState getState() { return this.state; }
     public void setState(FriendMoonState newState) {
         if (newState != state) {
+            if (state == FriendMoonState.OFFERING && newState != FriendMoonState.OFFERING)
+                abortAscension();
             this.state = newState;
             setDirty();
         }
@@ -105,6 +146,7 @@ public class FriendMoon extends SavedData {
     }
 
     public void resetValues() {
+        abortAscension();
         awake = false;
         setState(FriendMoonState.GREETING);
         setCandleTime(-1);
@@ -136,7 +178,12 @@ public class FriendMoon extends SavedData {
         for (Tag uuidEntry : tag.getList("UpsetWith", 10))
             upsetWith.add(NbtUtils.loadUUID(uuidEntry));
 
-        // read player map
+        buddyStars.clear();
+        for (Tag starTag : tag.getList("BuddyStars", 10)) {
+            if (starTag instanceof CompoundTag starCompound)
+                BuddyStar.CODEC.parse(NbtOps.INSTANCE, starCompound).result().ifPresent(buddyStars::add);
+        }
+
         playerPositionMap.clear();
         for (Tag storedTag : tag.getList("StoredPlayerPositions", 10)) {
             if (storedTag instanceof CompoundTag dataTag) {
@@ -160,7 +207,11 @@ public class FriendMoon extends SavedData {
         upsetWith.forEach((playerUUID) -> listTag.add(NbtUtils.createUUID(playerUUID)));
         tag.put("UpsetWith", listTag);
 
-        // store player map
+        ListTag starsTag = new ListTag();
+        for (BuddyStar star : buddyStars)
+            BuddyStar.CODEC.encodeStart(NbtOps.INSTANCE, star).result().ifPresent(starsTag::add);
+        tag.put("BuddyStars", starsTag);
+
         ListTag positionTag = new ListTag();
         playerPositionMap.forEach((uuid, blockPos) -> {
             CompoundTag playerTag = new CompoundTag();
@@ -206,15 +257,110 @@ public class FriendMoon extends SavedData {
     public static boolean isSpecialInteraction(MoonlightBasinBlockEntity.OfferingContext offeringContext) {
         return (offeringContext.isValid() && offeringContext.entity().getType().equals(NMLEntities.BUDDY.get()));
     }
+
     public boolean specialInteraction(Level level, Entity entity) {
-        if (entity instanceof Buddy buddy) {
-            level.addParticle(
-                new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MYCELIUM.defaultBlockState()),
-                buddy.getX(), buddy.getY() + 1, buddy.getZ(), 0, 0, 0
-            );
+        if (!(entity instanceof Buddy buddy))
+            return false;
+
+        if (!isAscensionActive()) {
+            startAscension(buddy.getUUID());
+        } else if (ascendingBuddyUUID != null && !ascendingBuddyUUID.equals(buddy.getUUID())) {
             return true;
         }
-        return false;
+
+        ascensionTicks++;
+        setDirty();
+
+        buddy.setAscensionTicks(ascensionTicks);
+
+        if (buddy.getHealth() <= 1.5f)
+            buddy.setHealth(1.5f);
+
+        if (ascensionTicks % ASCENSION_DAMAGE_INTERVAL == 0 && ascensionTicks > 0 && ascensionTicks <= ASCENSION_DAMAGE_END && !level.isClientSide()) {
+            buddy.hurt(level.damageSources().magic(), 1f);
+            if (buddy.getHealth() <= 1.5f)
+                buddy.setHealth(1.5f);
+        }
+
+        if (!level.isClientSide()) {
+            if (ascensionTicks >= ASCENSION_TRANSPARENCY_START) {
+                if (ascensionTicks % 50 == 0)
+                    level.playSound(null, buddy.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 0.12f, 1.5f + level.getRandom().nextFloat() * 0.3f);
+            }
+        }
+
+        for (int i = 0; i < (ascensionTicks > ASCENSION_TRANSPARENCY_START ? 3 : 1); i++) {
+            double offsetX = (level.getRandom().nextDouble() - 0.5) * 0.6;
+            double offsetZ = (level.getRandom().nextDouble() - 0.5) * 0.6;
+            level.addParticle(
+                new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MYCELIUM.defaultBlockState()),
+                buddy.getX() + offsetX, buddy.getY() + level.getRandom().nextDouble() * 1.8, buddy.getZ() + offsetZ,
+                0, 0.05, 0
+            );
+        }
+
+        if (ascensionTicks >= ASCENSION_TRANSPARENCY_START) {
+            int sparkCount = 1 + (ascensionTicks - ASCENSION_TRANSPARENCY_START) / 40;
+            for (int i = 0; i < sparkCount; i++) {
+                double offsetX = (level.getRandom().nextDouble() - 0.5) * 0.8;
+                double offsetY = level.getRandom().nextDouble() * 1.8;
+                double offsetZ = (level.getRandom().nextDouble() - 0.5) * 0.8;
+                level.addParticle(
+                    NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                    buddy.getX() + offsetX, buddy.getY() + offsetY, buddy.getZ() + offsetZ,
+                    (level.getRandom().nextDouble() - 0.5) * 0.02, 0.05 + level.getRandom().nextDouble() * 0.03, (level.getRandom().nextDouble() - 0.5) * 0.02
+                );
+            }
+        }
+
+        if (ascensionTicks >= ASCENSION_DURATION) {
+            completeAscension(buddy);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void completeAscension(Buddy buddy) {
+        if (level == null)
+            return;
+
+        String variantName = buddy.getVariantName();
+        BuddyStar star = BuddyStar.fromVariant(variantName, level.getRandom());
+        addBuddyStar(star);
+
+        rewardDelayTicks = ASCENSION_REWARD_DELAY;
+        rewardBasinPos = buddy.blockPosition().below(4);
+
+        buddy.discard();
+        ascensionTicks = -1;
+        ascendingBuddyUUID = null;
+        setDirty();
+    }
+
+    public void tickAscensionReward() {
+        if (rewardDelayTicks < 0 || level == null)
+            return;
+
+        rewardDelayTicks--;
+        if (rewardDelayTicks <= 0) {
+            rewardDelayTicks = -1;
+
+            if (rewardBasinPos != null) {
+                ItemEntity discEntity = new ItemEntity(
+                    level,
+                    rewardBasinPos.getX() + 0.5, rewardBasinPos.getY() + 1.5, rewardBasinPos.getZ() + 0.5,
+                    new ItemStack(NMLItems.MUSIC_DISC_GUIDANCE.get())
+                );
+                discEntity.setDeltaMovement(0, 0, 0);
+                discEntity.setPickUpDelay(10);
+                level.addFreshEntity(discEntity);
+
+                forFriendshipPlayers(player -> NMLCriteriaTriggers.BUDDY_ASCENSION.get().trigger(player));
+                rewardBasinPos = null;
+            }
+            setDirty();
+        }
     }
 
     public static boolean isNightTime(Level level) {
@@ -264,6 +410,7 @@ public class FriendMoon extends SavedData {
     public void tick() {
         assert level != null;
         updateMeetingPointInformation(level);
+        tickAscensionReward();
 
         if (!isNightTime(level) && !upsetWith.isEmpty()) {
             upsetWith.clear();
@@ -311,7 +458,7 @@ public class FriendMoon extends SavedData {
                 // Passive Dialogue
                 if (dialogueTicks >= 0) {
                     dialogueTicks = Math.max(dialogueTicks - 1, 0);
-                    if (dialogueTicks == 0) {
+                    if (dialogueTicks == 0 && !isAscensionActive()) {
                         getState().getMoonConsumer().accept(this);
                         randomDialogue(getState().getDialoguePoolType());
                     }

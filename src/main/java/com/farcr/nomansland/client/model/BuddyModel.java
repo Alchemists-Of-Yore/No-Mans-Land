@@ -1,16 +1,30 @@
 package com.farcr.nomansland.client.model;
 
 import com.farcr.nomansland.common.entity.buddy.Buddy;
-import net.minecraft.client.model.HumanoidModel;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.util.FastColor;
 
 public class BuddyModel<T extends Buddy> extends PlayerModel<T> {
 
     public BuddyModel(ModelPart root) {
         super(root, true);
+    }
+
+    public float ascensionAlpha = 1.0f;
+
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        if (ascensionAlpha < 1.0f) {
+            int originalAlpha = FastColor.ARGB32.alpha(color);
+            int newAlpha = (int) (originalAlpha * ascensionAlpha);
+            color = FastColor.ARGB32.color(newAlpha, FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
+        }
+        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
     public static LayerDefinition createBodyLayer() {

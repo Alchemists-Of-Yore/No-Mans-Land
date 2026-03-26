@@ -1,0 +1,21 @@
+{
+  "display": {
+    "description": {
+      "translate": "nomansland.advancements.buddy_ascension.description"
+    },
+    "icon": {
+      "id": "minecraft:red_mushroom"
+    },
+    "title": {
+      "translate": "nomansland.advancements.buddy_ascension.title"
+    },
+    "frame": "challenge",
+    "hidden": true
+  },
+  "parent": "nomansland:main/meet_friend_moon",
+  "criteria": {
+    "buddy_ascension": {
+      "trigger": "nomansland:buddy_ascension"
+    }
+  }
+}

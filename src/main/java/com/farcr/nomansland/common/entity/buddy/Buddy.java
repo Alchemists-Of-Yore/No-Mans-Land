@@ -1,14 +1,23 @@
 package com.farcr.nomansland.common.entity.buddy;
 
+import com.farcr.nomansland.common.entity.variant_action.SetBuddyMushroom;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.serialization.Dynamic;
+import dev.tazer.mixed_litter.MLRegistries;
+import dev.tazer.mixed_litter.VariantUtil;
+import dev.tazer.mixed_litter.variants.Variant;
+import dev.tazer.mixed_litter.variants.VariantGroup;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
@@ -24,16 +33,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.entity.EntityInLevelCallback;
-import net.minecraft.world.phys.Vec3;
-import org.apache.logging.log4j.core.jmx.Server;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 import java.util.Optional;
 
 public class Buddy extends PathfinderMob implements Npc {
+
+    private static final EntityDataAccessor<Integer> DATA_ASCENSION_TICKS =
+        SynchedEntityData.defineId(Buddy.class, EntityDataSerializers.INT);
 
     private Registry<BuddyFood> buddyFoods;
     private void setBuddyFood(Registry<BuddyFood> registry) {
@@ -45,6 +57,12 @@ public class Buddy extends PathfinderMob implements Npc {
 
         level.registryAccess().registry(NMLRegistries.BUDDY_FOOD_KEY)
             .ifPresent(this::setBuddyFood);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ASCENSION_TICKS, -1);
     }
 
     private static final int SUSPICIOUS_STEW_MULTIPLIER = 10;
@@ -61,6 +79,51 @@ public class Buddy extends PathfinderMob implements Npc {
     public void prepareAnchor(BlockPos anchorPosition) {
         this.anchorPosition = anchorPosition;
         this.restrictTo(anchorPosition, 5);
+    }
+
+    public int getAscensionTicks() {
+        return this.entityData.get(DATA_ASCENSION_TICKS);
+    }
+
+    public void setAscensionTicks(int ticks) {
+        this.entityData.set(DATA_ASCENSION_TICKS, ticks);
+    }
+
+    public boolean isAscending() {
+        return getAscensionTicks() >= 0;
+    }
+
+    public Block getMushroomBlock() {
+        SetBuddyMushroom action = (SetBuddyMushroom) VariantUtil.findAction(this, SetBuddyMushroom.class);
+        if (action != null && action.getBlock() != null)
+            return action.getBlock();
+        return Blocks.RED_MUSHROOM;
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
+        int mushroomCount = 1 + this.random.nextInt(3);
+        for (int i = 0; i < mushroomCount; i++)
+            this.spawnAtLocation(new ItemStack(getMushroomBlock()));
+    }
+
+    public String getVariantName() {
+        for (Variant variant : VariantUtil.getVariants(this)) {
+            VariantGroup group = VariantUtil.getGroup(this, variant);
+            if (group == null)
+                continue;
+            ResourceLocation groupKey = registryAccess().registryOrThrow(MLRegistries.VARIANT_GROUP_KEY).getKey(group);
+            if (groupKey == null || !groupKey.getPath().equals("buddy"))
+                continue;
+            ResourceLocation variantKey = registryAccess().registryOrThrow(MLRegistries.VARIANT_KEY).getKey(variant);
+            if (variantKey == null)
+                continue;
+            String path = variantKey.getPath();
+            int lastSlash = path.lastIndexOf('/');
+            return lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+        }
+        return "red";
     }
 
     @Override
@@ -84,8 +147,13 @@ public class Buddy extends PathfinderMob implements Npc {
 
     @Override
     public void tick() {
-        if (this.isAlive())
+        if (this.isAlive()) {
+            if (isAscending()) {
+                if (getHealth() <= 1.5f)
+                    setHealth(1.5f);
+            }
             setHealth(Math.min(getHealth() + (1f / 20f), getMaxHealth()));
+        }
         super.tick();
 
         if (level().isClientSide)
@@ -93,7 +161,22 @@ public class Buddy extends PathfinderMob implements Npc {
     }
 
     @Override
+    public boolean hurt(DamageSource source, float amount) {
+        boolean result = super.hurt(source, amount);
+        if (isAscending() && getHealth() <= 1.5f)
+            setHealth(1.5f);
+        return result;
+    }
+
+    @Override
+    public boolean isPushable() {
+        return !isAscending() && super.isPushable();
+    }
+
+    @Override
     protected void customServerAiStep() {
+        if (isAscending())
+            return;
         ServerLevel level = (ServerLevel) this.level();
         getBrain().tick(level, this);
         BuddyAI.updateActivity(this);
@@ -111,6 +194,8 @@ public class Buddy extends PathfinderMob implements Npc {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (isAscending())
+            return InteractionResult.PASS;
         if (this.isAlive() && buddyFoods != null) {
             ItemStack itemstack = player.getItemInHand(hand);
             Optional<BuddyFood> foodResult = buddyFoods.stream().filter(
@@ -118,7 +203,6 @@ public class Buddy extends PathfinderMob implements Npc {
             ).findFirst();
             if (foodResult.isPresent()) {
                 if (!this.level().isClientSide) {
-                    // So bowls are returned correctly
                     ItemStack resultingItem = itemstack.finishUsingItem(level(), player);
                     player.setItemInHand(hand, resultingItem);
 
@@ -128,7 +212,6 @@ public class Buddy extends PathfinderMob implements Npc {
                         (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F
                     );
 
-                    // Apply suspicious stew effects tenfold
                     if (itemstack.is(Items.SUSPICIOUS_STEW)) {
                         SuspiciousStewEffects stew = itemstack.getOrDefault(
                             DataComponents.SUSPICIOUS_STEW_EFFECTS, SuspiciousStewEffects.EMPTY);
@@ -145,7 +228,6 @@ public class Buddy extends PathfinderMob implements Npc {
                         }
                     }
                 }
-                // yaaay!!!
                 this.addEffect(new MobEffectInstance(NMLEffects.HAPPINESS, foodResult.get().happinessTicks(), 0, true, false));
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
@@ -153,7 +235,6 @@ public class Buddy extends PathfinderMob implements Npc {
         return super.mobInteract(player, hand);
     }
 
-    // ripped these from old minecraft please dont judge me too hard LOL
     public static void setupAnimationHappy(
         Entity entity, ModelPart head, ModelPart hat,
         ModelPart leftArm, ModelPart rightArm,
@@ -199,7 +280,7 @@ public class Buddy extends PathfinderMob implements Npc {
 
     @Override public void remove(Entity.RemovalReason reason) {
         if (isNaturallySpawned() && this.level() instanceof ServerLevel serverLevel) {
-            if (!serverLevel.isClientSide && (reason.shouldDestroy()))
+            if (reason.shouldDestroy() && !isAscending())
                 BuddyChunkAnchor.getOrDefault(serverLevel).queryRespawn(anchorPosition, this);
         }
         super.remove(reason);
