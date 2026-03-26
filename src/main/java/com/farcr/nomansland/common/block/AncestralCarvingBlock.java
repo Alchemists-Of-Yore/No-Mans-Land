@@ -1,0 +1,165 @@
+package com.farcr.nomansland.common.block;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+
+public class AncestralCarvingBlock extends DirectionalBlock {
+    public static final EnumProperty<CarvingFormation> FORMATION = EnumProperty.create("formation", CarvingFormation.class);
+    public static final IntegerProperty ROTATION = IntegerProperty.create("rotation", 0, 3);
+
+    public AncestralCarvingBlock(Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.UP)
+                .setValue(FORMATION, CarvingFormation.SINGLE)
+                .setValue(ROTATION, 0));
+    }
+
+    @Override
+    protected MapCodec<? extends DirectionalBlock> codec() {
+        return simpleCodec(AncestralCarvingBlock::new);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, FORMATION, ROTATION);
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Level level = context.getLevel();
+        BlockPos placedPos = context.getClickedPos();
+
+        Direction facing;
+        int rotation;
+
+        BlockState neighbor = findNeighborCarving(level, placedPos);
+        if (neighbor != null) {
+            facing = neighbor.getValue(FACING);
+            rotation = neighbor.getValue(ROTATION);
+        } else {
+            float pitch = context.getPlayer() != null ? context.getPlayer().getXRot() : 0;
+            if (pitch > 60) {
+                facing = Direction.UP;
+                rotation = getRotationForPlayer(context);
+            } else if (pitch < -60) {
+                facing = Direction.DOWN;
+                rotation = getRotationForPlayer(context);
+            } else {
+                facing = context.getHorizontalDirection().getOpposite();
+                rotation = 0;
+            }
+        }
+
+        return this.defaultBlockState()
+                .setValue(FACING, facing)
+                .setValue(FORMATION, CarvingFormation.SINGLE)
+                .setValue(ROTATION, rotation);
+    }
+
+    private BlockState findNeighborCarving(Level level, BlockPos pos) {
+        for (Direction dir : Direction.values()) {
+            BlockState state = level.getBlockState(pos.relative(dir));
+            if (state.getBlock() instanceof AncestralCarvingBlock) return state;
+        }
+        return null;
+    }
+
+    protected int getRotationForPlayer(BlockPlaceContext context) {
+        if (context.getPlayer() == null) return 0;
+        return switch (context.getHorizontalDirection()) {
+            case SOUTH -> 0;
+            case WEST -> 1;
+            case NORTH -> 2;
+            case EAST -> 3;
+            default -> 0;
+        };
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        if (!level.isClientSide && !oldState.is(this)) {
+            Direction facing = state.getValue(FACING);
+            int rotation = state.getValue(ROTATION);
+            Direction right = getPlaneRight(facing, rotation);
+            Direction down = getPlaneDown(facing, rotation);
+
+            if (!tryFormSize(level, pos, facing, rotation, right, down, 3))
+                tryFormSize(level, pos, facing, rotation, right, down, 2);
+        }
+    }
+
+    private boolean tryFormSize(Level level, BlockPos origin, Direction facing, int rotation, Direction right, Direction down, int size) {
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                BlockPos p = origin.relative(right, col).relative(down, row);
+                BlockState s = level.getBlockState(p);
+                if (!(s.getBlock() instanceof AncestralCarvingBlock)) return false;
+                if (s.getValue(FACING) != facing) return false;
+                if (s.getValue(ROTATION) != rotation) return false;
+            }
+        }
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                BlockPos p = origin.relative(right, col).relative(down, row);
+                CarvingFormation formation = CarvingFormation.getForPosition(size, col, row);
+                level.setBlock(p, this.defaultBlockState()
+                        .setValue(FACING, facing)
+                        .setValue(FORMATION, formation)
+                        .setValue(ROTATION, rotation), 2);
+            }
+        }
+        return true;
+    }
+
+    private static Direction rotateCW(Direction dir) {
+        return switch (dir) {
+            case EAST -> Direction.SOUTH;
+            case SOUTH -> Direction.WEST;
+            case WEST -> Direction.NORTH;
+            case NORTH -> Direction.EAST;
+            default -> dir;
+        };
+    }
+
+    public static Direction getPlaneRight(Direction facing, int rotation) {
+        Direction right = switch (facing) {
+            case UP -> Direction.WEST;
+            case DOWN -> Direction.WEST;
+            case NORTH -> Direction.WEST;
+            case SOUTH -> Direction.EAST;
+            case EAST -> Direction.NORTH;
+            case WEST -> Direction.SOUTH;
+        };
+        for (int i = 0; i < rotation; i++) right = rotateCW(right);
+        return right;
+    }
+
+    public static Direction getPlaneDown(Direction facing, int rotation) {
+        Direction down = switch (facing) {
+            case UP -> Direction.NORTH;
+            case DOWN -> Direction.SOUTH;
+            case NORTH, SOUTH, EAST, WEST -> Direction.DOWN;
+        };
+        for (int i = 0; i < rotation; i++) down = rotateCW(down);
+        return down;
+    }
+}

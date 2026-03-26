@@ -1,0 +1,746 @@
+{
+  "variants": {
+    "facing=south,formation=single": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single"
+    },
+    "facing=south,formation=two_top_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left"
+    },
+    "facing=south,formation=two_top_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right"
+    },
+    "facing=south,formation=two_bottom_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left"
+    },
+    "facing=south,formation=two_bottom_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right"
+    },
+    "facing=south,formation=three_0_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0"
+    },
+    "facing=south,formation=three_1_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0"
+    },
+    "facing=south,formation=three_2_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0"
+    },
+    "facing=south,formation=three_0_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1"
+    },
+    "facing=south,formation=three_1_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1"
+    },
+    "facing=south,formation=three_2_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1"
+    },
+    "facing=south,formation=three_0_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2"
+    },
+    "facing=south,formation=three_1_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2"
+    },
+    "facing=south,formation=three_2_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2"
+    },
+    "facing=north,formation=single": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "y": 180
+    },
+    "facing=north,formation=two_top_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "y": 180
+    },
+    "facing=north,formation=two_top_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "y": 180
+    },
+    "facing=north,formation=two_bottom_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "y": 180
+    },
+    "facing=north,formation=two_bottom_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "y": 180
+    },
+    "facing=north,formation=three_0_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "y": 180
+    },
+    "facing=north,formation=three_1_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "y": 180
+    },
+    "facing=north,formation=three_2_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "y": 180
+    },
+    "facing=north,formation=three_0_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "y": 180
+    },
+    "facing=north,formation=three_1_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "y": 180
+    },
+    "facing=north,formation=three_2_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "y": 180
+    },
+    "facing=north,formation=three_0_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "y": 180
+    },
+    "facing=north,formation=three_1_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "y": 180
+    },
+    "facing=north,formation=three_2_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "y": 180
+    },
+    "facing=east,formation=single": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "y": 270
+    },
+    "facing=east,formation=two_top_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "y": 270
+    },
+    "facing=east,formation=two_top_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "y": 270
+    },
+    "facing=east,formation=two_bottom_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "y": 270
+    },
+    "facing=east,formation=two_bottom_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "y": 270
+    },
+    "facing=east,formation=three_0_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "y": 270
+    },
+    "facing=east,formation=three_1_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "y": 270
+    },
+    "facing=east,formation=three_2_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "y": 270
+    },
+    "facing=east,formation=three_0_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "y": 270
+    },
+    "facing=east,formation=three_1_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "y": 270
+    },
+    "facing=east,formation=three_2_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "y": 270
+    },
+    "facing=east,formation=three_0_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "y": 270
+    },
+    "facing=east,formation=three_1_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "y": 270
+    },
+    "facing=east,formation=three_2_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "y": 270
+    },
+    "facing=west,formation=single": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "y": 90
+    },
+    "facing=west,formation=two_top_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "y": 90
+    },
+    "facing=west,formation=two_top_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "y": 90
+    },
+    "facing=west,formation=two_bottom_left": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "y": 90
+    },
+    "facing=west,formation=two_bottom_right": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "y": 90
+    },
+    "facing=west,formation=three_0_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "y": 90
+    },
+    "facing=west,formation=three_1_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "y": 90
+    },
+    "facing=west,formation=three_2_0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "y": 90
+    },
+    "facing=west,formation=three_0_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "y": 90
+    },
+    "facing=west,formation=three_1_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "y": 90
+    },
+    "facing=west,formation=three_2_1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "y": 90
+    },
+    "facing=west,formation=three_0_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "y": 90
+    },
+    "facing=west,formation=three_1_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "y": 90
+    },
+    "facing=west,formation=three_2_2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "y": 90
+    },
+    "facing=up,formation=single,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=two_top_left,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=two_top_right,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=two_bottom_left,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=two_bottom_right,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_0_0,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_1_0,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_2_0,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_0_1,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_1_1,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_2_1,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_0_2,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_1_2,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=three_2_2,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,formation=single,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=two_top_left,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=two_top_right,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=two_bottom_left,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=two_bottom_right,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_0_0,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_1_0,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_2_0,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_0_1,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_1_1,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_2_1,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_0_2,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_1_2,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=three_2_2,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up,formation=single,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 90
+    },
+    "facing=up,formation=two_top_left,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 90
+    },
+    "facing=up,formation=two_top_right,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 90
+    },
+    "facing=up,formation=two_bottom_left,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 90
+    },
+    "facing=up,formation=two_bottom_right,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 90
+    },
+    "facing=up,formation=three_0_0,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 90
+    },
+    "facing=up,formation=three_1_0,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 90
+    },
+    "facing=up,formation=three_2_0,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 90
+    },
+    "facing=up,formation=three_0_1,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 90
+    },
+    "facing=up,formation=three_1_1,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 90
+    },
+    "facing=up,formation=three_2_1,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 90
+    },
+    "facing=up,formation=three_0_2,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 90
+    },
+    "facing=up,formation=three_1_2,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 90
+    },
+    "facing=up,formation=three_2_2,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 90
+    },
+    "facing=up,formation=single,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=two_top_left,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=two_top_right,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=two_bottom_left,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=two_bottom_right,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_0_0,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_1_0,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_2_0,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_0_1,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_1_1,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_2_1,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_0_2,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_1_2,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,formation=three_2_2,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,formation=single,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=two_top_left,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=two_top_right,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=two_bottom_left,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=two_bottom_right,rotation=0": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_0_0,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_1_0,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_2_0,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_0_1,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_1_1,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_2_1,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_0_2,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_1_2,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=three_2_2,rotation=0": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 270,
+      "y": 180
+    },
+    "facing=down,formation=single,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=two_top_left,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=two_top_right,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=two_bottom_left,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=two_bottom_right,rotation=1": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_0_0,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_1_0,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_2_0,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_0_1,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_1_1,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_2_1,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_0_2,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_1_2,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=three_2_2,rotation=1": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 270,
+      "y": 270
+    },
+    "facing=down,formation=single,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 270
+    },
+    "facing=down,formation=two_top_left,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 270
+    },
+    "facing=down,formation=two_top_right,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 270
+    },
+    "facing=down,formation=two_bottom_left,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 270
+    },
+    "facing=down,formation=two_bottom_right,rotation=2": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 270
+    },
+    "facing=down,formation=three_0_0,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 270
+    },
+    "facing=down,formation=three_1_0,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 270
+    },
+    "facing=down,formation=three_2_0,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 270
+    },
+    "facing=down,formation=three_0_1,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 270
+    },
+    "facing=down,formation=three_1_1,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 270
+    },
+    "facing=down,formation=three_2_1,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 270
+    },
+    "facing=down,formation=three_0_2,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 270
+    },
+    "facing=down,formation=three_1_2,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 270
+    },
+    "facing=down,formation=three_2_2,rotation=2": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 270
+    },
+    "facing=down,formation=single,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=two_top_left,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=two_top_right,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=two_bottom_left,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=two_bottom_right,rotation=3": {
+      "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_0_0,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_1_0,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_2_0,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_0_1,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_1_1,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_2_1,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_0_2,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_1_2,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2",
+      "x": 270,
+      "y": 90
+    },
+    "facing=down,formation=three_2_2,rotation=3": {
+      "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2",
+      "x": 270,
+      "y": 90
+    }
+  }
+}

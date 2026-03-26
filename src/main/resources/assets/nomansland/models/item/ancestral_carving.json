@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "north": "nomansland:block/dungeon/ancestral_carving_small",
+    "east": "minecraft:block/stone",
+    "south": "minecraft:block/stone",
+    "west": "minecraft:block/stone",
+    "up": "minecraft:block/stone",
+    "down": "minecraft:block/stone",
+    "particle": "minecraft:block/stone"
+  }
+}
