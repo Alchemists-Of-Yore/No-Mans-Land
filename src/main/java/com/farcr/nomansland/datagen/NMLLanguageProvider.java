@@ -163,7 +163,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.advancements.meet_friend_moon.title", "Friendship");
         add("nomansland.advancements.meet_friend_moon.description", "Meet the Friend Moon");
         add("nomansland.advancements.buddy_ascension.title", "Friend of my Friend");
-        add("nomansland.advancements.buddy_ascension.description", "“Find some company for the Friend Moon");
+        add("nomansland.advancements.buddy_ascension.description", "Find some company for the Friend Moon");
         add("nomansland.filled_map.bell_sanctuary", "Ancient Sanctuary Map");
         add("nomansland.filled_map.mineshaft", "Lost Miner's Map");
         add("block.nomansland.resin_cauldron", "Cauldron Filled with Resin");
