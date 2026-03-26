@@ -10,7 +10,6 @@
   },
   "arguments": {
     "texture": "nomansland:mob_variants/pig/pig_wild_gray.png",
-    "baby_texture": "nomansland:mob_variants/pig/pig_wild_gray_baby.png",
-    "remodel": "pig"
+    "baby_texture": "nomansland:mob_variants/pig/pig_wild_gray_baby.png"
   }
 }

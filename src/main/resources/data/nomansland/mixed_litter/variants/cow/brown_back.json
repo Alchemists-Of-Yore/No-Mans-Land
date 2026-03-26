@@ -3,7 +3,6 @@
   "group": "mixed_litter:remodeled_cows",
   "arguments": {
     "texture": "nomansland:mob_variants/cow/cow_brown_back.png",
-    "baby_texture": "nomansland:mob_variants/cow/cow_brown_back_baby.png",
-    "remodel": "cow"
+    "baby_texture": "nomansland:mob_variants/cow/cow_brown_back_baby.png"
   }
 }

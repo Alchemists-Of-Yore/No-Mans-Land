@@ -4,7 +4,6 @@
   "arguments": {
     "texture": "nomansland:mob_variants/mooshroom/mooshroom_mycelial.png",
     "baby_texture": "nomansland:mob_variants/mooshroom/mooshroom_mycelial_baby.png",
-    "mushroom": "minecraft:air",
-    "remodel": "cow"
+    "mushroom": "minecraft:air"
   }
 }

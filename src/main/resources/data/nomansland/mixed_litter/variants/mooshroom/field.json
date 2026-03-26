@@ -4,7 +4,6 @@
   "arguments": {
     "texture": "nomansland:mob_variants/mooshroom/mooshroom_field.png",
     "baby_texture": "nomansland:mob_variants/mooshroom/mooshroom_field_baby.png",
-    "mushroom": "nomansland:field_mushroom",
-    "remodel": "cow"
+    "mushroom": "nomansland:field_mushroom"
   }
 }

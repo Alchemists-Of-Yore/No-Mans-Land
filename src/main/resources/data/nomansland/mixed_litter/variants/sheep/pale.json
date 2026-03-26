@@ -6,7 +6,6 @@
     "baby_texture": "nomansland:mob_variants/sheep/sheep_pale_baby.png",
     "fur_texture": "nomansland:mob_variants/sheep/sheep_fur.png",
     "baby_fur_texture": "nomansland:mob_variants/sheep/sheep_baby_fur.png",
-    "sheared_fur_texture": "nomansland:mob_variants/sheep/sheep_sheared_fur.png",
-    "remodel": "sheep"
+    "sheared_fur_texture": "nomansland:mob_variants/sheep/sheep_sheared_fur.png"
   }
 }

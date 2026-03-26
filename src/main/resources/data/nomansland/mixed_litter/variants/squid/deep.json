@@ -9,7 +9,6 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/squid/squid_deep.png",
-    "remodel": "squid"
+    "texture": "nomansland:mob_variants/squid/squid_deep.png"
   }
 }

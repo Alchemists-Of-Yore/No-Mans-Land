@@ -10,7 +10,6 @@
   },
   "arguments": {
     "texture": "nomansland:mob_variants/chicken/chicken_wild.png",
-    "baby_texture": "nomansland:mob_variants/chicken/chicken_baby.png",
-    "remodel": "chicken"
+    "baby_texture": "nomansland:mob_variants/chicken/chicken_baby.png"
   }
 }

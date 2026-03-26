@@ -3,7 +3,6 @@
   "group": "mixed_litter:remodeled_pigs",
   "arguments": {
     "texture": "nomansland:mob_variants/pig/pig_oldspot.png",
-    "baby_texture": "nomansland:mob_variants/pig/pig_oldspot_baby.png",
-    "remodel": "pig"
+    "baby_texture": "nomansland:mob_variants/pig/pig_oldspot_baby.png"
   }
 }
