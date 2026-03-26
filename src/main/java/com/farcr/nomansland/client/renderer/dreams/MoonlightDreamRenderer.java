@@ -56,7 +56,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.setShaderColor(
             ((float) FastColor.ARGB32.red(getGradientColor()) / 255f),
             ((float) FastColor.ARGB32.green(getGradientColor()) / 255f),
-            ((float)FastColor.ARGB32.blue(getGradientColor()) / 255f),
+            ((float) FastColor.ARGB32.blue(getGradientColor()) / 255f),
             starAlpha
         );
 
@@ -176,7 +176,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         Matrix4f moonViewMatrix = poseStack.last().pose();
 
-        if (!hasSeenMoon && FriendMoonRenderer.moonOnScreen(Minecraft.getInstance(),
+        if (FriendMoonRenderer.moonOnScreen(Minecraft.getInstance(),
             moonViewMatrix, projectionMatrix, FriendMoonRenderer.LOOKING_AT_THRESHOLD)
         && ((MoonlightDreamType) ClientDreamRenderer.getInstance().getDream()).moonPresenceTime > 0) {
             if (ticksSinceSeenMoon > STARE_AT_MOON_TICKS) FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.SAW_MOON_IN_DREAM);
