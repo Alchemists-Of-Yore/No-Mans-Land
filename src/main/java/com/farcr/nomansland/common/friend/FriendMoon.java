@@ -196,12 +196,11 @@ public class FriendMoon extends SavedData {
                 BuddyStar.CODEC.parse(NbtOps.INSTANCE, starCompound).result().ifPresent(buddyStars::add);
         }
 
-        playerPositionMap.clear();
+        cosmicBodyStateMap.clear();
         for (Tag storedTag : tag.getList("StoredPlayerPositions", 10)) {
             if (storedTag instanceof CompoundTag dataTag) {
-                playerPositionMap.put(
-                    dataTag.getUUID("UUID"),
-                    NbtUtils.readBlockPos(dataTag, "pos").orElseThrow()
+                CosmicBodyState.CODEC.parse(NbtOps.INSTANCE, dataTag.get("CosmicBodyState")).result().ifPresent(
+                    (data) -> cosmicBodyStateMap.put(dataTag.getUUID("UUID"), data)
                 );
             }
         }
@@ -225,14 +224,15 @@ public class FriendMoon extends SavedData {
         tag.put("BuddyStars", starsTag);
 
         ListTag positionTag = new ListTag();
-        playerPositionMap.forEach((uuid, blockPos) -> {
+        cosmicBodyStateMap.forEach((uuid, bodyState) -> {
             CompoundTag playerTag = new CompoundTag();
             playerTag.putUUID("UUID", uuid);
-            playerTag.put("pos", NbtUtils.writeBlockPos(blockPos));
+            ListTag listTag1 = new ListTag();
+            CosmicBodyState.CODEC.encodeStart(NbtOps.INSTANCE, bodyState).result().ifPresent(listTag1::add);
+            playerTag.put("CosmicBodyState", listTag1);
             positionTag.add(playerTag);
         });
         tag.put("StoredPlayerPositions", positionTag);
-
         return tag;
     }
 
@@ -394,12 +394,11 @@ public class FriendMoon extends SavedData {
     }
 
     private boolean updatedShadow = false;
-    private final HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
+    private final HashMap<UUID, CosmicBodyState> cosmicBodyStateMap = new HashMap<>();
     public void updateMeetingPointInformation(ServerLevel level) {
         if (isNightTime(level)) {
             if (!updatedShadow) {
-                level.players().forEach(
-                    (player) -> updatePlayerFriendShadow(player));
+                level.players().forEach((player) -> updatePlayerFriendShadow(player));
                 updatedShadow = true;
             }
         } else updatedShadow = false;
@@ -414,15 +413,36 @@ public class FriendMoon extends SavedData {
 
     public void updatePlayerFriendShadow(ServerPlayer player) {
         if (DreamManager.getOrDefault(player.getServer()).playerHasExperiencedDream(player, NMLDreamTypes.FRIEND_MOON_DREAM.get())) {
-            playerPositionMap.put(player.getUUID(), player.blockPosition());
+            int days = 0;
+            CosmicBodyState state = cosmicBodyStateMap.get(player.getUUID());
+            if (state != null) {
+                // avoid updating at all if it exceeds days
+                if (state.exceedsDays()) return;
+                days = (cosmicBodyStateMap.get(player.getUUID()).daysCounted()) + 1;
+            }
+            cosmicBodyStateMap.put(player.getUUID(), new CosmicBodyState(player.blockPosition(), days));
             setDirty();
         }
+        playerSendShadowPacket(player);
+    }
 
+    // decoupled from above function as to not update unnecessarily . only use above function to UPDATE position of shadow
+    public void playerSendShadowPacket(ServerPlayer player) {
         UUID playerUUID = player.getUUID();
-        if (playerPositionMap.containsKey(playerUUID)) {
-            Optional<BlockPos> lastPosition = Optional.ofNullable(playerPositionMap.get(playerUUID));
-            Optional<BlockPos> meetingPointPosition = Optional.ofNullable(getMeetingPointPosition(level));
-            PacketDistributor.sendToPlayer(player, new ClientboundMeetingPointPacket(lastPosition, meetingPointPosition));
+        CosmicBodyState state = cosmicBodyStateMap.get(playerUUID);
+        if (state != null) {
+            Optional<BlockPos> lastPosition = Optional.ofNullable(state.playerPosition());
+            Optional<BlockPos> meetingPointPosition = Optional.ofNullable(
+                getMeetingPointPosition(level)
+            );
+            NoMansLand.LOGGER.info(state.daysCounted());
+            PacketDistributor.sendToPlayer(player,
+                new ClientboundMeetingPointPacket(
+                    lastPosition,
+                    meetingPointPosition,
+                    state.exceedsDays()
+                )
+            );
         }
     }
 

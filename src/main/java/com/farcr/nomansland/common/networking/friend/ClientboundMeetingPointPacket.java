@@ -15,13 +15,16 @@ import java.util.Optional;
 
 public record ClientboundMeetingPointPacket(
     Optional<BlockPos> lastTrackedPosition,
-    Optional<BlockPos> meetingPointPosition
+    Optional<BlockPos> meetingPointPosition,
+    boolean discard
 ) implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundMeetingPointPacket> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.optional(BlockPos.STREAM_CODEC),
         ClientboundMeetingPointPacket::lastTrackedPosition,
         ByteBufCodecs.optional(BlockPos.STREAM_CODEC),
         ClientboundMeetingPointPacket::meetingPointPosition,
+        ByteBufCodecs.BOOL,
+        ClientboundMeetingPointPacket::discard,
         ClientboundMeetingPointPacket::new
     );
     public static final Type<ClientboundMeetingPointPacket> TYPE = new Type<>(NoMansLand.location("client/friend_moon/meeting_point_update"));
@@ -36,7 +39,7 @@ public record ClientboundMeetingPointPacket(
             context.enqueueWork(() -> {
                 boolean shadowIsVisible = lastTrackedPosition.isPresent() && meetingPointPosition.isPresent();
                 FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
-                if (shadowIsVisible) {
+                if (shadowIsVisible && !discard) {
                     renderer.meetingPointContext =
                         new MeetingPointRenderContext(
                             true,

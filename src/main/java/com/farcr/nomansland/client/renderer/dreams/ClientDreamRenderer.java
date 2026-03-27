@@ -50,7 +50,6 @@ public class ClientDreamRenderer implements AutoCloseable {
         this.dream = dream;
     }
 
-
     public static final List<Class<? extends Screen>> blacklistedScreens = List.of(
         InventoryScreen.class
     );

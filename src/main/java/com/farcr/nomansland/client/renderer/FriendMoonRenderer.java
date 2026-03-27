@@ -125,7 +125,8 @@ public class FriendMoonRenderer implements AutoCloseable {
     public float getFriendMoonOpacity() {
         return friendMoonOpacity;
     }
-    public float friendShadowOpacity = 0.0f;
+    private float friendShadowOpacity = 0.0f;
+    private float friendShadowFaceOpacity = 0.0f;
 
     public float badOmenWaitTime = 0.0f;
     public static final int MAX_BAD_OMEN_WAIT_TIME = 60;
@@ -370,13 +371,12 @@ public class FriendMoonRenderer implements AutoCloseable {
         LocalPlayer player = mc.player;
         assert player != null;
         if (meetingPointContext.enabled()) {
-
             float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
-            if (mc.isPaused())
-                deltaTime = 0f;
+            if (mc.isPaused()) deltaTime = 0f;
+
             boolean visible = FriendMoon.isNightTime(player.level());
 
-            float moveSpeed = 0.25f;
+            float moveSpeed = 0.2f;
             float t = (float) (1f - Math.exp(deltaTime * -moveSpeed));
 
             float moveTo = (visible ? 1 : 0);
@@ -404,15 +404,20 @@ public class FriendMoonRenderer implements AutoCloseable {
 
             applyMultiplyBlendFunction();
 
+            Matrix4f moonViewMatrix = poseStack.last().pose();
             drawWithColor(FastColor.ARGB32.color(255, 255, 255), compositeOpacity, () -> {
                 GL11.glEnable(GL11.GL_STENCIL_TEST);
                 GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 
-                Matrix4f moonViewMatrix = poseStack.last().pose();
                 boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, LOOKING_AT_THRESHOLD);
-                FriendMoonAnimation animation = moonIsVisible ? FriendMoonAnimation.HIDDEN : FriendMoonAnimation.HIDDEN_2;
+                friendShadowFaceOpacity = Mth.lerp(t, friendShadowFaceOpacity, (moonIsVisible ? 1 : 0));
 
-                renderFriendMoonInternal(tesselator, moonViewMatrix, animation, compositeOpacity, 0, false);
+                renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN_2, compositeOpacity, 0, false);
+
+                applySkyBlendFunction();
+                renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN, friendShadowFaceOpacity, 0, false);
+
+                applyMultiplyBlendFunction();
 
                 RenderSystem.stencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
                 RenderSystem.stencilOp(
@@ -422,7 +427,7 @@ public class FriendMoonRenderer implements AutoCloseable {
                 );
 
                 RenderSystem.colorMask(false, false, false, false);
-                renderFriendMoonInternal(tesselator, moonViewMatrix, animation, compositeOpacity, 0, true);
+                renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN_2, compositeOpacity, 0, false);
                 RenderSystem.colorMask(true, true, true, true);
 
                 RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 1, 0xFF);
@@ -440,6 +445,7 @@ public class FriendMoonRenderer implements AutoCloseable {
             return;
         }
         friendShadowOpacity = 0.0f;
+        friendShadowFaceOpacity = 0.0f;
     }
 
     public static void applySkyBlendFunction() {

@@ -3,17 +3,12 @@ package com.farcr.nomansland.common.dreams.dreamtypes;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.*;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.commands.PlaceCommand;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.player.Player;
@@ -21,27 +16,19 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.*;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
-import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public class MoonlightDreamType extends DreamType {
     public MoonlightDreamType() {
@@ -49,9 +36,9 @@ public class MoonlightDreamType extends DreamType {
 
         this.setCanSprint(false)
             .setHUDHidden(true)
-            .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
-            .setChunkGenerator(this::moonlightChunkGenerator)
             .setRenderer(MoonlightDreamRenderer::new)
+            .setChunkGenerator(this::moonlightChunkGenerator)
+            .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
             .setInstanceSupplier(() -> new MoonlightDreamTypeInstance(this));
     }
 

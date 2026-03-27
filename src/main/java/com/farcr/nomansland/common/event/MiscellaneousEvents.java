@@ -578,7 +578,7 @@ public class MiscellaneousEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDimensionSyncPacket(serverPlayer.server.levelKeys()));
             SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);
-            FriendMoon.getOrDefault(serverPlayer.serverLevel()).updatePlayerFriendShadow(serverPlayer);
+            FriendMoon.getOrDefault(serverPlayer.serverLevel()).playerSendShadowPacket(serverPlayer);
             DreamManager.getOrDefault(serverPlayer.getServer()).notifyClient(serverPlayer);
         }
     }
