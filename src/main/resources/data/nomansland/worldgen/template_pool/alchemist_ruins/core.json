@@ -3,7 +3,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "nomansland:alchemist_ruins/corridors/start_1",
+        "location": "nomansland:alchemist_ruins/core",
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },

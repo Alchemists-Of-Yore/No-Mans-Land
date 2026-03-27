@@ -1,0 +1,59 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_4",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_5",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_6",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

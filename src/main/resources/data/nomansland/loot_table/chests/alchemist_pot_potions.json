@@ -323,7 +323,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "nomansland:ender_pearl",
+          "name": "minecraft:ender_pearl",
           "weight": 20
         },
         {

@@ -23,6 +23,8 @@ public class NMLStructureProcessorTypes {
             BLOCK_REMOVER = register("block_remover", BlockRemoverProcessor.CODEC);
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<InvertedBellProcessor>>
             BELL_PROCESSOR = register("inverted_bell", InvertedBellProcessor.CODEC);
+    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<PotFeatureProcessor>>
+            POT_FEATURE = register("pot_feature", PotFeatureProcessor.CODEC);
     
     private static <P extends StructureProcessor> DeferredHolder<StructureProcessorType<?>, StructureProcessorType<P>> register (String name, MapCodec<P> codec) {
         return STRUCTURE_PROCESSOR_TYPES.register(name, () -> () -> codec);

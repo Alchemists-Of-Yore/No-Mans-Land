@@ -1,0 +1,500 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/cave_passage_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/cave_passage_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/cave_passage_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/door_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/door_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/door_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/firepit",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/pillars",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/pool_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/pool_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/pool_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/stairs",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_4",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_5",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_6",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_7",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_8",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_9",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_11",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_12",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_13",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_14",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_15",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_16",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_17",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/storage_18",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/tall_pillars",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/treasure_storage_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/small/treasure_storage_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/dead_end",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/chamber_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/chamber_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/chamber_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/chamber_4",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/chamber_5",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/chamber_6",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/haul_4",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/sanctum_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/sanctum_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/sanctum_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/small_well",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/warehouse_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/warehouse_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/warehouse_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/warehouse_4",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/well",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_3",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_4",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_5",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/archways/grand_6",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}
