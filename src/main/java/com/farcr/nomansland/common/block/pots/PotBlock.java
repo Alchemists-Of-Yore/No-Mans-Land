@@ -190,7 +190,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (stack.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get()) || stack.getItem() instanceof AncientPotItem) {
+        if (stack.is(NMLItems.POT_DEBUG_STICK.get()) || stack.getItem() instanceof AncientPotItem) {
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -462,7 +462,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     public void attack(BlockState state, Level level, BlockPos pos, Player player) {
         if (!level.isClientSide) {
             ItemStack held = player.getMainHandItem();
-            if (held.is(NMLItems.ANCIENT_POT_DEBUG_ITEM.get()) && held.getItem() instanceof AncientPotDebugItem debug) {
+            if (held.is(NMLItems.POT_DEBUG_STICK.get()) && held.getItem() instanceof AncientPotDebugItem debug) {
                 debug.handleLeftClick(level, pos, player);
                 return;
             }

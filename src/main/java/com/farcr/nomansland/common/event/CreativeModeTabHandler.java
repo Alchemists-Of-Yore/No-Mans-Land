@@ -235,6 +235,9 @@ public class CreativeModeTabHandler {
             insertAfter(CHISELED_TUFF_BRICKS, POLISHED_SILTSTONE_SLAB);
             insertAfter(CHISELED_TUFF_BRICKS, POLISHED_SILTSTONE_STAIRS);
             insertAfter(CHISELED_TUFF_BRICKS, POLISHED_SILTSTONE);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_WALL);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_SLAB);
+            insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE_STAIRS);
             insertAfter(CHISELED_TUFF_BRICKS, SILTSTONE);
 
             insertAfter(MUD_BRICK_WALL, THATCH_SLAB);

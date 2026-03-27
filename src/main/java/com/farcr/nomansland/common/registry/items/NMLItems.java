@@ -99,7 +99,7 @@ public class NMLItems {
     public static final ItemDefinition<AncientPotItem> LARGE_ANCIENT_POT = registerWithoutTab("large_ancient_pot",
             () -> new AncientPotItem(NMLBlocks.LARGE_ANCIENT_POT.get(), new Properties()));
 
-    public static final ItemDefinition<AncientPotDebugItem> ANCIENT_POT_DEBUG_ITEM = registerWithoutTab("ancient_pot_debug", () -> new AncientPotDebugItem(new Properties().stacksTo(1)));
+    public static final ItemDefinition<AncientPotDebugItem> POT_DEBUG_STICK = registerWithoutTab("pot_debug_stick", () -> new AncientPotDebugItem(new Properties().stacksTo(1)));
 
     // Moonlight Items
     public static final ItemDefinition<BlockItem> MOONLIGHT_BASIN = registerWithoutTab("moonlight_basin",

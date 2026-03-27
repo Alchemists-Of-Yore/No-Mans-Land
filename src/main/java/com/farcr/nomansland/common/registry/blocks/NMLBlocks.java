@@ -371,6 +371,12 @@ public class NMLBlocks {
 
     public static final BlockDefinition<Block> SILTSTONE = register("siltstone",
             () -> new Block(ofFullCopy(Blocks.STONE)), BlockProperties.stoneLike());
+    public static final BlockDefinition<StairBlock> SILTSTONE_STAIRS = register("siltstone_stairs",
+            () -> new StairBlock(SILTSTONE.get().defaultBlockState(), ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLikeStairs());
+    public static final BlockDefinition<SlabBlock> SILTSTONE_SLAB = register("siltstone_slab",
+            () -> new SlabBlock(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLikeSlab());
+    public static final BlockDefinition<WallBlock> SILTSTONE_WALL = register("siltstone_wall",
+            () -> new WallBlock(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLikeWall());
     public static final BlockDefinition<Block> POLISHED_SILTSTONE = register("polished_siltstone",
             () -> new Block(ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLike());
     public static final BlockDefinition<StairBlock> POLISHED_SILTSTONE_STAIRS = register("polished_siltstone_stairs",
