@@ -197,13 +197,13 @@ public class FriendMoon extends SavedData {
         }
 
         cosmicBodyStateMap.clear();
-        for (Tag storedTag : tag.getList("StoredPlayerPositions", 10)) {
-            if (storedTag instanceof CompoundTag dataTag) {
-                CosmicBodyState.CODEC.parse(NbtOps.INSTANCE, dataTag.get("CosmicBodyState")).result().ifPresent(
-                    (data) -> cosmicBodyStateMap.put(dataTag.getUUID("UUID"), data)
-                );
+        for (Tag positionTag : tag.getList("StoredPlayerPositions", 10)) {
+            if (positionTag instanceof CompoundTag stateCompound) {
+                CosmicBodyState.CODEC.parse(NbtOps.INSTANCE, stateCompound).result().ifPresent(
+                (data) -> cosmicBodyStateMap.put(data.playerUUID(), data));
             }
         }
+
         return this;
     }
 
@@ -224,14 +224,8 @@ public class FriendMoon extends SavedData {
         tag.put("BuddyStars", starsTag);
 
         ListTag positionTag = new ListTag();
-        cosmicBodyStateMap.forEach((uuid, bodyState) -> {
-            CompoundTag playerTag = new CompoundTag();
-            playerTag.putUUID("UUID", uuid);
-            ListTag listTag1 = new ListTag();
-            CosmicBodyState.CODEC.encodeStart(NbtOps.INSTANCE, bodyState).result().ifPresent(listTag1::add);
-            playerTag.put("CosmicBodyState", listTag1);
-            positionTag.add(playerTag);
-        });
+        cosmicBodyStateMap.forEach((uuid, bodyState) ->
+            CosmicBodyState.CODEC.encodeStart(NbtOps.INSTANCE, bodyState).result().ifPresent(positionTag::add));
         tag.put("StoredPlayerPositions", positionTag);
         return tag;
     }
@@ -420,7 +414,7 @@ public class FriendMoon extends SavedData {
                 if (state.exceedsDays()) return;
                 days = (cosmicBodyStateMap.get(player.getUUID()).daysCounted()) + 1;
             }
-            cosmicBodyStateMap.put(player.getUUID(), new CosmicBodyState(player.blockPosition(), days));
+            cosmicBodyStateMap.put(player.getUUID(), new CosmicBodyState(player.blockPosition(), player.getUUID(), days));
             setDirty();
         }
         playerSendShadowPacket(player);
@@ -435,7 +429,6 @@ public class FriendMoon extends SavedData {
             Optional<BlockPos> meetingPointPosition = Optional.ofNullable(
                 getMeetingPointPosition(level)
             );
-            NoMansLand.LOGGER.info(state.daysCounted());
             PacketDistributor.sendToPlayer(player,
                 new ClientboundMeetingPointPacket(
                     lastPosition,

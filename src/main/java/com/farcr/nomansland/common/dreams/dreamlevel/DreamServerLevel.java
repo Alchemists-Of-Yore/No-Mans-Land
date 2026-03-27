@@ -74,12 +74,10 @@ public class DreamServerLevel extends ServerLevel {
             if (dreamingPlayer != null) dreamingPlayer.discardTether();
             else DreamLevelHandler.playerTeleportFallback(player, false);
 
-            dreamTypeInstance.getDreamType().onDreamEnd(getServer().getPlayerList().getPlayer(player.getUUID()), success);
+            if (success) manager.setDreamExperienced(dreamTypeInstance.getDreamType(), player);
+            dreamTypeInstance.getDreamType().onDreamEnd(player, success);
             PacketDistributor.sendToPlayer(player,
-                new ClientboundDreamPacket(Optional.empty())
-            );
-
-            if (success) manager.getPlayerStorage(player).setDreamExperienced();
+                new ClientboundDreamPacket(Optional.empty()));
         }
     }
 }

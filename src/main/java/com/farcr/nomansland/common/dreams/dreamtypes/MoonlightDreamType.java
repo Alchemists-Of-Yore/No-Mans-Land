@@ -47,7 +47,8 @@ public class MoonlightDreamType extends DreamType {
         super.onDreamEnd(player, success);
         if (success) {
             NMLCriteriaTriggers.DREAM_FRIEND_MOON.get().trigger(player);
-            FriendMoon.getOrDefault(player.serverLevel())
+
+            FriendMoon.getOrDefault(player.getServer().overworld())
                 .updatePlayerFriendShadow(player);
         }
     }
@@ -68,6 +69,10 @@ public class MoonlightDreamType extends DreamType {
         private float moonGazeTime = 0f;
         public float moonPresenceTime;
 
+        public AABB dreamBoundingBox = new AABB(
+            new BlockPos(0, 0, 0)
+        ).inflate(36, 100, 200);
+
         @Override
         public void tick(Level level) {
             super.tick(level);
@@ -85,8 +90,7 @@ public class MoonlightDreamType extends DreamType {
                     moonGazeTime = 0f;
                     // force player exit if out of bounds
                     if (level instanceof DreamServerLevel dreamLevel) {
-                        if (Math.abs(player.position().x) > 36
-                            || Math.abs(player.position().z) > 200)
+                        if (!dreamBoundingBox.contains(player.position()))
                             dreamLevel.endDream(false);
                     }
                     return;

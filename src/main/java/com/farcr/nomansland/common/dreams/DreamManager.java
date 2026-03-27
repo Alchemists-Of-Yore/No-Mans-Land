@@ -43,7 +43,9 @@ public class DreamManager extends SavedData {
     }
 
     public DreamStorage clearPlayerStorage(ServerPlayer player) {
-        return storageMap.remove(player.getUUID());
+        DreamStorage dreamStorage = storageMap.remove(player.getUUID());
+        setDirty();
+        return dreamStorage;
     }
 
     // eventually this will be changed to (player, dream)
@@ -178,5 +180,10 @@ public class DreamManager extends SavedData {
         });
         compoundTag.put("Players", listTag);
         return compoundTag;
+    }
+
+    public void setDreamExperienced(DreamType dreamType, ServerPlayer player) {
+        getPlayerStorage(player).setDreamExperienced();
+        setDirty();
     }
 }
