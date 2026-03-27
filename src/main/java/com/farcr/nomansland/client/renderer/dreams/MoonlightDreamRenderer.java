@@ -48,41 +48,37 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
         float starAlpha = getStarBrightness(0f, 0f);
 
-        FriendMoonRenderer.drawWithColor(FriendMoonRenderer.getGradientColor(), starAlpha,
-            () -> {
-                if (levelRenderer.starBuffer == null)
-                    levelRenderer.createStars();
+        FriendMoonRenderer.drawWithColor(FriendMoonRenderer.getGradientColor(), starAlpha, () -> {
+            if (levelRenderer.starBuffer == null)
+                levelRenderer.createStars();
 
-                FriendMoonRenderer.applySkyBlendFunction();
+            FriendMoonRenderer.applySkyBlendFunction();
 
-                levelRenderer.starBuffer.bind();
-                levelRenderer.starBuffer.drawWithShader(poseStack.last().pose(),
-                    projectionMatrix, GameRenderer.getPositionShader());
-                VertexBuffer.unbind();
+            levelRenderer.starBuffer.bind();
+            levelRenderer.starBuffer.drawWithShader(poseStack.last().pose(),
+                projectionMatrix, GameRenderer.getPositionShader());
+            VertexBuffer.unbind();
 
-                renderDream(poseStack, deltaTracker, projectionMatrix);
+            renderDream(poseStack, deltaTracker, projectionMatrix);
 
-                RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                renderMoon(poseStack, projectionMatrix);
+            renderMoon(poseStack, projectionMatrix);
 
-                RenderSystem.defaultBlendFunc();
+            RenderSystem.defaultBlendFunc();
 
-                poseStack.popPose();
+            poseStack.popPose();
 
-                RenderSystem.setShaderColor(0f, 0f, 0f, 1f);
-                poseStack.pushPose();
+            RenderSystem.setShaderColor(0f, 0f, 0f, 1f);
+            poseStack.pushPose();
 
-                poseStack.scale(100f, 100f, 100f);
-                poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-                poseStack.translate(0, -0.125, 0);
-                getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, GRADIENT_SHADER);
+            poseStack.scale(100f, 100f, 100f);
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+            poseStack.translate(0, -0.125, 0);
+            getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, GRADIENT_SHADER);
 
-                poseStack.popPose();
-            }
-        );
-
-        //
+            poseStack.popPose();
+        }, true);
 
         levelRenderer.renderBuffers.bufferSource().endLastBatch();
 

@@ -43,8 +43,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -247,16 +247,24 @@ public class FriendMoon extends SavedData {
             || upsetWith.contains(serverPlayer.getUUID());
     }
 
-    public static final DeferredHolder<MobEffect, MobEffect> FRIENDSHIP = NMLEffects.FRIENDSHIP;
-    public static void grantPlayerFriendship(FriendMoon friendMoon, ServerPlayer serverPlayer, BlockPos pos) {
-        if (friendMoon.getState() != FriendMoonState.UPSET && !friendMoon.cannotObtainFriendship(serverPlayer))
-            serverPlayer.addEffect(new MobEffectInstance(FRIENDSHIP, 30, 0, true, false));
-        else friendMoon.setUpsetWith(serverPlayer.getUUID());
-        PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
+    // side agnostic, expects side to validate the basin
+    public static boolean appearConditionsMet(Player player, BlockPos basinPosition) {
+        if (!isNightTime(player.level()))
+            return false;
+        AABB boundingBox = new AABB(basinPosition).inflate(MoonlightBasinBlockEntity.FRIENDSHIP_MAX_RANGE);
+        return boundingBox.contains(player.position());
     }
 
-    public boolean playerHasFriendship(Player player) {
-        return player.hasEffect(FRIENDSHIP);
+    public static void grantPlayerFriendship(FriendMoon friendMoon, ServerPlayer serverPlayer, BlockPos pos) {
+        if (friendMoon.getState() != FriendMoonState.UPSET && !friendMoon.cannotObtainFriendship(serverPlayer)) {
+            friendMoon.lastFriendshipPlayers.put(serverPlayer, 0);
+            // only inform of basin if the player has friendship with the moon
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
+        } else friendMoon.setUpsetWith(serverPlayer.getUUID());
+    }
+
+    public boolean playerHasFriendship(ServerPlayer player) {
+        return lastFriendshipPlayers.containsKey(player);
     }
 
     public List<ServerPlayer> getFriendshipPlayers() {
@@ -379,8 +387,10 @@ public class FriendMoon extends SavedData {
         }
     }
 
+    public static float NIGHT_TIME_THRESHOLD = 0.3f;
     public static boolean isNightTime(Level level) {
-        return (level.getSkyDarken() >= 10);
+        float time = level.getTimeOfDay(0f);
+        return (time > NIGHT_TIME_THRESHOLD && time < (1 - NIGHT_TIME_THRESHOLD));
     }
 
     private boolean updatedShadow = false;
@@ -435,25 +445,19 @@ public class FriendMoon extends SavedData {
 
             // query players that had friendship
             for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
-                if (player != null && (!this.playerHasFriendship(player) || player.isDeadOrDying())) {
-                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
-                        if (!cannotObtainFriendship(player)) {
-                            getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
-                                (registry) -> leavingFilter(registry, player))
-                                    .dispatch(level, player);
-                        }
-                        lastFriendshipPlayers.remove(player);
+                lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                    if (!cannotObtainFriendship(player)) {
+                        getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
+                            (registry) -> leavingFilter(registry, player))
+                                .dispatch(level, player);
                     }
+                    lastFriendshipPlayers.remove(player);
                 }
             }
             // Grant players advancement if they do not have it
             AtomicInteger playerTracker = new AtomicInteger();
-            forFriendshipPlayers((player) -> {
-                playerTracker.getAndIncrement();
-                // and store the player for later
-                lastFriendshipPlayers.put(player, 0);
-            });
+            forFriendshipPlayers((player) -> playerTracker.getAndIncrement());
 
             // Ensure players are listening to the Moon
             int totalPlayers = playerTracker.get();
@@ -573,7 +577,6 @@ public class FriendMoon extends SavedData {
         NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
-
 
     private DialoguePool leavingFilter(Registry<DialoguePool> registry, ServerPlayer serverPlayer) {
         List<DialoguePool> filteredDialogue = registry.stream().filter(
