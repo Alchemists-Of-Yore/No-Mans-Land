@@ -3,7 +3,7 @@
   "start_pool":"nomansland:alchemist_ruins/core",
   "size": 16,
   "max_distance_from_center": 100,
-  "biomes": "#minecraft:is_overworld",
+  "biomes": "#c:is_cave",
   "liquid_settings": "ignore_waterlogging",
   "start_height": {
     "type": "uniform",
@@ -11,7 +11,7 @@
       "absolute": 32
     },
     "min_inclusive": {
-      "absolute": -32
+      "absolute": 0
     }
   },
   "dimension_padding": 10,
