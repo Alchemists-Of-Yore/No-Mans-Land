@@ -9,6 +9,7 @@ import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
+import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
@@ -260,6 +261,22 @@ public class ClientSetupEvents {
                         DefaultVertexFormat.POSITION_COLOR
                 ),
                 shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
+        );
+        event.registerShader(
+            new ShaderInstance(
+                event.getResourceProvider(),
+                NoMansLand.location("friend_moon_sky"),
+                DefaultVertexFormat.POSITION_COLOR
+            ),
+            shader -> FriendMoonRenderer.FRIEND_MOON_SKY_SHADER = shader
+        );
+        event.registerShader(
+            new ShaderInstance(
+                event.getResourceProvider(),
+                NoMansLand.location("dream_horizon_gradient"),
+                DefaultVertexFormat.POSITION_COLOR
+            ),
+            shader -> MoonlightDreamRenderer.GRADIENT_SHADER = shader
         );
         try {
             InvertedBellClientHandler.instance.postChain = new PostChain(

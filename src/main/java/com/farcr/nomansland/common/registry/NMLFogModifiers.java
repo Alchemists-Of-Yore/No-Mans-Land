@@ -13,5 +13,4 @@ public class NMLFogModifiers {
     public static final Supplier<FoggyBiomeFogModifier> FOGGY_BIOME_MODIFIER = FOG_MODIFIERS.register("foggy_biome_modifier", FoggyBiomeFogModifier::new);
     public static final Supplier<DeepDarkFogModifier> DEEP_DARK_MODIFIER = FOG_MODIFIERS.register("deep_dark_modifier", DeepDarkFogModifier::new);
     public static final Supplier<CaveBiomeFogModifier> CAVE_BIOME_MODIFIER = FOG_MODIFIERS.register("cave_biome_modifier", CaveBiomeFogModifier::new);
-    public static final Supplier<FriendMoonFogModifier> FRIEND_MOON_MODIFIER = FOG_MODIFIERS.register("friend_moon_modifier", FriendMoonFogModifier::new);
 }

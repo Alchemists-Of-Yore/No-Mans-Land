@@ -5,6 +5,8 @@ import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
+import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,6 +14,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.commands.PlaceCommand;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -48,44 +51,64 @@ public class MoonlightDreamType extends DreamType {
             .setHUDHidden(true)
             .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
             .setChunkGenerator(this::moonlightChunkGenerator)
-            .setRenderer(MoonlightDreamRenderer::new);
+            .setRenderer(MoonlightDreamRenderer::new)
+            .setInstanceSupplier(() -> new MoonlightDreamTypeInstance(this));
     }
 
-    private boolean hasSeenMoon = false;
-    public void hasSeenMoon() {
-        hasSeenMoon = true;
+    @Override
+    public void onDreamEnd(ServerPlayer player, boolean success) {
+        super.onDreamEnd(player, success);
+        if (success) {
+            NMLCriteriaTriggers.DREAM_FRIEND_MOON.get().trigger(player);
+            FriendMoon.getOrDefault(player.serverLevel())
+                .updatePlayerFriendShadow(player);
+        }
     }
 
-    private float moonGazeTime = 0f;
     public static final int MAX_MOON_GAZE_TIME = 200;
 
-    public float moonPresenceTime;
-    @Override public void tick(Level level) {
-        super.tick(level);
+    public static class MoonlightDreamTypeInstance extends DreamTypeInstance {
+        private boolean hasSeenMoon = false;
 
-        int size = 4;
-        AABB boundingBox = new AABB(BASIN_POSITION.subtract(new Vec3i(size, 0, size)))
-            .inflate(size, level.getMaxBuildHeight(), size);
+        public MoonlightDreamTypeInstance(DreamType dreamType) {
+            super(dreamType);
+        }
 
-        List<? extends Player> playerList = level.players();
-        if (!playerList.isEmpty()) {
-            Player player = playerList.getFirst();
-            if (!boundingBox.contains(player.position())) {
-                hasSeenMoon = false;
-                moonPresenceTime = 0f;
-                moonGazeTime = 0f;
-                // force player exit if out of bounds
-                if (level instanceof DreamServerLevel dreamLevel) {
-                    if (Math.abs(player.position().x) > 36
-                    || Math.abs(player.position().z) > 200)
-                        dreamLevel.endDream(false);
+        public void hasSeenMoon() {
+            hasSeenMoon = true;
+        }
+
+        private float moonGazeTime = 0f;
+        public float moonPresenceTime;
+
+        @Override
+        public void tick(Level level) {
+            super.tick(level);
+
+            int size = 4;
+            AABB boundingBox = new AABB(BASIN_POSITION.subtract(new Vec3i(size, 0, size)))
+                .inflate(size, level.getMaxBuildHeight(), size);
+
+            List<? extends Player> playerList = level.players();
+            if (!playerList.isEmpty()) {
+                Player player = playerList.getFirst();
+                if (!boundingBox.contains(player.position())) {
+                    hasSeenMoon = false;
+                    moonPresenceTime = 0f;
+                    moonGazeTime = 0f;
+                    // force player exit if out of bounds
+                    if (level instanceof DreamServerLevel dreamLevel) {
+                        if (Math.abs(player.position().x) > 36
+                            || Math.abs(player.position().z) > 200)
+                            dreamLevel.endDream(false);
+                    }
+                    return;
                 }
-                return;
-            }
-            moonPresenceTime++;
-            if (level instanceof DreamServerLevel serverLevel && hasSeenMoon) {
-                if (moonGazeTime > MAX_MOON_GAZE_TIME) serverLevel.endDream(true);
-                moonGazeTime++;
+                moonPresenceTime++;
+                if (level instanceof DreamServerLevel serverLevel && hasSeenMoon) {
+                    if (moonGazeTime > MAX_MOON_GAZE_TIME) serverLevel.endDream(true);
+                    moonGazeTime++;
+                }
             }
         }
     }

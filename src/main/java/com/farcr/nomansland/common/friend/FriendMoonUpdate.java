@@ -24,9 +24,14 @@ public class FriendMoonUpdate {
             moon.awake = true;
         }),
         SAW_MOON_IN_DREAM(1, (moon, player) -> {
-            DreamType dreamType = DreamManager.getOrDefault(player.getServer()).playerGetDream(player);
-            if (dreamType instanceof MoonlightDreamType moonlightDreamType)
-                moonlightDreamType.hasSeenMoon();
+            DreamManager manager = DreamManager.getOrDefault(player.getServer());
+            DreamType dreamType = manager.playerGetDream(player);
+            if (manager.playerIsDreaming(player) && dreamType instanceof MoonlightDreamType) {
+                // "theres gotta be a better way to do this" -person who wrote the system
+                ((MoonlightDreamType.MoonlightDreamTypeInstance)
+                    DreamLevelHandler.getDreamLevel(player.getServer(), dreamType, player)
+                    .getDreamTypeInstance()).hasSeenMoon();
+            }
         });
 
         private final int id;

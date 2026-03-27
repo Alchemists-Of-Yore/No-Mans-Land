@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.registry;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.trigger.BuddyAscensionTrigger;
+import com.farcr.nomansland.common.trigger.DreamFriendMoonTrigger;
 import com.farcr.nomansland.common.trigger.MeetFriendMoonTrigger;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.advancements.critereon.DefaultBlockInteractionTrigger;
@@ -20,5 +21,6 @@ public class NMLCriteriaTriggers {
     public static final DeferredHolder<CriterionTrigger<?>, KilledTrigger> IGNITE_FLAMMABLE_ENTITY = TRIGGERS.register("ignite_flammable_entity", KilledTrigger::new);
     public static final DeferredHolder<CriterionTrigger<?>, DefaultBlockInteractionTrigger> MINE_ORE_WITH_EXPLOSIVE = TRIGGERS.register("mine_ore_with_explosive", DefaultBlockInteractionTrigger::new);
     public static final DeferredHolder<CriterionTrigger<?>, MeetFriendMoonTrigger> MEET_FRIEND_MOON = TRIGGERS.register("meet_friend_moon_trigger", MeetFriendMoonTrigger::new);
+    public static final DeferredHolder<CriterionTrigger<?>, DreamFriendMoonTrigger> DREAM_FRIEND_MOON = TRIGGERS.register("dream_friend_moon_trigger", DreamFriendMoonTrigger::new);
     public static final DeferredHolder<CriterionTrigger<?>, BuddyAscensionTrigger> BUDDY_ASCENSION = TRIGGERS.register("buddy_ascension", BuddyAscensionTrigger::new);
 }

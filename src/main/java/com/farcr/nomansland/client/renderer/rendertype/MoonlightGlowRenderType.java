@@ -54,7 +54,7 @@ public class MoonlightGlowRenderType {
 
     public static boolean itemCanBeOffered(Item item) {
         Minecraft instance = Minecraft.getInstance();
-        if (instance.player != null && instance.player.hasEffect(NMLEffects.FRIENDSHIP)) {
+        if (instance.player != null && FriendMoonRenderer.getInstance().getFriendMoonOpacity() > 0) {
             if (instance.level != null) {
                 ArrayList<DialoguePool> list = new ArrayList<>();
                 DialogueUtil.appendTags(

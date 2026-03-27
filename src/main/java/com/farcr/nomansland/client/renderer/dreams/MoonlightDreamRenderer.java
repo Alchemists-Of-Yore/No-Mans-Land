@@ -5,6 +5,7 @@ import com.farcr.nomansland.client.Meshes;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonUpdate;
 import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -27,14 +28,11 @@ import org.joml.Vector3f;
 
 public class MoonlightDreamRenderer implements IDreamRenderer {
     public static ShaderInstance DREAM_SKY_SHADER;
+    public static ShaderInstance GRADIENT_SHADER;
 
-    public Quaternionf skyRotation = Axis.XP.rotationDegrees(35);
+    public Quaternionf skyRotation = Axis.XP.rotationDegrees(55f);
 
-    public int getGradientColor() {
-        return FastColor.ARGB32.color(
-                175, 220, 135
-        );
-    }
+    float speed = 1 / 150f;
 
     public boolean render(
         LevelRenderer levelRenderer,
@@ -45,44 +43,86 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     ) {
         RenderSystem.depthMask(false);
         poseStack.mulPose(frustumMatrix);
+        poseStack.pushPose();
         poseStack.mulPose(skyRotation);
 
-        float c0 = RenderSystem.getShaderColor()[0];
-        float c1 = RenderSystem.getShaderColor()[1];
-        float c2 = RenderSystem.getShaderColor()[2];
-        float c3 = RenderSystem.getShaderColor()[3];
-
         float starAlpha = getStarBrightness(0f, 0f);
-        RenderSystem.setShaderColor(
-            ((float) FastColor.ARGB32.red(getGradientColor()) / 255f),
-            ((float) FastColor.ARGB32.green(getGradientColor()) / 255f),
-            ((float) FastColor.ARGB32.blue(getGradientColor()) / 255f),
-            starAlpha
+
+        FriendMoonRenderer.drawWithColor(FriendMoonRenderer.getGradientColor(), starAlpha,
+            () -> {
+                if (levelRenderer.starBuffer == null)
+                    levelRenderer.createStars();
+
+                FriendMoonRenderer.applySkyBlendFunction();
+
+                levelRenderer.starBuffer.bind();
+                levelRenderer.starBuffer.drawWithShader(poseStack.last().pose(),
+                    projectionMatrix, GameRenderer.getPositionShader());
+                VertexBuffer.unbind();
+
+                renderDream(poseStack, deltaTracker, projectionMatrix);
+
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+
+                renderMoon(poseStack, projectionMatrix);
+
+                RenderSystem.defaultBlendFunc();
+
+                poseStack.popPose();
+
+                RenderSystem.setShaderColor(0f, 0f, 0f, 1f);
+                poseStack.pushPose();
+
+                poseStack.scale(100f, 100f, 100f);
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+                poseStack.translate(0, -0.125, 0);
+                getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, GRADIENT_SHADER);
+
+                poseStack.popPose();
+            }
         );
 
-        RenderSystem.defaultBlendFunc();
-        renderDream(poseStack, deltaTracker, projectionMatrix);
-
-        if (levelRenderer.starBuffer == null)
-            levelRenderer.createStars();
-
-        FriendMoonRenderer.applySkyBlendFunction();
-        RenderSystem.disableBlend();
-        levelRenderer.starBuffer.bind();
-        levelRenderer.starBuffer.drawWithShader(poseStack.last().pose(),
-            projectionMatrix, GameRenderer.getPositionShader());
-        VertexBuffer.unbind();
-
-        RenderSystem.setShaderColor(c0, c1, c2, c3);
-        renderMoon(poseStack, projectionMatrix);
+        //
 
         levelRenderer.renderBuffers.bufferSource().endLastBatch();
+
+        FriendMoonRenderer.applySkyBlendFunction();
+
         RenderSystem.applyModelViewMatrix();
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
         FogRenderer.setupNoFog();
 
+        handleCamera(deltaTracker);
         return true;
+    }
+
+    private void handleCamera(DeltaTracker deltaTracker) {
+        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
+        float timeWithDelta = dreamInstance.moonPresenceTime + partialTicks;
+        if (hasSeenMoon) ticksSinceSeenMoon += partialTicks;
+        timeWithDelta = Math.max(timeWithDelta - 1f, 0);
+
+        if (timeWithDelta > 0) {
+            Entity camera = Minecraft.getInstance().getCameraEntity();
+
+            Vec3 camPos = camera.getEyePosition(partialTicks);
+            Vector3f targetPosition = camPos.toVector3f().add(new Vector3f(0, 100, 0).rotate(skyRotation));
+
+            Vec3 target = new Vec3(targetPosition.x, targetPosition.y, targetPosition.z);
+            Vec3 dir = target.subtract(camPos).normalize();
+
+            float yawTo = (float) Math.toDegrees(Math.atan2(dir.z, dir.x)) - 90f;
+            float pitchTo = (float) Math.toDegrees(-Math.atan2(dir.y, Math.sqrt(dir.x * dir.x + dir.z * dir.z)));
+
+            float yaw = camera.getYRot();
+            float pitch = camera.getXRot();
+
+            float rotateSpeed = 0.08f * (speed * timeWithDelta / 2f);
+            if (hasSeenMoon) rotateSpeed = Math.min(rotateSpeed, 0.5f);
+            camera.setYRot(yaw + (Mth.wrapDegrees(yawTo - yaw) * rotateSpeed));
+            camera.setXRot(pitch + ((pitchTo - pitch) * rotateSpeed));
+        }
     }
 
     public float getStarBrightness(float partialTick, float originalBrightness) {
@@ -111,6 +151,11 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
     public float elapsedTime = 0.0f;
     private float ticksSinceSeenMoon = 0.0f;
+
+    MoonlightDreamType.MoonlightDreamTypeInstance dreamInstance =
+        (MoonlightDreamType.MoonlightDreamTypeInstance) ClientDreamRenderer.getInstance()
+            .getDreamClientInstance();
+
     public void renderDream(
         PoseStack poseStack, DeltaTracker deltaTracker, Matrix4f projectionMatrix
     ) {
@@ -120,36 +165,11 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.enableBlend();
         VertexBuffer skyBuffer = getSkyMesh();
 
-        elapsedTime += (deltaTracker.getGameTimeDeltaTicks() / 40) ;
-
-        MoonlightDreamType dream = (MoonlightDreamType) ClientDreamRenderer.getInstance().getDream();
+        elapsedTime += (deltaTracker.getGameTimeDeltaTicks() / 40);
 
         float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
-        float timeWithDelta = dream.moonPresenceTime + partialTicks;
-        if (hasSeenMoon) ticksSinceSeenMoon += partialTicks;
+        float timeWithDelta = dreamInstance.moonPresenceTime + partialTicks;
         timeWithDelta = Math.max(timeWithDelta - 1f, 0);
-        float speed = 1 / 150f;
-
-        if (timeWithDelta > 0) {
-            Entity camera = Minecraft.getInstance().getCameraEntity();
-
-            Vec3 camPos = camera.getEyePosition(partialTicks);
-            Vector3f targetPosition = camPos.toVector3f().add(new Vector3f(0, 100, 0).rotate(skyRotation));
-
-            Vec3 target = new Vec3(targetPosition.x, targetPosition.y, targetPosition.z);
-            Vec3 dir = target.subtract(camPos).normalize();
-
-            float yawTo = (float) Math.toDegrees(Math.atan2(dir.z, dir.x)) - 90f;
-            float pitchTo = (float) Math.toDegrees(-Math.atan2(dir.y, Math.sqrt(dir.x * dir.x + dir.z * dir.z)));
-
-            float yaw = camera.getYRot();
-            float pitch = camera.getXRot();
-
-            float rotateSpeed = 0.08f * (speed * timeWithDelta / 2f);
-            if (hasSeenMoon) rotateSpeed = Math.min(rotateSpeed, 0.5f);
-            camera.setYRot(yaw + (Mth.wrapDegrees(yawTo - yaw) * rotateSpeed));
-            camera.setXRot(pitch + ((pitchTo - pitch) * rotateSpeed));
-        }
 
         float distance = Math.max(0.25f, getStarBrightness(0f, 0f));
         DREAM_SKY_SHADER.safeGetUniform("CornerFade").set((timeWithDelta * speed));
@@ -178,7 +198,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
         if (FriendMoonRenderer.moonOnScreen(Minecraft.getInstance(),
             moonViewMatrix, projectionMatrix, FriendMoonRenderer.LOOKING_AT_THRESHOLD)
-        && ((MoonlightDreamType) ClientDreamRenderer.getInstance().getDream()).moonPresenceTime > 0) {
+        && dreamInstance.moonPresenceTime > 0) {
             if (ticksSinceSeenMoon > STARE_AT_MOON_TICKS) FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.SAW_MOON_IN_DREAM);
             hasSeenMoon = true;
         }
@@ -191,16 +211,8 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
     private VertexBuffer skyMesh;
     private VertexBuffer getSkyMesh() {
-        if (skyMesh == null) {
-            skyMesh = new VertexBuffer(VertexBuffer.Usage.STATIC);
-            skyMesh.bind();
-            skyMesh.upload(Meshes.texturelessHemisphere(Tesselator.getInstance(),
-                24, 24, Mth.PI * 0.55F, 1,
-                1F, 1F, 1F, 0F,
-                0.3F, 0.3F, 0.4F, 1F,
-                0.2F, -0.25F));
-            VertexBuffer.unbind();
-        }
+        if (skyMesh == null)
+            skyMesh = FriendMoonRenderer.createSkyMesh();
         skyMesh.bind();
         return skyMesh;
     }

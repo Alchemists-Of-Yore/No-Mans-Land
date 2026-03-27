@@ -1,6 +1,6 @@
 {
     "vertex": "nomansland:skybox_shader_vertex",
-    "fragment": "nomansland:friend_moon_dream",
+    "fragment": "nomansland:friend_moon_sky",
     "samplers": [
         { "name": "Sampler0" },
         { "name": "Sampler1" }

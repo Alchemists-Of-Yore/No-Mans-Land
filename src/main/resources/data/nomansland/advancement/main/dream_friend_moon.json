@@ -13,8 +13,8 @@
   },
   "parent": "minecraft:adventure/root",
   "criteria": {
-    "meet_friend_moon_trigger": {
-      "trigger": "nomansland:meet_friend_moon_trigger"
+    "dream_friend_moon_trigger": {
+      "trigger": "nomansland:dream_friend_moon_trigger"
     }
   }
 }

@@ -9,10 +9,16 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.FastColor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClientDreamRenderer implements AutoCloseable {
     public static final int MAX_SLEEP_TICKS = 100;
@@ -44,6 +50,14 @@ public class ClientDreamRenderer implements AutoCloseable {
         this.dream = dream;
     }
 
+
+    public static final List<Class<? extends Screen>> blacklistedScreens = List.of(
+        InventoryScreen.class
+    );
+    public static boolean isBlacklistedScreen(Screen guiScreen) {
+        return guiScreen != null && blacklistedScreens.contains(guiScreen.getClass());
+    }
+
     private IDreamRenderer renderer;
     public IDreamRenderer getRenderer() {
         if (dream.dreamRenderer != null && renderer == null)
@@ -61,12 +75,19 @@ public class ClientDreamRenderer implements AutoCloseable {
             if (!player.isAlive())
                 clientEndDream();
 
-            if (dream != null) dream.tick(Minecraft.getInstance().level);
+            if (dream != null) getDreamClientInstance().tick(Minecraft.getInstance().level);
         }
     }
 
     public DreamType getDream() {
         return dream;
+    }
+
+    DreamType.DreamTypeInstance clientInstance;
+    public DreamType.DreamTypeInstance getDreamClientInstance() {
+        if (clientInstance == null)
+            clientInstance = dream.instanceSupplier.get();
+        return clientInstance;
     }
 
     public boolean clientIsDreaming() {

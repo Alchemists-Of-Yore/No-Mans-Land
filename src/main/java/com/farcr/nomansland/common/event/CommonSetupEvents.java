@@ -5,6 +5,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
+import com.farcr.nomansland.common.commands.DreamCommand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
@@ -18,7 +19,6 @@ import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
-import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
@@ -32,9 +32,8 @@ import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetP
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.networking.*;
-import com.farcr.nomansland.common.networking.dialogue.*;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
-import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
+import com.farcr.nomansland.common.networking.dream.ClientboundDreamPacket;
 import com.farcr.nomansland.common.networking.friend.*;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -66,10 +65,12 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -295,7 +296,7 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundCandleLightPacket.TYPE, ClientboundCandleLightPacket.STREAM_CODEC, ClientboundCandleLightPacket::handleData);
 
         /* Dream Packets */
-        registrar.playToClient(ClientboundDreamStartPacket.TYPE, ClientboundDreamStartPacket.STREAM_CODEC, ClientboundDreamStartPacket::handleData);
+        registrar.playToClient(ClientboundDreamPacket.TYPE, ClientboundDreamPacket.STREAM_CODEC, ClientboundDreamPacket::handleData);
         registrar.playToClient(ClientboundDimensionSyncPacket.TYPE, ClientboundDimensionSyncPacket.STREAM_CODEC, ClientboundDimensionSyncPacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
@@ -305,6 +306,13 @@ public class CommonSetupEvents {
 
         registrar.playToClient(ClientboundInvertedBellPacket.TYPE, ClientboundInvertedBellPacket.STREAM_CODEC, ClientboundInvertedBellPacket::handleData);
         registrar.playToClient(ClientboundDistantChunkPacket.TYPE, ClientboundDistantChunkPacket.STREAM_CODEC, ClientboundDistantChunkPacket::handleData);
+    }
+
+    @SubscribeEvent
+    public static void registerListeners(RegisterCommandsEvent event) {
+        if (!FMLLoader.isProduction()) {
+            DreamCommand.register(event.getDispatcher(), event.getBuildContext());
+        }
     }
 
     @SubscribeEvent

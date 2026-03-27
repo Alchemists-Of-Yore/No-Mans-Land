@@ -1,8 +1,9 @@
 package com.farcr.nomansland.common.dreams;
 
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
-import com.farcr.nomansland.common.networking.dream.ClientboundDreamStartPacket;
+import com.farcr.nomansland.common.networking.dream.ClientboundDreamPacket;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -13,6 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -27,13 +29,8 @@ import java.util.function.BiFunction;
 public class DreamManager extends SavedData {
     public static final String NAME = "dream_manager";
 
-    private final MinecraftServer server;
-
-    public DreamManager(MinecraftServer server) {
-        this.server = server;
-    }
     public static DreamManager getOrDefault(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(() -> new DreamManager(server),
+        return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(DreamManager::new,
             (tag, provider) -> DreamManager.create(tag, provider, server)
         ), DreamManager.NAME);
     }
@@ -45,14 +42,19 @@ public class DreamManager extends SavedData {
         return storageMap.get(uuid);
     }
 
+    public DreamStorage clearPlayerStorage(ServerPlayer player) {
+        return storageMap.remove(player.getUUID());
+    }
+
     // eventually this will be changed to (player, dream)
     public boolean playerHasExperiencedDream(ServerPlayer player, DreamType dreamType) {
+        if (!storageMap.containsKey(player.getUUID())) return false;
         return getPlayerStorage(player).getHasExperiencedDream();
     }
 
     // should not be serialized or stored as when the server starts unloading all players should return to their dreaming players
     private final Map<UUID, DreamingPlayer> dreamerMap = new HashMap<>();
-    public DreamingPlayer createDreamingPlayer(ServerPlayer serverPlayer) {
+    public void createDreamingPlayer(ServerPlayer serverPlayer) {
         UUID playerUUID = serverPlayer.getUUID();
         if (!dreamerMap.containsKey(playerUUID)
         || (dreamerMap.get(playerUUID) == null)
@@ -63,7 +65,6 @@ public class DreamManager extends SavedData {
             level.addFreshEntity(dreamPlayer);
             dreamerMap.put(playerUUID, dreamPlayer);
         }
-        return getDreamingPlayer(serverPlayer);
     }
 
     public DreamingPlayer getDreamingPlayer(ServerPlayer player) {
@@ -72,19 +73,36 @@ public class DreamManager extends SavedData {
         return null;
     }
 
-    public void notifyClient(ServerPlayer player) {
-        DreamType dreamType = playerGetDream(player);
-        if (dreamType != null && player.isSleeping()) {
-            DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
-            PacketDistributor.sendToPlayer(player, new ClientboundDreamStartPacket(
-                NMLRegistries.DREAM_TYPE.getKey(dreamType)
-            ));
-        }
+    public void transferSleep(ServerPlayer player, DreamType dreamType) {
+        ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+        // summon fake player
+        createDreamingPlayer(player);
+        // move player to other dimension
+        player.stopSleeping();
+        player.changeDimension(
+            new DimensionTransition(
+                dreamLevel, dreamType.spawnPoint,
+                dreamType.spawnPoint, 0, 0,
+                DimensionTransition.DO_NOTHING
+            )
+        );
     }
 
+    public void notifyClient(ServerPlayer player) {
+        DreamType dreamType = playerGetDream(player);
+        if (dreamType != null && player.isSleeping())
+            forceNotify(dreamType, player);
+    }
+
+    public void forceNotify(DreamType dreamType, ServerPlayer player) {
+        DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+        PacketDistributor.sendToPlayer(player, new ClientboundDreamPacket(
+            Optional.ofNullable(NMLRegistries.DREAM_TYPE.getKey(dreamType))
+        ));
+    }
+
+    List<DreamType> instanceList = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get().stream().toList();
     public DreamType playerGetDream(ServerPlayer player) {
-        List<DreamType> instanceList = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry()
-            .get().stream().toList();
         for (DreamType dreamType : instanceList) {
             BiFunction<ServerPlayer, ServerLevel, Boolean> function = dreamType.biconsumer;
             if (function != null && !playerHasExperiencedDream(player, dreamType) && function.apply(player, player.serverLevel()))
@@ -96,12 +114,28 @@ public class DreamManager extends SavedData {
     public static boolean innerDreaming(DreamType dreamType, Player player) {
         return player.level().dimension().equals(
             DreamLevelHandler.resourceKey(
-                Registries.DIMENSION,
-                NMLDreamTypes.DREAM_TYPES_REGISTRY
+                Registries.DIMENSION, NMLDreamTypes.DREAM_TYPES_REGISTRY
                     .getRegistry().get().getKey(dreamType),
                 player
             )
         );
+    }
+
+    public static DreamType.DreamTypeInstance getAmbiguousDreamTypeInstance(Player player) {
+        if (player instanceof ServerPlayer serverPlayer && DreamManager.getOrDefault(serverPlayer.getServer()).playerIsDreaming(serverPlayer))
+            return DreamLevelHandler.getDreamLevel(player.getServer(), DreamManager.getOrDefault(player.getServer()).playerGetDream(serverPlayer), serverPlayer)
+                .getDreamTypeInstance();
+        if (player.isLocalPlayer() && ClientDreamRenderer.getInstance().dreamShouldRender())
+            return ClientDreamRenderer.getInstance().getDreamClientInstance();
+        return null;
+    }
+
+    public static DreamType getAmbiguousDreamType(Player player) {
+        if (player instanceof ServerPlayer serverPlayer && DreamManager.getOrDefault(serverPlayer.getServer()).playerIsDreaming(serverPlayer))
+            return DreamManager.getOrDefault(serverPlayer.getServer()).playerGetDream(serverPlayer);
+        if (player.isLocalPlayer() && ClientDreamRenderer.getInstance().dreamShouldRender())
+            return ClientDreamRenderer.getInstance().getDream();
+        return null;
     }
 
     public boolean playerIsDreaming(ServerPlayer player) {
@@ -116,8 +150,7 @@ public class DreamManager extends SavedData {
     }
 
     public static DreamManager create(CompoundTag tag, HolderLookup.Provider provider, MinecraftServer server) {
-        DreamManager manager = new DreamManager(server);
-        return manager.load(tag, provider);
+        return new DreamManager().load(tag, provider);
     }
 
     public DreamManager load(CompoundTag compoundTag, HolderLookup.Provider provider) {

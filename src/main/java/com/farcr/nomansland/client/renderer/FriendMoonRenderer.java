@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.Meshes;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.BuddyStar;
@@ -24,12 +25,14 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -48,6 +51,9 @@ import java.util.Optional;
 import java.util.function.IntFunction;
 
 public class FriendMoonRenderer implements AutoCloseable {
+
+    public static ShaderInstance FRIEND_MOON_SKY_SHADER;
+
     public static FriendMoonRenderer INSTANCE = new FriendMoonRenderer();
     public static FriendMoonRenderer getInstance() {
         if (INSTANCE == null)
@@ -115,7 +121,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         public static final StreamCodec<ByteBuf, FriendMoonAnimation> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, FriendMoonAnimation::getId);
     }
 
-    public float friendMoonOpacity = 0.0f;
+    private float friendMoonOpacity = 0.0f;
     public float getFriendMoonOpacity() {
         return friendMoonOpacity;
     }
@@ -215,7 +221,7 @@ public class FriendMoonRenderer implements AutoCloseable {
                         dontShowUp = false;
                 }
                 // Can stare up at the moon and it'll show up
-                if (player.hasEffect(NMLEffects.FRIENDSHIP) || (dontShowUp && (badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME))) {
+                if (friendMoonInstance.playerHasFriendship(player) || (dontShowUp && (badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME))) {
                     isAwake = friendMoonInstance.isAwake();
                     if (moonIsVisible || isAwake) {
                         fadeOut = false;
@@ -279,6 +285,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         float pitch = cameraEntity.getViewXRot(partialTick) + 90;
         float yaw = -cameraEntity.getViewYRot(partialTick);
         float speed = deltaTime / 30;
+        if (getFriendMoonOpacity() <= 0f)
+            speed = 1;
+
         if (!isAwake)
             speed /= 4f;
 
@@ -368,7 +377,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         assert player != null;
-        if (meetingPointContext.enabled() && FriendMoon.displayFriendShadow(player)) {
+        if (meetingPointContext.enabled()) {
             float time = player.level().getTimeOfDay(partialTick);
             boolean visible = (time > NIGHT_TIME_THRESHOLD && time < (1 - NIGHT_TIME_THRESHOLD));
             if (clientBlockPos != null) {
@@ -442,38 +451,6 @@ public class FriendMoonRenderer implements AutoCloseable {
         friendShadowOpacity = 0.0f;
     }
 
-    // debug
-    public static void debugLineRender(Vec3 start, Vec3 end) {
-        Minecraft mc = Minecraft.getInstance();
-        Camera camera = mc.gameRenderer.getMainCamera();
-
-        PoseStack pose = new PoseStack();
-        Vec3 cam = camera.getPosition();
-
-        pose.pushPose();
-        pose.translate(-cam.x, -cam.y, -cam.z);
-
-        Matrix4f tempPose = pose.last().pose();
-        VertexConsumer vertexConsumer = mc.renderBuffers().bufferSource()
-            .getBuffer(RenderType.lines());
-
-        vertexConsumer.addVertex(tempPose,
-                (float)(start.x),
-                (float)(start.y),
-                (float)(start.z))
-            .setColor(255, 0, 0, 255)
-            .setNormal(0, 1, 0);
-
-        vertexConsumer.addVertex(tempPose,
-                (float)(end.x),
-                (float)(end.y),
-                (float)(end.z))
-            .setColor(255, 0, 0, 255)
-            .setNormal(0, 1, 0);
-
-        pose.popPose();
-    }
-
     public static void applySkyBlendFunction() {
         RenderSystem.blendFuncSeparate(
             GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
@@ -488,21 +465,69 @@ public class FriendMoonRenderer implements AutoCloseable {
         );
     }
 
+    private VertexBuffer skyMesh;
+    private VertexBuffer getSkyMesh() {
+        if (skyMesh == null)
+            skyMesh = createSkyMesh();
+        skyMesh.bind();
+        return skyMesh;
+    }
+
+    public static VertexBuffer createSkyMesh() {
+        VertexBuffer skyMesh = new VertexBuffer(VertexBuffer.Usage.STATIC);
+        skyMesh.bind();
+        skyMesh.upload(Meshes.texturelessHemisphere(Tesselator.getInstance(),
+            24, 24, Mth.PI * 0.55F, 1,
+            1F, 1F, 1F, 0F,
+            0.3F, 0.3F, 0.4F, 1F,
+            0.2F, -0.25F));
+        VertexBuffer.unbind();
+        return skyMesh;
+    }
+
+    public static void drawWithColor(int color, float alpha, Runnable runnable) {
+        float c0 = RenderSystem.getShaderColor()[0];
+        float c1 = RenderSystem.getShaderColor()[1];
+        float c2 = RenderSystem.getShaderColor()[2];
+        float c3 = RenderSystem.getShaderColor()[3];
+
+        RenderSystem.setShaderColor(
+            ((float) FastColor.ARGB32.red(color) / 255f),
+            ((float) FastColor.ARGB32.green(color) / 255f),
+            ((float) FastColor.ARGB32.blue(color) / 255f),
+            alpha
+        );
+
+        runnable.run();
+
+        RenderSystem.setShaderColor(
+            c0, c1, c2, c3
+        );
+    }
+
+    public static int getGradientColor() {
+        return FastColor.ARGB32.color(
+            175, 220, 135
+        );
+    }
+
+    float elapsedTime = 0f;
+
     /*
-    * Stencil code will have to be rewritten eventually because I don't trust it but
-    * for the most part it's fine and works as intended. eventually with vulkan I know I will have to make things more render agnostic
-    * and not use GL calls but for the time being this will have to do
+    * Stencil code will have to be rewritten eventually because I don't
+    * trust it but for the most part it's fine and works as intended.
+    * eventually with vulkan I know I will have to make things more render
+    * agnostic and not use GL calls but for the time being this will have to do
     */
     public void renderFriendMoon(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         assert mc.level != null;
 
         poseStack.mulPose(frustumMatrix);
-        poseStack.pushPose();
 
         // Moon Rotation in the sky
         Quaternionf rotationQuaternion = Axis.YP.rotationDegrees(friendMoonYawAngle)
-                .mul(Axis.XP.rotationDegrees(friendMoonPitchAngle));
+            .mul(Axis.XP.rotationDegrees(friendMoonPitchAngle));
         poseStack.mulPose(rotationQuaternion);
 
         Matrix4f matrix4f1 = poseStack.last().pose();
@@ -514,6 +539,21 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
+
+        RenderSystem.defaultBlendFunc();
+
+        // Render Skybox elements
+        poseStack.pushPose();
+        drawWithColor(getGradientColor(), (getFriendMoonOpacity() * .5f), () -> {
+            poseStack.scale(100f, 100f, 100f);
+            elapsedTime += Minecraft.getInstance().getTimer().getGameTimeDeltaTicks() / 40;
+            FRIEND_MOON_SKY_SHADER.safeGetUniform("Time").set(elapsedTime);
+            getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, FRIEND_MOON_SKY_SHADER);
+        });
+        poseStack.popPose();
+
+        // Render Friend Moon Afterwards
+        poseStack.pushPose();
 
         RenderTarget target = mc.getMainRenderTarget();
         target.enableStencil();

@@ -11,6 +11,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.InBedChatScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.PlayerRideableJumping;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
@@ -49,7 +50,8 @@ public class GuiMixin {
         ClientDreamRenderer clientRenderer = ClientDreamRenderer.getInstance();
         if (clientRenderer.getDream() != null && clientRenderer.dreamShouldRender() && clientRenderer.getDream().hideHUD()) {
             // manually render regardless !!!
-            ClientDreamRenderer.renderOverlay(guiGraphics, deltaTracker);
+            if (!(Minecraft.getInstance().screen instanceof InBedChatScreen))
+                ClientDreamRenderer.renderOverlay(guiGraphics, deltaTracker);
             ci.cancel();
         }
     }

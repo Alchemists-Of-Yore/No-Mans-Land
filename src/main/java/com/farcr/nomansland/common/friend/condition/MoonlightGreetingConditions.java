@@ -32,4 +32,26 @@ public class MoonlightGreetingConditions {
         }
     }
 
+    public record DreamGreetingConditional() implements DialogueRegistry.ListCondition {
+        public static final MapCodec<DreamGreetingConditional> CODEC =
+            MapCodec.unit(DreamGreetingConditional::new);
+
+        @Override
+        public MapCodec<? extends DialogueRegistry.DialogueCondition> codec() {
+            return CODEC;
+        }
+
+        public static ArrayList<DialoguePool> DREAM_ARRAY = new ArrayList<>();
+
+        @Override
+        public boolean validate(ResourceKey<Registry<DialoguePool>> resourceKey) {
+            return resourceKey.equals(NMLRegistries.GREETING_DIALOGUE_KEY);
+        }
+
+        @Override
+        public ArrayList<DialoguePool> getList() {
+            return DREAM_ARRAY;
+        }
+    }
+
 }

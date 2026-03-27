@@ -178,5 +178,11 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("design.nomansland.tortoise.sandy", "Sandy");
         add("design.nomansland.tortoise.green", "Green");
         add("design.nomansland.tortoise.gray", "Gray");
+
+        add("commands.nomansland.dream.start.pass", "Successfully started dream %s for %s.");
+        add("commands.nomansland.dream.start.pass_count", "Successfully started dream %s for %s players.");
+        add("commands.nomansland.dream.clear.fail", "Information about dream not found, nothing to clear.");
+        add("commands.nomansland.dream.clear.pass", "Cleared information about dream %s for %s.");
+        add("commands.nomansland.dream.clear.pass_count", "Cleared information about dream %s for %s players.");
     }
 }

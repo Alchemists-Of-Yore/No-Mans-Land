@@ -7,6 +7,8 @@ import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.core.Holder;
@@ -60,19 +62,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
             && player.isSleepingLongEnough()
         ) {
             DreamManager manager = DreamManager.getOrDefault(player.getServer());
-            DreamType dreamType = manager.playerGetDream(player);
-            ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
-            // summon fake player
-            manager.createDreamingPlayer(player);
-            // move player to other dimension
-            player.stopSleeping();
-            player.changeDimension(
-                new DimensionTransition(
-                    dreamLevel, dreamType.spawnPoint,
-                    dreamType.spawnPoint, 0, 0,
-                    DimensionTransition.DO_NOTHING
-                )
-            );
+            manager.transferSleep(player, manager.playerGetDream(player));
         }
     }
 
@@ -147,5 +137,15 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         if (this.nml$bellParalysisTimer > 0 && !((Object)this instanceof Player)) {
             cir.setReturnValue(true);
         }
+    }
+
+    @WrapMethod(method = "setSprinting")
+    private void nml$setSprintingHackyFix(boolean sprinting, Operation<Void> original) {
+        if (nml$Self instanceof Player player) {
+            DreamType dreamType = DreamManager.getAmbiguousDreamType(player);
+            if (dreamType != null && !dreamType.canSprint && !player.isCreative())
+                original.call(false);
+        }
+        original.call(sprinting);
     }
 }

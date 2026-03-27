@@ -14,6 +14,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
@@ -36,7 +37,8 @@ public class DreamingPlayer extends Mob {
         this.setYBodyRot(serverPlayer.yBodyRot);
         this.setYHeadRot(serverPlayer.yHeadRot);
         this.setPos(serverPlayer.position());
-        serverPlayer.getSleepingPos().ifPresent(this::startSleeping);
+        serverPlayer.getSleepingPos().ifPresentOrElse(this::startSleeping,
+            () -> this.startSleeping(serverPlayer.blockPosition()));
     }
 
     public DreamPlayerSnapshot getClientSnapshot() {
@@ -94,6 +96,7 @@ public class DreamingPlayer extends Mob {
     }
 
     public Player clientOnlyRemotePlayer;
+    public boolean debug = false;
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -117,6 +120,11 @@ public class DreamingPlayer extends Mob {
     }
 
     @Override
+    public boolean checkSpawnRules(LevelAccessor level, MobSpawnType reason) {
+        return reason != MobSpawnType.COMMAND;
+    }
+
+    @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         return InteractionResult.FAIL;
     }
@@ -127,13 +135,15 @@ public class DreamingPlayer extends Mob {
             this.remove(RemovalReason.DISCARDED);
         else if (getTetheredPlayer() != null) {
             if (getTetheredPlayer().level().dimension().equals(this.level().dimension()))
-                discardTether();
+                this.remove(RemovalReason.DISCARDED); // originally i would discard tether but in odd cases I feel the player might be teleported unintentionally
+//                discardTether();
         }
 
         this.setDeltaMovement(Vec3.ZERO);
-        if (!isSleeping()) discardTether();
+        if (!isSleeping() && !debug) discardTether();
 
         // hackily obtained from the renderer only on the client as to not . crash the server
+        // can you really call yourself a programmer if you havent said "i hate programming" once in your life
         if (clientOnlyRemotePlayer != null) {
             clientOnlyRemotePlayer.setDeltaMovement(this.getDeltaMovement());
             clientOnlyRemotePlayer.walkAnimation.setSpeed(0f);

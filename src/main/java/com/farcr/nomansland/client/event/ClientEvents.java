@@ -113,8 +113,8 @@ public class ClientEvents {
     @SubscribeEvent
     public static void calculatePlayerTurn(CalculatePlayerTurnEvent event) {
         if (ClientDreamRenderer.getInstance().dreamShouldRender()
-        && ClientDreamRenderer.getInstance().getDream()
-            instanceof MoonlightDreamType moonlightDreamType
+        && ClientDreamRenderer.getInstance().getDreamClientInstance()
+            instanceof MoonlightDreamType.MoonlightDreamTypeInstance moonlightDreamType
         && moonlightDreamType.moonPresenceTime > 0)
             event.setCinematicCameraEnabled(true);
     }

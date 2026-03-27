@@ -64,6 +64,24 @@ public class DreamType {
         }
     }
 
+    public Supplier<DreamTypeInstance> instanceSupplier = () -> new DreamTypeInstance(this);
+    public void setInstanceSupplier(Supplier<DreamTypeInstance> instanceSupplier) {
+        this.instanceSupplier = instanceSupplier;
+    }
+
+    public static class DreamTypeInstance {
+        private final DreamType dreamType;
+        public DreamType getDreamType() {
+            return dreamType;
+        }
+        public DreamTypeInstance(DreamType dreamType) {
+            this.dreamType = dreamType;
+        }
+        public void tick(Level level) {}
+    }
+
+    public void onDreamEnd(ServerPlayer player, boolean success) {}
+
     public void createStructures(
         ChunkGenerator generator,
         RegistryAccess registryAccess,
@@ -79,8 +97,6 @@ public class DreamType {
         this.dreamRenderer = dreamRenderer;
         return this;
     }
-
-    public void tick(Level level) {}
 
     public TriConsumer<ChunkAccess, StructureManager, WorldGenRegion> chunkGenerator = this::defaultChunkGenerator;
     public DreamType setChunkGenerator(TriConsumer<ChunkAccess, StructureManager, WorldGenRegion> chunkGenerator) {

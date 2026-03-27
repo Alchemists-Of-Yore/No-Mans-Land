@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
+import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
@@ -11,6 +12,7 @@ import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetP
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
+import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -253,8 +255,12 @@ public class FriendMoon extends SavedData {
         PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
     }
 
+    public boolean playerHasFriendship(Player player) {
+        return player.hasEffect(FRIENDSHIP);
+    }
+
     public List<ServerPlayer> getFriendshipPlayers() {
-        return level.getPlayers((player) -> player.hasEffect(FRIENDSHIP));
+        return level.getPlayers(this::playerHasFriendship);
     }
 
     private final HashMap<ServerPlayer, Integer> lastFriendshipPlayers = new HashMap<>();
@@ -377,23 +383,13 @@ public class FriendMoon extends SavedData {
         return (level.getSkyDarken() >= 10);
     }
 
-    public static boolean displayFriendShadow(Player player) {
-        return true; // TEMPORARY, eventually only display under the condition the player has seen the dream
-    }
-
     private boolean updatedShadow = false;
     private final HashMap<UUID, BlockPos> playerPositionMap = new HashMap<>();
-    public void updateMeetingPointInformation(Level level) {
+    public void updateMeetingPointInformation(ServerLevel level) {
         if (isNightTime(level)) {
             if (!updatedShadow) {
-                level.players().forEach((player) -> {
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        if (displayFriendShadow(serverPlayer))
-                            playerPositionMap.put(serverPlayer.getUUID(), serverPlayer.blockPosition());
-                        setDirty();
-                        updatePlayerFriendShadow(serverPlayer);
-                    }
-                });
+                level.players().forEach(
+                    (player) -> updatePlayerFriendShadow(player));
                 updatedShadow = true;
             }
         } else updatedShadow = false;
@@ -407,7 +403,11 @@ public class FriendMoon extends SavedData {
     }
 
     public void updatePlayerFriendShadow(ServerPlayer player) {
-        assert level != null;
+        if (DreamManager.getOrDefault(player.getServer()).playerHasExperiencedDream(player, NMLDreamTypes.FRIEND_MOON_DREAM.get())) {
+            playerPositionMap.put(player.getUUID(), player.blockPosition());
+            setDirty();
+        }
+
         UUID playerUUID = player.getUUID();
         if (playerPositionMap.containsKey(playerUUID)) {
             Optional<BlockPos> lastPosition = Optional.ofNullable(playerPositionMap.get(playerUUID));
@@ -435,7 +435,7 @@ public class FriendMoon extends SavedData {
 
             // query players that had friendship
             for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
-                if (player != null && (!player.hasEffect(FRIENDSHIP) || player.isDeadOrDying())) {
+                if (player != null && (!this.playerHasFriendship(player) || player.isDeadOrDying())) {
                     lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
                     if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
                         if (!cannotObtainFriendship(player)) {
@@ -453,8 +453,6 @@ public class FriendMoon extends SavedData {
                 playerTracker.getAndIncrement();
                 // and store the player for later
                 lastFriendshipPlayers.put(player, 0);
-                if (getState() != FriendMoonState.GREETING)
-                    NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player);
             });
 
             // Ensure players are listening to the Moon
@@ -471,6 +469,8 @@ public class FriendMoon extends SavedData {
                     if (dialogueTicks == 0 && !isAscensionActive()) {
                         getState().getMoonConsumer().accept(this);
                         randomDialogue(getState().getDialoguePoolType());
+                        forFriendshipPlayers((player) ->
+                            NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player));
                     }
                 }
             } else if (getState() == FriendMoonState.OFFERING)
@@ -556,6 +556,7 @@ public class FriendMoon extends SavedData {
     * allow you to sort through any kind of condition you wish to for dialogues and dispatch them automatically
     * without having to write the same redundant code that gets the registry and resourcelocation
     */
+    private final ResourceLocation DREAM_MOON_ADVANCEMENT = NoMansLand.location("main/dream_friend_moon");
     private final ResourceLocation MEET_MOON_ADVANCEMENT = NoMansLand.location("main/meet_friend_moon");
     private DialoguePool greetingFilter(Registry<DialoguePool> registry, ServerPlayer serverPlayer) {
         List<DialoguePool> filteredDialogue = registry.stream().filter(
@@ -563,11 +564,13 @@ public class FriendMoon extends SavedData {
 
         // Grant Advancement
         AdvancementHolder meetAdvancement = level.getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
-        NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
-
-        if (meetAdvancement != null && !serverPlayer.getAdvancements().getOrStartProgress(meetAdvancement).isDone())
+        AdvancementHolder dreamAdvancement = level.getServer().getAdvancements().get(DREAM_MOON_ADVANCEMENT);
+        if (meetAdvancement != null && !serverPlayer.getAdvancements().getOrStartProgress(meetAdvancement).isDone()) {
             filteredDialogue = MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY;
-
+            if (dreamAdvancement != null && serverPlayer.getAdvancements().getOrStartProgress(dreamAdvancement).isDone())
+                filteredDialogue = MoonlightGreetingConditions.DreamGreetingConditional.DREAM_ARRAY;
+        }
+        NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 
@@ -588,7 +591,7 @@ public class FriendMoon extends SavedData {
     }
 
     public ServerPlayer getContextualPlayer() {
-        for (ServerPlayer serverPlayer : level.getPlayers((player) -> {return player.hasEffect(FRIENDSHIP);})) {
+        for (ServerPlayer serverPlayer : getFriendshipPlayers()) {
             if (level.getBlockState(serverPlayer.blockPosition()).is(NMLBlocks.MOONLIGHT_BASIN))
                 return serverPlayer;
         }

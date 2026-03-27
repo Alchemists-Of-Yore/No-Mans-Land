@@ -2,7 +2,9 @@ package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.client.renderer.LightTexture;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,8 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 * https://github.com/HaXrDEV/True-Darkness-Refabricated/blob/main/src/client/java/grondag/darkness/Darkness.java#L123
 */
 @Mixin(LightTexture.class)
+@IfModAbsent("delightmap")
 public class LightTextureMixin {
-    @Shadow
+    @Final @Shadow
     private NativeImage lightPixels;
 
     @Unique

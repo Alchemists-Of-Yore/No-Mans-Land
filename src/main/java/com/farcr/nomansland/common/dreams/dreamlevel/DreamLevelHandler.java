@@ -142,7 +142,7 @@ public class DreamLevelHandler implements AutoCloseable {
                 ),
                 chunkprogresslistener, worldData.isDebugWorld(),
                 overworld.getSeed(), List.of(), false,
-                overworld.getRandomSequences(), dreamType
+                overworld.getRandomSequences(), dreamType.instanceSupplier.get()
             );
 
             if (dreamType.worldBorder > 0) newLevel.getWorldBorder().setSize(dreamType.worldBorder);

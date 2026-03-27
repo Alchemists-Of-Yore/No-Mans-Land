@@ -26,6 +26,8 @@ public class NMLDialogueConditions {
 
     public static final DeferredHolder<MapCodec<? extends DialogueRegistry.DialogueCondition>, MapCodec<MoonlightGreetingConditions.FirstTimeGreetingConditional>> FIRST_TIME_GREETING_CONDITIONAL =
         DIALOGUE_CONDITION_REGISTRY.register("first_time", () -> MoonlightGreetingConditions.FirstTimeGreetingConditional.CODEC);
+    public static final DeferredHolder<MapCodec<? extends DialogueRegistry.DialogueCondition>, MapCodec<MoonlightGreetingConditions.DreamGreetingConditional>> FROM_DREAM =
+        DIALOGUE_CONDITION_REGISTRY.register("from_dream", () -> MoonlightGreetingConditions.DreamGreetingConditional.CODEC);
     public static final DeferredHolder<MapCodec<? extends DialogueRegistry.DialogueCondition>, MapCodec<MoonlightLeavingConditions.OnDeathConditional>> ON_DEATH_LEAVING_CONDITIONAL =
         DIALOGUE_CONDITION_REGISTRY.register("on_death", () -> MoonlightLeavingConditions.OnDeathConditional.CODEC);
 }

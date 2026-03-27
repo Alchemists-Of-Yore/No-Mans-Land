@@ -6,8 +6,7 @@ import net.minecraft.client.DeltaTracker;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.InBedChatScreen;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import net.minecraft.client.sounds.SoundManager;
@@ -47,7 +46,8 @@ public abstract class MinecraftMixin {
     @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     private void nml$OverrideSetScreenDream(Screen guiScreen, CallbackInfo ci) {
         ClientDreamRenderer renderer = ClientDreamRenderer.getInstance();
-        if (renderer.clientIsDreaming() && guiScreen instanceof InBedChatScreen)
+        if (renderer.clientIsDreaming() && renderer.dreamShouldRender()
+        && ClientDreamRenderer.isBlacklistedScreen(guiScreen))
             ci.cancel();
     }
 }
