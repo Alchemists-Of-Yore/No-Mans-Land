@@ -243,7 +243,7 @@ public class FriendMoon extends SavedData {
 
     // side agnostic, expects side to validate the basin
     public static boolean appearConditionsMet(Player player, BlockPos basinPosition) {
-        if (!isNightTime(player.level()))
+        if (!isNightTime(player.level()) || basinPosition == null)
             return false;
         AABB boundingBox = new AABB(basinPosition).inflate(MoonlightBasinBlockEntity.FRIENDSHIP_MAX_RANGE);
         return boundingBox.contains(player.position());

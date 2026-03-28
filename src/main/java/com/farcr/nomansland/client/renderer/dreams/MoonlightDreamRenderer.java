@@ -75,6 +75,8 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
             poseStack.scale(100f, 100f, 100f);
             poseStack.mulPose(Axis.ZP.rotationDegrees(180));
             poseStack.translate(0, -0.125, 0);
+
+            MoonlightDreamRenderer.GRADIENT_SHADER.safeGetUniform("Slice").set(1f / 6f);
             getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, GRADIENT_SHADER);
 
             poseStack.popPose();

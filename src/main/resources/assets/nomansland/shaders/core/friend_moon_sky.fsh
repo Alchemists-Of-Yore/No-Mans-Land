@@ -105,8 +105,5 @@ void main() {
     darkness.xyz += yIntensity * colorHaze;
     darkness = min(darkness, vec4(colorHaze, 1.0));
     fragColor = darkness * vec4(colorLine, 1.) * ColorModulator.a;
-
-    float slice = (1. / 2.);
-    float alpha = smoothstep(0., slice, vertexPosition.y);
-    fragColor *= alpha;
+    fragColor *= smoothstep(.35, 1., vertexPosition.y);
 }

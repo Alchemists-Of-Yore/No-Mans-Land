@@ -4,11 +4,11 @@
 in vec3 vertexPosition;
 
 uniform vec4 ColorModulator;
+uniform float Slice;
 
 out vec4 fragColor;
 
 void main() {
-    float slice = (1. / 6.);
-    float alpha = smoothstep(0., slice, vertexPosition.y);
+    float alpha = smoothstep(0., Slice, vertexPosition.y);
     fragColor = ColorModulator * alpha;
 }

@@ -37,6 +37,7 @@
     "RandomStrollGoalMixin",
     "RegistryFileCodecMixin",
     "ServerLevelMixin",
+    "ServerLevelSleepMixin",
     "ServerPlayerMixin",
     "SnowAndFreezeFeatureMixin",
     "SnowyDirtBlockMixin",

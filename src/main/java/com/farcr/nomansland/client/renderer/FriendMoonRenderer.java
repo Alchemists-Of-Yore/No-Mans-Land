@@ -2,6 +2,8 @@ package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.Meshes;
+import com.farcr.nomansland.client.ambience.fogmodifiers.FriendMoonFogModifier;
+import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.BuddyStar;
@@ -374,7 +376,8 @@ public class FriendMoonRenderer implements AutoCloseable {
             float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
             if (mc.isPaused()) deltaTime = 0f;
 
-            boolean visible = FriendMoon.isNightTime(player.level());
+            boolean visible = (FriendMoon.isNightTime(player.level())
+                && !FriendMoon.appearConditionsMet(player, clientBlockPos));
 
             float moveSpeed = 0.2f;
             float t = (float) (1f - Math.exp(deltaTime * -moveSpeed));
@@ -382,8 +385,7 @@ public class FriendMoonRenderer implements AutoCloseable {
             float moveTo = (visible ? 1 : 0);
             friendShadowOpacity = Mth.lerp(t, friendShadowOpacity, moveTo);
             float compositeOpacity = Math.max(friendShadowOpacity - getFriendMoonOpacity(), 0f);
-            if (compositeOpacity <= 0.1f)
-                return;
+            if (compositeOpacity <= 0.1f) return;
 
             poseStack.mulPose(frustumMatrix);
             poseStack.pushPose();
@@ -510,6 +512,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         );
     }
 
+    private FriendMoonFogModifier fogModifier = new FriendMoonFogModifier();
+    private float fogOpacity = 0.0f;
+
     /*
     * Stencil code will have to be rewritten eventually because I don't
     * trust it but for the most part it's fine and works as intended.
@@ -522,6 +527,45 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         poseStack.mulPose(frustumMatrix);
 
+        // Renders separate from opacity
+        assert mc.player != null;
+        boolean enabledFog = FriendMoon.appearConditionsMet(mc.player, clientBlockPos);
+        float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
+        if (mc.isPaused()) deltaTime = 0.0f;
+        float t = (float) (1f - Math.exp(deltaTime * -.2f));
+        fogOpacity = Mth.lerp(t, fogOpacity, (enabledFog ? (0.5f + (getFriendMoonOpacity() / 2f)) : 0));
+
+        if (fogOpacity > 0.01f) {
+            applySkyBlendFunction();
+
+            poseStack.pushPose();
+            // Render Sky Fog prior to skybox as well
+            int fogColor = FastColor.ARGB32.colorFromFloat(
+                1f,
+                fogModifier.getFogRedMultiplier(),
+                fogModifier.getFogGreenMultiplier(),
+                fogModifier.getFogBlueMultiplier()
+            );
+            applyMultiplyBlendFunction();
+            drawWithColor(fogColor, fogOpacity, () -> {
+                poseStack.scale(100f, 100f, 100f);
+                MoonlightDreamRenderer.GRADIENT_SHADER.safeGetUniform("Slice").set(0.0f);
+                getSkyMesh().drawWithShader(
+                    poseStack.last().pose(), projectionMatrix,
+                    MoonlightDreamRenderer.GRADIENT_SHADER
+                );
+
+                poseStack.mulPose(Axis.XP.rotationDegrees(180));
+                getSkyMesh().drawWithShader(
+                    poseStack.last().pose(), projectionMatrix,
+                    MoonlightDreamRenderer.GRADIENT_SHADER
+                );
+
+                VertexBuffer.unbind();
+            }, true);
+            poseStack.popPose();
+        }
+
         // Moon Rotation in the sky
         Quaternionf rotationQuaternion = Axis.YP.rotationDegrees(friendMoonYawAngle)
             .mul(Axis.XP.rotationDegrees(friendMoonPitchAngle));
@@ -529,12 +573,15 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         Matrix4f matrix4f1 = poseStack.last().pose();
 
+        RenderSystem.enableBlend();
+        RenderSystem.enableCull();
+        applySkyBlendFunction();
+
         // Update moon rotation / position
         updateFriendMoonPosition(mc.getCameraEntity(), rotationQuaternion, matrix4f1, projectionMatrix, partialTick);
         if (getFriendMoonOpacity() <= 0)
             return;
 
-        RenderSystem.enableBlend();
         RenderSystem.disableCull();
 
         RenderSystem.defaultBlendFunc();
@@ -546,6 +593,7 @@ public class FriendMoonRenderer implements AutoCloseable {
             elapsedTime += Minecraft.getInstance().getTimer().getGameTimeDeltaTicks() / 40;
             FRIEND_MOON_SKY_SHADER.safeGetUniform("Time").set(elapsedTime);
             getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, FRIEND_MOON_SKY_SHADER);
+            VertexBuffer.unbind();
         }, false);
         poseStack.popPose();
 

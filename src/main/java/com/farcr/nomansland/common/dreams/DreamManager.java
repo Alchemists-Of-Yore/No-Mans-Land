@@ -28,9 +28,13 @@ import java.util.function.BiFunction;
  */
 public class DreamManager extends SavedData {
     public static final String NAME = "dream_manager";
+    private final MinecraftServer server;
+    public DreamManager(MinecraftServer server) {
+        this.server = server;
+    }
 
     public static DreamManager getOrDefault(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(DreamManager::new,
+        return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(() -> new DreamManager(server),
             (tag, provider) -> DreamManager.create(tag, provider, server)
         ), DreamManager.NAME);
     }
@@ -56,6 +60,20 @@ public class DreamManager extends SavedData {
 
     // should not be serialized or stored as when the server starts unloading all players should return to their dreaming players
     private final Map<UUID, DreamingPlayer> dreamerMap = new HashMap<>();
+    public int getDreamingPlayerCount() {
+        int i = 0;
+        for (UUID uuid : dreamerMap.keySet()) {
+            ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+            if (player == null)
+                continue;
+            if (getDreamingPlayer(player) == null)
+                continue;
+            i++;
+        }
+        return i;
+    }
+
+    public static boolean IGNORE_UPDATE_CONTEXT = false;
     public void createDreamingPlayer(ServerPlayer serverPlayer) {
         UUID playerUUID = serverPlayer.getUUID();
         if (!dreamerMap.containsKey(playerUUID)
@@ -79,6 +97,9 @@ public class DreamManager extends SavedData {
         ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
         // summon fake player
         createDreamingPlayer(player);
+        // suppress updating the player sleep counter
+        IGNORE_UPDATE_CONTEXT = true;
+
         // move player to other dimension
         player.stopSleeping();
         player.changeDimension(
@@ -152,7 +173,7 @@ public class DreamManager extends SavedData {
     }
 
     public static DreamManager create(CompoundTag tag, HolderLookup.Provider provider, MinecraftServer server) {
-        return new DreamManager().load(tag, provider);
+        return new DreamManager(server).load(tag, provider);
     }
 
     public DreamManager load(CompoundTag compoundTag, HolderLookup.Provider provider) {
