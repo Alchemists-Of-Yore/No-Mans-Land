@@ -9,7 +9,7 @@ import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
-import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
+import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
@@ -22,9 +22,11 @@ import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -265,14 +267,6 @@ public class ClientSetupEvents {
         event.registerShader(
             new ShaderInstance(
                 event.getResourceProvider(),
-                NoMansLand.location("friend_moon_sky"),
-                DefaultVertexFormat.POSITION_COLOR
-            ),
-            shader -> FriendMoonRenderer.FRIEND_MOON_SKY_SHADER = shader
-        );
-        event.registerShader(
-            new ShaderInstance(
-                event.getResourceProvider(),
                 NoMansLand.location("dream_horizon_gradient"),
                 DefaultVertexFormat.POSITION_COLOR
             ),
@@ -289,6 +283,27 @@ public class ClientSetupEvents {
             NoMansLand.LOGGER.warn("Failed to load shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
         } catch (JsonSyntaxException e) {
             NoMansLand.LOGGER.warn("Failed to parse shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
+        }
+        // Accumulate Zoom Shader
+        try {
+            Minecraft minecraft = Minecraft.getInstance();
+            PostChain postChain = new PostChain(
+                minecraft.getTextureManager(), minecraft.getResourceManager(),
+                minecraft.getMainRenderTarget(), AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER
+            );
+            RenderTarget swapTarget = postChain.getTempTarget("swap");
+            RenderTarget persistentTarget = AccumulateZoomRenderer.getInstance().persistentTarget;
+            PostPass pass = postChain.addPass("nomansland:accumulate_zoom", swapTarget, persistentTarget, false);
+            pass.getEffect().setSampler("DiffuseSampler", swapTarget::getColorTextureId);
+            pass.getEffect().setSampler("PreviousSampler", persistentTarget::getColorTextureId);
+
+            postChain.addPass("blit", persistentTarget, minecraft.getMainRenderTarget(), false);
+            postChain.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
+            AccumulateZoomRenderer.getInstance().postChain = postChain;
+        } catch (IOException e) {
+            NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
+        } catch (JsonSyntaxException e) {
+            NoMansLand.LOGGER.warn("Failed to parse shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
         }
     }
 }

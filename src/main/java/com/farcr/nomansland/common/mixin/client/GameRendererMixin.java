@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
+import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -18,5 +19,6 @@ public class GameRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getMainRenderTarget()Lcom/mojang/blaze3d/pipeline/RenderTarget;"))
     private void applyInvertedBellPost(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         InvertedBellClientHandler.instance.render(this.minecraft, deltaTracker.getRealtimeDeltaTicks());
+        AccumulateZoomRenderer.getInstance().render(this.minecraft, deltaTracker.getRealtimeDeltaTicks());
     }
 }

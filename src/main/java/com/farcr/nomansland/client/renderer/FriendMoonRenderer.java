@@ -54,8 +54,6 @@ import java.util.function.IntFunction;
 
 public class FriendMoonRenderer implements AutoCloseable {
 
-    public static ShaderInstance FRIEND_MOON_SKY_SHADER;
-
     public static FriendMoonRenderer INSTANCE = new FriendMoonRenderer();
     public static FriendMoonRenderer getInstance() {
         if (INSTANCE == null)
@@ -583,19 +581,6 @@ public class FriendMoonRenderer implements AutoCloseable {
             return;
 
         RenderSystem.disableCull();
-
-        RenderSystem.defaultBlendFunc();
-
-        // Render Skybox elements
-        poseStack.pushPose();
-        drawWithColor(getGradientColor(), (getFriendMoonOpacity() * .5f), () -> {
-            poseStack.scale(100f, 100f, 100f);
-            elapsedTime += Minecraft.getInstance().getTimer().getGameTimeDeltaTicks() / 40;
-            FRIEND_MOON_SKY_SHADER.safeGetUniform("Time").set(elapsedTime);
-            getSkyMesh().drawWithShader(poseStack.last().pose(), projectionMatrix, FRIEND_MOON_SKY_SHADER);
-            VertexBuffer.unbind();
-        }, false);
-        poseStack.popPose();
 
         // Render Friend Moon Afterwards
         poseStack.pushPose();
