@@ -286,20 +286,7 @@ public class ClientSetupEvents {
         }
         // Accumulate Zoom Shader
         try {
-            Minecraft minecraft = Minecraft.getInstance();
-            PostChain postChain = new PostChain(
-                minecraft.getTextureManager(), minecraft.getResourceManager(),
-                minecraft.getMainRenderTarget(), AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER
-            );
-            RenderTarget swapTarget = postChain.getTempTarget("swap");
-            RenderTarget persistentTarget = AccumulateZoomRenderer.getInstance().persistentTarget;
-            PostPass pass = postChain.addPass("nomansland:accumulate_zoom", swapTarget, persistentTarget, false);
-            pass.getEffect().setSampler("DiffuseSampler", swapTarget::getColorTextureId);
-            pass.getEffect().setSampler("PreviousSampler", persistentTarget::getColorTextureId);
-
-            postChain.addPass("blit", persistentTarget, minecraft.getMainRenderTarget(), false);
-            postChain.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
-            AccumulateZoomRenderer.getInstance().postChain = postChain;
+            AccumulateZoomRenderer.getInstance().setupPostChain();
         } catch (IOException e) {
             NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
         } catch (JsonSyntaxException e) {

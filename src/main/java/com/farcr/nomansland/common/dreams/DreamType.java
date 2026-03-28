@@ -88,9 +88,7 @@ public class DreamType {
         ChunkGeneratorStructureState structureState,
         StructureManager structureManager, ChunkAccess chunk,
         StructureTemplateManager structureTemplateManager
-    ) {
-
-    }
+    ) {}
 
     public Supplier<IDreamRenderer> dreamRenderer;
     public DreamType setRenderer(Supplier<IDreamRenderer> dreamRenderer) {

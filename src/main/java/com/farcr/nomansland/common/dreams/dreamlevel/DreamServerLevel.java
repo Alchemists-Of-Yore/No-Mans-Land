@@ -29,10 +29,15 @@ import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 
 public class DreamServerLevel extends ServerLevel {
-    private final DreamType.DreamTypeInstance dreamTypeInstance;
+    private DreamType.DreamTypeInstance dreamTypeInstance;
     public DreamType.DreamTypeInstance getDreamTypeInstance() {
         return dreamTypeInstance;
     }
+    public void regenerateDreamInstance() {
+        dreamTypeInstance = dreamType.instanceSupplier.get();
+    }
+
+    private final DreamType dreamType;
     public DreamServerLevel(
         MinecraftServer server, Executor dispatcher,
         LevelStorageSource.LevelStorageAccess levelStorageAccess,
@@ -40,7 +45,7 @@ public class DreamServerLevel extends ServerLevel {
         LevelStem levelStem, ChunkProgressListener progressListener,
         boolean isDebug, long biomeZoomSeed, List<CustomSpawner> customSpawners,
         boolean tickTime, @Nullable RandomSequences randomSequences,
-        DreamType.DreamTypeInstance dreamTypeInstance
+        DreamType dreamType
     ) {
         super(
             server, dispatcher,
@@ -51,7 +56,8 @@ public class DreamServerLevel extends ServerLevel {
             biomeZoomSeed, customSpawners,
             tickTime, randomSequences
         );
-        this.dreamTypeInstance = dreamTypeInstance;
+        this.dreamType = dreamType;
+        this.regenerateDreamInstance();
     }
 
     @Override
@@ -74,10 +80,11 @@ public class DreamServerLevel extends ServerLevel {
             if (dreamingPlayer != null) dreamingPlayer.discardTether();
             else DreamLevelHandler.playerTeleportFallback(player, false);
 
-            if (success) manager.setDreamExperienced(dreamTypeInstance.getDreamType(), player);
-            dreamTypeInstance.getDreamType().onDreamEnd(player, success);
-            PacketDistributor.sendToPlayer(player,
-                new ClientboundDreamPacket(Optional.empty()));
+            if (success) manager.setDreamExperienced(dreamType, player);
+            dreamType.onDreamEnd(player, success);
+            // this will get rid of the transition so I moved it to the next time the player sleeps
+//            PacketDistributor.sendToPlayer(player,
+//                new ClientboundDreamPacket(Optional.empty()));
         }
     }
 }

@@ -31,7 +31,9 @@ public class ClientDreamRenderer implements AutoCloseable {
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        clientEndDream();
+    }
 
     public static void destroy() {
         if (INSTANCE == null)
@@ -43,6 +45,7 @@ public class ClientDreamRenderer implements AutoCloseable {
     private DreamType dream;
     public void clientEndDream() {
         dream = null;
+        renderer = null;
     }
 
     public void clientSetDream(DreamType dream) {
@@ -65,8 +68,10 @@ public class ClientDreamRenderer implements AutoCloseable {
     }
 
     public void tick() {
-        if (!clientIsDreaming())
+        if (!clientIsDreaming()) {
+            clientEndDream();
             return;
+        }
 
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
@@ -74,7 +79,8 @@ public class ClientDreamRenderer implements AutoCloseable {
             if (!player.isAlive())
                 clientEndDream();
 
-            if (dream != null) getDreamClientInstance().tick(Minecraft.getInstance().level);
+            if (dream != null) getDreamClientInstance()
+                .tick(Minecraft.getInstance().level);
         }
     }
 

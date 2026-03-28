@@ -47,8 +47,7 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 		return CODEC;
 	}
 
-	@javax.annotation.Nullable
-	@Override
+	@Nullable @Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
 		return createTickerHelper(blockEntityType, NMLBlockEntities.MOONLIGHT_BASIN.get(), MoonlightBasinBlockEntity::tick);
 	}

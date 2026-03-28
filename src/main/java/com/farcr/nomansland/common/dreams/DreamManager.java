@@ -1,7 +1,9 @@
 package com.farcr.nomansland.common.dreams;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
+import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.networking.dream.ClientboundDreamPacket;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
@@ -94,7 +96,9 @@ public class DreamManager extends SavedData {
     }
 
     public void transferSleep(ServerPlayer player, DreamType dreamType) {
-        ServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+        DreamServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+        dreamLevel.regenerateDreamInstance();
+
         // summon fake player
         createDreamingPlayer(player);
         // suppress updating the player sleep counter
@@ -113,12 +117,11 @@ public class DreamManager extends SavedData {
 
     public void notifyClient(ServerPlayer player) {
         DreamType dreamType = playerGetDream(player);
-        if (dreamType != null && player.isSleeping())
-            forceNotify(dreamType, player);
+        if (player.isSleeping()) forceNotify(dreamType, player);
     }
 
     public void forceNotify(DreamType dreamType, ServerPlayer player) {
-        DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
+        if (dreamType != null) DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
         PacketDistributor.sendToPlayer(player, new ClientboundDreamPacket(
             Optional.ofNullable(NMLRegistries.DREAM_TYPE.getKey(dreamType))
         ));
@@ -146,8 +149,8 @@ public class DreamManager extends SavedData {
 
     public static DreamType.DreamTypeInstance getAmbiguousDreamTypeInstance(Player player) {
         if (player instanceof ServerPlayer serverPlayer && DreamManager.getOrDefault(serverPlayer.getServer()).playerIsDreaming(serverPlayer))
-            return DreamLevelHandler.getDreamLevel(player.getServer(), DreamManager.getOrDefault(player.getServer()).playerGetDream(serverPlayer), serverPlayer)
-                .getDreamTypeInstance();
+            return DreamLevelHandler.getDreamLevel(player.getServer(), DreamManager.getOrDefault(player.getServer())
+                    .playerGetDream(serverPlayer), serverPlayer).getDreamTypeInstance();
         if (player.isLocalPlayer() && ClientDreamRenderer.getInstance().dreamShouldRender())
             return ClientDreamRenderer.getInstance().getDreamClientInstance();
         return null;

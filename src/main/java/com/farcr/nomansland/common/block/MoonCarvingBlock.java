@@ -1,14 +1,20 @@
 package com.farcr.nomansland.common.block;
 
+import com.farcr.nomansland.common.blockentity.MoonCarvingBlockEntity;
+import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-public class MoonCarvingBlock extends AncestralCarvingBlock {
+public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlock {
 
     public MoonCarvingBlock(Properties properties) {
         super(properties);
@@ -17,6 +23,25 @@ public class MoonCarvingBlock extends AncestralCarvingBlock {
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
         return simpleCodec(MoonCarvingBlock::new);
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        if (state.getValue(FORMATION) == CarvingFormation.THREE_1_1)
+            return new MoonCarvingBlockEntity(pos, state);
+        return null;
+    }
+
+    // Write an access transformer or something idk duplicate code sucks
+    @javax.annotation.Nullable
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
+        BlockEntityType<A> serverType, BlockEntityType<E> clientType, BlockEntityTicker<? super E> ticker) {
+        return clientType == serverType ? (BlockEntityTicker<A>) ticker : null;
+    }
+
+    @Nullable @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return createTickerHelper(blockEntityType, NMLBlockEntities.MOON_CARVING.get(), MoonCarvingBlockEntity::tick);
     }
 
     @Override

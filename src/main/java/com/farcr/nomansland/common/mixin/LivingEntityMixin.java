@@ -51,8 +51,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
 
     @Inject(method = "startSleeping", at = @At("TAIL"))
     private void nml$startSleeping(CallbackInfo ci) {
-        if ((nml$Self instanceof ServerPlayer player) && DreamManager.getOrDefault(player.getServer()).playerShouldDream(player))
-            DreamManager.getOrDefault(player.getServer()).notifyClient(player);
+        if (nml$Self instanceof ServerPlayer player) DreamManager.getOrDefault(player.getServer()).notifyClient(player);
     }
 
     @Inject(method = "baseTick", at = @At("TAIL"))

@@ -360,7 +360,8 @@ public class FriendMoonRenderer implements AutoCloseable {
     }
 
     public static float OFFSET_MAX_AMOUNT = 30f;
-    public static float OFFSET_MAX_DISTANCE = 1000f;
+    public static float OFFSET_MAX_DISTANCE = 2500f;
+    public static float OFFSET_DIMINISH_DISTANCE = 500f;
 
     public MeetingPointRenderContext meetingPointContext = MeetingPointRenderContext.fromDefault();
     public void renderFriendShadow(
@@ -374,6 +375,27 @@ public class FriendMoonRenderer implements AutoCloseable {
             float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
             if (mc.isPaused()) deltaTime = 0f;
 
+            poseStack.mulPose(frustumMatrix);
+            poseStack.pushPose();
+
+            BlockPos meetingPointPosition = meetingPointContext.meetingPointPosition();
+            BlockPos blockPos = meetingPointPosition.subtract(meetingPointContext.originalLocation());
+            float distanceMax = ((float) blockPos.distSqr(new Vec3i(0, 0, 0)) / (OFFSET_MAX_DISTANCE * OFFSET_MAX_DISTANCE));
+            float offsetCalculation = Math.clamp(distanceMax, 0, 1) * OFFSET_MAX_AMOUNT;
+
+
+            float xDist = (float) (meetingPointPosition.getCenter().x - player.position().x);
+            float yDist = (float) (meetingPointPosition.getCenter().z - player.position().z);
+            float actualDegrees = (float) Math.toDegrees(Math.atan2(xDist, yDist));
+            float degrees = (float) Math.toDegrees(Math.atan2(blockPos.getX(), blockPos.getZ()));
+            degrees += offsetCalculation;
+
+            float finalDegrees = Mth.lerp(
+                (float) Math.clamp(player.position().distanceToSqr(meetingPointPosition.getCenter())
+                    / (OFFSET_DIMINISH_DISTANCE * OFFSET_DIMINISH_DISTANCE), 0, 1), actualDegrees, degrees
+            );
+
+            float totalDistance = (float) Math.sqrt(xDist * xDist + yDist * yDist);
             boolean visible = (FriendMoon.isNightTime(player.level())
                 && !FriendMoon.appearConditionsMet(player, clientBlockPos));
 
@@ -382,20 +404,13 @@ public class FriendMoonRenderer implements AutoCloseable {
 
             float moveTo = (visible ? 1 : 0);
             friendShadowOpacity = Mth.lerp(t, friendShadowOpacity, moveTo);
-            float compositeOpacity = Math.max(friendShadowOpacity - getFriendMoonOpacity(), 0f);
+            float decreaseDistance = 32f;
+            float compositeOpacity = Math.max(friendShadowOpacity - getFriendMoonOpacity()
+                + Math.clamp((totalDistance - (decreaseDistance * 2)) / decreaseDistance, -1, 0), 0f);
+
             if (compositeOpacity <= 0.1f) return;
 
-            poseStack.mulPose(frustumMatrix);
-            poseStack.pushPose();
-
-            BlockPos blockPos = meetingPointContext.meetingPointPosition().subtract(meetingPointContext.originalLocation());
-            float distanceMax = ((float) blockPos.distSqr(new Vec3i(0, 0, 0)) / (OFFSET_MAX_DISTANCE * OFFSET_MAX_DISTANCE));
-            float offsetCalculation = Math.clamp(distanceMax, 0, 1) * OFFSET_MAX_AMOUNT;
-
-            float degrees = (float) Math.toDegrees(Math.atan2(blockPos.getX(), blockPos.getZ()));
-            degrees += offsetCalculation;
-
-            poseStack.mulPose(Axis.YP.rotationDegrees(degrees));
+            poseStack.mulPose(Axis.YP.rotationDegrees(finalDegrees));
             poseStack.mulPose(Axis.XP.rotationDegrees(65));
 
             RenderSystem.disableCull();

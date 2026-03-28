@@ -26,13 +26,15 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.awt.*;
+
 public class MoonlightDreamRenderer implements IDreamRenderer {
     public static ShaderInstance DREAM_SKY_SHADER;
     public static ShaderInstance GRADIENT_SHADER;
 
     public Quaternionf skyRotation = Axis.XP.rotationDegrees(55f);
 
-    float speed = 1 / 150f;
+    float speed = 1 / 40f;
 
     public boolean render(
         LevelRenderer levelRenderer,
@@ -96,7 +98,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     }
 
     private void handleCamera(DeltaTracker deltaTracker) {
-        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
+        float partialTicks = deltaTracker.getGameTimeDeltaTicks();
         float timeWithDelta = dreamInstance.moonPresenceTime + partialTicks;
         if (hasSeenMoon) ticksSinceSeenMoon += partialTicks;
         timeWithDelta = Math.max(timeWithDelta - 1f, 0);
@@ -116,7 +118,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
             float yaw = camera.getYRot();
             float pitch = camera.getXRot();
 
-            float rotateSpeed = 0.08f * (speed * timeWithDelta / 2f);
+            float rotateSpeed = 0.08f * (speed * timeWithDelta / 2f) * partialTicks;
             if (hasSeenMoon) rotateSpeed = Math.min(rotateSpeed, 0.5f);
             camera.setYRot(yaw + (Mth.wrapDegrees(yawTo - yaw) * rotateSpeed));
             camera.setXRot(pitch + ((pitchTo - pitch) * rotateSpeed));
@@ -165,7 +167,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
         elapsedTime += (deltaTracker.getGameTimeDeltaTicks() / 40);
 
-        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
+        float partialTicks = deltaTracker.getGameTimeDeltaTicks();
         float timeWithDelta = dreamInstance.moonPresenceTime + partialTicks;
         timeWithDelta = Math.max(timeWithDelta - 1f, 0);
 
@@ -183,8 +185,10 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     private static final int MOON_FADE_START_TIME = 50;
     private static final int STARE_AT_MOON_TICKS = 30;
     @Override public float getFadeAlpha(float originalAlpha) {
-        if (hasSeenMoon && ticksSinceSeenMoon > 0f)
-            return Math.clamp(((ticksSinceSeenMoon - (MOON_FADE_START_TIME + STARE_AT_MOON_TICKS)) / MoonlightDreamType.MAX_MOON_GAZE_TIME), 0, 1);
+        if (hasSeenMoon && ticksSinceSeenMoon > 0f) {
+            return Math.clamp(((ticksSinceSeenMoon - (MOON_FADE_START_TIME + STARE_AT_MOON_TICKS))
+                / (MoonlightDreamType.MAX_MOON_GAZE_TIME - MOON_FADE_START_TIME)), 0, 1);
+        }
         return originalAlpha;
     }
 
@@ -200,11 +204,19 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
             if (ticksSinceSeenMoon > STARE_AT_MOON_TICKS) FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.SAW_MOON_IN_DREAM);
             hasSeenMoon = true;
         }
-        FriendMoonRenderer.FriendMoonAnimation animation = (hasSeenMoon && (ticksSinceSeenMoon > STARE_AT_MOON_TICKS))
-            ? FriendMoonRenderer.FriendMoonAnimation.DREAM
-            : FriendMoonRenderer.FriendMoonAnimation.DREAM_UNFOCUSED;
-        FriendMoonRenderer.renderFriendMoonInternal(Tesselator.getInstance(), moonViewMatrix,
-            animation, 1f, 0, false);
+        float focusedOpacity = Math.clamp((ticksSinceSeenMoon - STARE_AT_MOON_TICKS) / 20f, 0, 1);
+        FriendMoonRenderer.drawWithColor(
+            Color.WHITE.getRGB(), 1f - focusedOpacity,
+            () -> FriendMoonRenderer.renderFriendMoonInternal(Tesselator.getInstance(), moonViewMatrix,
+                FriendMoonRenderer.FriendMoonAnimation.DREAM_UNFOCUSED, 1f - focusedOpacity, 0, false),
+            true
+        );
+        FriendMoonRenderer.drawWithColor(
+            Color.WHITE.getRGB(), focusedOpacity,
+            () -> FriendMoonRenderer.renderFriendMoonInternal(Tesselator.getInstance(), moonViewMatrix,
+                FriendMoonRenderer.FriendMoonAnimation.DREAM, focusedOpacity, 0, false),
+            true
+        );
     }
 
     private VertexBuffer skyMesh;
