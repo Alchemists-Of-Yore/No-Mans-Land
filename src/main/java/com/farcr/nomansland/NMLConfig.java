@@ -228,7 +228,7 @@ public class NMLConfig {
                 .defineInRange("minMeetingPointDistance", 1000, 0, Integer.MAX_VALUE);
         MAX_MEETING_POINT_DISTANCE = COMMON_BUILDER
                 .comment("The maximum distance, from the center of the world, the Meeting Point should spawn at.")
-                .defineInRange("maxMeetingPointDistance", 5000, 0, Integer.MAX_VALUE);
+                .defineInRange("maxMeetingPointDistance", 2500, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(BELL_SANCTUARIES);
