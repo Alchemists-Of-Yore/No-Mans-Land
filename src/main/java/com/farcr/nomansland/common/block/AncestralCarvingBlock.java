@@ -112,13 +112,7 @@ public class AncestralCarvingBlock extends DirectionalBlock {
         for (int col = 0; col < size; col++) {
             for (int row = 0; row < size; row++) {
                 BlockPos p = origin.relative(right, col).relative(down, row);
-                int texCol = col, texRow = row;
-                if (facing.getAxis() == Direction.Axis.Y) {
-                    int[] t = rotateFormationCoords(col, row, size, rotation);
-                    texCol = t[0];
-                    texRow = t[1];
-                }
-                CarvingFormation formation = CarvingFormation.getForPosition(size, texCol, texRow);
+                CarvingFormation formation = CarvingFormation.getForPosition(size, col, row);
                 level.setBlock(p, this.defaultBlockState()
                         .setValue(FACING, facing)
                         .setValue(FORMATION, formation)
