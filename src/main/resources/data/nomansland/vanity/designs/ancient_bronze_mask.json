@@ -1,13 +1,13 @@
 {
     "type": "default",
     "styles": {
-        "restored": 
+        "alchemist": 
         [
             {
                 "item": "nomansland:ancient_bronze_mask",
                 "assets": {
-                    "default": "nomansland:ancient_bronze_mask_restored",
-                    "armor": "nomansland:textures/armor/ancient_bronze_mask_restored.png"
+                    "default": "nomansland:ancient_bronze_mask_alchemist",
+                    "armor": "nomansland:textures/armor/ancient_bronze_mask_alchemist.png"
                 }
             }
         ]

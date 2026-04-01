@@ -179,6 +179,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("design.nomansland.tortoise.sandy", "Sandy");
         add("design.nomansland.tortoise.green", "Green");
         add("design.nomansland.tortoise.gray", "Gray");
+        add("design.nomansland.ancient_bronze_mask.alchemist", "Alchemist");
+        add("design.nomansland.warp_worn.warp_worn", "Warp-worn");
 
         add("commands.nomansland.dream.start.pass", "Successfully started dream %s for %s.");
         add("commands.nomansland.dream.start.pass_count", "Successfully started dream %s for %s players.");
