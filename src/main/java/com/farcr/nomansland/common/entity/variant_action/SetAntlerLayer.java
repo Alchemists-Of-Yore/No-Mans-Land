@@ -10,7 +10,7 @@ public class SetAntlerLayer implements VariantActionType {
     @Override
     public VariantActionType resolve(JsonObject actionsArgs, JsonObject variantArgs, JsonObject defaultArgs) {
         JsonObject arguments = VariantActionType.resolveArguments(actionsArgs, variantArgs, defaultArgs);
-        texture = ResourceLocation.parse(arguments.get("texture").getAsString()).withPath(path -> "textures/entity/" + path);
+        texture = ResourceLocation.parse(arguments.get("texture").getAsString()).withPath(path -> "textures/entity/" + path + ".png");
         return this;
     }
 }

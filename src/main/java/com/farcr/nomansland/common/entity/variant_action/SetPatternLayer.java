@@ -11,8 +11,8 @@ public class SetPatternLayer implements VariantActionType {
     @Override
     public VariantActionType resolve(JsonObject actionsArgs, JsonObject variantArgs, JsonObject defaultArgs) {
         JsonObject arguments = VariantActionType.resolveArguments(actionsArgs, variantArgs, defaultArgs);
-        texture = ResourceLocation.parse(arguments.get("texture").getAsString()).withPath(path -> "textures/entity/" + path);
-        babyTexture = ResourceLocation.parse(arguments.get("baby_texture").getAsString()).withPath(path -> "textures/entity/" + path);
+        texture = ResourceLocation.parse(arguments.get("texture").getAsString()).withPath(path -> "textures/entity/" + path + ".png");
+        babyTexture = ResourceLocation.parse(arguments.get("baby_texture").getAsString()).withPath(path -> "textures/entity/" + path + ".png");
         return this;
     }
 }
