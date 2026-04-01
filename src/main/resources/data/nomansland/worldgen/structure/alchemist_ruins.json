@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "nomansland:alchemist_ruins",
   "start_pool":"nomansland:alchemist_ruins/core",
   "size": 16,
   "max_distance_from_center": 100,
