@@ -1,10 +1,12 @@
 package com.farcr.nomansland.client.model.frienderman;
 
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EndermanModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.world.entity.HumanoidArm;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -23,6 +25,13 @@ public class FriendermanModel extends EndermanModel<Frienderman> {
             this.rightArm.yRot = -0.5F;
             this.rightArm.zRot = 0.0F;
         }
+    }
+
+    @Override
+    public void translateToHand(HumanoidArm arm, PoseStack poseStack) {
+        this.getArm(arm).translateAndRotate(poseStack);
+        boolean left = arm == HumanoidArm.LEFT;
+        poseStack.translate(left ? -0.0625F : 0.0625F, 1.0F, 0.0F);
     }
 
     public static LayerDefinition createBodyLayer() {

@@ -350,7 +350,9 @@ public class MiscellaneousEvents {
 
     @SubscribeEvent
     public static void onFinalizeMobSpawn(FinalizeSpawnEvent event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel && event.getSpawnType() == MobSpawnType.NATURAL && event.getEntity() instanceof Monster) {
+        if (event.getLevel() instanceof ServerLevel serverLevel
+                && event.getSpawnType() == MobSpawnType.NATURAL
+                && event.getEntity() instanceof Monster) {
             WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
 
@@ -369,6 +371,7 @@ public class MiscellaneousEvents {
                 frienderman.moveTo(event.getEntity().position());
                 frienderman.setYRot(event.getEntity().getYRot());
                 serverLevel.addFreshEntity(frienderman);
+                System.out.println("spawned");
             }
         }
     }

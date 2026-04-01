@@ -42,6 +42,7 @@ public class FriendermanRenderer extends MobRenderer<Frienderman, FriendermanMod
         FriendermanModel model = getModel();
         model.carrying = entity.getCarriedBlock() != null;
         model.creepy = false;
+        model.hat.visible = !entity.hasExchangedMask();
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 

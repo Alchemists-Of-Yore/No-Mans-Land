@@ -8,6 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -53,22 +56,30 @@ import java.util.UUID;
 public class Frienderman extends EnderMan {
     private static final ResourceKey<LootTable> GIFT_LOOT_TABLE =
             ResourceKey.create(Registries.LOOT_TABLE, NoMansLand.location("gameplay/frienderman_gift"));
+    private static final EntityDataAccessor<Boolean> DATA_EXCHANGED_MASK =
+            SynchedEntityData.defineId(Frienderman.class, EntityDataSerializers.BOOLEAN);
 
     private boolean isPerformingStare;
     private boolean inspectingMask;
-    private boolean waitingToDespawnAfterExchange;
     private int inspectTimer;
+    private int exchangePhase;
+    private int passiveDespawnTimer;
     @Nullable
     private Player barteringPlayer;
 
     public Frienderman(EntityType<? extends EnderMan> entityType, Level level) {
         super(entityType, level);
         setCanPickUpLoot(true);
-        ItemStack mask = new ItemStack(NMLItems.ANCIENT_BRONZE_MASK.get());
-        if (Mods.VANITY.isLoaded()) {
-            VanityIntegration.applyWarpWornDesign(mask);
-        }
-        setItemSlot(EquipmentSlot.HEAD, mask);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_EXCHANGED_MASK, false);
+    }
+
+    public boolean hasExchangedMask() {
+        return this.entityData.get(DATA_EXCHANGED_MASK);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -126,13 +137,13 @@ public class Frienderman extends EnderMan {
 
     @Override
     public boolean wantsToPickUp(ItemStack stack) {
-        return isAcceptableMask(stack) && !inspectingMask && !waitingToDespawnAfterExchange && Mods.VANITY.isLoaded();
+        return isAcceptableMask(stack) && !inspectingMask && Mods.VANITY.isLoaded();
     }
 
     @Override
     protected void pickUpItem(ItemEntity itemEntity) {
         ItemStack stack = itemEntity.getItem();
-        if (isAcceptableMask(stack) && !inspectingMask && !waitingToDespawnAfterExchange && Mods.VANITY.isLoaded()) {
+        if (isAcceptableMask(stack) && !inspectingMask && Mods.VANITY.isLoaded()) {
             this.onItemPickup(itemEntity);
             this.take(itemEntity, 1);
             ItemStack mask = stack.split(1);
@@ -160,11 +171,22 @@ public class Frienderman extends EnderMan {
     protected void customServerAiStep() {
         super.customServerAiStep();
 
-        if (isPerformingStare || inspectingMask || waitingToDespawnAfterExchange) return;
+        if (isPerformingStare || inspectingMask) return;
+
+        boolean shouldDespawn = false;
 
         Player nearestPlayer = level().getNearestPlayer(this, 4.0);
         if (nearestPlayer != null && !isWearingAlchemistMask(nearestPlayer)) {
-            despawnWithEffects();
+            shouldDespawn = true;
+        }
+
+        if (shouldDespawn) {
+            passiveDespawnTimer++;
+            if (passiveDespawnTimer >= 60) {
+                despawnWithEffects();
+            }
+        } else {
+            passiveDespawnTimer = 0;
         }
     }
 
@@ -189,7 +211,7 @@ public class Frienderman extends EnderMan {
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!level().isClientSide() && Mods.VANITY.isLoaded() && !inspectingMask && !waitingToDespawnAfterExchange) {
+        if (!level().isClientSide() && Mods.VANITY.isLoaded() && !inspectingMask) {
             ItemStack heldItem = player.getItemInHand(hand);
             if (isAcceptableMask(heldItem)) {
                 ItemStack mask = heldItem.split(1);
@@ -203,6 +225,7 @@ public class Frienderman extends EnderMan {
     private void startInspecting(ItemStack mask, @Nullable Player player) {
         inspectingMask = true;
         inspectTimer = 40;
+        exchangePhase = 0;
         barteringPlayer = player;
         setItemInHand(InteractionHand.MAIN_HAND, mask);
         getNavigation().stop();
@@ -212,28 +235,38 @@ public class Frienderman extends EnderMan {
         ItemStack newMask = getItemInHand(InteractionHand.MAIN_HAND);
         setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 
-        ItemStack oldMask = getItemBySlot(EquipmentSlot.HEAD);
-        if (barteringPlayer != null && !oldMask.isEmpty()) {
-            throwItemToward(oldMask.copy(), barteringPlayer);
-        } else if (!oldMask.isEmpty()) {
-            spawnAtLocation(oldMask.copy());
-        }
-
         setItemSlot(EquipmentSlot.HEAD, newMask);
+        this.entityData.set(DATA_EXCHANGED_MASK, true);
 
-        waitingToDespawnAfterExchange = true;
-        inspectTimer = 40;
+        ItemStack warpWornMask = new ItemStack(NMLItems.ANCIENT_BRONZE_MASK.get());
+        VanityIntegration.applyWarpWornDesign(warpWornMask);
+        setItemInHand(InteractionHand.MAIN_HAND, warpWornMask);
+
+        exchangePhase = 1;
+        inspectTimer = 20;
+    }
+
+    private void throwHeldItem() {
+        ItemStack held = getItemInHand(InteractionHand.MAIN_HAND);
+        setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        if (!held.isEmpty() && barteringPlayer != null) {
+            throwItemToward(held, barteringPlayer);
+        } else if (!held.isEmpty()) {
+            spawnAtLocation(held);
+        }
+        exchangePhase = 2;
+        inspectTimer = 20;
     }
 
     public void despawnWithEffects() {
-        if (inspectingMask) {
+        if (inspectingMask && exchangePhase == 0) {
             ItemStack held = getItemInHand(InteractionHand.MAIN_HAND);
             if (!held.isEmpty()) spawnAtLocation(held);
-            setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-            inspectingMask = false;
-            barteringPlayer = null;
         }
-        waitingToDespawnAfterExchange = false;
+        setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        inspectingMask = false;
+        exchangePhase = 0;
+        barteringPlayer = null;
         if (level() instanceof ServerLevel serverLevel) {
             serverLevel.playSound(null, xo, yo, zo, SoundEvents.ENDERMAN_TELEPORT, getSoundSource(), 1.0F, 1.0F);
             serverLevel.sendParticles(ParticleTypes.PORTAL, getX(), getY() + 1.0, getZ(), 64, 0.5, 1.0, 0.5, 0.5);
@@ -242,26 +275,19 @@ public class Frienderman extends EnderMan {
         discard();
     }
 
-    public void giftItems(Player target) {
-        if (!(level() instanceof ServerLevel serverLevel)) return;
+    public ItemStack generateGift() {
+        if (!(level() instanceof ServerLevel serverLevel)) return ItemStack.EMPTY;
 
         LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(GIFT_LOOT_TABLE);
         LootParams params = new LootParams.Builder(serverLevel)
                 .withParameter(LootContextParams.THIS_ENTITY, this)
                 .create(LootContextParamSets.PIGLIN_BARTER);
 
-        for (ItemStack item : lootTable.getRandomItems(params)) {
-            throwItemToward(item, target);
-        }
-
-        BlockState carriedBlock = getCarriedBlock();
-        if (carriedBlock != null) {
-            throwItemToward(new ItemStack(carriedBlock.getBlock()), target);
-            setCarriedBlock(null);
-        }
+        List<ItemStack> lootItems = lootTable.getRandomItems(params);
+        return lootItems.isEmpty() ? ItemStack.EMPTY : lootItems.getFirst();
     }
 
-    private void throwItemToward(ItemStack stack, LivingEntity target) {
+    void throwItemToward(ItemStack stack, LivingEntity target) {
         double dx = target.getX() - getX();
         double dz = target.getZ() - getZ();
         double horizontalDist = Math.sqrt(dx * dx + dz * dz);
@@ -291,7 +317,9 @@ public class Frienderman extends EnderMan {
     }
 
     public static boolean isWearingAlchemistMask(Player player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).is(NMLItems.ANCIENT_BRONZE_MASK);
+        return player.getItemBySlot(EquipmentSlot.HEAD).is(NMLItems.ANCIENT_BRONZE_MASK)
+                || player.getMainHandItem().is(NMLItems.ANCIENT_BRONZE_MASK)
+                || player.getOffhandItem().is(NMLItems.ANCIENT_BRONZE_MASK);
     }
 
     private static class FriendermanInspectMaskGoal extends Goal {
@@ -304,7 +332,7 @@ public class Frienderman extends EnderMan {
 
         @Override
         public boolean canUse() {
-            return frienderman.inspectingMask || frienderman.waitingToDespawnAfterExchange;
+            return frienderman.inspectingMask;
         }
 
         @Override
@@ -324,25 +352,29 @@ public class Frienderman extends EnderMan {
             }
             frienderman.inspectTimer--;
             if (frienderman.inspectTimer <= 0) {
-                if (frienderman.waitingToDespawnAfterExchange) {
-                    frienderman.despawnWithEffects();
-                } else {
-                    frienderman.performExchange();
+                switch (frienderman.exchangePhase) {
+                    case 0 -> frienderman.performExchange();
+                    case 1 -> frienderman.throwHeldItem();
+                    case 2 -> frienderman.despawnWithEffects();
                 }
             }
         }
 
         @Override
         public boolean canContinueToUse() {
-            return frienderman.inspectingMask || frienderman.waitingToDespawnAfterExchange;
+            return frienderman.inspectingMask;
         }
     }
+
+    private enum StarePhase { LOOKING, HOLDING_GIFT, WAITING_TO_DESPAWN }
 
     private static class FriendermanStareGoal extends Goal {
         private final Frienderman frienderman;
         @Nullable
         private Player staringPlayer;
-        private int lookTimer;
+        private int timer;
+        private StarePhase phase;
+        private ItemStack pendingGift = ItemStack.EMPTY;
 
         FriendermanStareGoal(Frienderman frienderman) {
             this.frienderman = frienderman;
@@ -365,10 +397,11 @@ public class Frienderman extends EnderMan {
         public void start() {
             frienderman.getNavigation().stop();
             frienderman.isPerformingStare = true;
+            phase = StarePhase.LOOKING;
 
             Vec3 lookDir = staringPlayer.getViewVector(1.0F).normalize();
-            double targetX = staringPlayer.getX() + lookDir.x;
-            double targetZ = staringPlayer.getZ() + lookDir.z;
+            double targetX = staringPlayer.getX() + lookDir.x * 2;
+            double targetZ = staringPlayer.getZ() + lookDir.z * 2;
             double targetY = staringPlayer.getY();
 
             Vec3 oldPos = frienderman.position();
@@ -384,30 +417,65 @@ public class Frienderman extends EnderMan {
             frienderman.setYHeadRot(yaw);
             frienderman.yRotO = yaw;
 
-            lookTimer = 60;
+            timer = 60;
         }
 
         @Override
         public void tick() {
             frienderman.getLookControl().setLookAt(staringPlayer.getX(), staringPlayer.getEyeY(), staringPlayer.getZ());
-            lookTimer--;
-            if (lookTimer <= 0) {
-                if (isWearingAlchemistMask(staringPlayer)) {
-                    frienderman.giftItems(staringPlayer);
+            timer--;
+            if (timer <= 0) {
+                switch (phase) {
+                    case LOOKING -> {
+                        if (isWearingAlchemistMask(staringPlayer)) {
+                            BlockState carriedBlock = frienderman.getCarriedBlock();
+                            if (carriedBlock != null) {
+                                frienderman.spawnAtLocation(new ItemStack(carriedBlock.getBlock()));
+                                frienderman.setCarriedBlock(null);
+                            }
+                            pendingGift = frienderman.generateGift();
+                            if (!pendingGift.isEmpty()) {
+                                frienderman.setItemInHand(InteractionHand.MAIN_HAND, pendingGift.copy());
+                            }
+                            phase = StarePhase.HOLDING_GIFT;
+                            timer = 20;
+                        } else {
+                            phase = StarePhase.WAITING_TO_DESPAWN;
+                            timer = 20;
+                        }
+                    }
+                    case HOLDING_GIFT -> {
+                        frienderman.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                        if (!pendingGift.isEmpty()) {
+                            frienderman.throwItemToward(pendingGift, staringPlayer);
+                            pendingGift = ItemStack.EMPTY;
+                        }
+                        phase = StarePhase.WAITING_TO_DESPAWN;
+                        timer = 20;
+                    }
+                    case WAITING_TO_DESPAWN -> frienderman.despawnWithEffects();
                 }
-                frienderman.despawnWithEffects();
             }
         }
 
         @Override
         public boolean canContinueToUse() {
-            return lookTimer > 0 && staringPlayer != null && staringPlayer.isAlive();
+            return frienderman.isPerformingStare && staringPlayer != null && staringPlayer.isAlive();
         }
 
         @Override
         public void stop() {
+            if (frienderman.isPerformingStare) {
+                frienderman.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                if (!pendingGift.isEmpty()) {
+                    frienderman.spawnAtLocation(pendingGift);
+                }
+                frienderman.despawnWithEffects();
+            }
             frienderman.isPerformingStare = false;
+            pendingGift = null;
             staringPlayer = null;
+            phase = StarePhase.LOOKING;
         }
     }
 
@@ -420,7 +488,7 @@ public class Frienderman extends EnderMan {
 
         @Override
         public boolean canUse() {
-            if (frienderman.isPerformingStare || frienderman.inspectingMask || frienderman.waitingToDespawnAfterExchange) return false;
+            if (frienderman.isPerformingStare || frienderman.inspectingMask) return false;
             if (frienderman.getCarriedBlock() != null) return false;
             if (!EventHooks.canEntityGrief(frienderman.level(), frienderman)) return false;
             return frienderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
@@ -456,7 +524,7 @@ public class Frienderman extends EnderMan {
 
         @Override
         public boolean canUse() {
-            if (frienderman.isPerformingStare || frienderman.inspectingMask || frienderman.waitingToDespawnAfterExchange) return false;
+            if (frienderman.isPerformingStare || frienderman.inspectingMask) return false;
             if (frienderman.getCarriedBlock() == null) return false;
             if (!EventHooks.canEntityGrief(frienderman.level(), frienderman)) return false;
             return frienderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
