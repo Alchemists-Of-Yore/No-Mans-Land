@@ -45,7 +45,9 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 NMLBiomes.DESERT_RIVER,
                 NMLBiomes.MUD_BEACH,
                 NMLBiomes.FROZEN_SHORE,
-                NMLBiomes.TROPICAL_BEACH
+                NMLBiomes.TROPICAL_BEACH,
+
+                NMLBiomes.ALCHEMIST_RUINS
         );
 
         tag(NMLTags.IS_CRAGLAND).add(
@@ -58,6 +60,9 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
                 Biomes.OCEAN,
                 Biomes.DEEP_OCEAN,
                 Biomes.STONY_SHORE
+        );
+        tag(Tags.Biomes.IS_CAVE).add(
+                NMLBiomes.ALCHEMIST_RUINS
         );
 
         tag(BiomeTags.IS_OVERWORLD).addTags(NMLTags.OLD_GROWTH_FOREST, NMLTags.CAVES);
