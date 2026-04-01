@@ -58,7 +58,10 @@ public class NMLSurfaceRules {
         //Multiple-Biome Modifiers
         SurfaceRules.RuleSource gravel_shores = SurfaceRules.ifTrue(
                 new BiomeTagConditionSource(NMLTags.HAS_GRAVEL_SHORE),
-                SurfaceRules.ifTrue(SHORE, GRAVEL)
+                SurfaceRules.ifTrue(SHORE, SurfaceRules.sequence(
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(0.33), SILT),
+                        GRAVEL
+                ))
         );
         SurfaceRules.RuleSource mud_shores = SurfaceRules.ifTrue(
                 new BiomeTagConditionSource(Tags.Biomes.IS_SWAMP),
