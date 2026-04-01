@@ -105,29 +105,33 @@ public class FriendMoon extends SavedData {
         setDirty();
     }
 
+    @Nullable
+    private Buddy findAscendingBuddy() {
+        if (level == null) return null;
+        if (ascendingBuddyEntityId >= 0) {
+            Entity entity = level.getEntity(ascendingBuddyEntityId);
+            if (entity instanceof Buddy b) return b;
+        }
+        if (ascendingBuddyUUID != null) {
+            Entity entity = level.getEntity(ascendingBuddyUUID);
+            if (entity instanceof Buddy b) return b;
+        }
+        return null;
+    }
+
     public void abortAscension() {
         if (!isAscensionActive())
             return;
-        if (level != null) {
-            Buddy buddy = null;
-            if (ascendingBuddyEntityId >= 0) {
-                Entity entity = level.getEntity(ascendingBuddyEntityId);
-                if (entity instanceof Buddy b)
-                    buddy = b;
-            }
-            if (buddy == null && ascendingBuddyUUID != null) {
-                Entity entity = level.getEntity(ascendingBuddyUUID);
-                if (entity instanceof Buddy b)
-                    buddy = b;
-            }
-            if (buddy != null) {
-                buddy.setAscensionTicks(-1);
-                buddy.setHealth(buddy.getMaxHealth());
-            }
+        Buddy buddy = findAscendingBuddy();
+        if (buddy != null) {
+            buddy.setAscensionTicks(-1);
+            buddy.setHealth(buddy.getMaxHealth());
         }
         ascensionTicks = -1;
         ascendingBuddyUUID = null;
         ascendingBuddyEntityId = -1;
+        rewardDelayTicks = -1;
+        rewardBasinPos = null;
         setDirty();
     }
 
@@ -444,6 +448,12 @@ public class FriendMoon extends SavedData {
         assert level != null;
         updateMeetingPointInformation(level);
         tickAscensionReward();
+
+        if (isAscensionActive()) {
+            Buddy buddy = findAscendingBuddy();
+            if (buddy == null || !buddy.isAlive())
+                abortAscension();
+        }
 
         if (!isNightTime(level) && !upsetWith.isEmpty()) {
             upsetWith.clear();
