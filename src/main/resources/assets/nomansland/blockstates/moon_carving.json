@@ -153,7 +153,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -165,7 +166,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -176,8 +177,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -189,7 +189,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_single_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -286,7 +286,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -298,7 +299,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -309,8 +310,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -322,7 +322,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_left_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -419,7 +419,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -431,7 +432,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -442,8 +443,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -455,7 +455,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_top_right_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -552,7 +552,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -564,7 +565,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -575,8 +576,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -588,7 +588,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_left_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -685,7 +685,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -697,7 +698,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -708,8 +709,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -721,7 +721,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/ancestral_carving/ancestral_carving_two_bottom_right_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -818,7 +818,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -830,7 +831,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -841,8 +842,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -854,7 +854,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_0_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -951,7 +951,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -963,7 +964,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -974,8 +975,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -987,7 +987,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_0_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1084,7 +1084,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1096,7 +1097,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1107,8 +1108,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1120,7 +1120,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_0_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1217,7 +1217,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1229,7 +1230,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1240,8 +1241,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1253,7 +1253,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_1_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1350,7 +1350,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1362,7 +1363,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1373,8 +1374,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1386,7 +1386,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_1_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1483,7 +1483,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1495,7 +1496,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1506,8 +1507,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1519,7 +1519,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_1_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1616,7 +1616,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1628,7 +1629,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1639,8 +1640,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1652,7 +1652,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_0_2_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1749,7 +1749,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1761,7 +1762,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1772,8 +1773,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1785,7 +1785,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_1_2_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -1882,7 +1882,8 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2_plane",
-        "x": 270
+        "x": 270,
+        "y": 180
       }
     },
     {
@@ -1894,7 +1895,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2_plane",
         "x": 270,
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -1905,8 +1906,7 @@
       },
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2_plane",
-        "x": 270,
-        "y": 180
+        "x": 270
       }
     },
     {
@@ -1918,7 +1918,7 @@
       "apply": {
         "model": "nomansland:block/dungeon/moon_carving/moon_carving_three_2_2_plane",
         "x": 270,
-        "y": 270
+        "y": 90
       }
     }
   ]
