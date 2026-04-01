@@ -53,7 +53,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     private @Nullable ResourceLocation potionTableId;
     private long potionTableSeed = 0L;
     public boolean skipBreakEffects;
-    public boolean wokenUp;
+    public boolean shouldDropItems;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
     private ItemStack item = ItemStack.EMPTY;
@@ -340,7 +340,6 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         level.addFreshEntity(pot);
         pot.startWakeUp();
         this.skipBreakEffects = true;
-        this.wokenUp = true;
         level.removeBlock(pos, false);
 
         level.playSound(null, pos, SoundEvents.DECORATED_POT_STEP, SoundSource.HOSTILE, 1.0F, 0.8F);
@@ -359,7 +358,6 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         LivingPot pot = LivingPot.fromPot(this);
         level.addFreshEntity(pot);
         this.skipBreakEffects = true;
-        this.wokenUp = true;
         level.removeBlock(pos, false);
     }
 

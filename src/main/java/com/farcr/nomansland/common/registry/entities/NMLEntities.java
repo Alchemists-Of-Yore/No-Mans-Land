@@ -10,6 +10,7 @@ import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
+import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
@@ -109,6 +110,13 @@ public class NMLEntities {
             .sized(.75f, 2.05f)
             .ridingOffset(-0.7F)
             .build("buddy"));
+
+    public static final Supplier<EntityType<Frienderman>> FRIENDERMAN =
+            ENTITIES.register("frienderman", () -> EntityType.Builder.of(Frienderman::new, MobCategory.MONSTER)
+                    .sized(0.6F, 2.9F)
+                    .eyeHeight(2.55F)
+                    .clientTrackingRange(8)
+                    .build("frienderman"));
 
     public static final Supplier<EntityType<DreamingPlayer>> DREAMING_PLAYER =
         ENTITIES.register("dreaming_player", () -> EntityType.Builder.of(DreamingPlayer::new, MobCategory.MISC)

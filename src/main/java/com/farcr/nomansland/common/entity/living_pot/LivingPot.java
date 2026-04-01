@@ -218,7 +218,9 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
     }
 
     public void setVariant(PotVariant variant, BlockState state) {
-        entityData.set(VARIANT, level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant).toString());
+        ResourceLocation location = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
+        if (location == null) return;
+        entityData.set(VARIANT, location.toString());
         entityData.set(BLOCKSTATE, state);
         if (isSmall()) {
             Objects.requireNonNull(getAttribute(Attributes.MAX_HEALTH)).setBaseValue(10);

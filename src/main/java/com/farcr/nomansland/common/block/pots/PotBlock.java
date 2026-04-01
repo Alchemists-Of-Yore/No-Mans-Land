@@ -208,13 +208,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             for (int i = 0; i < amount; i++) {
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
-                    silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    silverfish.moveTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0);
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
                 }
             }
             pot.removeModifier(PotModifier.INFESTED);
-            level.destroyBlock(pos, true, player);
+            pot.setChanged();
+            level.sendBlockUpdated(pos, state, state, 3);
             return ItemInteractionResult.SUCCESS;
         }
 
@@ -224,12 +225,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
                     slime.setSize(1, true);
-                    slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    slime.moveTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0);
                     level.addFreshEntity(slime);
                 }
             }
             pot.removeModifier(PotModifier.OOZING);
-            level.destroyBlock(pos, true, player);
+            pot.setChanged();
+            level.sendBlockUpdated(pos, state, state, 3);
             return ItemInteractionResult.SUCCESS;
         }
 
@@ -360,7 +362,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
-            if (!pot.wokenUp) {
+            if (pot.shouldDropItems) {
                 Containers.dropContents(level, pos, pot);
             }
 
@@ -443,6 +445,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            pot.shouldDropItems = true;
             if (pot.hasModifier(PotModifier.WAXED) || dropsItself(player.getMainHandItem(), level)) {
                 pot.skipBreakEffects = true;
                 pot.setChanged();
@@ -508,6 +511,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             if (level.getBlockEntity(blockpos) instanceof PotBlockEntity pot && pot.isLiving()) {
                 pot.wakeUp(projectile.getOwner() instanceof LivingEntity le ? le : null);
             } else {
+                if (level.getBlockEntity(blockpos) instanceof PotBlockEntity pot) {
+                    pot.shouldDropItems = true;
+                }
                 level.destroyBlock(blockpos, true, projectile);
             }
         }

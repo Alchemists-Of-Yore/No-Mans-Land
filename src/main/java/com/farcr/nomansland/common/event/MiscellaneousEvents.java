@@ -6,7 +6,9 @@ import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
+import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
@@ -50,6 +52,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -352,6 +355,21 @@ public class MiscellaneousEvents {
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
 
             event.setSpawnCancelled(wardedSpacesData.isWarded(event.getEntity().blockPosition()));
+        }
+
+        if (event.getLevel() instanceof ServerLevel serverLevel
+                && event.getSpawnType() == MobSpawnType.NATURAL
+                && event.getEntity() instanceof EnderMan
+                && !(event.getEntity() instanceof Frienderman)
+                && serverLevel.dimension() == Level.OVERWORLD
+                && serverLevel.random.nextFloat() < 0.01f) {
+            event.setSpawnCancelled(true);
+            Frienderman frienderman = NMLEntities.FRIENDERMAN.get().create(serverLevel);
+            if (frienderman != null) {
+                frienderman.moveTo(event.getEntity().position());
+                frienderman.setYRot(event.getEntity().getYRot());
+                serverLevel.addFreshEntity(frienderman);
+            }
         }
     }
 

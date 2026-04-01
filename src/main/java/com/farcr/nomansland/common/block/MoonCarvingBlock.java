@@ -33,7 +33,7 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
     }
 
     // Write an access transformer or something idk duplicate code sucks
-    @javax.annotation.Nullable
+    @Nullable
     protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
         BlockEntityType<A> serverType, BlockEntityType<E> clientType, BlockEntityTicker<? super E> ticker) {
         return clientType == serverType ? (BlockEntityTicker<A>) ticker : null;
@@ -66,8 +66,8 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
         Direction right = getPlaneRight(facing, rotation);
         Direction down = getPlaneDown(facing, rotation);
 
-        for (int col = 0; col < 3; col++) {
-            for (int row = 0; row < 3; row++) {
+        for (int col = -1; col <= 1; col++) {
+            for (int row = -1; row <= 1; row++) {
                 if (col == 0 && row == 0) continue;
                 BlockPos pos = placedPos.relative(right, col).relative(down, row);
                 if (!level.getBlockState(pos).canBeReplaced(context)) {
@@ -78,7 +78,7 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
 
         return this.defaultBlockState()
                 .setValue(FACING, facing)
-                .setValue(FORMATION, CarvingFormation.THREE_0_0)
+                .setValue(FORMATION, CarvingFormation.SINGLE)
                 .setValue(ROTATION, rotation);
     }
 
@@ -91,16 +91,10 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
         Direction right = getPlaneRight(facing, rotation);
         Direction down = getPlaneDown(facing, rotation);
 
-        for (int col = 0; col < 3; col++) {
-            for (int row = 0; row < 3; row++) {
+        for (int col = -1; col <= 1; col++) {
+            for (int row = -1; row <= 1; row++) {
                 BlockPos target = pos.relative(right, col).relative(down, row);
-                int texCol = col, texRow = row;
-                if (facing.getAxis() == Direction.Axis.Y) {
-                    int[] t = AncestralCarvingBlock.rotateFormationCoords(col, row, 3, rotation);
-                    texCol = t[0];
-                    texRow = t[1];
-                }
-                CarvingFormation formation = CarvingFormation.getForPosition(3, texCol, texRow);
+                CarvingFormation formation = CarvingFormation.getForPosition(3, col + 1, row + 1);
                 level.setBlock(target, this.defaultBlockState()
                         .setValue(FACING, facing)
                         .setValue(FORMATION, formation)
