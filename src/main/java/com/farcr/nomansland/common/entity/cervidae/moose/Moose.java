@@ -154,6 +154,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     private int pacificationStage;
     private int chargeAttackCooldown;
 
+    private int chargeLoopAnimationDelay;
+
     public Moose(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
         moveControl = new MooseMoveControl(this);
@@ -183,7 +185,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         super.addAdditionalSaveData(compound);
         saveAntlerData(compound);
 
-        compound.put("targetMemory", targetMemory.serializeNBT());
+        compound.put("TargetMemory", targetMemory.serializeNBT());
 
         compound.putInt("InAggroRadius", inAggroRadius);
         compound.putLong("MostRecentWarning", mostRecentWarning);
@@ -207,7 +209,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         super.readAdditionalSaveData(compound);
         readAntlerData(compound);
 
-        targetMemory.deserializeNBT(compound.getCompound("targetMemory"));
+        targetMemory.deserializeNBT(compound.getCompound("TargetMemory"));
 
         inAggroRadius = compound.getInt("InAggroRadius");
         mostRecentWarning = compound.getInt("MostRecentWarning");
@@ -223,6 +225,10 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         setPacificationStage(compound.getInt("PacificationStage"));
         setChargeAttackCooldown(compound.getInt("ChargeAttackCooldown"));
         setIsSaddled(compound.getBoolean("IsSaddled"));
+    }
+
+    public static float modifyMooseMovedWronglyThreshold() {
+        return 0.25f;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -314,6 +320,13 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         super.aiStep();
         if (chargeAttackCooldown > 0) {
             setChargeAttackCooldown(chargeAttackCooldown-1);
+        }
+        if (chargeLoopAnimationDelay > 0) {
+            chargeLoopAnimationDelay--;
+            if (chargeLoopAnimationDelay == 0) {
+                chargedAttackStartAnimationState.stop();
+                chargedAttackHoldAnimationState.start(tickCount);
+            }
         }
     }
 
@@ -486,6 +499,10 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
 
+        var healInteraction = tryEatAndHeal(player, heldItem);
+        if (healInteraction.isPresent()) {
+            return healInteraction.get();
+        }
         var mountInteraction = tryMount(player);
         if (mountInteraction.isPresent()) {
             return mountInteraction.get();
@@ -546,6 +563,36 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         return Optional.of(InteractionResult.sidedSuccess(isClientSide));
     }
 
+    /**
+     * Attempts to eat moose food from a player if the moose is pacified, healing after eating the correct item.
+     *
+     * @param player The soon-to-be owner of the moose
+     * @param stack  The offering.
+     * @return An optional containing the result of the interaction if it was successful
+     */
+    public Optional<InteractionResult> tryEatAndHeal(Player player, ItemStack stack) {
+        if (!isPacified()) {
+            return Optional.empty();
+        }
+        var level = level();
+        boolean isMooseFood = stack.is(NMLTags.MOOSE_FOOD);
+        if (getTarget() != null || (!isMooseFood && stack.getFoodProperties(player) != null)) {
+            level.broadcastEntityEvent(this, REJECT_FOOD_EVENT);
+            playSound(NMLSounds.MOOSE_REJECTS_FOOD.get(), 1f, 1f);
+            return Optional.of(InteractionResult.FAIL);
+        }
+        if (isMooseFood && getHealth() < getMaxHealth()) {
+            var isClientSide = level.isClientSide;
+            if (!isClientSide) {
+                stack.shrink(1);
+                playSound(NMLSounds.MOOSE_EAT.get(), 1f, 1f);
+                heal(8);
+            }
+
+            return Optional.of(InteractionResult.sidedSuccess(isClientSide));
+        }
+        return Optional.empty();
+    }
     /**
      * Attempts to eat moose food from a player, eventually growing pacified and enabling saddling behavior.
      *
@@ -682,10 +729,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     }
 
     @Override
-    public void onPlayerJump(int jumpPower) {
-    }
-
-    @Override
     public boolean canJump() {
         return isPacified() && isSaddled();
     }
@@ -696,6 +739,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
             return entityData.get(DATA_CAN_CHARGE_ATTACK) ? 0 : 1;
         }
         return chargeAttackCooldown;
+    }
+
+
+    @Override
+    public void onPlayerJump(int jumpPower) {
     }
 
     /**
@@ -858,6 +906,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         }
     }
 
+    @Override
+    protected void positionRider(@NotNull Entity passenger, Entity.@NotNull MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        if (passenger instanceof LivingEntity living) {
+            living.yBodyRot = this.yBodyRot;
+        }
+    }
+
     public void lookAtAndFaceTarget(Entity target) {
         var moveControl = getMoveControl();
         if (target == null || !target.isAlive()) {
@@ -937,6 +993,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
     protected void addChargedAttackStartFeedback() {
         chargedAttackStartAnimationState.start(tickCount);
+        chargeLoopAnimationDelay = 16;
     }
 
     protected void addChargedAttackEndFeedback() {

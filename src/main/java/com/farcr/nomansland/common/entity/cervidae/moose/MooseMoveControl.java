@@ -166,8 +166,13 @@ public class MooseMoveControl extends MoveControl {
         }
         double xDiff = wantedX - moose.getX();
         double zDiff = wantedZ - moose.getZ();
-        float movementAngle = (float) (Mth.atan2(zDiff, xDiff) * 180.0F / (float) Math.PI) - 90.0F;
-        moose.setYRot(rotlerp(moose.getYRot(), movementAngle, 90.0F));
+        if ((xDiff * xDiff + zDiff * zDiff) > 0.05f) {
+            float movementAngle = (float) (Mth.atan2(zDiff, xDiff) * 180.0F / (float) Math.PI) - 90.0F;
+            moose.setYRot(rotlerp(moose.getYRot(), movementAngle, 90.0F));
+        }
+        else {
+            float f = 0;
+        }
     }
 
     public void tryJump(double xDiff, double yDiff, double zDiff) {

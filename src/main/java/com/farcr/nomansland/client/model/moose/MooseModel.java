@@ -138,7 +138,8 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         animate(moose.stompAnimationState, MooseAnimations.STOMPING, ageInTicks);
         animate(moose.attackAnimationState, MooseAnimations.ATTACK, ageInTicks);
 
-        animate(moose.chargedAttackStartAnimationState, MooseAnimations.CHARGING_ATTACK, ageInTicks);
+        animate(moose.chargedAttackStartAnimationState, MooseAnimations.CHARGING_START, ageInTicks);
+        animate(moose.chargedAttackHoldAnimationState, MooseAnimations.CHARGING_LOOP, ageInTicks);
         animate(moose.chargedAttackEndAnimationState, MooseAnimations.UPPERCUT, ageInTicks);
     }
 

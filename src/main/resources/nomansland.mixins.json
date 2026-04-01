@@ -36,6 +36,7 @@
     "RailStateMixin",
     "RandomStrollGoalMixin",
     "RegistryFileCodecMixin",
+    "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin",
     "ServerLevelSleepMixin",
     "ServerPlayerMixin",
