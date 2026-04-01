@@ -7,11 +7,17 @@ import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.networking.ClientboundZoomEffectPacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -73,6 +79,11 @@ public class MoonCarvingBlockEntity extends BlockEntity {
                                     MOONLIGHT_DREAM_TYPE,
                                     DREAM_TIME
                                 );
+                            level.playSound(
+                                null, pos,
+                                NMLSounds.MOON_CARVING_ACTIVATE.get(),
+                                SoundSource.AMBIENT
+                            );
                             PacketDistributor.sendToPlayer((ServerPlayer) player,
                                 new ClientboundZoomEffectPacket(70));
                         }

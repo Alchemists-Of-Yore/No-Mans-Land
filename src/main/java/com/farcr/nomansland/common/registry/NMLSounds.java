@@ -75,6 +75,7 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LIVING_URN_SHATTERS = registerSound("entity.living_urn.shatter");
 
     public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOON_CARVING_ACTIVATE = registerSound("block.moon_carving.activate");
 
     public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
     public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);

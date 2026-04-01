@@ -1252,5 +1252,12 @@
         "stream": true
       }
     ]
+  },
+  "block.moon_carving.activate": {
+    "sounds": [{
+      "name": "ambient/cave/cave1",
+      "volume": 0.75
+    }],
+    "subtitle": "subtitles.ambient.cave"
   }
 }
