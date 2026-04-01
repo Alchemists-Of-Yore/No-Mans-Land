@@ -9,7 +9,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/pig/pig_riverhog.png",
-    "baby_texture": "nomansland:mob_variants/pig/pig_riverhog_baby.png"
+    "texture": "nomansland:mob_variants/pig/pig_riverhog",
+    "baby_texture": "nomansland:mob_variants/pig/pig_riverhog_baby"
   }
 }

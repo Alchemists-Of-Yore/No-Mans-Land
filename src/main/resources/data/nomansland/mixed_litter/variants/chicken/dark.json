@@ -9,7 +9,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/chicken/chicken_dark.png",
-    "baby_texture": "nomansland:mob_variants/chicken/chicken_baby.png"
+    "texture": "nomansland:mob_variants/chicken/chicken_dark",
+    "baby_texture": "nomansland:mob_variants/chicken/chicken_baby"
   }
 }

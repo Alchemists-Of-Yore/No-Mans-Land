@@ -9,7 +9,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:goose/goose_flamingo.png",
-    "baby_texture": "nomansland:goose/goose_baby.png"
+    "texture": "nomansland:goose/goose_flamingo",
+    "baby_texture": "nomansland:goose/goose_baby"
   }
 }

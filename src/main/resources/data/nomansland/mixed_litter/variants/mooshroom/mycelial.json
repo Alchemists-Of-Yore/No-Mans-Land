@@ -2,8 +2,8 @@
   "type": "mixed_litter:mooshroom",
   "group": "mixed_litter:remodeled_mooshrooms",
   "arguments": {
-    "texture": "nomansland:mob_variants/mooshroom/mooshroom_mycelial.png",
-    "baby_texture": "nomansland:mob_variants/mooshroom/mooshroom_mycelial_baby.png",
+    "texture": "nomansland:mob_variants/mooshroom/mooshroom_mycelial",
+    "baby_texture": "nomansland:mob_variants/mooshroom/mooshroom_mycelial_baby",
     "mushroom": "minecraft:air"
   }
 }

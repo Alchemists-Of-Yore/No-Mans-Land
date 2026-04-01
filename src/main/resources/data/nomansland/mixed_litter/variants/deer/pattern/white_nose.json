@@ -2,6 +2,6 @@
   "type": "nomansland:pattern",
   "group": "nomansland:deer_pattern",
   "arguments": {
-    "texture": "nomansland:deer/pattern_white_nose.png"
+    "texture": "nomansland:deer/pattern_white_nose"
   }
 }

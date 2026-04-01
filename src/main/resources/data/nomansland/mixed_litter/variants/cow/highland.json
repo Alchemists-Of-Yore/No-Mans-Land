@@ -9,7 +9,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/cow/cow_highland.png",
-    "baby_texture": "nomansland:mob_variants/cow/cow_highland_baby.png"
+    "texture": "nomansland:mob_variants/cow/cow_highland",
+    "baby_texture": "nomansland:mob_variants/cow/cow_highland_baby"
   }
 }

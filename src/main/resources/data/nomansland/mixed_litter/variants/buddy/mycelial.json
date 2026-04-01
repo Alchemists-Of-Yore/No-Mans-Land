@@ -2,7 +2,7 @@
   "type": "nomansland:buddy",
   "group": "nomansland:buddy",
   "arguments": {
-    "texture": "nomansland:buddy/mycelial.png",
+    "texture": "nomansland:buddy/mycelial",
     "mushroom": "minecraft:air"
   }
 }

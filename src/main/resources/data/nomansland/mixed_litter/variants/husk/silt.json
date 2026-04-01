@@ -9,6 +9,6 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/zombie/silt_husk.png"
+    "texture": "nomansland:mob_variants/zombie/silt_husk"
   }
 }

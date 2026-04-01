@@ -2,6 +2,6 @@
   "type": "nomansland:antlers",
   "group": "nomansland:moose_antlers",
   "arguments": {
-    "texture": "nomansland:moose/antlers_round.png"
+    "texture": "nomansland:moose/antlers_round"
   }
 }
