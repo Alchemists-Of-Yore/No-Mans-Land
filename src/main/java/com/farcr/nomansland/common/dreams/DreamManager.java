@@ -48,16 +48,26 @@ public class DreamManager extends SavedData {
         return storageMap.get(uuid);
     }
 
-    public DreamStorage clearPlayerStorage(ServerPlayer player) {
-        DreamStorage dreamStorage = storageMap.remove(player.getUUID());
-        setDirty();
-        return dreamStorage;
+    public Optional<DreamStorage> getPlayerStorageOptional(ServerPlayer player) {
+        if (!storageMap.containsKey(player.getUUID()))
+            return Optional.empty();
+        return Optional.of(getPlayerStorage(player));
+    }
+
+    public DreamStorage clearPlayerStorage(ServerPlayer player, DreamType dreamType) {
+        DreamStorage storage = storageMap.get(player.getUUID());
+        if (storageMap.containsKey(player.getUUID())
+        && storage.removeInformationAboutDream(dreamType)) {
+            setDirty();
+            return storage;
+        }
+        return null;
     }
 
     // eventually this will be changed to (player, dream)
     public boolean playerHasExperiencedDream(ServerPlayer player, DreamType dreamType) {
         if (!storageMap.containsKey(player.getUUID())) return false;
-        return getPlayerStorage(player).getHasExperiencedDream();
+        return getPlayerStorage(player).getHasExperiencedDream(dreamType);
     }
 
     // should not be serialized or stored as when the server starts unloading all players should return to their dreaming players
@@ -139,9 +149,9 @@ public class DreamManager extends SavedData {
 
     public static boolean innerDreaming(DreamType dreamType, Player player) {
         return player.level().dimension().equals(
-            DreamLevelHandler.resourceKey(
-                Registries.DIMENSION, NMLDreamTypes.DREAM_TYPES_REGISTRY
-                    .getRegistry().get().getKey(dreamType),
+            DreamLevelHandler.resourceKey(Registries.DIMENSION,
+                NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry()
+                    .get().getKey(dreamType),
                 player
             )
         );
@@ -207,7 +217,7 @@ public class DreamManager extends SavedData {
     }
 
     public void setDreamExperienced(DreamType dreamType, ServerPlayer player) {
-        getPlayerStorage(player).setDreamExperienced();
+        getPlayerStorage(player).setDreamExperienced(dreamType);
         setDirty();
     }
 }

@@ -300,6 +300,7 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundDimensionSyncPacket.TYPE, ClientboundDimensionSyncPacket.STREAM_CODEC, ClientboundDimensionSyncPacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
+        registrar.playToClient(ClientboundZoomEffectPacket.TYPE, ClientboundZoomEffectPacket.STREAM_CODEC, ClientboundZoomEffectPacket::handleData);
 
         // sun dog update packet
         registrar.playToClient(ClientboundSunDogStatePacket.TYPE, ClientboundSunDogStatePacket.STREAM_CODEC, ClientboundSunDogStatePacket::handleData);

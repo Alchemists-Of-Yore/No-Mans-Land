@@ -31,9 +31,6 @@ public abstract class PlayerMixin {
 
     @Unique private Player nml$Self = ((Player) (Object) this);
 
-    @Shadow
-    public abstract boolean isLocalPlayer();
-
     @Inject(method = "isImmobile", at = @At("RETURN"), cancellable = true)
     private void nml$playerImmobile(CallbackInfoReturnable<Boolean> cir) {
         DreamType.DreamTypeInstance dreamTypeInstance = DreamManager.getAmbiguousDreamTypeInstance(nml$Self);

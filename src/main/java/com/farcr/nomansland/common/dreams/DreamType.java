@@ -24,24 +24,31 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.*;
 
 /*
 * Class that stores information about dream types`
 */
 public class DreamType {
-
     public static final Codec<DreamType> CODEC = NMLRegistries.DREAM_TYPE.byNameCodec();
 
-    public final @Nullable BiFunction<ServerPlayer, ServerLevel, Boolean> biconsumer;
-    public DreamType(@Nullable BiFunction<ServerPlayer, ServerLevel, Boolean> condition) {
+    public @Nullable BiFunction<ServerPlayer, ServerLevel, Boolean> biconsumer;
+    public DreamType setCondition(@Nullable BiFunction<ServerPlayer, ServerLevel, Boolean> condition) {
         this.biconsumer = condition;
+        return this;
     }
 
     public boolean canSprint = false;
     public DreamType setCanSprint(boolean canSprint) {
         this.canSprint = canSprint;
         return this;
+    }
+
+    public boolean timeCondition(ServerPlayer player, ServerLevel level) {
+        DreamStorage storage = DreamManager.getOrDefault(
+            Objects.requireNonNull(player.getServer())).getPlayerStorage(player);
+        return (storage.getTimeRemainingForDream(this) > 0);
     }
 
     protected void defaultChunkGenerator(ChunkAccess chunk, StructureManager manager, WorldGenRegion level) {

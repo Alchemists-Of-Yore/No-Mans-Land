@@ -32,10 +32,8 @@ import java.util.List;
 
 public class MoonlightDreamType extends DreamType {
     public MoonlightDreamType() {
-        super((player, level) -> true);
-
-        this.setCanSprint(false)
-            .setHUDHidden(true)
+        this.setCondition(this::timeCondition)
+            .setCanSprint(false).setHUDHidden(true)
             .setRenderer(MoonlightDreamRenderer::new)
             .setChunkGenerator(this::moonlightChunkGenerator)
             .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))

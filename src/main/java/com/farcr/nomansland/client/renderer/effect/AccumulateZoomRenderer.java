@@ -33,11 +33,22 @@ public class AccumulateZoomRenderer {
 
     private final RenderTargetUnclear persistentTarget = new RenderTargetUnclear(100, 100, false, false);
 
-    public float zoomOut = 0.0f;
-    public float fadeOut = 0.0f;
+    public float zoomOut = 0.985f;
+    public float fadeOut = 0.7f;
+
+    public float maxTicks = 0.0f;
+    public float ticks = 0.0f;
+    public void setEffectForTicks(int ticks) {
+        this.maxTicks = ticks;
+        this.ticks = ticks;
+    }
 
     public void render(Minecraft minecraft, float partialTicks) {
-        if (postChain != null && (zoomOut > 0.0f || fadeOut > 0.0f) && !minecraft.isPaused()) {
+        ticks = Math.max(0, ticks - partialTicks);
+        float tempZoom = zoomOut * (ticks / maxTicks);
+        float tempFade = fadeOut * (ticks / maxTicks);
+
+        if (postChain != null && (tempZoom > 0.0f || tempFade > 0.0f) && !minecraft.isPaused()) {
             if (persistentTarget.width != minecraft.getWindow().getWidth()
             || persistentTarget.height != minecraft.getWindow().getHeight()) {
                 persistentTarget.resize(
@@ -46,8 +57,8 @@ public class AccumulateZoomRenderer {
                     false
                 );
             }
-            postChain.setUniform("zoomOut", zoomOut);
-            postChain.setUniform("fadeOut", Math.max(fadeOut, 0.0f));
+            postChain.setUniform("zoomOut", tempZoom);
+            postChain.setUniform("fadeOut", Math.max(tempFade, 0.0f));
             postChain.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
             postChain.process(partialTicks);
         }

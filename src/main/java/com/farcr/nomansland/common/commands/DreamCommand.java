@@ -76,7 +76,8 @@ public class DreamCommand {
         Holder.Reference<DreamType> dreamTypeResult =
             ResourceArgument.getResource(stackCommandContext, "dream_type", NMLRegistries.DREAM_TYPE_KEY);
         int i = (int) playerCollection.stream().filter(player ->
-            DreamManager.getOrDefault(Objects.requireNonNull(player.getServer())).clearPlayerStorage(player) != null).count();
+            DreamManager.getOrDefault(Objects.requireNonNull(player.getServer())).clearPlayerStorage(player,
+                NMLRegistries.DREAM_TYPE.get(dreamTypeResult.key())) != null).count();
         CommandSourceStack source = stackCommandContext.getSource();
 
         if (i > 1) {
