@@ -1,0 +1,7 @@
+{
+  "parent": "nomansland:block/alt_trapdoor_top",
+  "textures": {
+    "front": "nomansland:block/building/crude_trapdoor",
+    "side": "nomansland:block/building/crude_trapdoor_sides"
+  }
+}

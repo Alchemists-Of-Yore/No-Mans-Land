@@ -91,6 +91,9 @@ public class NMLBlocks {
             () -> new PlatformStairsBlock(Block.Properties.ofFullCopy(NMLBlocks.WOODEN_PLATFORM.get())), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<DoorBlock> CRUDE_DOOR = register("crude_door",
             () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new DoorBlockLootType(), false));
+    public static final BlockDefinition<TrapDoorBlock> CRUDE_TRAPDOOR = register("crude_trapdoor",
+            () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new SelfBlockLootType(), false));
+
     public static final BlockDefinition<ResinCauldron> RESIN_CAULDRON = registerNoItem("resin_cauldron", ResinCauldron::new, BlockProperties.custom(true));
 
     public static final BlockDefinition<ResinOilCauldron> RESIN_OIL_CAULDRON = registerNoItem("resin_oil_cauldron", ResinOilCauldron::new, BlockProperties.cauldron());
