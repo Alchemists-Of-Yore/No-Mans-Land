@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,6 +71,8 @@ public record ClientboundDimensionSyncPacket(
                         this is an important note to leave in case anyone is having compatibility issues / respawn crashes
                     */
                 }
+                PacketDistributor.sendToServer(
+                    new ServerboundDreamAcknowledgePacket());
             });
         }
     }

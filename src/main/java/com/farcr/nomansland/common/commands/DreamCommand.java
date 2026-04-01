@@ -49,8 +49,7 @@ public class DreamCommand {
         for (ServerPlayer player : playerCollection) {
             DreamManager manager = DreamManager.getOrDefault(Objects.requireNonNull(player.getServer()));
             manager.forceNotify(dreamType, player);
-            manager.transferSleep(player, dreamType);
-            manager.getDreamingPlayer(player).debug = true;
+            manager.flagForStart(dreamType, player);
             i++;
         }
         CommandSourceStack source = stackCommandContext.getSource();

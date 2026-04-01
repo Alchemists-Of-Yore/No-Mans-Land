@@ -105,24 +105,29 @@ public class DreamManager extends SavedData {
         return null;
     }
 
-    public void transferSleep(ServerPlayer player, DreamType dreamType) {
+    public boolean transferSleep(ServerPlayer player, DreamType dreamType) {
         DreamServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
-        dreamLevel.regenerateDreamInstance();
+        if (DreamLevelHandler.playerIsUpdated(player)) {
+            dreamLevel.regenerateDreamInstance();
 
-        // summon fake player
-        createDreamingPlayer(player);
-        // suppress updating the player sleep counter
-        IGNORE_UPDATE_CONTEXT = true;
+            // summon fake player
+            createDreamingPlayer(player);
 
-        // move player to other dimension
-        player.stopSleeping();
-        player.changeDimension(
-            new DimensionTransition(
-                dreamLevel, dreamType.spawnPoint,
-                dreamType.spawnPoint, 0, 0,
-                DimensionTransition.DO_NOTHING
-            )
-        );
+            // suppress updating the player sleep counter
+            IGNORE_UPDATE_CONTEXT = true;
+
+            // move player to other dimension
+            player.stopSleeping();
+            player.changeDimension(
+                new DimensionTransition(
+                    dreamLevel, dreamType.spawnPoint,
+                    dreamType.spawnPoint, 0, 0,
+                    DimensionTransition.DO_NOTHING
+                )
+            );
+            return true;
+        }
+        return false;
     }
 
     public void notifyClient(ServerPlayer player) {
@@ -135,6 +140,23 @@ public class DreamManager extends SavedData {
         PacketDistributor.sendToPlayer(player, new ClientboundDreamPacket(
             Optional.ofNullable(NMLRegistries.DREAM_TYPE.getKey(dreamType))
         ));
+    }
+    private Map<ServerPlayer, DreamType> flaggedPlayerMap = new HashMap<>();
+    public void flagForStart(DreamType dreamType, ServerPlayer player) {
+        flaggedPlayerMap.put(player, dreamType);
+    }
+
+    public void updateFlaggedPlayers() {
+        List<ServerPlayer> flagForDeletion = new ArrayList<>();
+        for (ServerPlayer player : flaggedPlayerMap.keySet()) {
+            boolean transferedSleep = transferSleep(player, flaggedPlayerMap.get(player));
+            if (transferedSleep) {
+                getDreamingPlayer(player).debug = true;
+                flagForDeletion.add(player);
+            }
+        }
+        for (ServerPlayer player : flagForDeletion)
+            flaggedPlayerMap.remove(player);
     }
 
     List<DreamType> instanceList = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get().stream().toList();
@@ -164,6 +186,17 @@ public class DreamManager extends SavedData {
         if (player.isLocalPlayer() && ClientDreamRenderer.getInstance().dreamShouldRender())
             return ClientDreamRenderer.getInstance().getDreamClientInstance();
         return null;
+    }
+
+    public static boolean getPlayerShouldDream(Player player) {
+        boolean additionalCondition = player.isSleepingLongEnough()
+            && (getAmbiguousDreamTypeInstance(player) == null); // hasnt entered dream yet
+        if (player instanceof ServerPlayer serverPlayer)
+            return DreamManager.getOrDefault(serverPlayer.getServer()).playerShouldDream(serverPlayer)
+                && additionalCondition;
+        if (player.isLocalPlayer()) return (ClientDreamRenderer.getInstance().getDream() != null)
+            && additionalCondition;
+        return false;
     }
 
     public static DreamType getAmbiguousDreamType(Player player) {

@@ -586,6 +586,8 @@ public class MiscellaneousEvents {
             RegeneratingPotsData.getOrDefault(serverLevel).tick();
             SunDog.getOrDefault(serverLevel).tick();
             InvertedBellServerHandler.get(serverLevel).tick(serverLevel);
+            DreamManager.getOrDefault(serverLevel.getServer())
+                .updateFlaggedPlayers();
         } else {
             SunDog.Client.INSTANCE.tick();
             ClientDreamRenderer.getInstance().tick();

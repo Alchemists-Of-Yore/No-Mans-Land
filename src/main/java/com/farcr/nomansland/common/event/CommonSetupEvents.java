@@ -30,6 +30,7 @@ import com.farcr.nomansland.common.networking.ClientboundSunDogStatePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.dream.ServerboundDreamAcknowledgePacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.networking.*;
@@ -300,6 +301,7 @@ public class CommonSetupEvents {
         /* Dream Packets */
         registrar.playToClient(ClientboundDreamPacket.TYPE, ClientboundDreamPacket.STREAM_CODEC, ClientboundDreamPacket::handleData);
         registrar.playToClient(ClientboundDimensionSyncPacket.TYPE, ClientboundDimensionSyncPacket.STREAM_CODEC, ClientboundDimensionSyncPacket::handleData);
+        registrar.playToServer(ServerboundDreamAcknowledgePacket.TYPE, ServerboundDreamAcknowledgePacket.STREAM_CODEC, ServerboundDreamAcknowledgePacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
         registrar.playToClient(ClientboundZoomEffectPacket.TYPE, ClientboundZoomEffectPacket.STREAM_CODEC, ClientboundZoomEffectPacket::handleData);

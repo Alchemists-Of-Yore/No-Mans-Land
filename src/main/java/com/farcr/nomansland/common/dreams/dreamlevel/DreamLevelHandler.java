@@ -42,10 +42,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 public class DreamLevelHandler implements AutoCloseable {
@@ -115,6 +112,11 @@ public class DreamLevelHandler implements AutoCloseable {
         ));
     }
 
+    public static final List<ServerPlayer> dirtyClients = new ArrayList<>();
+    public static boolean playerIsUpdated(ServerPlayer player) {
+        return !dirtyClients.contains(player);
+    }
+
     public static DreamServerLevel getDreamLevel(MinecraftServer server, DreamType dreamType, ServerPlayer serverPlayer) {
         ResourceLocation dreamLocation = NMLDreamTypes.DREAM_TYPES_REGISTRY.getRegistry().get().getKey(dreamType);
         ResourceKey<Level> dreamKey = resourceKey(Registries.DIMENSION, dreamLocation, serverPlayer);
@@ -156,6 +158,7 @@ public class DreamLevelHandler implements AutoCloseable {
             // REMEMBER to tell players what the new dimension set is
             PacketDistributor.sendToAllPlayers(
                 new ClientboundDimensionSyncPacket(server.levelKeys()));
+            dirtyClients.addAll(server.getPlayerList().getPlayers());
         }
         return (DreamServerLevel) levelList.get(dreamKey);
     }

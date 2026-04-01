@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.registry.NMLDamageTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
@@ -30,6 +31,12 @@ public abstract class PlayerMixin {
     }
 
     @Unique private Player nml$Self = ((Player) (Object) this);
+
+    @Inject(method = "stopSleepInBed", at = @At("HEAD"), cancellable = true)
+    private void nml$stopSleeping(CallbackInfo ci) {
+        if (DreamManager.getPlayerShouldDream(nml$Self))
+            ci.cancel();
+    }
 
     @Inject(method = "isImmobile", at = @At("RETURN"), cancellable = true)
     private void nml$playerImmobile(CallbackInfoReturnable<Boolean> cir) {
