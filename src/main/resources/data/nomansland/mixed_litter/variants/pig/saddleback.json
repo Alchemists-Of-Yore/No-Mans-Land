@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_pigs",
   "arguments": {
-    "texture": "nomansland:mob_variants/pig/pig_saddleback.png",
-    "baby_texture": "nomansland:mob_variants/pig/pig_saddleback_baby.png"
+    "texture": "nomansland:mob_variants/pig/pig_saddleback",
+    "baby_texture": "nomansland:mob_variants/pig/pig_saddleback_baby"
   }
 }

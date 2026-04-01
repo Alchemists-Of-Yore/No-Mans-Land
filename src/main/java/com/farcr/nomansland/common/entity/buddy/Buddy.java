@@ -76,7 +76,7 @@ public class Buddy extends PathfinderMob implements Npc {
     }
 
     public static final List<String> COPY_ON_RESPAWN = List.of(
-        "CustomName"
+        "CustomName", "neoforge:attachments"
     );
 
     public void prepareAnchor(BlockPos anchorPosition) {
@@ -262,9 +262,9 @@ public class Buddy extends PathfinderMob implements Npc {
     public static void setupAnimationHappy(
         Entity entity, ModelPart head, ModelPart hat,
         ModelPart leftArm, ModelPart rightArm,
-        ModelPart leftLeg, ModelPart rightLeg
+        ModelPart leftLeg, ModelPart rightLeg,
+        float time
     ) {
-        double time = System.currentTimeMillis() / 100D;
 
         head.yRot = (float) Math.sin(time * 0.83D);
         head.xRot = (float) Math.sin(time) * 0.8F;

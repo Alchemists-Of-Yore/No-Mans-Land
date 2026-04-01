@@ -1,11 +1,12 @@
 package com.farcr.nomansland.common.world.structure.processor;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructureProcessorTypes;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -24,10 +25,10 @@ public class PotFeatureProcessor extends StructureProcessor {
 
     public static final MapCodec<PotFeatureProcessor> CODEC = MapCodec.unit(PotFeatureProcessor::new);
 
-    private static final ResourceKey<ConfiguredFeature<?, ?>> TREASURE = ResourceKey.create(Registries.CONFIGURED_FEATURE, ResourceLocation.fromNamespaceAndPath("nomansland", "pots/pots_alchemist_treasure"));
-    private static final ResourceKey<ConfiguredFeature<?, ?>> POTIONS = ResourceKey.create(Registries.CONFIGURED_FEATURE, ResourceLocation.fromNamespaceAndPath("nomansland", "pots/pots_alchemist_potions"));
-    private static final ResourceKey<ConfiguredFeature<?, ?>> ALCHEMY = ResourceKey.create(Registries.CONFIGURED_FEATURE, ResourceLocation.fromNamespaceAndPath("nomansland", "pots/pots_alchemist_alchemy"));
-    private static final ResourceKey<ConfiguredFeature<?, ?>> ARTISANSHIP = ResourceKey.create(Registries.CONFIGURED_FEATURE, ResourceLocation.fromNamespaceAndPath("nomansland", "pots/pots_alchemist_artisanship"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> TREASURE = ResourceKey.create(Registries.CONFIGURED_FEATURE, NoMansLand.location("pots/pots_alchemist_treasure"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> POTIONS = ResourceKey.create(Registries.CONFIGURED_FEATURE, NoMansLand.location("pots/pots_alchemist_potions"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> ALCHEMY = ResourceKey.create(Registries.CONFIGURED_FEATURE, NoMansLand.location("pots/pots_alchemist_alchemy"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> ARTISANSHIP = ResourceKey.create(Registries.CONFIGURED_FEATURE, NoMansLand.location("pots/pots_alchemist_artisanship"));
 
     @Override
     protected StructureProcessorType<?> getType() {
@@ -42,8 +43,16 @@ public class PotFeatureProcessor extends StructureProcessor {
             for (StructureTemplate.StructureBlockInfo info : processedBlockInfos) {
                 ResourceKey<ConfiguredFeature<?, ?>> featureKey = getFeatureForConcrete(info.state());
                 if (featureKey != null) {
+                    BlockState replacement = Blocks.AIR.defaultBlockState();
+                    for (Direction direction : Direction.values()) {
+                        if (level.getBlockState(info.pos().relative(direction)).is(Blocks.WATER)) {
+                            replacement = Blocks.WATER.defaultBlockState();
+                            break;
+                        }
+                    }
+
                     result.remove(info);
-                    result.add(new StructureTemplate.StructureBlockInfo(info.pos(), Blocks.AIR.defaultBlockState(), null));
+                    result.add(new StructureTemplate.StructureBlockInfo(info.pos(), replacement, null));
 
                     worldGenLevel.registryAccess()
                             .registryOrThrow(Registries.CONFIGURED_FEATURE)

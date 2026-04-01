@@ -38,13 +38,13 @@ public class BuddyBehavior extends Behavior<Buddy> {
         greetTime.remove(entity);
     }
 
-    private Map<LivingEntity, Integer> stareTime = new HashMap<>();
+    private final Map<LivingEntity, Integer> stareTime = new HashMap<>();
     public boolean boredOfStaring(LivingEntity player) {
         stareTime.put(player, stareTime.getOrDefault(player, 0) + 1);
         return (stareTime.get(player) < 30) && (greetTime.getOrDefault(player, 0) <= 0);
     }
 
-    private Map<LivingEntity, Integer> greetTime = new HashMap<>();
+    private final Map<LivingEntity, Integer> greetTime = new HashMap<>();
     private int crouchTimer = 0;
     public void mimicPlayerGreeting(LivingEntity player, Buddy buddy) {
         int curGreetTime = greetTime.getOrDefault(player, 0);

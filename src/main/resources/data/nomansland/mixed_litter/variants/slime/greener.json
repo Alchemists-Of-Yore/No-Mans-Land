@@ -2,6 +2,6 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:slime",
   "arguments": {
-    "texture": "nomansland:mob_variants/slime/slime_greener.png"
+    "texture": "nomansland:mob_variants/slime/slime_greener"
   }
 }

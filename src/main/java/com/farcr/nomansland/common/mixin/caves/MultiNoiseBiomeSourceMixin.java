@@ -20,7 +20,8 @@ public abstract class MultiNoiseBiomeSourceMixin extends BiomeSource {
                 super.possibleBiomes().stream(),
                 Stream.of(
                         NMLBiomes.CAVES_HOLDER,
-                        NMLBiomes.CAVE_DEPTHS_HOLDER
+                        NMLBiomes.CAVE_DEPTHS_HOLDER,
+                        NMLBiomes.ALCHEMIST_RUINS_HOLDER
                 )).collect(Collectors.toSet());
     }
 }

@@ -360,8 +360,11 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            if (!pot.wokenUp) {
+                Containers.dropContents(level, pos, pot);
+            }
+
             if (pot.skipBreakEffects) {
-                pot.dropStoredItem(level, pos);
                 if (pot.hasModifier(PotModifier.WAXED)) {
                     pot.removeModifier(PotModifier.WAXED);
                     pot.setChanged();
@@ -369,7 +372,6 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     Block.popResource(level, pos, new ItemStack(Items.HONEYCOMB));
                 }
             } else {
-                Containers.dropContents(level, pos, pot);
                 if (!level.isClientSide) {
                     if (!pot.getStoredPotion().equals(PotionContents.EMPTY)) {
                         spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());

@@ -9,7 +9,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/pig/pig_wild_black.png",
-    "baby_texture": "nomansland:mob_variants/pig/pig_wild_black_baby.png"
+    "texture": "nomansland:mob_variants/pig/pig_wild_black",
+    "baby_texture": "nomansland:mob_variants/pig/pig_wild_black_baby"
   }
 }

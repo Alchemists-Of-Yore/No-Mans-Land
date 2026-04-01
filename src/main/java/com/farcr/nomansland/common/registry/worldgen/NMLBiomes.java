@@ -50,9 +50,11 @@ public class NMLBiomes {
     //Underground
     public static final ResourceKey<Biome> CAVES = createKey("caves");
     public static final ResourceKey<Biome> CAVE_DEPTHS = createKey("cave_depths");
+    public static final ResourceKey<Biome> ALCHEMIST_RUINS = createKey("alchemist_ruins");
 
     public static Holder<Biome> CAVES_HOLDER;
     public static Holder<Biome> CAVE_DEPTHS_HOLDER;
+    public static Holder<Biome> ALCHEMIST_RUINS_HOLDER;
 
     private static ResourceKey<Biome> createKey(String name) {
         ResourceKey<Biome> biome = ResourceKey.create(Registries.BIOME, NoMansLand.location(name));

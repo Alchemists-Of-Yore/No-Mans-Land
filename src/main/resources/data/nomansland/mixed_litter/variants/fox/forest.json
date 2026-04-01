@@ -9,9 +9,9 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/fox/forest_fox.png",
+    "texture": "nomansland:mob_variants/fox/forest_fox",
     "replacements": {
-      "fox/fox_sleep.png": "nomansland:mob_variants/fox/forest_fox_sleep.png"
+      "fox/fox_sleep": "nomansland:mob_variants/fox/forest_fox_sleep"
     }
   }
 }

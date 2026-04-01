@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_chicken",
   "arguments": {
-    "texture": "nomansland:mob_variants/chicken/chicken_beige.png",
-    "baby_texture": "nomansland:mob_variants/chicken/chicken_baby.png"
+    "texture": "nomansland:mob_variants/chicken/chicken_beige",
+    "baby_texture": "nomansland:mob_variants/chicken/chicken_baby"
   }
 }

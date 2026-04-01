@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_cows",
   "arguments": {
-    "texture": "nomansland:mob_variants/cow/cow_white.png",
-    "baby_texture": "nomansland:mob_variants/cow/cow_white_baby.png"
+    "texture": "nomansland:mob_variants/cow/cow_white",
+    "baby_texture": "nomansland:mob_variants/cow/cow_white_baby"
   }
 }

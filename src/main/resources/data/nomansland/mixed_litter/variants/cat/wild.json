@@ -9,6 +9,6 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/cat/wild.png"
+    "texture": "nomansland:mob_variants/cat/wild"
   }
 }

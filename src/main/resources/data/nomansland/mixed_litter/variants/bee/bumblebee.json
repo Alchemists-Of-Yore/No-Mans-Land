@@ -9,12 +9,12 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/bee/bumblebee.png",
+    "texture": "nomansland:mob_variants/bee/bumblebee",
     "replacements": {
-      "bee/bee_angry.png": "nomansland:mob_variants/bee/bumblebee_angry.png",
-      "bee/bee_nectar.png": "nomansland:mob_variants/bee/bumblebee_nectar.png",
-      "bee/bee_angry_nectar.png": "nomansland:mob_variants/bee/bumblebee_angry_nectar.png",
-      "bee/bee_stinger.png": "nomansland:mob_variants/bee/bumblebee_stinger.png"
+      "bee/bee_angry": "nomansland:mob_variants/bee/bumblebee_angry",
+      "bee/bee_nectar": "nomansland:mob_variants/bee/bumblebee_nectar",
+      "bee/bee_angry_nectar": "nomansland:mob_variants/bee/bumblebee_angry_nectar",
+      "bee/bee_stinger": "nomansland:mob_variants/bee/bumblebee_stinger"
     }
   }
 }

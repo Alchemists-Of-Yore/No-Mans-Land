@@ -88,7 +88,8 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             Buddy.setupAnimationHappy(
                 entity, head, hat,
                 leftArm, rightArm,
-                leftLeg, rightLeg
+                leftLeg, rightLeg,
+                    ageInTicks
             );
         }
     }

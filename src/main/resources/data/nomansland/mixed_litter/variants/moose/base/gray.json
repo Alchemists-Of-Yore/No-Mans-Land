@@ -2,6 +2,6 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:moose",
   "arguments": {
-    "texture": "nomansland:moose/moose_gray.png"
+    "texture": "nomansland:moose/moose_gray"
   }
 }

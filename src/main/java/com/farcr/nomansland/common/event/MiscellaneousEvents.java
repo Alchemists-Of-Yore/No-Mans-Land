@@ -553,6 +553,7 @@ public class MiscellaneousEvents {
     public static void onServerStart(ServerAboutToStartEvent event) {
         NMLBiomes.CAVES_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.CAVES);
         NMLBiomes.CAVE_DEPTHS_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.CAVE_DEPTHS);
+        NMLBiomes.ALCHEMIST_RUINS_HOLDER = event.getServer().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(NMLBiomes.ALCHEMIST_RUINS);
     }
 
     @SubscribeEvent

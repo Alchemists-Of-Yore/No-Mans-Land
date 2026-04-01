@@ -59,7 +59,6 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
     }
 
     private CompletableFuture<ChunkPos> generateMeetingPointPosition(StructureSet structureSet, MeetingPointStructurePlacement placement) {
-        Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
         CompletableFuture<ChunkPos> task;
         HolderSet<Biome> preferredBiomes = placement.preferredBiomes;
         RandomSource random = RandomSource.create();

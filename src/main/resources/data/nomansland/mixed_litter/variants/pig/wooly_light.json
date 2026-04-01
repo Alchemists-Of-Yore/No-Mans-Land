@@ -9,7 +9,7 @@
     }
   },
   "arguments": {
-    "texture": "nomansland:mob_variants/pig/pig_wooly_light.png",
-    "baby_texture": "nomansland:mob_variants/pig/pig_wooly_light_baby.png"
+    "texture": "nomansland:mob_variants/pig/pig_wooly_light",
+    "baby_texture": "nomansland:mob_variants/pig/pig_wooly_light_baby"
   }
 }

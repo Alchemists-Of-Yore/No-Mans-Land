@@ -228,36 +228,39 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         if (friendMoon.getState() == FriendMoonState.OFFERING) {
             OfferingContext inspectionContext = blockEntity.inspectionContext;
             if (inspectionContext != null && inspectionContext.entity() != null) {
-                boolean specialOffering = FriendMoon.isSpecialInteraction(inspectionContext);
-
                 Entity entity = inspectionContext.entity();
-                Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
-                entity.setDeltaMovement(new Vec3(0, 0, 0));
+                if (!entity.isAlive()) {
+                    blockEntity.setInspectionContext(null, friendMoon);
+                    friendMoon.abortAscension();
+                } else {
+                    boolean specialOffering = FriendMoon.isSpecialInteraction(inspectionContext);
 
-                Vec3 approachSpeed = newPosition.subtract(
-                    entity.position()).multiply(new Vec3(new Vector3f(1 / 15f)));
+                    Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
+                    entity.setDeltaMovement(new Vec3(0, 0, 0));
 
-                entity.addDeltaMovement(approachSpeed);
-                if (approachSpeed.lengthSqr() <= 0.001f) {
-                    int raiseDistance = specialOffering ? 4 : 2;
-                    Vec3 raisedPosition = pos.above(raiseDistance).getCenter();
-                    Vec3 dist = raisedPosition.subtract(entity.position());
+                    Vec3 approachSpeed = newPosition.subtract(
+                        entity.position()).multiply(new Vec3(new Vector3f(1 / 15f)));
 
-                    float speed = 1 / 20f;
-                    entity.setDeltaMovement(
-                        dist.multiply(new Vec3(new Vector3f(speed))));
+                    entity.addDeltaMovement(approachSpeed);
+                    if (approachSpeed.lengthSqr() <= 0.001f) {
+                        int raiseDistance = specialOffering ? 4 : 2;
+                        Vec3 raisedPosition = pos.above(raiseDistance).getCenter();
+                        Vec3 dist = raisedPosition.subtract(entity.position());
 
-                    if (dist.lengthSqr() <= 0.1f) {
-                        if (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) {
-                            int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
-                                .dispatch(level, friendMoon.getFriendshipPlayers());
-                            friendMoon.applyDialogueLength(dialogueLength - 80);
-                        }
-                        if (specialOffering) {
-                            if (friendMoon.specialInteraction(level, entity))
-                                return;
-                            else blockEntity.setInspectionContext(null, friendMoon);
-                            return;
+                        float speed = 1 / 20f;
+                        entity.setDeltaMovement(
+                            dist.multiply(new Vec3(new Vector3f(speed))));
+
+                        if (dist.lengthSqr() <= 0.1f) {
+                            if (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) {
+                                int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
+                                    .dispatch(level, friendMoon.getFriendshipPlayers());
+                                friendMoon.applyDialogueLength(dialogueLength - 80);
+                            }
+                            if (specialOffering) {
+                                if (!friendMoon.specialInteraction(level, entity))
+                                    blockEntity.setInspectionContext(null, friendMoon);
+                            }
                         }
                     }
                 }
