@@ -8,8 +8,12 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "add": false,
-              "function": "minecraft:set_count"
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1.0,
+                "max": 4.0
+              }
             }
           ],
           "name": "minecraft:ender_pearl",

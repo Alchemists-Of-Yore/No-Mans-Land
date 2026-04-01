@@ -1,0 +1,15 @@
+{
+    "type": "default",
+    "styles": {
+        "warp_worn":
+        [
+            {
+                "item": "nomansland:ancient_bronze_mask",
+                "assets": {
+                    "default": "nomansland:ancient_bronze_mask_warpworn",
+                    "armor": "nomansland:textures/armor/ancient_bronze_warpworn.png"
+                }
+            }
+        ]
+    }
+}

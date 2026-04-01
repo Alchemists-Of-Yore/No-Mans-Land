@@ -15,7 +15,8 @@ public enum Mods {
     BLUEPRINT,
     NIRVANA,
     EVERYCOMP,
-    SNOWREALMAGIC;
+    SNOWREALMAGIC,
+    VANITY;
 
     private final String id;
 
