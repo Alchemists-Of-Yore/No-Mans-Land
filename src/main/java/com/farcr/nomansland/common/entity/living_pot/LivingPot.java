@@ -143,11 +143,6 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
     }
 
     @Override
-    public boolean canBreatheUnderwater() {
-        return true;
-    }
-
-    @Override
     protected void registerGoals() {
         goalSelector.addGoal(1, new LivingPotFindHelpGoal(this));
         goalSelector.addGoal(1, new LivingPotDashGoal(this));
