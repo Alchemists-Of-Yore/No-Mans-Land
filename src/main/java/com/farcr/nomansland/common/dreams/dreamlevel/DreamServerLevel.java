@@ -82,6 +82,7 @@ public class DreamServerLevel extends ServerLevel {
 
             if (success) manager.setDreamExperienced(dreamType, player);
             dreamType.onDreamEnd(player, success);
+
             // this will get rid of the transition so I moved it to the next time the player sleeps
 //            PacketDistributor.sendToPlayer(player,
 //                new ClientboundDreamPacket(Optional.empty()));

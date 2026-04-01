@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
@@ -20,9 +21,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -35,10 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public class MoonlightBasinBlockEntity extends BlockEntity {
@@ -192,14 +190,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         return litCandles;
     }
 
+    private HashMap<UUID, Boolean> quickSparkHash = new HashMap<>();
     public static void tick(Level level, BlockPos pos, BlockState state, MoonlightBasinBlockEntity blockEntity) {
         @Nullable FriendMoon friendMoon = (!level.isClientSide() ? FriendMoon.getOrDefault(level.getServer().overworld()) : blockEntity.clientMoon);
         if (friendMoon == null)
             return;
 
+        AABB aabb = new AABB(pos).inflate(FRIENDSHIP_MAX_RANGE);
         if (!level.isClientSide()) {
             if (FriendMoon.isNightTime(level)) {
-                AABB aabb = new AABB(pos).inflate(FRIENDSHIP_MAX_RANGE);
                 for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, aabb))
                     FriendMoon.grantPlayerFriendship(friendMoon, serverPlayer, pos);
                 if (friendMoon.shouldPulseUpdate())
@@ -289,6 +288,30 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     && blockState.getBlock() instanceof MoonlightCandleBlock candleBlock)
                         candleBlock.lightSpark(blockState, level, blockPos, level.getRandom());
                 });
+            }
+        } else if (friendMoon.getState() != FriendMoonState.OFFERING) {
+            // Oof, it's fine with caching I guess
+            for (Entity entity : level.getEntitiesOfClass(LivingEntity.class, aabb, (entity) -> {
+                UUID uuid = entity.getUUID();
+                if (!blockEntity.quickSparkHash.containsKey(uuid)) {
+                    ArrayList<DialoguePool> list = new ArrayList<>();
+                    DialogueUtil.appendTags(
+                        entity.getType(), level.registryAccess(), Registries.ENTITY_TYPE,
+                        MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP,
+                        MoonlightOfferingConditions.EntityOfferingConditional.KEY_MAP,
+                        list
+                    );
+                    blockEntity.quickSparkHash.put(uuid, !list.isEmpty());
+                }
+                return blockEntity.quickSparkHash.get(uuid);
+            })) {
+                if (level.getRandom().nextFloat() <= 0.25) {
+                    level.addParticle(
+                        NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                        entity.getX(), entity.getY() + 0.5f, entity.getZ(),
+                        0f, 0f, 0f
+                    );
+                }
             }
         }
     }

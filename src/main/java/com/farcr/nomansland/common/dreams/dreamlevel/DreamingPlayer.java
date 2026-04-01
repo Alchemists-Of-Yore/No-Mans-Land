@@ -72,6 +72,10 @@ public class DreamingPlayer extends Mob {
 
     public Optional<Player> discardTether() {
         if (this.level() instanceof ServerLevel level) {
+            this.getSleepingPos().ifPresent(
+                (sleepingPos) -> level.getBlockState(sleepingPos)
+                    .setBedOccupied(level, sleepingPos, this, false)
+            );
             if (getTetheredPlayer() == null)
                 return Optional.empty();
             Player player = getTetheredPlayer();
