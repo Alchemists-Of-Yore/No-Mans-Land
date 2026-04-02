@@ -89,8 +89,8 @@ public class NMLBlocks {
             () -> new PlatformBlock(Block.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS).sound(SoundType.CHERRY_WOOD)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<PlatformStairsBlock> WOODEN_PLATFORM_STAIRS = register("wooden_platform_stairs",
             () -> new PlatformStairsBlock(Block.Properties.ofFullCopy(NMLBlocks.WOODEN_PLATFORM.get())), new BlockProperties(new SelfBlockLootType(), false));
-    public static final BlockDefinition<DoorBlock> CRUDE_DOOR = register("crude_door",
-            () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new DoorBlockLootType(), false));
+    public static final BlockDefinition<CrudeDoorBlock> CRUDE_DOOR = register("crude_door",
+            () -> new CrudeDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion().pushReaction(PushReaction.DESTROY)), new BlockProperties(new DoorBlockLootType(), false));
     public static final BlockDefinition<TrapDoorBlock> CRUDE_TRAPDOOR = register("crude_trapdoor",
             () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new SelfBlockLootType(), false));
 
