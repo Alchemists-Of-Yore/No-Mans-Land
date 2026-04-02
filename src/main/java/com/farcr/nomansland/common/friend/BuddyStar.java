@@ -9,8 +9,6 @@ public record BuddyStar(
     float hueOffset,
     float saturationOffset,
     float lightnessOffset,
-    float angle,
-    float distance,
     long seed
 ) {
     public static final Codec<BuddyStar> CODEC = RecordCodecBuilder.create(instance ->
@@ -19,17 +17,16 @@ public record BuddyStar(
             Codec.FLOAT.fieldOf("hue_offset").forGetter(BuddyStar::hueOffset),
             Codec.FLOAT.fieldOf("saturation_offset").forGetter(BuddyStar::saturationOffset),
             Codec.FLOAT.fieldOf("lightness_offset").forGetter(BuddyStar::lightnessOffset),
-            Codec.FLOAT.fieldOf("angle").forGetter(BuddyStar::angle),
-            Codec.FLOAT.fieldOf("distance").forGetter(BuddyStar::distance),
             Codec.LONG.fieldOf("seed").forGetter(BuddyStar::seed)
         ).apply(instance, BuddyStar::new)
     );
 
     public static final float MIN_DISTANCE = 12f;
-    public static final float BASE_RANGE = 8f;
-    public static final float DISTANCE_PER_STAR = 0.3f;
+    public static final float MIN_RANGE = 2f;
+    public static final float MAX_RANGE = 18f;
+    public static final float RANGE_PER_STAR = 0.5f;
 
-    public static BuddyStar fromVariant(String variantName, RandomSource random, int existingStarCount) {
+    public static BuddyStar fromVariant(String variantName, RandomSource random) {
         BuddyStarColor color = BuddyStarColor.fromVariantName(variantName);
 
         float variation = 0.05f;
@@ -37,11 +34,19 @@ public record BuddyStar(
         float sOff = (random.nextFloat() * 2 - 1) * variation;
         float lOff = (random.nextFloat() * 2 - 1) * variation;
 
-        float angle = random.nextFloat() * 360f;
-        float minDist = MIN_DISTANCE + existingStarCount * DISTANCE_PER_STAR;
-        float distance = minDist + random.nextFloat() * BASE_RANGE;
+        return new BuddyStar(color, hOff, sOff, lOff, random.nextLong());
+    }
 
-        return new BuddyStar(color, hOff, sOff, lOff, angle, distance, random.nextLong());
+    public float getAngle() {
+        RandomSource r = RandomSource.create(seed);
+        return r.nextFloat() * 360f;
+    }
+
+    public float getDistance(int index) {
+        RandomSource r = RandomSource.create(seed);
+        r.nextFloat();
+        float range = Math.min(MIN_RANGE + index * RANGE_PER_STAR, MAX_RANGE);
+        return MIN_DISTANCE + r.nextFloat() * range;
     }
 
     public float getFlickerAlpha(long timeMs) {

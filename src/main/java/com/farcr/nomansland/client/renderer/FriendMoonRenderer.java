@@ -636,7 +636,6 @@ public class FriendMoonRenderer implements AutoCloseable {
 
     private static final ResourceLocation BUDDY_STAR_TEXTURE = NoMansLand.location("textures/misc/buddy_star.png");
     public static final float STAR_SIZE = 1.0f;
-    public static final float STAR_DISTANCE_FROM_MOON = 12f;
 
     public void renderBuddyStars(Tesselator tesselator, Matrix4f moonMatrix, float opacity) {
         if (clientBlockPos == null || opacity <= 0)
@@ -662,12 +661,12 @@ public class FriendMoonRenderer implements AutoCloseable {
         float[] prevColor = RenderSystem.getShaderColor();
         for (int i = 0; i < stars.size(); i++) {
             BuddyStar star = stars.get(i);
-            float angleRad = (float) Math.toRadians(star.angle());
-            float distRad = (float) Math.toRadians(star.distance());
+            float angleRad = (float) Math.toRadians(star.getAngle());
+            float dist = star.getDistance(i);
 
-            float x = (float) (Math.sin(angleRad) * Math.cos(distRad)) * STAR_DISTANCE_FROM_MOON;
-            float y = MOON_DISTANCE + (float) (Math.sin(distRad)) * STAR_DISTANCE_FROM_MOON;
-            float z = (float) (Math.cos(angleRad) * Math.cos(distRad)) * STAR_DISTANCE_FROM_MOON;
+            float x = (float) (Math.sin(angleRad)) * dist;
+            float y = MOON_DISTANCE;
+            float z = (float) (Math.cos(angleRad)) * dist;
 
             float[] rgb = star.getRgb();
             float flicker = star.getFlickerAlpha(timeMs);

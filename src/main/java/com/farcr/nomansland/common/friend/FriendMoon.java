@@ -348,7 +348,7 @@ public class FriendMoon extends SavedData {
             return;
 
         String variantName = buddy.getVariantName();
-        BuddyStar star = BuddyStar.fromVariant(variantName, level.getRandom(), buddyStars.size());
+        BuddyStar star = BuddyStar.fromVariant(variantName, level.getRandom());
         addBuddyStar(star);
 
         rewardDelayTicks = ASCENSION_REWARD_DELAY;
