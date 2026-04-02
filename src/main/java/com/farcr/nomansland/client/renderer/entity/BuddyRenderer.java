@@ -34,7 +34,7 @@ public class BuddyRenderer extends HumanoidMobRenderer<Buddy, BuddyModel<Buddy>>
             if (alpha <= 0) return;
             buddyModel.ascensionAlpha = alpha;
         } else {
-            buddyModel.ascensionAlpha = 1.0f;
+            buddyModel.ascensionAlpha = 1;
         }
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
@@ -49,9 +49,9 @@ public class BuddyRenderer extends HumanoidMobRenderer<Buddy, BuddyModel<Buddy>>
     private float getAscensionAlpha(Buddy buddy) {
         int ticks = buddy.getAscensionTicks();
         if (ticks < FriendMoon.ASCENSION_TRANSPARENCY_START)
-            return 1.0f;
+            return 1;
         float progress = (float) (ticks - FriendMoon.ASCENSION_TRANSPARENCY_START)
             / (FriendMoon.ASCENSION_DURATION - FriendMoon.ASCENSION_TRANSPARENCY_START);
-        return Mth.clamp(1.0f - progress, 0.0f, 1.0f);
+        return Mth.clamp(1 - progress, 0, 1);
     }
 }

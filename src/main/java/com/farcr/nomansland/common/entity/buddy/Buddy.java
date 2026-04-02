@@ -46,9 +46,6 @@ public class Buddy extends PathfinderMob implements Npc {
 
     private static final EntityDataAccessor<Integer> DATA_ASCENSION_TICKS =
         SynchedEntityData.defineId(Buddy.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_HEAD_TILT =
-        SynchedEntityData.defineId(Buddy.class, EntityDataSerializers.BOOLEAN);
-
     private Registry<BuddyFood> buddyFoods;
     private void setBuddyFood(Registry<BuddyFood> registry) {
         this.buddyFoods = registry;
@@ -65,7 +62,6 @@ public class Buddy extends PathfinderMob implements Npc {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_ASCENSION_TICKS, -1);
-        builder.define(DATA_HEAD_TILT, false);
     }
 
     private static final int SUSPICIOUS_STEW_MULTIPLIER = 10;
@@ -96,22 +92,8 @@ public class Buddy extends PathfinderMob implements Npc {
         return getAscensionTicks() >= 0;
     }
 
-    public boolean isHeadTilted() {
-        return this.entityData.get(DATA_HEAD_TILT);
-    }
-
-    public void setHeadTilted(boolean tilted) {
-        this.entityData.set(DATA_HEAD_TILT, tilted);
-    }
-
-    private float headTiltAmount = 0;
-    public float getHeadTiltAmount() {
-        return headTiltAmount;
-    }
-
     LivingEntity followTarget;
     int followTimer = 0;
-    int headTiltTimer = 0;
 
     public Block getMushroomBlock() {
         SetBuddyMushroom action = (SetBuddyMushroom) VariantUtil.findAction(this, SetBuddyMushroom.class);
@@ -178,9 +160,6 @@ public class Buddy extends PathfinderMob implements Npc {
 
         if (level().isClientSide) {
             crouchTimer = Math.max(0, crouchTimer - 1);
-            float target = isHeadTilted() ? 0.3F : 0;
-            headTiltAmount += (target - headTiltAmount) * 0.15F;
-            if (Math.abs(headTiltAmount) < 0.01F) headTiltAmount = 0;
         }
     }
 

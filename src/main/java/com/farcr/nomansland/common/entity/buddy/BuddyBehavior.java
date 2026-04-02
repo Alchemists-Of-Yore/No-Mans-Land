@@ -79,7 +79,6 @@ public class BuddyBehavior extends Behavior<Buddy> {
             if (playerFocus.isPresent()) {
                 mimicPlayerGreeting(playerFocus.get(), buddy);
                 buddy.getLookControl().setLookAt(playerFocus.get().getEyePosition(gameTime));
-                buddy.setHeadTilted(false);
                 return;
             }
         }
@@ -96,7 +95,6 @@ public class BuddyBehavior extends Behavior<Buddy> {
                 buddy.followTarget = null;
                 buddy.followTimer = 0;
             }
-            buddy.setHeadTilted(false);
             return;
         }
 
@@ -106,27 +104,8 @@ public class BuddyBehavior extends Behavior<Buddy> {
         Optional<LivingEntity> staringPlayer = entities.findClosest(player -> staringAt(player, buddy) && !boredOfStaring(player));
         if (staringPlayer.isPresent()) {
             buddy.getLookControl().setLookAt(staringPlayer.get().getEyePosition(gameTime));
-            buddy.setHeadTilted(false);
-            buddy.headTiltTimer = 0;
             return;
         }
-
-        Optional<LivingEntity> unwatchingPlayer = entities.findClosest(
-            player -> player instanceof Player && !staringAt(player, buddy) && buddy.distanceTo(player) < 10
-        );
-        if (unwatchingPlayer.isPresent()) {
-            if (buddy.headTiltTimer <= 0 && buddy.getRandom().nextInt(150) == 0)
-                buddy.headTiltTimer = 40 + buddy.getRandom().nextInt(40);
-            if (buddy.headTiltTimer > 0) {
-                buddy.headTiltTimer--;
-                buddy.getLookControl().setLookAt(unwatchingPlayer.get().getEyePosition(gameTime));
-                buddy.setHeadTilted(true);
-                return;
-            }
-        } else {
-            buddy.headTiltTimer = 0;
-        }
-        buddy.setHeadTilted(false);
 
         for (var entry : stareTime.entrySet()) {
             if (entry.getValue() >= 30 && entry.getKey().isAlive() && buddy.getRandom().nextInt(3) == 0) {
@@ -153,11 +132,8 @@ public class BuddyBehavior extends Behavior<Buddy> {
                     buddy.getY() + Math.sin(moonAngle) * 100,
                     buddy.getZ()
                 );
-                buddy.setHeadTilted(false);
                 return;
             }
         }
-
-        buddy.setHeadTilted(false);
     }
 }
