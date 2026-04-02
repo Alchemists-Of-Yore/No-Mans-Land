@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "coarse_bricks",
+  "key": {
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    " S ",
+    "###",
+    "###"
+  ],
+  "result": {
+    "id": "nomansland:crude_trapdoor"
+  },
+  "show_notification": true
+}
