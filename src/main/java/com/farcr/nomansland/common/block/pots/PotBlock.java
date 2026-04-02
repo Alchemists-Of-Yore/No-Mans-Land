@@ -316,6 +316,11 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         return false;
     }
 
+    @Override
+    protected float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+        return 1;
+    }
+
     private static final VoxelShape SMALL_FALLBACK = Shapes.box(2.0 / 16, 0, 2.0 / 16, 14.0 / 16, 1, 14.0 / 16);
     private static final VoxelShape LARGE_FALLBACK = Shapes.or(
             Shapes.box(0, 2.0 / 16, 0, 1, 21.0 / 16, 1),
