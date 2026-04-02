@@ -137,14 +137,4 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
             cir.setReturnValue(true);
         }
     }
-
-    @WrapMethod(method = "setSprinting")
-    private void nml$setSprintingHackyFix(boolean sprinting, Operation<Void> original) {
-        if (nml$Self instanceof Player player) {
-            DreamType dreamType = DreamManager.getAmbiguousDreamType(player);
-            if (dreamType != null && !dreamType.canSprint && !player.isCreative())
-                original.call(false);
-        }
-        original.call(sprinting);
-    }
 }

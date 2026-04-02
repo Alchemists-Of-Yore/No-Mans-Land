@@ -54,11 +54,4 @@ public abstract class PlayerMixin {
     private void nml$cancelAction(Level level, BlockPos pos, GameType gameMode, CallbackInfoReturnable<Boolean> cir) {
         if (DreamManager.getAmbiguousDreamType(nml$Self) != null) cir.setReturnValue(true);
     }
-
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void nml$noSprint(CallbackInfo ci) {
-        DreamType dreamType = DreamManager.getAmbiguousDreamType(nml$Self);
-        if (dreamType != null && !dreamType.canSprint && !nml$Self.isCreative())
-            nml$Self.setSprinting(false);
-    }
 }
