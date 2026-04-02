@@ -72,15 +72,13 @@ public class DreamingPlayer extends Mob {
 
     public Optional<Player> discardTether() {
         if (this.level() instanceof ServerLevel level) {
-            this.getSleepingPos().ifPresent(
-                (sleepingPos) -> level.getBlockState(sleepingPos)
-                    .setBedOccupied(level, sleepingPos, this, false)
-            );
             if (getTetheredPlayer() == null)
                 return Optional.empty();
             Player player = getTetheredPlayer();
             this.remove(RemovalReason.DISCARDED);
             player.teleportTo(level, this.getX(), this.getY(), this.getZ(), Set.of(), player.getXRot(), player.getYRot());
+            this.getSleepingPos().ifPresent(player::setSleepingPos);
+            player.stopSleeping();
             // Recalculate player since old player doesn't exist anymore
             return Optional.ofNullable(getTetheredPlayer());
         }
@@ -131,6 +129,17 @@ public class DreamingPlayer extends Mob {
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         return InteractionResult.FAIL;
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        if (level() != null && level() instanceof ServerLevel level) {
+            this.getSleepingPos().ifPresent(
+                (sleepingPos) -> level.getBlockState(sleepingPos)
+                    .setBedOccupied(level, sleepingPos, this, false)
+            );
+        }
+        super.remove(reason);
     }
 
     @Override

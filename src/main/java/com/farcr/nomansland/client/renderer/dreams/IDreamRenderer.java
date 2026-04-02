@@ -17,4 +17,5 @@ public interface IDreamRenderer extends AutoCloseable {
 
     default float getStarBrightness(float partialTick, float originalBrightness) { return originalBrightness; }
     default float getFadeAlpha(float originalAlpha) { return originalAlpha; }
+    default boolean shouldRenderClouds() { return false; }
 }

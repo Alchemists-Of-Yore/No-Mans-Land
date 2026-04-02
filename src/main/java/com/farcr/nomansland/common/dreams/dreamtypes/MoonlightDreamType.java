@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +39,11 @@ public class MoonlightDreamType extends DreamType {
             .setChunkGenerator(this::moonlightChunkGenerator)
             .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
             .setInstanceSupplier(() -> new MoonlightDreamTypeInstance(this));
+    }
+
+    @Override
+    public boolean timeCondition(ServerPlayer player, ServerLevel level) {
+        return !FriendMoon.hasMetWithPlayer(player) && super.timeCondition(player, level);
     }
 
     @Override

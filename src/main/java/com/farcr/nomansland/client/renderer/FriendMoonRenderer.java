@@ -25,6 +25,7 @@ import com.mojang.blaze3d.vertex.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -157,7 +158,6 @@ public class FriendMoonRenderer implements AutoCloseable {
     public float friendMoonYawStep = 0;
 
     public static boolean moonOnScreen(Minecraft mc, Matrix4f moonViewMatrix, Matrix4f projectionMatrix, float threshold) {
-        Camera camera = mc.gameRenderer.getMainCamera();
         Vector3f worldPosition = moonViewMatrix.transformPosition(0f, MOON_DISTANCE, 0F, new Vector3f());
         Vector4f clip = new Vector4f(worldPosition, 1f).mul(projectionMatrix);
         return (clip.w > 0.0f)
@@ -218,6 +218,8 @@ public class FriendMoonRenderer implements AutoCloseable {
                 // Can stare up at the moon and it'll show up
                 if (!dontShowUp || (badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME)) {
                     isAwake = friendMoonInstance.isAwake();
+                    if (isAwake) moonWasWokenUp = true;
+
                     if (moonIsVisible || isAwake) {
                         fadeOut = false;
                         friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
@@ -359,6 +361,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], lastOpacity);
     }
 
+    // hacky fix
+    private boolean moonWasWokenUp = false;
+
     public static float OFFSET_MAX_AMOUNT = 30f;
     public static float OFFSET_MAX_DISTANCE = 2500f;
     public static float OFFSET_DIMINISH_DISTANCE = 500f;
@@ -371,7 +376,8 @@ public class FriendMoonRenderer implements AutoCloseable {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         assert player != null;
-        if (meetingPointContext.enabled()) {
+
+        if (meetingPointContext.enabled() && moonWasWokenUp) {
             float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
             if (mc.isPaused()) deltaTime = 0f;
 

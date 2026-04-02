@@ -1,6 +1,6 @@
 #version 150
 #define pi 3.14
-#define r(a) mat2(cos(a + vec4(0, 33, 11, 0)))
+#define r(a) mat2(cos(a + vec4(0., 33., 11., 0.)))
 
 in vec3 vertexPosition;
 

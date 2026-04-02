@@ -90,6 +90,22 @@ public abstract class LevelRendererMixin {
     }
 
     @Inject(
+        method = "renderClouds",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void nml$renderClouds(
+        PoseStack poseStack, Matrix4f frustumMatrix,
+        Matrix4f projectionMatrix, float partialTick,
+        double camX, double camY, double camZ, CallbackInfo ci
+    ) {
+        ClientDreamRenderer clientManager = ClientDreamRenderer.getInstance();
+        if (clientManager.dreamShouldRender() && clientManager.getRenderer() != null) {
+            if (!clientManager.getRenderer().shouldRenderClouds()) ci.cancel();
+        }
+    }
+
+    @Inject(
         method = "renderSky",
         at = @At(
             value = "INVOKE",

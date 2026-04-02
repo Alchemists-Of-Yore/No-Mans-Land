@@ -1,22 +1,18 @@
 package com.farcr.nomansland.common.blockentity;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamStorage;
 import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.networking.ClientboundZoomEffectPacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -47,10 +43,10 @@ public class MoonCarvingBlockEntity extends BlockEntity {
 
     private final Map<Player, Integer> playerStareMap = new HashMap<>();
     private boolean playerMeetsCondition(ServerPlayer player) {
-        DreamStorage storage = DreamManager.getOrDefault(player.getServer())
-            .getPlayerStorage((ServerPlayer) player);
+        DreamStorage storage = DreamManager.getOrDefault(player.getServer()).getPlayerStorage(player);
         return (storage.getTimeRemainingForDream(MOONLIGHT_DREAM_TYPE) <= 0)
-            && (!storage.getHasExperiencedDream(MOONLIGHT_DREAM_TYPE));
+            && (!storage.getHasExperiencedDream(MOONLIGHT_DREAM_TYPE))
+            && (!FriendMoon.hasMetWithPlayer(player));
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, MoonCarvingBlockEntity blockEntity) {

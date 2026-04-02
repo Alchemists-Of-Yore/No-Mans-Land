@@ -437,10 +437,15 @@ public class FriendMoon extends SavedData {
                 new ClientboundMeetingPointPacket(
                     lastPosition,
                     meetingPointPosition,
-                    state.exceedsDays()
+                    (state.exceedsDays() || FriendMoon.hasMetWithPlayer(player))
                 )
             );
         }
+    }
+
+    public static boolean hasMetWithPlayer(ServerPlayer player) {
+        AdvancementHolder meetAdvancement = player.level().getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
+        return (meetAdvancement != null && player.getAdvancements().getOrStartProgress(meetAdvancement).isDone());
     }
 
     /* Behavior */
@@ -471,9 +476,9 @@ public class FriendMoon extends SavedData {
                 lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
                 if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
                     if (!cannotObtainFriendship(player)) {
-                        getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
+                        applyDialogueLength(getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
                             (registry) -> leavingFilter(registry, player))
-                                .dispatch(level, player);
+                                .dispatch(level, getFriendshipPlayers()));
                     }
                     lastFriendshipPlayers.remove(player);
                 }
@@ -583,16 +588,15 @@ public class FriendMoon extends SavedData {
     * allow you to sort through any kind of condition you wish to for dialogues and dispatch them automatically
     * without having to write the same redundant code that gets the registry and resourcelocation
     */
-    private final ResourceLocation DREAM_MOON_ADVANCEMENT = NoMansLand.location("main/dream_friend_moon");
-    private final ResourceLocation MEET_MOON_ADVANCEMENT = NoMansLand.location("main/meet_friend_moon");
+    public static final ResourceLocation DREAM_MOON_ADVANCEMENT = NoMansLand.location("main/dream_friend_moon");
+    public static final ResourceLocation MEET_MOON_ADVANCEMENT = NoMansLand.location("main/meet_friend_moon");
     private DialoguePool greetingFilter(Registry<DialoguePool> registry, ServerPlayer serverPlayer) {
         List<DialoguePool> filteredDialogue = registry.stream().filter(
             (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
 
         // Grant Advancement
-        AdvancementHolder meetAdvancement = level.getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
         AdvancementHolder dreamAdvancement = level.getServer().getAdvancements().get(DREAM_MOON_ADVANCEMENT);
-        if (meetAdvancement != null && !serverPlayer.getAdvancements().getOrStartProgress(meetAdvancement).isDone()) {
+        if (!hasMetWithPlayer(serverPlayer)) {
             filteredDialogue = MoonlightGreetingConditions.FirstTimeGreetingConditional.FIRST_TIME_ARRAY;
             if (dreamAdvancement != null && serverPlayer.getAdvancements().getOrStartProgress(dreamAdvancement).isDone())
                 filteredDialogue = MoonlightGreetingConditions.DreamGreetingConditional.DREAM_ARRAY;
