@@ -377,7 +377,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         LocalPlayer player = mc.player;
         assert player != null;
 
-        if (meetingPointContext.enabled() && moonWasWokenUp) {
+        if (meetingPointContext.enabled() && !moonWasWokenUp) {
             float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
             if (mc.isPaused()) deltaTime = 0f;
 
