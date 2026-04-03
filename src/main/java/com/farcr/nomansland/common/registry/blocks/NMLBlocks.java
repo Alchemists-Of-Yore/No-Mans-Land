@@ -542,6 +542,8 @@ public class NMLBlocks {
             () -> new StairBlock(THATCH.get().defaultBlockState(), ofFullCopy(NMLBlocks.THATCH.get())), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<SlabBlock> THATCH_SLAB = register("thatch_slab",
             () -> new SlabBlock(ofFullCopy(NMLBlocks.THATCH.get())), new BlockProperties(new SelfBlockLootType(), false));
+    public static final BlockDefinition<StrawBedBlock> STRAW_BED = register("straw_bed",
+            () -> new StrawBedBlock(ofFullCopy(NMLBlocks.THATCH.get())), new BlockProperties(new DoorBlockLootType(), false));
     //Mushrooms
     public static final BlockDefinition<SurfaceMushroomBlock> FIELD_MUSHROOM = registerNoItem("field_mushroom",
             () -> new SurfaceMushroomBlock((NMLFeatures.HUGE_FIELD_MUSHROOM), (ofFullCopy(Blocks.RED_MUSHROOM).sound(NMLSounds.MUSHROOM_CAP).mapColor(MapColor.TERRACOTTA_WHITE))), new BlockProperties(new SelfBlockLootType(), false));

@@ -1,12 +1,17 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.block.StrawBedBlock;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamStorage;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import net.minecraft.nbt.CompoundTag;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
@@ -26,6 +31,14 @@ public abstract class ServerPlayerMixin extends LivingEntityMixin {
     @Shadow @Final public MinecraftServer server;
 
     @Unique ServerPlayer nml$Self = (ServerPlayer) (Object) this;
+
+    @WrapOperation(method = "lambda$startSleepInBed$13", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;setRespawnPosition(Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/BlockPos;FZZ)V"))
+    private void nml$skipRespawnForStrawBed(ServerPlayer instance, ResourceKey<Level> dimension, BlockPos pos, float angle, boolean forced, boolean sendMessage, Operation<Void> original) {
+        if (pos != null && instance.level().getBlockState(pos).getBlock() instanceof StrawBedBlock) {
+            return;
+        }
+        original.call(instance, dimension, pos, angle, forced, sendMessage);
+    }
 
     @Inject(method = "stopSleepInBed", at = @At("HEAD"), cancellable = true)
     private void nml$stopSleeping(CallbackInfo ci) {

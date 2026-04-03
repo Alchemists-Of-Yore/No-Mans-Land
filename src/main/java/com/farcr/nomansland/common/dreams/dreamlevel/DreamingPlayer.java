@@ -15,6 +15,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
@@ -133,10 +134,12 @@ public class DreamingPlayer extends Mob {
 
     @Override
     public void remove(Entity.RemovalReason reason) {
-        if (level() != null && level() instanceof ServerLevel level) {
+        if (level() instanceof ServerLevel level) {
             this.getSleepingPos().ifPresent(
-                (sleepingPos) -> level.getBlockState(sleepingPos)
-                    .setBedOccupied(level, sleepingPos, this, false)
+                (sleepingPos) -> {
+                    if (level.getBlockState(sleepingPos).getOptionalValue(BlockStateProperties.OCCUPIED).isPresent())
+                        level.getBlockState(sleepingPos).setBedOccupied(level, sleepingPos, this, false);
+                }
             );
         }
         super.remove(reason);

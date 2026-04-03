@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,part=foot": {
+      "model": "nomansland:block/building/straw_bed_bottom"
+    },
+    "facing=north,part=head": {
+      "model": "nomansland:block/building/straw_bed_top"
+    },
+    "facing=south,part=foot": {
+      "model": "nomansland:block/building/straw_bed_bottom",
+      "y": 180
+    },
+    "facing=south,part=head": {
+      "model": "nomansland:block/building/straw_bed_top",
+      "y": 180
+    },
+    "facing=east,part=foot": {
+      "model": "nomansland:block/building/straw_bed_bottom",
+      "y": 90
+    },
+    "facing=east,part=head": {
+      "model": "nomansland:block/building/straw_bed_top",
+      "y": 90
+    },
+    "facing=west,part=foot": {
+      "model": "nomansland:block/building/straw_bed_bottom",
+      "y": 270
+    },
+    "facing=west,part=head": {
+      "model": "nomansland:block/building/straw_bed_top",
+      "y": 270
+    }
+  }
+}
