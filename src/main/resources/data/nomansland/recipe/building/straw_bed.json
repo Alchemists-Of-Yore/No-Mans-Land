@@ -3,19 +3,19 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "minecraft:stick"
+      "item": "minecraft:leather"
     },
     "S": {
-      "item": "minecraft:string"
+      "item": "minecraft:thatch"
     }
   },
   "pattern": [
-    "## ",
-    "##S",
-    "## "
+    "   ",
+    "###",
+    "SSS"
   ],
   "result": {
-    "id": "nomansland:crude_door"
+    "id": "nomansland:straw_bed"
   },
   "show_notification": true
 }
