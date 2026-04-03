@@ -8,7 +8,9 @@ import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -58,6 +60,8 @@ public class NMLBlockLootSubProvider extends BlockLootSubProvider {
                 add(block, createSlabItemTable(block));
             else if (lootType instanceof DoorBlockLootType)
                 add(block, createDoorTable(block));
+            else if (lootType instanceof BedBlockLootType)
+                add(block, createSinglePropConditionTable(block, BedBlock.PART, BedPart.HEAD));
             else if (lootType instanceof CandleCakeBlockLootType candleCakeBlockLootType)
                 add(block, createCandleCakeDrops(candleCakeBlockLootType.getCandle()));
             else if (lootType instanceof FlowerPotBlockLootType flowerPotBlockLootType)
