@@ -404,8 +404,7 @@ public class FriendMoon extends SavedData {
 
     public static BlockPos getMeetingPointPosition(ServerLevel level) {
         ChunkPos meetingPointChunk = level.getChunkSource().getGeneratorState().meetingPointPosition();
-        if (meetingPointChunk == null)
-            return null;
+        if (meetingPointChunk == null) return null;
         return meetingPointChunk.getMiddleBlockPosition(0);
     }
 
@@ -449,6 +448,7 @@ public class FriendMoon extends SavedData {
     }
 
     /* Behavior */
+    private int lastTotalPlayers = 0;
     public void tick() {
         assert level != null;
         updateMeetingPointInformation(level);
@@ -472,15 +472,19 @@ public class FriendMoon extends SavedData {
             }
 
             // query players that had friendship
-            for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
-                lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
-                    if (!cannotObtainFriendship(player)) {
-                        applyDialogueLength(getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
-                            (registry) -> leavingFilter(registry, player))
-                                .dispatch(level, getFriendshipPlayers()));
+            if (getState() != FriendMoonState.OFFERING || lastTotalPlayers <= 1) {
+                for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
+                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                        if (!cannotObtainFriendship(player)) {
+                            setState(FriendMoonState.PASSIVE);
+                            applyDialogueLength(
+                                getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
+                                (registry) -> leavingFilter(registry, player)
+                            ).dispatch(level, getFriendshipPlayers()));
+                        }
+                        lastFriendshipPlayers.remove(player);
                     }
-                    lastFriendshipPlayers.remove(player);
                 }
             }
             // Grant players advancement if they do not have it
@@ -500,7 +504,7 @@ public class FriendMoon extends SavedData {
                     dialogueTicks = Math.max(dialogueTicks - 1, 0);
                     if (dialogueTicks == 0 && !isAscensionActive()) {
                         getState().getMoonConsumer().accept(this);
-                        randomDialogue(getState().getDialoguePoolType());
+                        randomDialogueOrGreeting(getState().getDialoguePoolType(), totalPlayers);
                         forFriendshipPlayers((player) ->
                             NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player));
                     }
@@ -615,6 +619,15 @@ public class FriendMoon extends SavedData {
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 
+    private DialoguePool addToCommuneFilter(Registry<DialoguePool> registry, boolean enteredCommune) {
+        List<DialoguePool> filteredDialogue = registry.stream().filter(
+            (dialoguePool) -> dialoguePool.condition().isEmpty()
+            || !(dialoguePool.condition().get() instanceof MoonlightGreetingConditions.AdditionToCommuneConditional)
+        ).toList();
+        if (enteredCommune) filteredDialogue = MoonlightGreetingConditions.AdditionToCommuneConditional.ADDITION_TO_COMMUNE_ARRAY;
+        return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
+    }
+
     // Simple dialogue filter used in most cases, just selects a random dialogue based on weight
     private DialoguePool weightedFilter(Registry<DialoguePool> registry) {
         return DialogueUtil.getWeightedEntry(registry.stream().toList(), level.getRandom());
@@ -668,6 +681,23 @@ public class FriendMoon extends SavedData {
         applyDialogueLength(dialogueLength);
         // if the dialogue length is greater than 0 it succeeded
         return (dialogueLength > 0);
+    }
+
+    public void randomDialogueOrGreeting(ResourceKey<Registry<DialoguePool>> registryKey, int totalPlayers) {
+        if (registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY || registryKey == NMLRegistries.GREETING_DIALOGUE_KEY) {
+            if (totalPlayers > lastTotalPlayers && registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY) {
+                applyDialogueLength(
+                    getDialogueFromStream(NMLRegistries.GREETING_DIALOGUE_KEY,
+                        (registry) -> addToCommuneFilter(
+                            registry, (totalPlayers > lastTotalPlayers)
+                        )).dispatch(level, getFriendshipPlayers())
+                );
+                lastTotalPlayers = totalPlayers;
+                return;
+            }
+            lastTotalPlayers = totalPlayers;
+        }
+        randomDialogue(registryKey);
     }
 
     public void randomDialogue(ResourceKey<Registry<DialoguePool>> registryKey) {

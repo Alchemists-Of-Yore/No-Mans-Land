@@ -37,7 +37,7 @@ public class DialogueRenderer {
 
             float initialFade = Math.min(currentState.elapsedTicks / DialogueState.GRADIENT_FADE_TICKS, 1);
             float totalOpacity = Math.min(initialFade, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
-            currentState.handleTime(deltaTime);
+            deltaTime = currentState.handleTime(deltaTime);
 
             // Reset Text when the moon goes away
             if (initialFade >= 1 && totalOpacity <= 0.1f) {

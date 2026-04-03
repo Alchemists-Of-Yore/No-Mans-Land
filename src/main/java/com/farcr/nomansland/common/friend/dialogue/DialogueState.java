@@ -58,11 +58,13 @@ public class DialogueState {
         return true;
     }
 
-    public void handleTime(float deltaTime) {
+    public float handleTime(float deltaTime) {
         if (!Minecraft.getInstance().isPaused()) {
             ticks -= deltaTime;
             elapsedTicks += deltaTime;
+            return deltaTime;
         }
+        return 0.0f;
     }
 
     public List<String> progressText(float deltaTime) {
