@@ -24,7 +24,7 @@ public class BuddyModel<T extends Buddy> extends PlayerModel<T> {
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        int newAlpha = (int) ascensionAlpha;
+        int newAlpha = (int) (ascensionAlpha * 255);
         color = FastColor.ARGB32.color(newAlpha, FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, color);
     }
