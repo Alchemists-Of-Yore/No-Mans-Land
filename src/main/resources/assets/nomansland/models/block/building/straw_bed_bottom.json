@@ -3,7 +3,9 @@
 	"credit": "Made by Farcr",
 	"texture_size": [32, 32],
 	"textures": {
-		"1": "nomansland:block/building/straw_bed"
+		"1": "nomansland:block/building/straw_bed",
+		"2": "nomansland:block/building/thatch_top",
+    	"particle": "nomansland:block/building/thatch_top"
 	},
 	"elements": [
 		{
@@ -14,7 +16,7 @@
 				"south": {"uv": [8, 12, 16, 16], "texture": "#1"},
 				"west": {"uv": [8, 8, 16, 12], "texture": "#1"},
 				"up": {"uv": [8, 0, 16, 8], "rotation": 90, "texture": "#1"},
-				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#missing"}
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#2"}
 			}
 		}
 	]

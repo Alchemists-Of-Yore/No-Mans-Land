@@ -24,6 +24,9 @@
             "item": "minecraft:brown_mushroom"
         },
         {
+            "item": "minecraft:glass_bottle"
+        },
+        {
             "item": "minecraft:fern"
         }
     ],

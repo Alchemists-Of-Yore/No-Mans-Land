@@ -4,7 +4,8 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"1": "nomansland:block/building/straw_bed",
-		"2": "nomansland:block/building/thatch_top"
+		"2": "nomansland:block/building/thatch_top",
+    	"particle": "nomansland:block/building/thatch_top"
 	},
 	"elements": [
 		{
