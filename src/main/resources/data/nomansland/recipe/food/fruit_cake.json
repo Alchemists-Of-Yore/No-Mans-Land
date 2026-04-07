@@ -13,7 +13,7 @@
       ],
       "key": {
           "M": {
-              "tag": "c:foods/milk"
+              "tag": "c:drinks/milk"
           },
           "P": {
               "item": "nomansland:pear"
