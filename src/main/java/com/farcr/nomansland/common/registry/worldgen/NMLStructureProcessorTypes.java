@@ -25,7 +25,9 @@ public class NMLStructureProcessorTypes {
             BELL_PROCESSOR = register("inverted_bell", InvertedBellProcessor.CODEC);
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<PotFeatureProcessor>>
             POT_FEATURE = register("pot_feature", PotFeatureProcessor.CODEC);
-    
+    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<OreVeinProcessor>>
+            ORE_VEIN = register("ore_vein", OreVeinProcessor.CODEC);
+
     private static <P extends StructureProcessor> DeferredHolder<StructureProcessorType<?>, StructureProcessorType<P>> register (String name, MapCodec<P> codec) {
         return STRUCTURE_PROCESSOR_TYPES.register(name, () -> () -> codec);
     }

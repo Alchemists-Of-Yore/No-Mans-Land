@@ -52,7 +52,7 @@ public class PotFeatureProcessor extends StructureProcessor {
                     }
 
                     result.remove(info);
-                    result.add(new StructureTemplate.StructureBlockInfo(info.pos(), replacement, null));
+                    level.setBlock(info.pos(), replacement, 2);
 
                     worldGenLevel.registryAccess()
                             .registryOrThrow(Registries.CONFIGURED_FEATURE)
