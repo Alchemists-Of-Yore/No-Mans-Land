@@ -74,7 +74,8 @@
       "nomansland:underground/ore_silt"
     ],
     [],
-    [],
+    [
+      "nomansland:underground/patch_ancestral_effigy"],
     [
       "minecraft:patch_tall_grass_2",
       "minecraft:trees_plains",

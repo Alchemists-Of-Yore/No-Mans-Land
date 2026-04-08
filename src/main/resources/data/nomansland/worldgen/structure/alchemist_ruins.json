@@ -8,10 +8,10 @@
   "start_height": {
     "type": "uniform",
     "max_inclusive": {
-      "absolute": 32
+      "absolute": 40
     },
     "min_inclusive": {
-      "absolute": 0
+      "absolute": 10
     }
   },
   "dimension_padding": 10,
