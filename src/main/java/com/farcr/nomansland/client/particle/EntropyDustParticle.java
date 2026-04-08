@@ -11,8 +11,8 @@ public class EntropyDustParticle extends TextureSheetParticle {
     public EntropyDustParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet) {
         super(level, x, y, z);
         this.setSprite(spriteSet.get(this.random.nextInt(4), 4));
-        this.gravity = 0.00001F;
-        this.lifetime = (int) (64.0 / (Math.random() * 0.8 + 0.2));
+        this.gravity = 0.0001F;
+        this.lifetime = (int) (32.0 / (Math.random() * 0.8 + 0.2));
         this.roll = (float) Math.random() * ((float) Math.PI * 2F);
         this.oRoll = this.roll;
     }
