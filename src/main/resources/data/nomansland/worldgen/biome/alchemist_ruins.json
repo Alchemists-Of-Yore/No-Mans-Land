@@ -20,7 +20,7 @@
     },
     "particle": {
       "options": {
-        "type": "nomansland:cave_dust"
+        "type": "nomansland:entropy_dust"
       },
       "probability": 0.04
     },
