@@ -58,17 +58,19 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     static {
         final VoxelShape lowerRunOuter = Block.box(-10, -16, -10, 26, -14, 26);
-        final VoxelShape lowerRunInner = Block.box(-6, -17, -6, 22, -13, 22);
+        final VoxelShape lowerRunInner = Block.box(-5, -17, -5, 21, -13, 21);
         final VoxelShape lowerRun = Shapes.join(lowerRunOuter, lowerRunInner, BooleanOp.ONLY_FIRST);
-        final VoxelShape mainBodyOuter = Block.box(-8, -14, -8, 24, 16, 24);
-        final VoxelShape mainBodyInner = Block.box(-6, -15, -6, 22, 14, 22);
+        final VoxelShape mainBodyOuter = Block.box(-8, -16, -8, 24, 16, 24);
+        final VoxelShape mainBodyInner = Block.box(-5, -17, -5, 21, 13, 21);
         final VoxelShape mainBody = Shapes.join(mainBodyOuter, mainBodyInner, BooleanOp.ONLY_FIRST);
         final VoxelShape topPlate = Block.box(-5, 16, -5, 21, 19, 21);
+        final VoxelShape ornateNS = Block.box(7, 19, -9, 9, 28, 25);
+        final VoxelShape ornateEW = Block.box(-9, 19, 7, 25, 28, 9);
         final VoxelShape beamNS = Block.box(6, 28, -16, 10, 32, 32);
         final VoxelShape beamEW = Block.box(-16, 28, 6, 32, 32, 10);
 
-        final VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, topPlate, beamNS);
-        final VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, topPlate, beamEW);
+        final VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, topPlate, ornateNS, beamNS);
+        final VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, topPlate, ornateEW, beamEW);
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = -1; y < 2; y++) {
