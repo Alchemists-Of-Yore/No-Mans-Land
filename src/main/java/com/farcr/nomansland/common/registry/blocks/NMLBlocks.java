@@ -315,7 +315,7 @@ public class NMLBlocks {
             () -> new MoonCarvingBlock(ofFullCopy(Blocks.STONE)));
 
     public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
-            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion()));
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).sound(SoundType.COPPER).noOcclusion()));
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());

@@ -1,6 +1,7 @@
 {
 	"format_version": "1.9.0",
 	"credit": "Made by Frenderman",
+  	"render_type": "minecraft:translucent",
 	"texture_size": [128, 128],
 	"textures": {
 		"0": "nomansland:block/dungeon/inverted_bell",
