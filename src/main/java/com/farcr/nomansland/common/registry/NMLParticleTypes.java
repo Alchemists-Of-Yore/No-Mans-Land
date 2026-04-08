@@ -46,6 +46,9 @@ public class NMLParticleTypes {
     public static final Supplier<SimpleParticleType> MALEVOLENT_EMBERS = register("malevolent_embers");
 
     public static final Supplier<SimpleParticleType> SCULK_AMBIENCE = register("sculk_ambience");
+
+    public static final Supplier<SimpleParticleType> ENTROPY_DUST = register("entropy_dust");
+
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MILK_DROPLET = register("milk_droplet");
     public static final Supplier<SimpleParticleType> MILK_DROPLET_FLAT = register("milk_droplet_flat");
 

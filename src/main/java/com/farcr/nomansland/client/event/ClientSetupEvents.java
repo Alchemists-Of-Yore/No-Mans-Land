@@ -197,6 +197,9 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.SCULK_AMBIENCE.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new SculkAmbienceParticle(clientLevel, d, e, f, sprites));
+        event.registerSpriteSet(NMLParticleTypes.ENTROPY_DUST.get(), sprites
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new EntropyDustParticle(clientLevel, d, e, f, sprites));
         event.registerSpriteSet(NMLParticleTypes.MALEVOLENT_EMBERS.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new EmbersParticle(clientLevel, d, e, f, g, h, i, sprites));
