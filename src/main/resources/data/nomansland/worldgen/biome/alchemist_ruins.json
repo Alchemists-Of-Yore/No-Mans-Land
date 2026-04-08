@@ -20,9 +20,9 @@
     },
     "particle": {
       "options": {
-        "type": "nomansland:entropy_dust"
+        "type": "nomansland:cave_dust"
       },
-      "probability": 0.04
+      "probability": 0.03
     },
     "water_color": 6913929,
     "water_fog_color": 3820113
