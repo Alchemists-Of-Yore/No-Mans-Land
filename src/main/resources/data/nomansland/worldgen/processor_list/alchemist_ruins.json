@@ -12,7 +12,10 @@
       "processor_type": "nomansland:pot_feature"
     },
     {
-      "processor_type": "nomansland:ore_vein"
+      "processor_type": "nomansland:ore_vein",
+      "blocks": [
+        "nomansland:siltstone"
+      ]
     }
   ]
 }

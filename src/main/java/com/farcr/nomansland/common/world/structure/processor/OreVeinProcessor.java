@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.world.structure.processor;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.worldgen.NMLStructureProcessorTypes;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -16,20 +16,22 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class OreVeinProcessor extends StructureProcessor {
 
-    public static final MapCodec<OreVeinProcessor> CODEC = MapCodec.unit(OreVeinProcessor::new);
+    public static final MapCodec<OreVeinProcessor> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(
+                    ResourceLocation.CODEC.listOf().fieldOf("blocks").forGetter(p -> List.copyOf(p.blocks))
+            ).apply(instance, OreVeinProcessor::new));
 
-    private static final Map<ResourceLocation, String> VEIN_MATERIAL = Map.of(
-            ResourceLocation.withDefaultNamespace("tuff"), "tuff",
-            ResourceLocation.fromNamespaceAndPath(NoMansLand.MODID, "siltstone"), "siltstone",
-            ResourceLocation.withDefaultNamespace("andesite"), "andesite",
-            ResourceLocation.withDefaultNamespace("granite"), "granite",
-            ResourceLocation.withDefaultNamespace("diorite"), "diorite"
-    );
+    private final Set<ResourceLocation> blocks;
+
+    public OreVeinProcessor(List<ResourceLocation> blocks) {
+        this.blocks = Set.copyOf(blocks);
+    }
 
     @Override
     protected StructureProcessorType<?> getType() {
@@ -43,8 +45,10 @@ public class OreVeinProcessor extends StructureProcessor {
         Registry<Block> blockRegistry = levelReader.registryAccess().registryOrThrow(Registries.BLOCK);
 
         ResourceLocation worldBlockId = blockRegistry.getKey(worldState.getBlock());
-        String material = VEIN_MATERIAL.get(worldBlockId);
-        if (material == null) return relativeBlockInfo;
+        if (!blocks.contains(worldBlockId)) return relativeBlockInfo;
+
+        String material = worldBlockId.getPath();
+        String namespace = worldBlockId.getNamespace();
 
         BlockState newState = relativeBlockInfo.state();
         ResourceLocation newBlockId = blockRegistry.getKey(newState.getBlock());
@@ -52,9 +56,9 @@ public class OreVeinProcessor extends StructureProcessor {
         String replacedPath = newBlockId.getPath().replace("stone", material);
         if (replacedPath.equals(newBlockId.getPath())) return relativeBlockInfo;
 
-        Optional<Block> replacement = blockRegistry.getOptional(ResourceLocation.withDefaultNamespace(replacedPath));
-        if (replacement.isEmpty()) {
-            replacement = blockRegistry.getOptional(ResourceLocation.fromNamespaceAndPath(NoMansLand.MODID, replacedPath));
+        Optional<Block> replacement = blockRegistry.getOptional(ResourceLocation.fromNamespaceAndPath(namespace, replacedPath));
+        if (replacement.isEmpty() && !namespace.equals("minecraft")) {
+            replacement = blockRegistry.getOptional(ResourceLocation.withDefaultNamespace(replacedPath));
         }
 
         if (replacement.isPresent()) {

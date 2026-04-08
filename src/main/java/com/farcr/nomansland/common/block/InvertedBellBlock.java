@@ -57,9 +57,11 @@ public class InvertedBellBlock extends BaseEntityBlock {
     public static final VoxelShape[] BELL_EW = new VoxelShape[3 * 3 * 3];
 
     static {
-        final VoxelShape lowerRun = Block.box(-10, -16, -10, 26, -14, 26);
-        final VoxelShape mainBodyOuter = Block.box(-8, -16, -8, 24, 16, 24);
-        final VoxelShape mainBodyInner = Block.box(-6, -17, -6, 22, 14, 22);
+        final VoxelShape lowerRunOuter = Block.box(-10, -16, -10, 26, -14, 26);
+        final VoxelShape lowerRunInner = Block.box(-6, -17, -6, 22, -13, 22);
+        final VoxelShape lowerRun = Shapes.join(lowerRunOuter, lowerRunInner, BooleanOp.ONLY_FIRST);
+        final VoxelShape mainBodyOuter = Block.box(-8, -14, -8, 24, 16, 24);
+        final VoxelShape mainBodyInner = Block.box(-6, -15, -6, 22, 14, 22);
         final VoxelShape mainBody = Shapes.join(mainBodyOuter, mainBodyInner, BooleanOp.ONLY_FIRST);
         final VoxelShape topPlate = Block.box(-5, 16, -5, 21, 19, 21);
         final VoxelShape beamNS = Block.box(6, 28, -16, 10, 32, 32);
