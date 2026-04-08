@@ -7,13 +7,17 @@ import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.client.RenderTypeHelper;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 
 public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> implements BlockEntityRenderer<T> {
@@ -43,15 +47,19 @@ public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> i
         }
 
         BakedModel model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BELL_MODEL);
-        this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.cutoutBlockSheet()), bell.getBlockState(), model,
-                1, 1, 1, packedLight, packedOverlay);
+        for (RenderType renderType : model.getRenderTypes(bell.getBlockState(), RandomSource.create(), ModelData.EMPTY)) {
+            this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(renderType, true)), bell.getBlockState(), model,
+                    1, 1, 1, packedLight, packedOverlay);
+        }
         poseStack.popPose();
 
         poseStack.pushPose();
         poseStack.translate(0, 1, 0);
         model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BEAM_MODEL);
-        this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(Sheets.solidBlockSheet()), bell.getBlockState(), model,
-                1, 1, 1, packedLight, packedOverlay);
+        for (RenderType renderType : model.getRenderTypes(bell.getBlockState(), RandomSource.create(), ModelData.EMPTY)) {
+            this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(renderType, true)), bell.getBlockState(), model,
+                    1, 1, 1, packedLight, packedOverlay);
+        }
         poseStack.popPose();
         poseStack.popPose();
     }

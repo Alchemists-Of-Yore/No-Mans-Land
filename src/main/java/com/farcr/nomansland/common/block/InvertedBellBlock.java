@@ -58,12 +58,15 @@ public class InvertedBellBlock extends BaseEntityBlock {
 
     static {
         final VoxelShape lowerRun = Block.box(-10, -16, -10, 26, -14, 26);
-        final VoxelShape mainBody = Block.box(-8, -14, -8, 24, 28, 24);
+        final VoxelShape mainBodyOuter = Block.box(-8, -16, -8, 24, 16, 24);
+        final VoxelShape mainBodyInner = Block.box(-6, -17, -6, 22, 14, 22);
+        final VoxelShape mainBody = Shapes.join(mainBodyOuter, mainBodyInner, BooleanOp.ONLY_FIRST);
+        final VoxelShape topPlate = Block.box(-5, 16, -5, 21, 19, 21);
         final VoxelShape beamNS = Block.box(6, 28, -16, 10, 32, 32);
         final VoxelShape beamEW = Block.box(-16, 28, 6, 32, 32, 10);
 
-        final VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, beamNS);
-        final VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, beamEW);
+        final VoxelShape fullBellNS = Shapes.or(lowerRun, mainBody, topPlate, beamNS);
+        final VoxelShape fullBellEW = Shapes.or(lowerRun, mainBody, topPlate, beamEW);
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
                 for (int y = -1; y < 2; y++) {

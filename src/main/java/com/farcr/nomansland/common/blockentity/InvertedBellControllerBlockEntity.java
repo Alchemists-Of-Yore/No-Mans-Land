@@ -9,12 +9,14 @@ import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -106,6 +108,14 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     public static void tick(final Level level, final BlockPos pos, final BlockState state, final InvertedBellControllerBlockEntity ibbe) {
         if (ibbe.ringCooldown > 0) {
             ibbe.ringCooldown--;
+        }
+
+        if (level.isClientSide) {
+            RandomSource random = level.getRandom();
+            double x = pos.getX() + random.nextDouble() * 2.0 - 0.5;
+            double y = pos.getY() + random.nextDouble() * 2.0 - 1.0;
+            double z = pos.getZ() + random.nextDouble() * 2.0 - 0.5;
+            level.addParticle(NMLParticleTypes.ENTROPY_DUST.get(), x, y, z, 0, 0, 0);
         }
 
         if (level instanceof final ServerLevel serverLevel) {
