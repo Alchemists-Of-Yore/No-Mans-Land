@@ -88,6 +88,10 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
         addToTags(NMLBiomes.TROPICAL_BEACH, BiomeTags.IS_BEACH, Tags.Biomes.IS_HOT, Tags.Biomes.IS_LUSH, Tags.Biomes.IS_JUNGLE_TREE);
         addToTags(NMLBiomes.FROZEN_SHORE, Tags.Biomes.IS_STONY_SHORES, Tags.Biomes.IS_COLD, Tags.Biomes.IS_SNOWY, Tags.Biomes.IS_ICY, Tags.Biomes.IS_AQUATIC_ICY);
         addToTags(NMLBiomes.MUD_BEACH, Tags.Biomes.IS_AQUATIC, Tags.Biomes.IS_RARE, Tags.Biomes.IS_WET);
+
+
+        //Misc Tag Tweaks
+        addToTags(Biomes.FROZEN_RIVER, Tags.Biomes.IS_SNOWY);
     }
 
     @SafeVarargs
