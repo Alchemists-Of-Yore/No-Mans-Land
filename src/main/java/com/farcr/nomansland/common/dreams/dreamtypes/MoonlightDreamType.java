@@ -73,7 +73,7 @@ public class MoonlightDreamType extends DreamType {
         private float moonGazeTime = 0f;
         public float moonPresenceTime;
 
-        public AABB dreamBoundingBox = new AABB(
+        public static AABB DREAM_BOUNDING_BOX = new AABB(
             new BlockPos(0, 0, 0)
         ).inflate(36, 100, 200);
 
@@ -94,7 +94,7 @@ public class MoonlightDreamType extends DreamType {
                     moonGazeTime = 0f;
                     // force player exit if out of bounds
                     if (level instanceof DreamServerLevel dreamLevel) {
-                        if (!dreamBoundingBox.contains(player.position()))
+                        if (!DREAM_BOUNDING_BOX.contains(player.position()))
                             dreamLevel.endDream(false);
                     }
                     return;

@@ -21,6 +21,7 @@ import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -184,12 +185,21 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
     private static final int MOON_FADE_START_TIME = 50;
     private static final int STARE_AT_MOON_TICKS = 30;
+
+    public static float BLOCKS_FROM_EDGE = 15;
+
     @Override public float getFadeAlpha(float originalAlpha) {
         if (hasSeenMoon && ticksSinceSeenMoon > 0f) {
             return Math.clamp(((ticksSinceSeenMoon - (MOON_FADE_START_TIME + STARE_AT_MOON_TICKS))
                 / (MoonlightDreamType.MAX_MOON_GAZE_TIME - MOON_FADE_START_TIME)), 0, 1);
         }
-        return originalAlpha;
+        // distance from edge alpha
+        Vec3 playerPosition = Minecraft.getInstance().player.position();
+        AABB boundingBox = MoonlightDreamType.MoonlightDreamTypeInstance.DREAM_BOUNDING_BOX;
+        float x = (float) Math.min(playerPosition.x - boundingBox.minX, boundingBox.maxX - playerPosition.x);
+        float z = (float) Math.min(playerPosition.z - boundingBox.minZ, boundingBox.maxZ - playerPosition.z);
+        float dist = 1f - Mth.clamp(Math.min(x, z) / BLOCKS_FROM_EDGE, 0f, 1f);
+        return Math.max(originalAlpha, dist);
     }
 
     public void renderMoon(PoseStack poseStack, Matrix4f projectionMatrix) {
