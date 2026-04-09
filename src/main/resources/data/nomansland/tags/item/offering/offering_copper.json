@@ -2,9 +2,6 @@
   "values": [
     "minecraft:copper_ingot",
     "minecraft:raw_copper",
-    {
-      "id": "#c:nuggets/copper",
-      "required": false
-    }
+    "#c:nuggets/copper"
   ]
 }

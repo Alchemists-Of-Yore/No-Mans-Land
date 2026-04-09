@@ -1,8 +1,0 @@
-{
-    "condition": {
-      "type": "nomansland:equipment_conditional",
-      "items": "minecraft:iron_helmet"
-    },
-    "weight": 1,
-    "text": "&PlayerName iron helmet"
-}

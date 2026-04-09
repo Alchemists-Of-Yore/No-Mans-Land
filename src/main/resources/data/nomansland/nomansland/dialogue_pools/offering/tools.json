@@ -1,7 +1,7 @@
 {
     "condition": {
         "type": "nomansland:item_conditional",
-        "items": "#c:tools"
+        "items": "#nomansland:offering/offering_tools"
     },
     "weight": 1,
     "text": "An extension of your will, a thing of sacred artisanship. \n No matter how shoddy the tool, to create is to express the greatness within."

@@ -1,16 +1,7 @@
 {
   "values": [
-    {
-      "id": "#c:raw_materials/lead",
-      "required": false
-    },
-    {
-      "id": "#c:ingots/lead",
-      "required": false
-    },
-    {
-      "id": "#c:nuggets/lead",
-      "required": false
-    }
+    "#c:raw_materials/lead",
+    "#c:ingots/lead",
+    "#c:nuggets/lead"
   ]
 }
