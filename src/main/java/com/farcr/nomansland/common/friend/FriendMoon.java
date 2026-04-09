@@ -593,7 +593,7 @@ public class FriendMoon extends SavedData {
             if ((getState() != FriendMoonState.OFFERING || lastTotalPlayers <= 1) && !isJukeboxInteractionActive()) {
                 for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
                     lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                    if (lastFriendshipPlayers.get(player) >= 100 || player.isDeadOrDying()) {
                         if (!cannotObtainFriendship(player)) {
                             setState(FriendMoonState.PASSIVE);
                             applyDialogueLength(
