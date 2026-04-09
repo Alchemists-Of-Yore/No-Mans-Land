@@ -89,7 +89,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
                 entity, head, hat,
                 leftArm, rightArm,
                 leftLeg, rightLeg,
-                    ageInTicks
+                (ageInTicks / Buddy.DIVIDE_TIME_CONSTANT)
             );
         }
     }

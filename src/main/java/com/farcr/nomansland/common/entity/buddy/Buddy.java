@@ -44,6 +44,7 @@ import java.util.Optional;
 
 public class Buddy extends PathfinderMob implements Npc {
 
+    public static final float DIVIDE_TIME_CONSTANT = 1.9333F;
     private static final EntityDataAccessor<Integer> DATA_ASCENSION_TICKS =
         SynchedEntityData.defineId(Buddy.class, EntityDataSerializers.INT);
     private Registry<BuddyFood> buddyFoods;
@@ -256,6 +257,10 @@ public class Buddy extends PathfinderMob implements Npc {
         leftArm.zRot = (float) (Math.sin(time * 0.2812D) - 1.0D);
         rightLeg.xRot = (float) Math.sin(time * 0.6662D) * 1.4F;
         leftLeg.xRot = (float) Math.sin(time * 0.6662D + Math.PI) * 1.4F;
+    }
+
+    public static float getHappinessYDisplacement(float time) {
+        return (float)(-Math.abs(Math.sin(time * 0.6662)) * 0.4f);
     }
 
     @Override
