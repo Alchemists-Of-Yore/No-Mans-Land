@@ -38,6 +38,6 @@ public class FriendMoonFogModifier extends FogModifier {
 
     @Override
     boolean active(FogModifierHandler.FogContext context) {
-        return Minecraft.getInstance().player != null;
+        return Minecraft.getInstance().player != null && opacity() > 0.01f;
     }
 }

@@ -39,12 +39,14 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
@@ -203,69 +205,66 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         boolean fadeOut = true;
         float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
-        float fadeSpeed = deltaTime / 50f;
+        float fadeSpeed = deltaTime / 25f;
         float turnAnimateSpeed = deltaTime / (15f);
 
         boolean isAwake = false;
         boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, 0.5f);
-        if (clientBlockPos != null) {
-            Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
-            if (FriendMoon.appearConditionsMet(player, clientBlockPos) && optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null)) {
-                FriendMoon friendMoonInstance = optionalBasin.get().clientMoon;
-                boolean dontShowUp = friendMoonInstance.cannotObtainFriendship(player);
-                if (!dontShowUp) badOmenWaitTime = 0;
+        FriendMoon friendMoonInstance = getClientMoon();
+        if (friendMoonInstance != null) {
+            boolean dontShowUp = friendMoonInstance.cannotObtainFriendship(player);
+            if (!dontShowUp) badOmenWaitTime = 0;
 
-                // Can stare up at the moon and it'll show up
-                if (!dontShowUp || (badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME)) {
-                    isAwake = friendMoonInstance.isAwake();
-                    if (isAwake) moonWasWokenUp = true;
+            // Can stare up at the moon and it'll show up
+            if (!dontShowUp || (badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME)) {
+                isAwake = friendMoonInstance.isAwake();
+                if (isAwake) moonWasWokenUp = true;
 
-                    if (moonIsVisible || isAwake) {
-                        fadeOut = false;
-                        friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
-                        // moon awakening logic
-                        if (!dontShowUp) {
-                            if (!isAwake) {
-                                // moon rotation
-                                if (friendMoonOpacity >= 1) {
-                                    animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
-                                    if (animationProgress >= getFriendMoonAnimation().getFrames())
-                                        FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.AWAKEN);
-                                } else
-                                    setFriendMoonAnimation(FriendMoonAnimation.PHASES);
-                            } else {
-                                // Set default animation to emotion (server chosen)
-                                setFriendMoonAnimation(getFriendMoonEmotion(friendMoonInstance));
-                                DialogueState currentState = DialogueRenderer.getCurrentState();
-                                if (currentState != null) {
-                                    float talkSpeed = 1 / 3f;
-                                    if (currentState.canSpeakCurrently() && !currentState.doneTalking) {
-                                        talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
-                                        animationProgress = talkAnimationProgress;
-                                    } else {
-                                        talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
-                                        animationProgress = 0;
-                                    }
-                                } else
-                                    animationProgress = 0;
-                            }
-                        } else {
-                            // not showing up takes precedent over everything else
-                            animationProgress = 0;
-                            setFriendMoonAnimation(FriendMoonAnimation.PHASES);
+                if ((moonIsVisible || isAwake) && canRenderMoonEffects()) {
+                    fadeOut = false;
+                    friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
+                    // moon awakening logic
+                    if (!dontShowUp) {
+                        if (!isAwake) {
+                            // moon rotation
                             if (friendMoonOpacity >= 1) {
-                                badOmenWaitTime += deltaTime;
-                                if (badOmenWaitTime > MAX_BAD_OMEN_WAIT_TIME) {
-                                    ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
-                                        NoMansLand.location("nobody_came"),
-                                        NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
-                                        Optional.of(player.getUUID()),
-                                        player.getRandom()
-                                    );
-                                    packet.applyPacket(player.level(), player);
-                                    DialogueRenderer.getCurrentState()
-                                        .setOverrideColor(DialogueUtil.NOBODY_CAME_TEXT_COLOR);
+                                animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
+                                if (animationProgress >= getFriendMoonAnimation().getFrames())
+                                    FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.AWAKEN);
+                            } else
+                                setFriendMoonAnimation(FriendMoonAnimation.PHASES);
+                        } else {
+                            // Set default animation to emotion (server chosen)
+                            setFriendMoonAnimation(getFriendMoonEmotion(friendMoonInstance));
+                            DialogueState currentState = DialogueRenderer.getCurrentState();
+                            if (currentState != null) {
+                                float talkSpeed = 1 / 3f;
+                                if (currentState.canSpeakCurrently() && !currentState.doneTalking) {
+                                    talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
+                                    animationProgress = talkAnimationProgress;
+                                } else {
+                                    talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
+                                    animationProgress = 0;
                                 }
+                            } else
+                                animationProgress = 0;
+                        }
+                    } else {
+                        // not showing up takes precedent over everything else
+                        animationProgress = 0;
+                        setFriendMoonAnimation(FriendMoonAnimation.PHASES);
+                        if (friendMoonOpacity >= 1) {
+                            badOmenWaitTime += deltaTime;
+                            if (badOmenWaitTime > MAX_BAD_OMEN_WAIT_TIME) {
+                                ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
+                                    NoMansLand.location("nobody_came"),
+                                    NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
+                                    Optional.of(player.getUUID()),
+                                    player.getRandom()
+                                );
+                                packet.applyPacket(player.level(), player);
+                                DialogueRenderer.getCurrentState()
+                                    .setOverrideColor(DialogueUtil.NOBODY_CAME_TEXT_COLOR);
                             }
                         }
                     }
@@ -524,48 +523,52 @@ public class FriendMoonRenderer implements AutoCloseable {
         );
     }
 
-    float elapsedTime = 0f;
     public static int getGradientColor() {
         return FastColor.ARGB32.color(
             175, 220, 135
         );
     }
 
-    private FriendMoonFogModifier fogModifier = new FriendMoonFogModifier();
-    private float fogOpacity = 0.0f;
+    private FriendMoon getClientMoon() {
+        Player player = Minecraft.getInstance().player;
+        if (player != null && clientBlockPos != null) {
+            Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
+            if (FriendMoon.appearConditionsMet(player, clientBlockPos) && optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null))
+                return optionalBasin.get().clientMoon;
+        }
+        return null;
+    }
 
-    /*
-    * Stencil code will have to be rewritten eventually because I don't
-    * trust it but for the most part it's fine and works as intended.
-    * eventually with vulkan I know I will have to make things more render
-    * agnostic and not use GL calls but for the time being this will have to do
-    */
-    public void renderFriendMoon(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
-        Minecraft mc = Minecraft.getInstance();
-        assert mc.level != null;
+    private boolean canRenderMoonEffects() {
+        return (getClientMoon() != null) && (getClientMoon().getState() != FriendMoonState.UPSET);
+    }
 
+    float fogOpacity = 0.0f;
+    FriendMoonFogModifier fogModifier = new FriendMoonFogModifier();
+    public void renderFriendMoonFog(Matrix4f frustumMatrix, Matrix4f projectionMatrix, PoseStack poseStack) {
         poseStack.mulPose(frustumMatrix);
 
         // Renders separate from opacity
+        Minecraft mc = Minecraft.getInstance();
         assert mc.player != null;
+
         boolean enabledFog = FriendMoon.appearConditionsMet(mc.player, clientBlockPos);
-        float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
+        float deltaTime = mc.getTimer().getGameTimeDeltaTicks() / 5f;
         if (mc.isPaused()) deltaTime = 0.0f;
         float t = (float) (1f - Math.exp(deltaTime * -.2f));
         fogOpacity = Mth.lerp(t, fogOpacity, (enabledFog ? (0.5f + (getFriendMoonOpacity() / 2f)) : 0));
 
         if (fogOpacity > 0.01f) {
-            applySkyBlendFunction();
-
             poseStack.pushPose();
             // Render Sky Fog prior to skybox as well
+            float divider = 1 / 6f;
             int fogColor = FastColor.ARGB32.colorFromFloat(
                 1f,
-                fogModifier.getFogRedMultiplier(),
-                fogModifier.getFogGreenMultiplier(),
-                fogModifier.getFogBlueMultiplier()
+                fogModifier.getFogRedMultiplier() * divider,
+                fogModifier.getFogGreenMultiplier() * divider,
+                fogModifier.getFogBlueMultiplier() * divider
             );
-            applyMultiplyBlendFunction();
+//            applyMultiplyBlendFunction();
             drawWithColor(fogColor, fogOpacity, () -> {
                 poseStack.scale(100f, 100f, 100f);
                 MoonlightDreamRenderer.GRADIENT_SHADER.safeGetUniform("Slice").set(0.0f);
@@ -582,8 +585,25 @@ public class FriendMoonRenderer implements AutoCloseable {
 
                 VertexBuffer.unbind();
             }, true);
+
+            applySkyBlendFunction();
             poseStack.popPose();
         }
+
+        poseStack.popPose();
+    }
+
+    /*
+    * Stencil code will have to be rewritten eventually because I don't
+    * trust it but for the most part it's fine and works as intended.
+    * eventually with vulkan I know I will have to make things more render
+    * agnostic and not use GL calls but for the time being this will have to do
+    */
+    public void renderFriendMoon(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, PoseStack poseStack, float partialTick) {
+        Minecraft mc = Minecraft.getInstance();
+        assert mc.level != null;
+
+        poseStack.mulPose(frustumMatrix);
 
         // Moon Rotation in the sky
         Quaternionf rotationQuaternion = Axis.YP.rotationDegrees(friendMoonYawAngle)

@@ -6,12 +6,16 @@ import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.pots.LargePotBlock;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
@@ -103,6 +107,27 @@ public abstract class LevelRendererMixin {
         if (clientManager.dreamShouldRender() && clientManager.getRenderer() != null) {
             if (!clientManager.getRenderer().shouldRenderClouds()) ci.cancel();
         }
+    }
+
+    /*
+    * Renders post rain calc, unrelated but this happens before
+    * moon rendering and post sky rendering so its good enough
+    */
+    @Inject(
+        method = "renderSky",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/multiplayer/ClientLevel;getRainLevel(F)F"
+        )
+    )
+    private void nml$renderFriendMoonFog(
+        Matrix4f frustumMatrix, Matrix4f projectionMatrix,
+        float partialTick, Camera camera, boolean isFoggy,
+        Runnable skyFogSetup, CallbackInfo ci
+    ) {
+        FriendMoonRenderer.getInstance().renderFriendMoonFog(
+            frustumMatrix, projectionMatrix, new PoseStack()
+        );
     }
 
     @Inject(
