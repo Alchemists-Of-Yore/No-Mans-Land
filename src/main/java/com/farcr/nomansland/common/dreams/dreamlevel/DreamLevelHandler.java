@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.dreams.dreamlevel;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.extension.MinecraftServerExtension;
+import com.farcr.nomansland.common.extension.PlayerExtension;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
@@ -93,9 +94,16 @@ public class DreamLevelHandler implements AutoCloseable {
         );
 
         MinecraftServer server = serverPlayer.getServer();
-        BlockPos respawnPosition = serverPlayer.getRespawnPosition();
+        PlayerExtension playerExtension = (PlayerExtension) serverPlayer;
+        BlockPos respawnPosition = playerExtension.nml$getLastSleepPosition();
+        if (respawnPosition == null) respawnPosition = serverPlayer.getRespawnPosition();
         if (respawnPosition == null) respawnPosition = server.overworld().getSharedSpawnPos();
+
         ServerLevel respawnDimension = server.getLevel(serverPlayer.getRespawnDimension());
+        if (playerExtension.nml$getLastSleepDimension() != null) {
+            ServerLevel storedRespawnDimension = server.getLevel(playerExtension.nml$getLastSleepDimension());
+            if (storedRespawnDimension != null) respawnDimension = storedRespawnDimension;
+        }
         if (respawnDimension == null) respawnDimension = server.overworld();
 
         if (load) {

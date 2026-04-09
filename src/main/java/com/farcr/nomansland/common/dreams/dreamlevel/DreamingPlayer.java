@@ -8,16 +8,19 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -145,6 +148,10 @@ public class DreamingPlayer extends Mob {
         super.remove(reason);
     }
 
+    public void addChunkTicket(ServerLevel serverLevel) {
+        serverLevel.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(this.blockPosition()), 3, this.blockPosition());
+    }
+
     @Override
     public void tick() {
         if (!level().isClientSide && getTetheredPlayer() == null)
@@ -154,6 +161,8 @@ public class DreamingPlayer extends Mob {
                 this.remove(RemovalReason.DISCARDED); // originally i would discard tether but in odd cases I feel the player might be teleported unintentionally
 //                discardTether();
         }
+
+        if (level() instanceof ServerLevel serverLevel) addChunkTicket(serverLevel);
 
         this.setDeltaMovement(Vec3.ZERO);
         if (!isSleeping() && !debug) discardTether();

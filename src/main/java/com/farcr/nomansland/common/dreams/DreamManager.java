@@ -94,6 +94,7 @@ public class DreamManager extends SavedData {
             ServerLevel level = serverPlayer.serverLevel();
             DreamingPlayer dreamPlayer = NMLEntities.DREAMING_PLAYER.get().create(level);
             dreamPlayer.setTetheredPlayer(serverPlayer);
+            dreamPlayer.addChunkTicket(level);
             level.addFreshEntity(dreamPlayer);
             dreamerMap.put(playerUUID, dreamPlayer);
         }

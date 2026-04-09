@@ -16,5 +16,8 @@
     ],
     "net/minecraft/server/MinecraftServer": [
         "com/farcr/nomansland/common/extension/MinecraftServerExtension"
+    ],
+    "net/minecraft/world/entity/player": [
+      "com/farcr/nomansland/common/extension/PlayerExtension"
     ]
 }
