@@ -37,10 +37,6 @@
     "nomansland:chests/hardtack_shipwreck",
     "nomansland:chests/hardtack_stronghold",
 
-    "nomansland:chests/temp_living_urn_village",
-    "nomansland:chests/temp_living_urn_jungle_temple",
-    "nomansland:chests/temp_living_urn_desert_pyramid",
-
     "nomansland:archaeology/trinket"
   ]
 }
