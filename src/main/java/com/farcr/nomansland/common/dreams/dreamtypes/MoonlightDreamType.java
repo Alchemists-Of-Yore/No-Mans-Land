@@ -43,7 +43,7 @@ public class MoonlightDreamType extends DreamType {
 
     @Override
     public boolean timeCondition(ServerPlayer player, ServerLevel level) {
-        return !FriendMoon.hasMetWithPlayer(player) && super.timeCondition(player, level);
+        return super.timeCondition(player, level);
     }
 
     @Override

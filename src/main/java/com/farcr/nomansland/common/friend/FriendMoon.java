@@ -436,7 +436,7 @@ public class FriendMoon extends SavedData {
                 new ClientboundMeetingPointPacket(
                     lastPosition,
                     meetingPointPosition,
-                    (state.exceedsDays() || FriendMoon.hasMetWithPlayer(player))
+                    state.exceedsDays()
                 )
             );
         }

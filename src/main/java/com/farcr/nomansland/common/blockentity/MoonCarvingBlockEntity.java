@@ -45,8 +45,7 @@ public class MoonCarvingBlockEntity extends BlockEntity {
     private boolean playerMeetsCondition(ServerPlayer player) {
         DreamStorage storage = DreamManager.getOrDefault(player.getServer()).getPlayerStorage(player);
         return (storage.getTimeRemainingForDream(MOONLIGHT_DREAM_TYPE) <= 0)
-            && (!storage.getHasExperiencedDream(MOONLIGHT_DREAM_TYPE))
-            && (!FriendMoon.hasMetWithPlayer(player));
+            && (!storage.getHasExperiencedDream(MOONLIGHT_DREAM_TYPE));
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, MoonCarvingBlockEntity blockEntity) {
