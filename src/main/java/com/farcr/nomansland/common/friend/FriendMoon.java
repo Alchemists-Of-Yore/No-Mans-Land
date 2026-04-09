@@ -208,7 +208,6 @@ public class FriendMoon extends SavedData {
 
     private BlockPos targetJukeboxPos;
     private int jukeboxInteractionTicks = -1;
-    public static final int JUKEBOX_CONVERGE_DURATION = 25;
     public static final int JUKEBOX_PARTICLE_DURATION = 40;
 
     public boolean isJukeboxInteractionActive() { return targetJukeboxPos != null; }

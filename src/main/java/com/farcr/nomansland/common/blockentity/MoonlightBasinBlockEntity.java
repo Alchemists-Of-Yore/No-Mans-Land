@@ -326,27 +326,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     double cx = jukeboxPos.getX() + 0.5;
                     double cy = jukeboxPos.getY() + 0.5;
                     double cz = jukeboxPos.getZ() + 0.5;
-                    boolean extractPhase = ticks >= FriendMoon.JUKEBOX_CONVERGE_DURATION;
                     for (int i = 0; i < 2; i++) {
-                        if (!extractPhase) {
-                            double startX = cx + (level.getRandom().nextDouble() - 0.5) * 3;
-                            double startY = cy + 2 + level.getRandom().nextDouble() * 3;
-                            double startZ = cz + (level.getRandom().nextDouble() - 0.5) * 3;
-                            level.addParticle(
-                                NMLParticleTypes.MOONLIGHT_SPARK.get(),
-                                startX, startY, startZ,
-                                (cx - startX) * 0.04, (cy - startY) * 0.04, (cz - startZ) * 0.04
-                            );
-                        } else {
-                            double burstX = (level.getRandom().nextDouble() - 0.5) * 0.15;
-                            double burstY = 0.05 + level.getRandom().nextDouble() * 0.1;
-                            double burstZ = (level.getRandom().nextDouble() - 0.5) * 0.15;
-                            level.addParticle(
-                                NMLParticleTypes.MOONLIGHT_SPARK.get(),
-                                cx, cy + 0.3, cz,
-                                burstX, burstY, burstZ
-                            );
-                        }
+                        double burstX = (level.getRandom().nextDouble() - 0.5) * 0.15;
+                        double burstY = 0.05 + level.getRandom().nextDouble() * 0.1;
+                        double burstZ = (level.getRandom().nextDouble() - 0.5) * 0.15;
+                        level.addParticle(
+                            NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                            cx, cy + 0.3, cz,
+                            burstX, burstY, burstZ
+                        );
                     }
                 }
             }
