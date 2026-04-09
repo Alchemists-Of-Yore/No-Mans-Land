@@ -689,7 +689,7 @@ public class FriendMoon extends SavedData {
                 applyDialogueLength(
                     getDialogueFromStream(NMLRegistries.GREETING_DIALOGUE_KEY,
                         (registry) -> addToCommuneFilter(
-                            registry, (totalPlayers > lastTotalPlayers)
+                            registry, ((totalPlayers > 1) && (totalPlayers > lastTotalPlayers))
                         )).dispatch(level, getFriendshipPlayers())
                 );
                 lastTotalPlayers = totalPlayers;

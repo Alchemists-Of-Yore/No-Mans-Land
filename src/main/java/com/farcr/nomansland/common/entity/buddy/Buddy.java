@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.Npc;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
@@ -207,8 +208,13 @@ public class Buddy extends PathfinderMob implements Npc {
             ).findFirst();
             if (foodResult.isPresent()) {
                 if (!this.level().isClientSide) {
-                    ItemStack resultingItem = itemstack.finishUsingItem(level(), player);
-                    player.setItemInHand(hand, resultingItem);
+                    if (!player.hasInfiniteMaterials()) {
+                        Optional<ItemStack> resultingItem = Optional.empty();
+                        FoodProperties foodProperties = itemstack.getFoodProperties(this);
+                        if (foodProperties != null) resultingItem = foodProperties.usingConvertsTo();
+                        resultingItem.ifPresentOrElse((item) -> player.setItemInHand(hand, item),
+                            () -> itemstack.consume(1, player));
+                    }
 
                     this.playSound(
                         SoundEvents.PLAYER_BURP,

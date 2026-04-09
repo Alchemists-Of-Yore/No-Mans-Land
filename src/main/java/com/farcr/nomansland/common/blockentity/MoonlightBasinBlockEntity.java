@@ -113,7 +113,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }, level, pos);
     }
 
-    public static final float FRIENDSHIP_MAX_RANGE = 9;
+    public static final float FRIENDSHIP_MAX_RANGE = 12;
 
     private OfferingContext inspectionContext;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
