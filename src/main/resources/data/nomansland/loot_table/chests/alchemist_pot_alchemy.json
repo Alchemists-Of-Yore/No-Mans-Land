@@ -361,7 +361,7 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "decoration": "minecraft:red_x",
+              "decoration": "nomansland:bell_sanctuary",
               "function": "minecraft:exploration_map",
               "skip_existing_chunks": false,
               "zoom": 1,
@@ -388,7 +388,7 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "decoration": "minecraft:red_x",
+              "decoration": "nomansland:alchemist_ruins",
               "function": "minecraft:exploration_map",
               "skip_existing_chunks": false,
               "zoom": 1,

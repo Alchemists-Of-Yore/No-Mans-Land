@@ -368,7 +368,7 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "decoration": "minecraft:red_x",
+              "decoration": "nomansland:mineshaft",
               "function": "minecraft:exploration_map",
               "skip_existing_chunks": false,
               "zoom": 1,

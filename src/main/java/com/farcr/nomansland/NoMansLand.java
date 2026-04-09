@@ -76,6 +76,7 @@ public class NoMansLand {
         NMLStructurePlacements.STRUCTURE_PLACEMENTS.register(bus);
         NMLBlockStateProviderTypes.BLOCKSTATE_PROVIDER_TYPES.register(bus);
         NMLStructureElementTypes.STRUCTURE_ELEMENTS.register(bus);
+        NMLMapDecorationTypes.MAP_DECORATION_TYPES.register(bus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();
