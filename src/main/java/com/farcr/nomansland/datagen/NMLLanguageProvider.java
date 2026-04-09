@@ -125,6 +125,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.firebomb", "Firebomb");
         add("effect.nomansland.flammable", "Flammable");
         add("effect.nomansland.friendship", "Friendship");
+        add("effect.nomansland.happiness", "Happiness");
         add("item.nomansland.bandage.effect.empty", "Uncraftable Bandage");
         add("item.nomansland.bandage.effect.fire_resistance", "Fire Resistance Bandage");
         add("item.nomansland.bandage.effect.harming", "Harming Bandage");

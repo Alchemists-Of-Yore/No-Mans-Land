@@ -21,5 +21,5 @@ public class NMLEffects {
             () -> new PacifiedEffect(MobEffectCategory.NEUTRAL));
 
     public static final DeferredHolder<MobEffect, MobEffect> HAPPINESS = MOB_EFFECTS.register("happiness",
-        () -> new HappinessEffect(MobEffectCategory.BENEFICIAL, 0));
+        () -> new HappinessEffect(MobEffectCategory.BENEFICIAL, 16746142));
 }
