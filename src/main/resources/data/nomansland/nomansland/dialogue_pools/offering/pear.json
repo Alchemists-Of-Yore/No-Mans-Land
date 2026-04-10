@@ -1,8 +1,0 @@
-{
-    "condition": {
-        "type": "nomansland:item_conditional",
-        "items": "nomansland:pear"
-    },
-    "weight": 1,
-    "text": "Those who sow ill will/ find only ire to harvest. This is one fruit of such folly./ Handle it with care, dear Friend."
-}
