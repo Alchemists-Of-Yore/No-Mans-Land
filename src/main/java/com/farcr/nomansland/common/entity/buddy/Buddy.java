@@ -68,6 +68,8 @@ public class Buddy extends PathfinderMob implements Npc {
         builder.define(DATA_ASCENSION_TICKS, -1);
     }
 
+    @Override public boolean shouldStayCloseToLeashHolder() { return false; }
+
     private static final int SUSPICIOUS_STEW_MULTIPLIER = 10;
 
     private BlockPos anchorPosition;
@@ -148,7 +150,8 @@ public class Buddy extends PathfinderMob implements Npc {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 50f)
-            .add(Attributes.KNOCKBACK_RESISTANCE, -.5f);
+            .add(Attributes.KNOCKBACK_RESISTANCE, -.5f)
+            .add(Attributes.MOVEMENT_SPEED, 0.2);
     }
 
     @Override

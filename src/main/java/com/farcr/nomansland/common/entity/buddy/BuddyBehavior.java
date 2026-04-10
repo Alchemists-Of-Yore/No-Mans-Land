@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.entity.buddy;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -87,7 +88,8 @@ public class BuddyBehavior extends Behavior<Buddy> {
             buddy.followTimer--;
             if (buddy.followTarget.isAlive() && buddy.distanceTo(buddy.followTarget) < 20) {
                 if (brain.getMemory(MemoryModuleType.WALK_TARGET).isEmpty() && buddy.distanceTo(buddy.followTarget) > 5) {
-                    BehaviorUtils.setWalkAndLookTargetMemories(buddy, buddy.followTarget.blockPosition(), 0.2f, 4);
+                    BehaviorUtils.setWalkAndLookTargetMemories(buddy, buddy.followTarget.blockPosition(),
+                        (float) buddy.getAttributeValue(Attributes.MOVEMENT_SPEED), 4);
                 }
                 buddy.getLookControl().setLookAt(buddy.followTarget.getEyePosition(gameTime));
             } else {
