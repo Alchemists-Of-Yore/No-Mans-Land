@@ -212,8 +212,14 @@ public class Buddy extends PathfinderMob implements Npc {
                         Optional<ItemStack> resultingItem = Optional.empty();
                         FoodProperties foodProperties = itemstack.getFoodProperties(this);
                         if (foodProperties != null) resultingItem = foodProperties.usingConvertsTo();
-                        resultingItem.ifPresentOrElse((item) -> player.setItemInHand(hand, item),
-                            () -> itemstack.consume(1, player));
+                        itemstack.shrink(1);
+                        if (resultingItem.isPresent()) {
+                            ItemStack result = resultingItem.get().copy();
+                            if (itemstack.isEmpty())
+                                player.setItemInHand(hand, result);
+                            else if (!player.getInventory().add(result))
+                                player.drop(result, false);
+                        }
                     }
 
                     this.playSound(
