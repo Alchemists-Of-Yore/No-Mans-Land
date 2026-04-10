@@ -14,6 +14,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlock {
 
     public MoonCarvingBlock(Properties properties) {
@@ -44,6 +48,24 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
         return createTickerHelper(blockEntityType, NMLBlockEntities.MOON_CARVING.get(), MoonCarvingBlockEntity::tick);
     }
 
+    public boolean queryPositions(
+        Level level, BlockPos placedPos, Direction facing,
+        int rotation, Function<BlockState, Boolean> breakOutCondition
+    ) {
+        Direction right = getPlaneRight(facing, rotation);
+        Direction down = getPlaneDown(facing, rotation);
+
+        for (int col = -1; col <= 1; col++) {
+            for (int row = -1; row <= 1; row++) {
+                if (col == 0 && row == 0) continue;
+                BlockPos pos = placedPos.relative(right, col).relative(down, row);
+                if (breakOutCondition.apply(level.getBlockState(pos)))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level level = context.getLevel();
@@ -63,18 +85,9 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
             rotation = 0;
         }
 
-        Direction right = getPlaneRight(facing, rotation);
-        Direction down = getPlaneDown(facing, rotation);
-
-        for (int col = -1; col <= 1; col++) {
-            for (int row = -1; row <= 1; row++) {
-                if (col == 0 && row == 0) continue;
-                BlockPos pos = placedPos.relative(right, col).relative(down, row);
-                if (!level.getBlockState(pos).canBeReplaced(context)) {
-                    return null;
-                }
-            }
-        }
+        // sorry tazer I dont like duplicating code so i've condensed this here so I can use it in the blockentity as well !!!
+        if (queryPositions(level, placedPos, facing, rotation, (blockState) -> !blockState.canBeReplaced(context)))
+            return null;
 
         return this.defaultBlockState()
                 .setValue(FACING, facing)

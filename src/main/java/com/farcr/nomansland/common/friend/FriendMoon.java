@@ -16,11 +16,11 @@ import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,8 +30,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -40,9 +38,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import com.farcr.nomansland.common.registry.NMLMapDecorationTypes;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -135,6 +139,104 @@ public class FriendMoon extends SavedData {
         setDirty();
     }
 
+    public void abortSpecialInteractions() {
+        abortAscension();
+        mapInteractionActive = false;
+        mapInteractionTicks = -1;
+        targetJukeboxPos = null;
+        jukeboxInteractionTicks = -1;
+        setDirty();
+    }
+
+    private boolean mapInteractionActive = false;
+    private int mapInteractionTicks = -1;
+    public static final int MAP_PARTICLE_DURATION = 30;
+
+    public static boolean isMapOffering(MoonlightBasinBlockEntity.OfferingContext offeringContext) {
+        if (!offeringContext.isValid()) return false;
+        Entity entity = offeringContext.entity();
+        if (entity instanceof ItemEntity itemEntity) {
+            ItemStack stack = itemEntity.getItem();
+            return stack.is(Items.FILLED_MAP) || stack.is(Items.MAP);
+        }
+        return false;
+    }
+
+    public boolean mapInteraction(Level level, Entity entity, BlockPos basinPos) {
+        if (!mapInteractionActive) {
+            mapInteractionActive = true;
+            mapInteractionTicks = 0;
+            setDirty();
+            return true;
+        }
+
+        mapInteractionTicks++;
+        for (int i = 0; i < 2; i++) {
+            double offsetX = (level.getRandom().nextDouble() - 0.5) * 0.6;
+            double offsetZ = (level.getRandom().nextDouble() - 0.5) * 0.6;
+            level.addParticle(
+                NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                entity.getX() + offsetX, entity.getY() + level.getRandom().nextDouble() * 0.5, entity.getZ() + offsetZ,
+                0, 0.03, 0
+            );
+        }
+
+        if (mapInteractionTicks >= MAP_PARTICLE_DURATION) {
+            completeMapInteraction(level, entity, basinPos);
+            return false;
+        }
+        return true;
+    }
+
+    private void completeMapInteraction(Level level, Entity entity, BlockPos basinPos) {
+        if (entity instanceof ItemEntity itemEntity && level instanceof ServerLevel serverLevel) {
+            Holder<MapDecorationType> targetPoint = NMLMapDecorationTypes.MOONLIGHT_BASIN;
+            ItemStack stack = itemEntity.getItem();
+            if (stack.is(Items.MAP)) {
+                ItemStack basinMap = MapItem.create(serverLevel, basinPos.getX(), basinPos.getZ(), (byte) 2, true, true);
+                MapItemSavedData.addTargetDecoration(basinMap, basinPos, "+", targetPoint);
+                itemEntity.setItem(basinMap);
+            } else if (stack.is(Items.FILLED_MAP)) {
+                MapItemSavedData.addTargetDecoration(stack, basinPos, "+", targetPoint);
+                itemEntity.setItem(stack);
+            }
+        }
+        mapInteractionActive = false;
+        mapInteractionTicks = -1;
+        setDirty();
+    }
+
+    private BlockPos targetJukeboxPos;
+    private int jukeboxInteractionTicks = -1;
+    public static final int JUKEBOX_PARTICLE_DURATION = 40;
+
+    public boolean isJukeboxInteractionActive() { return targetJukeboxPos != null; }
+    public BlockPos getTargetJukeboxPos() { return targetJukeboxPos; }
+    public int getJukeboxInteractionTicks() { return jukeboxInteractionTicks; }
+
+    public static final ResourceLocation JUKEBOX_DIALOGUE = NoMansLand.location("jukebox");
+
+    public void startJukeboxInteraction(BlockPos pos) {
+        targetJukeboxPos = pos;
+        jukeboxInteractionTicks = 0;
+        resetDialogue(false);
+        applyDialogueLength(
+            getDialogueFromLocation(NMLRegistries.SPECIAL_DIALOGUE_KEY, JUKEBOX_DIALOGUE)
+                .dispatch(level, getFriendshipPlayers())
+        );
+        setDirty();
+    }
+
+    private void completeJukeboxInteraction() {
+        if (level != null && targetJukeboxPos != null) {
+            if (level.getBlockEntity(targetJukeboxPos) instanceof JukeboxBlockEntity jukebox)
+                jukebox.popOutTheItem();
+        }
+        targetJukeboxPos = null;
+        jukeboxInteractionTicks = -1;
+        setDirty();
+    }
+
     private final List<BuddyStar> buddyStars = new ArrayList<>();
     public List<BuddyStar> getBuddyStars() { return buddyStars; }
 
@@ -147,7 +249,7 @@ public class FriendMoon extends SavedData {
     public FriendMoonState getState() { return this.state; }
     public void setState(FriendMoonState newState) {
         if (newState != state) {
-            if (state == FriendMoonState.OFFERING) abortAscension();
+            abortSpecialInteractions();
             this.state = newState;
             setDirty();
         }
@@ -162,7 +264,7 @@ public class FriendMoon extends SavedData {
     }
 
     public void resetValues() {
-        abortAscension();
+        abortSpecialInteractions();
         awake = false;
         setState(FriendMoonState.GREETING);
         setCandleTime(-1);
@@ -200,6 +302,13 @@ public class FriendMoon extends SavedData {
                 BuddyStar.CODEC.parse(NbtOps.INSTANCE, starCompound).result().ifPresent(buddyStars::add);
         }
 
+        mapInteractionActive = tag.getBoolean("MapInteractionActive");
+        mapInteractionTicks = tag.getInt("MapInteractionTicks");
+        jukeboxInteractionTicks = tag.getInt("JukeboxInteractionTicks");
+        if (tag.contains("JukeboxX"))
+            targetJukeboxPos = new BlockPos(tag.getInt("JukeboxX"), tag.getInt("JukeboxY"), tag.getInt("JukeboxZ"));
+        else targetJukeboxPos = null;
+
         cosmicBodyStateMap.clear();
         for (Tag positionTag : tag.getList("StoredPlayerPositions", 10)) {
             if (positionTag instanceof CompoundTag stateCompound) {
@@ -226,6 +335,15 @@ public class FriendMoon extends SavedData {
         for (BuddyStar star : buddyStars)
             BuddyStar.CODEC.encodeStart(NbtOps.INSTANCE, star).result().ifPresent(starsTag::add);
         tag.put("BuddyStars", starsTag);
+
+        tag.putBoolean("MapInteractionActive", mapInteractionActive);
+        tag.putInt("MapInteractionTicks", mapInteractionTicks);
+        tag.putInt("JukeboxInteractionTicks", jukeboxInteractionTicks);
+        if (targetJukeboxPos != null) {
+            tag.putInt("JukeboxX", targetJukeboxPos.getX());
+            tag.putInt("JukeboxY", targetJukeboxPos.getY());
+            tag.putInt("JukeboxZ", targetJukeboxPos.getZ());
+        }
 
         ListTag positionTag = new ListTag();
         cosmicBodyStateMap.forEach((uuid, bodyState) ->
@@ -436,7 +554,7 @@ public class FriendMoon extends SavedData {
                 new ClientboundMeetingPointPacket(
                     lastPosition,
                     meetingPointPosition,
-                    (state.exceedsDays() || FriendMoon.hasMetWithPlayer(player))
+                    state.exceedsDays()
                 )
             );
         }
@@ -472,10 +590,10 @@ public class FriendMoon extends SavedData {
             }
 
             // query players that had friendship
-            if (getState() != FriendMoonState.OFFERING || lastTotalPlayers <= 1) {
+            if ((getState() != FriendMoonState.OFFERING || lastTotalPlayers <= 1) && !isJukeboxInteractionActive()) {
                 for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
                     lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                    if (lastFriendshipPlayers.get(player) >= 5 || player.isDeadOrDying()) {
+                    if (lastFriendshipPlayers.get(player) >= 100 || player.isDeadOrDying()) {
                         if (!cannotObtainFriendship(player)) {
                             setState(FriendMoonState.PASSIVE);
                             applyDialogueLength(
@@ -508,6 +626,13 @@ public class FriendMoon extends SavedData {
                         forFriendshipPlayers((player) ->
                             NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player));
                     }
+                }
+
+                if (jukeboxInteractionTicks >= 0) {
+                    jukeboxInteractionTicks++;
+                    if (jukeboxInteractionTicks >= JUKEBOX_PARTICLE_DURATION)
+                        completeJukeboxInteraction();
+                    setDirty();
                 }
             } else if (getState() == FriendMoonState.OFFERING)
                 setState(FriendMoonState.PASSIVE);

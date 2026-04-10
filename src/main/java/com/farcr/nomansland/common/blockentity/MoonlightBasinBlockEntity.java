@@ -31,6 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -113,7 +114,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }, level, pos);
     }
 
-    public static final float FRIENDSHIP_MAX_RANGE = 12;
+    public static final float FRIENDSHIP_MAX_RANGE = 16;
 
     private OfferingContext inspectionContext;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
@@ -191,6 +192,22 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     }
 
     private HashMap<UUID, Boolean> quickSparkHash = new HashMap<>();
+    private int jukeboxScanTimer = 0;
+
+    private static BlockPos findPlayingJukebox(Level level, BlockPos basinPos) {
+        int range = (int) FRIENDSHIP_MAX_RANGE;
+        for (int x = -range; x <= range; x++) {
+            for (int y = -BLOCK_Y_REACH; y < BLOCK_Y_REACH; y++) {
+                for (int z = -range; z <= range; z++) {
+                    BlockPos checkPos = basinPos.offset(x, y, z);
+                    BlockState checkState = level.getBlockState(checkPos);
+                    if (checkState.hasProperty(BlockStateProperties.HAS_RECORD) && checkState.getValue(BlockStateProperties.HAS_RECORD))
+                        return checkPos;
+                }
+            }
+        }
+        return null;
+    }
     public static void tick(Level level, BlockPos pos, BlockState state, MoonlightBasinBlockEntity blockEntity) {
         @Nullable FriendMoon friendMoon = (!level.isClientSide() ? FriendMoon.getOrDefault(level.getServer().overworld()) : blockEntity.clientMoon);
         if (friendMoon == null)
@@ -233,6 +250,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     friendMoon.abortAscension();
                 } else {
                     boolean specialOffering = FriendMoon.isSpecialInteraction(inspectionContext);
+                    boolean mapOffering = FriendMoon.isMapOffering(inspectionContext);
 
                     Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
                     entity.setDeltaMovement(new Vec3(0, 0, 0));
@@ -259,6 +277,9 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                             if (specialOffering) {
                                 if (!friendMoon.specialInteraction(level, entity))
                                     blockEntity.setInspectionContext(null, friendMoon);
+                            } else if (mapOffering) {
+                                if (!friendMoon.mapInteraction(level, entity, pos))
+                                    blockEntity.setInspectionContext(null, friendMoon);
                             }
                         }
                     }
@@ -275,7 +296,15 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     blockEntity.setInspectionContext(context, friendMoon);
             }
 
-            // Check Candles at the end
+            if (friendMoon.getState() == FriendMoonState.PASSIVE && !friendMoon.isJukeboxInteractionActive()) {
+                if (blockEntity.jukeboxScanTimer++ >= 20) {
+                    blockEntity.jukeboxScanTimer = 0;
+                    BlockPos jukeboxPos = findPlayingJukebox(level, pos);
+                    if (jukeboxPos != null)
+                        friendMoon.startJukeboxInteraction(jukeboxPos);
+                }
+            }
+
             ArrayList<BlockPos> candleList = getCandles(level, pos);
             if (blockEntity.queryNegativeInteraction(candleList)) {
                 friendMoon.negative();
@@ -289,28 +318,49 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                         candleBlock.lightSpark(blockState, level, blockPos, level.getRandom());
                 });
             }
-        } else if (friendMoon.getState() != FriendMoonState.OFFERING) {
-            // Oof, it's fine with caching I guess
-            for (Entity entity : level.getEntitiesOfClass(LivingEntity.class, aabb, (entity) -> {
-                UUID uuid = entity.getUUID();
-                if (!blockEntity.quickSparkHash.containsKey(uuid)) {
-                    ArrayList<DialoguePool> list = new ArrayList<>();
-                    DialogueUtil.appendTags(
-                        entity.getType(), level.registryAccess(), Registries.ENTITY_TYPE,
-                        MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP,
-                        MoonlightOfferingConditions.EntityOfferingConditional.KEY_MAP,
-                        list
-                    );
-                    blockEntity.quickSparkHash.put(uuid, !list.isEmpty());
+        } else {
+            if (friendMoon.isJukeboxInteractionActive() && friendMoon.getJukeboxInteractionTicks() >= 0) {
+                BlockPos jukeboxPos = friendMoon.getTargetJukeboxPos();
+                int ticks = friendMoon.getJukeboxInteractionTicks();
+                if (jukeboxPos != null) {
+                    double cx = jukeboxPos.getX() + 0.5;
+                    double cy = jukeboxPos.getY() + 0.5;
+                    double cz = jukeboxPos.getZ() + 0.5;
+                    for (int i = 0; i < 2; i++) {
+                        double burstX = (level.getRandom().nextDouble() - 0.5) * 0.15;
+                        double burstY = 0.05 + level.getRandom().nextDouble() * 0.1;
+                        double burstZ = (level.getRandom().nextDouble() - 0.5) * 0.15;
+                        level.addParticle(
+                            NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                            cx, cy + 0.3, cz,
+                            burstX, burstY, burstZ
+                        );
+                    }
                 }
-                return blockEntity.quickSparkHash.get(uuid);
-            })) {
-                if (level.getRandom().nextFloat() <= 0.25) {
-                    level.addParticle(
-                        NMLParticleTypes.MOONLIGHT_SPARK.get(),
-                        entity.getX(), entity.getY() + 0.5f, entity.getZ(),
-                        0f, 0f, 0f
-                    );
+            }
+
+            if (friendMoon.getState() != FriendMoonState.OFFERING) {
+                for (Entity entity : level.getEntitiesOfClass(LivingEntity.class, aabb, (entity) -> {
+                    UUID uuid = entity.getUUID();
+                    if (!blockEntity.quickSparkHash.containsKey(uuid)) {
+                        ArrayList<DialoguePool> list = new ArrayList<>();
+                        DialogueUtil.appendTags(
+                                entity.getType(), level.registryAccess(), Registries.ENTITY_TYPE,
+                                MoonlightOfferingConditions.EntityOfferingConditional.COMPILED_MAP,
+                                MoonlightOfferingConditions.EntityOfferingConditional.KEY_MAP,
+                                list
+                        );
+                        blockEntity.quickSparkHash.put(uuid, !list.isEmpty());
+                    }
+                    return blockEntity.quickSparkHash.get(uuid);
+                })) {
+                    if (level.getRandom().nextFloat() <= 0.25) {
+                        level.addParticle(
+                                NMLParticleTypes.MOONLIGHT_SPARK.get(),
+                                entity.getX(), entity.getY() + 0.5f, entity.getZ(),
+                                0f, 0f, 0f
+                        );
+                    }
                 }
             }
         }

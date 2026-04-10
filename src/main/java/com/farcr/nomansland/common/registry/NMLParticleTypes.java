@@ -58,10 +58,10 @@ public class NMLParticleTypes {
     );
 
     public static final Supplier<SimpleParticleType> MOONLIGHT_RAY = register("moonlight_ray");
-
     public static final Supplier<SimpleParticleType> MOONLIGHT_FLAME = register("moonlight_flame");
-
     public static final Supplier<SimpleParticleType> MOONLIGHT_SPARK = register("moonlight_spark");
+
+    public static final Supplier<SimpleParticleType> DEEP_SLEEP = register("deep_sleep");
 
     public static final Supplier<ParticleType<PotShatterParticleOption>> POT_SHATTER = register(
             "pot_shatter", false,

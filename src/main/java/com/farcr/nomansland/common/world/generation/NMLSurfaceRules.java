@@ -203,6 +203,11 @@ public class NMLSurfaceRules {
                 )
         );
 
+        SurfaceRules.RuleSource caves_surface = SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(NMLBiomes.CAVES),
+                DEEP_GRAVEL
+        );
+
         SurfaceRules.RuleSource cave_depths = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.CAVE_DEPTHS),
                 SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, true, CaveSurface.FLOOR),
@@ -216,6 +221,7 @@ public class NMLSurfaceRules {
                 SurfaceRules.ifTrue(
                         SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
+                                caves_surface,
                                 // deeper layer biome modifiers - sand, beaches...
                                 SurfaceRules.sequence(
                                         gravel_shores,

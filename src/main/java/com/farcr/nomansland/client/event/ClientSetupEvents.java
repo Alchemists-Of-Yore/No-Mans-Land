@@ -22,11 +22,9 @@ import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -223,6 +221,9 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_SPARK.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));
+        event.registerSpriteSet(NMLParticleTypes.DEEP_SLEEP.get(), sprites
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new DeepSleepParticle(clientLevel, d, e, f, g, h, i, sprites));
         event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
     }
 

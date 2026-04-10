@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.networking;
+package com.farcr.nomansland.common.networking.buddy;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
@@ -13,11 +13,13 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record ClientboundBuddyCrouchPacket(
     int buddyID
 ) implements CustomPacketPayload {
-    public static final StreamCodec<ByteBuf, ClientboundBuddyCrouchPacket> STREAM_CODEC  = StreamCodec.composite(
-        ByteBufCodecs.INT, ClientboundBuddyCrouchPacket::buddyID,
+    public static final StreamCodec<ByteBuf, ClientboundBuddyCrouchPacket> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.INT,
+        ClientboundBuddyCrouchPacket::buddyID,
         ClientboundBuddyCrouchPacket::new
     );
-    public static final CustomPacketPayload.Type<ClientboundBuddyCrouchPacket> TYPE = new CustomPacketPayload.Type<>(NoMansLand.location("client/buddy_crouch"));
+    public static final CustomPacketPayload.Type<ClientboundBuddyCrouchPacket> TYPE =
+        new CustomPacketPayload.Type<>(NoMansLand.location("client/buddy_crouch"));
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -29,8 +31,7 @@ public record ClientboundBuddyCrouchPacket(
             context.enqueueWork(() -> {
                 Player player = context.player();
                 Entity entity = player.level().getEntity(buddyID);
-                if (entity instanceof Buddy buddy)
-                    buddy.crouch();
+                if (entity instanceof Buddy buddy) buddy.crouch();
             });
         }
     }
