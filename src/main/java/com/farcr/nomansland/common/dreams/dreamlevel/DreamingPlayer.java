@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.dreams.dreamlevel;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.*;
@@ -150,6 +151,24 @@ public class DreamingPlayer extends Mob {
 
     public void addChunkTicket(ServerLevel serverLevel) {
         serverLevel.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(this.blockPosition()), 3, this.blockPosition());
+    }
+
+    float tickCooldown = 0;
+    float maxParticleTick = 15;
+    @Override
+    public void aiStep() {
+        Level level = this.level();
+        if (level.isClientSide) {
+            tickCooldown++;
+            if (tickCooldown < maxParticleTick)
+                return;
+            tickCooldown = 0;
+            level.addParticle(
+                NMLParticleTypes.DEEP_SLEEP.get(),
+                getX(), getY(), getZ(),
+                0, 0.01, 0
+            );
+        }
     }
 
     @Override
