@@ -150,8 +150,7 @@ public class Buddy extends PathfinderMob implements Npc {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 50f)
-            .add(Attributes.KNOCKBACK_RESISTANCE, -.5f)
-            .add(Attributes.MOVEMENT_SPEED, 0.2);
+            .add(Attributes.KNOCKBACK_RESISTANCE, -.5f);
     }
 
     @Override

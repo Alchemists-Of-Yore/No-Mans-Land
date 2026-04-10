@@ -89,7 +89,7 @@ public class BuddyBehavior extends Behavior<Buddy> {
             if (buddy.followTarget.isAlive() && buddy.distanceTo(buddy.followTarget) < 20) {
                 if (brain.getMemory(MemoryModuleType.WALK_TARGET).isEmpty() && buddy.distanceTo(buddy.followTarget) > 5) {
                     BehaviorUtils.setWalkAndLookTargetMemories(buddy, buddy.followTarget.blockPosition(),
-                        (float) buddy.getAttributeValue(Attributes.MOVEMENT_SPEED), 4);
+                        0.2F, 4);
                 }
                 buddy.getLookControl().setLookAt(buddy.followTarget.getEyePosition(gameTime));
             } else {
