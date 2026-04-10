@@ -192,7 +192,17 @@ public class FriendMoonRenderer implements AutoCloseable {
         return cast.getType() == HitResult.Type.BLOCK;
     }
 
+    /* Since the Friend Moon has a delay before leaving on the server
+    * this delay has to be tracked on the client as well so I've hacked together
+    * a solution that should work for now since the player receives one of these packets
+    * whenever they "gain friendship" as well. oh how I miss the status effect
+    */
+    private float trackedBasinTime = 0f;
     public BlockPos clientBlockPos;
+    public void setClientBlockPos(BlockPos clientBlockPos) {
+        this.clientBlockPos = clientBlockPos;
+        trackedBasinTime = 0f;
+    }
     public void updateFriendMoonPosition(
         Entity cameraEntity, Quaternionf moonRotation,
         Matrix4f moonViewMatrix, Matrix4f projectionMatrix, float partialTick
@@ -205,6 +215,8 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         boolean fadeOut = true;
         float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
+        trackedBasinTime += deltaTime;
+
         float fadeSpeed = deltaTime / 25f;
         float turnAnimateSpeed = deltaTime / (15f);
 
@@ -528,7 +540,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         Player player = Minecraft.getInstance().player;
         if (player != null && clientBlockPos != null) {
             Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
-            if (FriendMoon.appearConditionsMet(player, clientBlockPos) && optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null))
+            boolean isOrWasPreviouslyMet = FriendMoon.appearConditionsMet(player, clientBlockPos)
+                || (trackedBasinTime < FriendMoon.LEAVE_TIME_THRESHOLD);
+            if (isOrWasPreviouslyMet && optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null))
                 return optionalBasin.get().clientMoon;
         }
         return null;
@@ -556,7 +570,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         if (fogOpacity > 0.01f) {
             poseStack.pushPose();
             // Render Sky Fog prior to skybox as well
-            float divider = 1 / 6f;
+            float divider = 1 / 24f;
             int fogColor = FastColor.ARGB32.colorFromFloat(
                 1f,
                 fogModifier.getFogRedMultiplier() * divider,
@@ -566,13 +580,8 @@ public class FriendMoonRenderer implements AutoCloseable {
 //            applyMultiplyBlendFunction();
             drawWithColor(fogColor, fogOpacity, () -> {
                 poseStack.scale(100f, 100f, 100f);
-                MoonlightDreamRenderer.GRADIENT_SHADER.safeGetUniform("Slice").set(0.0f);
-                getSkyMesh().drawWithShader(
-                    poseStack.last().pose(), projectionMatrix,
-                    MoonlightDreamRenderer.GRADIENT_SHADER
-                );
-
-                poseStack.mulPose(Axis.XP.rotationDegrees(180));
+                MoonlightDreamRenderer.GRADIENT_SHADER
+                    .safeGetUniform("Slice").set(.15f);
                 getSkyMesh().drawWithShader(
                     poseStack.last().pose(), projectionMatrix,
                     MoonlightDreamRenderer.GRADIENT_SHADER

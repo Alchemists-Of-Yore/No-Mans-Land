@@ -567,6 +567,7 @@ public class FriendMoon extends SavedData {
 
     /* Behavior */
     private int lastTotalPlayers = 0;
+    public static float LEAVE_TIME_THRESHOLD = 100F;
     public void tick() {
         assert level != null;
         updateMeetingPointInformation(level);
@@ -593,7 +594,7 @@ public class FriendMoon extends SavedData {
             if ((getState() != FriendMoonState.OFFERING || lastTotalPlayers <= 1) && !isJukeboxInteractionActive()) {
                 for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
                     lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                    if (lastFriendshipPlayers.get(player) >= 100 || player.isDeadOrDying()) {
+                    if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying()) {
                         if (!cannotObtainFriendship(player)) {
                             setState(FriendMoonState.PASSIVE);
                             applyDialogueLength(

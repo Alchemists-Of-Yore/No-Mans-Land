@@ -11,7 +11,7 @@ import net.minecraft.world.level.material.FogType;
 public class FriendMoonFogModifier extends FogModifier {
     @Override
     public float getFogEndAddend() {
-        return -.25f;
+        return 0f;
     }
 
     public float opacity() {
@@ -20,7 +20,7 @@ public class FriendMoonFogModifier extends FogModifier {
 
     @Override
     public float getFogStartAddend() {
-        return -1F;
+        return 0f;
     }
 
     static float redModifier = (116 / 255f);
@@ -34,7 +34,7 @@ public class FriendMoonFogModifier extends FogModifier {
     public float getFogGreenMultiplier() { return greenModifier * opacity(); }
 
     @Override
-    public float getFogBlueMultiplier() { return (0.25f * (1f - opacity())) + (blueModifier * opacity()); }
+    public float getFogBlueMultiplier() { return blueModifier * opacity(); }
 
     @Override
     boolean active(FogModifierHandler.FogContext context) {
