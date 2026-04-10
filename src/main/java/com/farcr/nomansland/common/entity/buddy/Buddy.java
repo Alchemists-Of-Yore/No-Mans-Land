@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.buddy;
 
 import com.farcr.nomansland.common.entity.variant_action.SetBuddyMushroom;
+import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.serialization.Dynamic;
@@ -39,6 +40,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.Optional;
@@ -244,7 +246,14 @@ public class Buddy extends PathfinderMob implements Npc {
                         }
                     }
                 }
-                this.addEffect(new MobEffectInstance(NMLEffects.HAPPINESS, foodResult.get().happinessTicks(), 0, true, false));
+                if (!this.level().isClientSide) {
+                    MobEffectInstance effectInstance = new MobEffectInstance(
+                        NMLEffects.HAPPINESS, foodResult.get().happinessTicks(),
+                        0, true, false);
+                    this.addEffect(effectInstance);
+                    PacketDistributor.sendToPlayersTrackingEntity(this,
+                        new ClientboundBuddyUpdateEffectsPacket(this.getId(), effectInstance));
+                }
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
         }
@@ -257,7 +266,6 @@ public class Buddy extends PathfinderMob implements Npc {
         ModelPart leftLeg, ModelPart rightLeg,
         float time
     ) {
-
         head.yRot = (float) Math.sin(time * 0.83D);
         head.xRot = (float) Math.sin(time) * 0.8F;
         hat.yRot = head.yRot;

@@ -6,8 +6,10 @@ import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
+import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
@@ -325,6 +327,26 @@ public class MiscellaneousEvents {
                     }
                 }
             }
+        }
+    }
+
+    /*
+    * To be clear, this exists because Minecraft doesn't actually sync mob effects
+    * with the player. it just handles everything related to them on the server
+    * including the spawning of particles. the only time an effect is applied is
+    * when it is applied to the player itself or when the player is there to witness
+    * the effect being applied. for this reason we must manually reapply the effect
+    * on respawn or otherwise if the player wasn't there to witness its application
+    */
+    @SubscribeEvent
+    private static void buddyTrackingPacket(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof Buddy buddy
+        && buddy.hasEffect(NMLEffects.HAPPINESS)
+        && event.getEntity() instanceof ServerPlayer player) {
+            MobEffectInstance effectInstance = buddy.getEffect(NMLEffects.HAPPINESS);
+            ClientboundBuddyUpdateEffectsPacket updateEffectsPacket
+                = new ClientboundBuddyUpdateEffectsPacket(buddy.getId(), effectInstance);
+            PacketDistributor.sendToPlayer(player, updateEffectsPacket);
         }
     }
 

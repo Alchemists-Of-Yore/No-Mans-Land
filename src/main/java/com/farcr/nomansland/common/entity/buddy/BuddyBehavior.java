@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.entity.buddy;
 
-import com.farcr.nomansland.common.networking.ClientboundBuddyCrouchPacket;
-import net.minecraft.core.BlockPos;
+import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
