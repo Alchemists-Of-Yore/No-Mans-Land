@@ -1,7 +1,11 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.common.entity.buddy.Buddy;
+import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -32,6 +36,17 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> {
 
     @Inject(method = "isShaking", at = @At("RETURN"), cancellable = true)
     private void NML$isShaking(T entity, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValue() || entity.NML$isBeingInspected());
+        cir.setReturnValue(cir.getReturnValue() || ((EntityExtension) entity).NML$isBeingInspected());
+    }
+
+    @WrapOperation(
+        method = "setupRotations",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;isShaking(Lnet/minecraft/world/entity/LivingEntity;)Z"
+        )
+    )
+    private boolean nml$isShaking(LivingEntityRenderer instance, T entity, Operation<Boolean> original) {
+        return original.call(instance, entity) || ((EntityExtension) entity).NML$isBeingInspected();
     }
 }

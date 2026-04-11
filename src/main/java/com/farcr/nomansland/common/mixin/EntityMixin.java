@@ -91,8 +91,7 @@ public abstract class EntityMixin implements EntityExtension {
 
     @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true)
     private void NML$getGravity(CallbackInfoReturnable<Double> cir) {
-        if (NML$isBeingInspected())
-            cir.setReturnValue(0.0d);
+        if (NML$isBeingInspected()) cir.setReturnValue(0.0d);
     }
 
     @Unique @Nullable

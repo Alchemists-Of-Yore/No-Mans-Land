@@ -745,12 +745,8 @@ public class FriendMoon extends SavedData {
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 
-    private DialoguePool addToCommuneFilter(Registry<DialoguePool> registry, boolean enteredCommune) {
-        List<DialoguePool> filteredDialogue = registry.stream().filter(
-            (dialoguePool) -> dialoguePool.condition().isEmpty()
-            || !(dialoguePool.condition().get() instanceof MoonlightGreetingConditions.AdditionToCommuneConditional)
-        ).toList();
-        if (enteredCommune) filteredDialogue = MoonlightGreetingConditions.AdditionToCommuneConditional.ADDITION_TO_COMMUNE_ARRAY;
+    private DialoguePool addToCommuneFilter(Registry<DialoguePool> registry) {
+        List<DialoguePool> filteredDialogue = MoonlightGreetingConditions.AdditionToCommuneConditional.ADDITION_TO_COMMUNE_ARRAY;
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 
@@ -811,12 +807,10 @@ public class FriendMoon extends SavedData {
 
     public void randomDialogueOrGreeting(ResourceKey<Registry<DialoguePool>> registryKey, int totalPlayers) {
         if (registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY || registryKey == NMLRegistries.GREETING_DIALOGUE_KEY) {
-            if (totalPlayers > lastTotalPlayers && registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY) {
+            if (((totalPlayers > 1) && (totalPlayers > lastTotalPlayers)) && registryKey == NMLRegistries.PASSIVE_DIALOGUE_KEY) {
                 applyDialogueLength(
-                    getDialogueFromStream(NMLRegistries.GREETING_DIALOGUE_KEY,
-                        (registry) -> addToCommuneFilter(
-                            registry, ((totalPlayers > 1) && (totalPlayers > lastTotalPlayers))
-                        )).dispatch(level, getFriendshipPlayers())
+                    getDialogueFromStream(NMLRegistries.GREETING_DIALOGUE_KEY, this::addToCommuneFilter)
+                        .dispatch(level, getFriendshipPlayers())
                 );
                 lastTotalPlayers = totalPlayers;
                 return;

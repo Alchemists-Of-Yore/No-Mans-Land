@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.blockentity;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
+import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -247,6 +249,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 Entity entity = inspectionContext.entity();
                 if (!entity.isAlive()) {
                     blockEntity.setInspectionContext(null, friendMoon);
+                    if (!level.isClientSide) friendMoon.negative();
                     friendMoon.abortAscension();
                 } else {
                     boolean specialOffering = FriendMoon.isSpecialInteraction(inspectionContext);
@@ -267,6 +270,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                         float speed = 1 / 20f;
                         entity.setDeltaMovement(
                             dist.multiply(new Vec3(new Vector3f(speed))));
+//                        if (entity instanceof Mob mob && mob.getTarget() != null) mob.setTarget(null);
 
                         if (dist.lengthSqr() <= 0.1f) {
                             if (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) {
@@ -354,7 +358,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     }
                     return blockEntity.quickSparkHash.get(uuid);
                 })) {
-                    if (level.getRandom().nextFloat() <= 0.25) {
+                    if (level.getRandom().nextFloat() <= 0.25
+                    && !((EntityExtension) entity).NML$wasPreviouslyInspected()) {
                         level.addParticle(
                                 NMLParticleTypes.MOONLIGHT_SPARK.get(),
                                 entity.getX(), entity.getY() + 0.5f, entity.getZ(),
