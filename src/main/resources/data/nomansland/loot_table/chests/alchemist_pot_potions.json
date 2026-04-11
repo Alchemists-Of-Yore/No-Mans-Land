@@ -351,34 +351,7 @@
             }
           ],
           "name": "minecraft:map",
-          "weight": 7
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "decoration": "nomansland:alchemist_ruins",
-              "function": "minecraft:exploration_map",
-              "skip_existing_chunks": false,
-              "zoom": 1,
-              "destination": "nomansland:alchemist_ruins"
-            },
-            {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:map_color": 8222546
-              }
-            },
-            {
-              "function": "minecraft:set_name",
-              "name": {
-                "translate": "nomansland.filled_map.alchemist_ruins"
-              },
-              "target": "item_name"
-            }
-          ],
-          "name": "minecraft:map",
-          "weight": 7
+          "weight": 5
         }
       ],
       "rolls": 1
