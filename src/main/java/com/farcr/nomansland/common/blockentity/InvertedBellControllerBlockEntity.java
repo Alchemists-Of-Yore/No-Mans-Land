@@ -113,7 +113,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (level.isClientSide) {
             RandomSource random = level.getRandom();
             double x = pos.getX() + random.nextDouble() * 1.375 - 0.1875;
-            double y = pos.getY() + random.nextDouble() * 1.6875 - 0.875;
+            double y = pos.getY();// + random.nextDouble() * 1.6875 - 0.875;
             double z = pos.getZ() + random.nextDouble() * 1.375 - 0.1875;
             level.addParticle(NMLParticleTypes.ENTROPY_DUST.get(), x, y, z, 0, 0, 0);
         }
