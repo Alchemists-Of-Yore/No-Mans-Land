@@ -324,7 +324,8 @@ public class FriendMoon extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        tag.putBoolean("IsAwake", isAwake() && (wokenUpBy != null));
+        tag.putBoolean("IsAwake", isAwake());
+
         tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
         tag.putBoolean("UpdatedShadow", updatedShadow);
@@ -598,7 +599,7 @@ public class FriendMoon extends SavedData {
             // query players that had friendship
             boolean someoneLeft = false, someoneDied = false;
             ArrayList<ServerPlayer> withRemovedPlayers = new ArrayList<>(lastFriendshipPlayers.keySet());
-            boolean silentlyRemove = (getState() == FriendMoonState.OFFERING) && (lastTotalPlayers > 1);
+            boolean silentlyRemove = (getState() == FriendMoonState.OFFERING || isJukeboxInteractionActive()) && (lastTotalPlayers > 1);
             for (ServerPlayer player : withRemovedPlayers) {
                 lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
                 if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying() || cannotObtainFriendship(player)) {
@@ -634,8 +635,12 @@ public class FriendMoon extends SavedData {
                                 (registry) -> greetingFilter(registry, wokenUpBy)
                             ).setTargetPlayer(wokenUpBy).dispatch(level, getFriendshipPlayers())
                         );
+                        getState().getMoonConsumer().accept(this);
                         // just in case I dont want it softlocking players if they log off please
-                    } else awake = false;
+                    } else if (awake) {
+                        awake = false;
+                        setDirty();
+                    }
                     return;
                 }
 
