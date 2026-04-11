@@ -72,6 +72,7 @@ public class FriendMoon extends SavedData {
     }
 
     public boolean awake = false;
+    public ServerPlayer wokenUpBy;
     public boolean isAwake() {
         return awake;
     }
@@ -266,6 +267,7 @@ public class FriendMoon extends SavedData {
     public void resetValues() {
         abortSpecialInteractions();
         awake = false;
+        wokenUpBy = null;
         setState(FriendMoonState.GREETING);
         setCandleTime(-1);
 
@@ -293,7 +295,7 @@ public class FriendMoon extends SavedData {
         updatedShadow = tag.getBoolean("UpdatedShadow");
 
         upsetWith.clear();
-        for (Tag uuidEntry : tag.getList("UpsetWith", 10))
+        for (Tag uuidEntry : tag.getList("UpsetWith", 11))
             upsetWith.add(NbtUtils.loadUUID(uuidEntry));
 
         buddyStars.clear();
@@ -322,14 +324,14 @@ public class FriendMoon extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        tag.putBoolean("IsAwake", isAwake());
+        tag.putBoolean("IsAwake", isAwake() && (wokenUpBy != null));
         tag.putInt("CandleTimer", getCandleTime());
         tag.putString("State", state.getSerializedName());
         tag.putBoolean("UpdatedShadow", updatedShadow);
 
-        ListTag listTag = new ListTag();
-        upsetWith.forEach((playerUUID) -> listTag.add(NbtUtils.createUUID(playerUUID)));
-        tag.put("UpsetWith", listTag);
+        ListTag upsetTag = new ListTag();
+        upsetWith.forEach((playerUUID) -> upsetTag.add(NbtUtils.createUUID(playerUUID)));
+        tag.put("UpsetWith", upsetTag);
 
         ListTag starsTag = new ListTag();
         for (BuddyStar star : buddyStars)
@@ -372,11 +374,14 @@ public class FriendMoon extends SavedData {
     }
 
     public static void grantPlayerFriendship(FriendMoon friendMoon, ServerPlayer serverPlayer, BlockPos pos) {
-        if (friendMoon.getState() != FriendMoonState.UPSET && !friendMoon.cannotObtainFriendship(serverPlayer)) {
+        boolean grantedFriendship = false;
+        if (friendMoon.getState() != FriendMoonState.UPSET
+        && !friendMoon.cannotObtainFriendship(serverPlayer)) {
             friendMoon.lastFriendshipPlayers.put(serverPlayer, 0);
-            // only inform of basin if the player has friendship with the moon
-            PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos));
+            grantedFriendship = true;
         } else friendMoon.setUpsetWith(serverPlayer.getUUID());
+        // inform of player regardless but let them know not to update the leave time
+        PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos, grantedFriendship));
     }
 
     public boolean playerHasFriendship(ServerPlayer player) {
@@ -567,7 +572,7 @@ public class FriendMoon extends SavedData {
 
     /* Behavior */
     private int lastTotalPlayers = 0;
-    public static float LEAVE_TIME_THRESHOLD = 100F;
+    public static float LEAVE_TIME_THRESHOLD = 60F;
     public void tick() {
         assert level != null;
         updateMeetingPointInformation(level);
@@ -584,28 +589,37 @@ public class FriendMoon extends SavedData {
             setDirty();
         }
 
-        if (isAwake()) {
+        if (this.isAwake()) {
             if (!isNightTime(level)) {
                 resetValues();
                 return;
             }
 
             // query players that had friendship
-            if ((getState() != FriendMoonState.OFFERING || lastTotalPlayers <= 1) && !isJukeboxInteractionActive()) {
-                for (ServerPlayer player : lastFriendshipPlayers.keySet()) {
-                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                    if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying()) {
-                        if (!cannotObtainFriendship(player)) {
-                            setState(FriendMoonState.PASSIVE);
-                            applyDialogueLength(
-                                getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
-                                (registry) -> leavingFilter(registry, player)
-                            ).dispatch(level, getFriendshipPlayers()));
-                        }
-                        lastFriendshipPlayers.remove(player);
-                    }
+            boolean someoneLeft = false, someoneDied = false;
+            ArrayList<ServerPlayer> withRemovedPlayers = new ArrayList<>(lastFriendshipPlayers.keySet());
+            boolean silentlyRemove = (getState() == FriendMoonState.OFFERING) && (lastTotalPlayers > 1);
+            for (ServerPlayer player : withRemovedPlayers) {
+                lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying() || cannotObtainFriendship(player)) {
+                    if (!silentlyRemove && !cannotObtainFriendship(player)) {
+                        setState(FriendMoonState.PASSIVE);
+                        if (player.isDeadOrDying()) someoneDied = true;
+                        someoneLeft = true;
+                    } else if (silentlyRemove) PacketDistributor.sendToPlayer(player, new ClientboundDialogueResetPacket());
+                    lastFriendshipPlayers.remove(player);
                 }
             }
+            if (someoneLeft) {
+                boolean finalSomeoneDied = someoneDied;
+                applyDialogueLength(
+                    getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
+                        (registry) -> leavingFilter(registry, finalSomeoneDied)
+                    ).dispatch(level, withRemovedPlayers)
+                );
+                return;
+            }
+
             // Grant players advancement if they do not have it
             AtomicInteger playerTracker = new AtomicInteger();
             forFriendshipPlayers((player) -> playerTracker.getAndIncrement());
@@ -614,7 +628,14 @@ public class FriendMoon extends SavedData {
             int totalPlayers = playerTracker.get();
             if (totalPlayers > 0) {
                 if (getState() == FriendMoonState.GREETING) {
-                    queryUniqueDialogue(NMLRegistries.GREETING_DIALOGUE_KEY, this::greetingFilter);
+                    if (wokenUpBy != null) {
+                        applyDialogueLength(
+                            getDialogueFromStream(NMLRegistries.GREETING_DIALOGUE_KEY,
+                                (registry) -> greetingFilter(registry, wokenUpBy)
+                            ).setTargetPlayer(wokenUpBy).dispatch(level, getFriendshipPlayers())
+                        );
+                        // just in case I dont want it softlocking players if they log off please
+                    } else awake = false;
                     return;
                 }
 
@@ -688,31 +709,6 @@ public class FriendMoon extends SavedData {
     }
 
     /*
-    * Queries possible unique dialogue per players
-    * and applies the highest delay possible
-    *
-    * technically this is wrong as it dispatches wholly unique dialogue to each player,
-    * but for now that's fine until I want to start messing with the passive dialogue
-    */
-    private void queryUniqueDialogue(
-        ResourceKey<Registry<DialoguePool>> registryKey,
-        BiFunction<Registry<DialoguePool>, ServerPlayer, DialoguePool> function
-    ) {
-        assert level != null;
-        AtomicInteger highestTicks = new AtomicInteger();
-        forFriendshipPlayers((serverPlayer) -> {
-            int localDialogueTicks = getDialogueFromStream(registryKey,
-                (registry) -> function.apply(registry, serverPlayer))
-                .dispatch(level, serverPlayer);
-            if (highestTicks.get() < localDialogueTicks)
-                highestTicks.set(localDialogueTicks);
-
-        });
-        applyDialogueLength(highestTicks.get());
-        getState().getMoonConsumer().accept(this);
-    }
-
-    /*
     * Dialogue Queries: Dialogue Queries provide different conditions for sending dialogue.
     * The way I've set the system up is done in a way where you provide the query and it should
     * allow you to sort through any kind of condition you wish to for dialogues and dispatch them automatically
@@ -735,13 +731,10 @@ public class FriendMoon extends SavedData {
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 
-    private DialoguePool leavingFilter(Registry<DialoguePool> registry, ServerPlayer serverPlayer) {
+    private DialoguePool leavingFilter(Registry<DialoguePool> registry, boolean someoneDied) {
         List<DialoguePool> filteredDialogue = registry.stream().filter(
             (dialoguePool) -> (dialoguePool.condition().isEmpty())).toList();
-
-        if (serverPlayer.isDeadOrDying())
-            filteredDialogue = MoonlightLeavingConditions.OnDeathConditional.ON_DEATH_ARRAY;
-
+        if (someoneDied) filteredDialogue = MoonlightLeavingConditions.OnDeathConditional.ON_DEATH_ARRAY;
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 

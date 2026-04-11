@@ -22,6 +22,7 @@ public class FriendMoonUpdate {
     public enum ToServer {
         AWAKEN(0, (moon, player) -> {
             moon.awake = true;
+            moon.wokenUpBy = player;
         }),
         SAW_MOON_IN_DREAM(1, (moon, player) -> {
             DreamManager manager = DreamManager.getOrDefault(player.getServer());
