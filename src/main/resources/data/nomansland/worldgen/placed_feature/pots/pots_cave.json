@@ -2,11 +2,15 @@
   "feature": "nomansland:pots/pots_cave",
   "placement": [
     {
+      "type": "minecraft:count",
+      "count": 2
+    },
+    {
       "type": "minecraft:in_square"
     },
     {
       "type": "minecraft:rarity_filter",
-      "chance": 2
+      "chance": 4
     },
     {
       "type": "minecraft:height_range",

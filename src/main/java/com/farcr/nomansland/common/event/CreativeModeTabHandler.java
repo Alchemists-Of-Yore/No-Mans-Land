@@ -223,6 +223,7 @@ public class CreativeModeTabHandler {
             insertAfter(BAMBOO_MOSAIC_SLAB, BAMBOO_BOOKSHELF);
 
             insertBefore(AMETHYST_BLOCK, QUARTZITE);
+            insertBefore(STONE, CRUDE_TRAPDOOR);
             insertBefore(STONE, CRUDE_DOOR);
             insertBefore(STONE, WOODEN_PLATFORM_STAIRS);
             insertBefore(STONE, WOODEN_PLATFORM);
@@ -333,6 +334,10 @@ public class CreativeModeTabHandler {
 
             insertAfter(TUFF, SILTSTONE);
 
+
+            insertAfter(BEDROCK, ANCESTRAL_CARVING);
+            insertAfter(BEDROCK, ANCESTRAL_CARVING);
+
 //            event.accept(REMAINS);
 
             insertAfter(SPRUCE_LOG, PINE.log());
@@ -385,6 +390,7 @@ public class CreativeModeTabHandler {
             insertAfter(CAULDRON, TAP);
             insertBefore(SCAFFOLDING, NMLItems.WOODEN_SCAFFOLDING);
             insertAfter(CONDUIT, NMLItems.WARDING_EFFIGY);
+            insertAfter(PINK_BED, STRAW_BED);
 
             insertAfter(OCHRE_FROGLIGHT, VERMILION_FROGLIGHT);
 
@@ -500,6 +506,7 @@ public class CreativeModeTabHandler {
             insertAfter(BEE_SPAWN_EGG, BILLHOOK_BASS_SPAWN_EGG);
             insertAfter(CHICKEN_SPAWN_EGG, GOOSE_SPAWN_EGG);
             insertBefore(TURTLE_SPAWN_EGG, TORTOISE_SPAWN_EGG);
+            insertBefore(BREEZE_SPAWN_EGG, BUDDY_SPAWN_EGG);
         }
 
        //if (tab == FDIntegration.TAB.get()); {
