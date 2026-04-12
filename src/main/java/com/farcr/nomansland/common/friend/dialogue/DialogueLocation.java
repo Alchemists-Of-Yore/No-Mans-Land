@@ -49,8 +49,7 @@ public class DialogueLocation {
 
     // Dispatch returns the length of the dialogue for the server to operate on, but it isn't forced to use it
     public int dispatch(Level level, ServerPlayer player) {
-        if (dialogueLocation == null)
-            return 0;
+        if (dialogueLocation == null) return 0;
         ClientboundDialoguePacket clientPacket = createPacket();
         PacketDistributor.sendToPlayer(player, clientPacket);
         return clientPacket.getDialogueLengthTicks(level);

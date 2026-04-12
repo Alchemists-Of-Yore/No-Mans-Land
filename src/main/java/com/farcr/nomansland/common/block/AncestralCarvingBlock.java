@@ -59,10 +59,10 @@ public class AncestralCarvingBlock extends DirectionalBlock {
             float pitch = context.getPlayer() != null ? context.getPlayer().getXRot() : 0;
             if (pitch > 60) {
                 facing = Direction.UP;
-                rotation = getRotationForPlayer(context);
+                rotation = getRotationForPlayer(context, facing);
             } else if (pitch < -60) {
                 facing = Direction.DOWN;
-                rotation = getRotationForPlayer(context);
+                rotation = getRotationForPlayer(context, facing);
             } else {
                 facing = context.getHorizontalDirection().getOpposite();
                 rotation = 0;
@@ -75,8 +75,17 @@ public class AncestralCarvingBlock extends DirectionalBlock {
                 .setValue(ROTATION, rotation);
     }
 
-    protected int getRotationForPlayer(BlockPlaceContext context) {
+    protected int getRotationForPlayer(BlockPlaceContext context, Direction facing) {
         if (context.getPlayer() == null) return 0;
+        if (facing == Direction.DOWN) {
+            return switch (context.getHorizontalDirection()) {
+                case NORTH -> 0;
+                case EAST -> 1;
+                case SOUTH -> 2;
+                case WEST -> 3;
+                default -> 0;
+            };
+        }
         return switch (context.getHorizontalDirection()) {
             case SOUTH -> 0;
             case WEST -> 1;
@@ -145,7 +154,7 @@ public class AncestralCarvingBlock extends DirectionalBlock {
     public static Direction getPlaneRight(Direction facing, int rotation) {
         Direction right = switch (facing) {
             case UP -> Direction.WEST;
-            case DOWN -> Direction.WEST;
+            case DOWN -> Direction.EAST;
             case NORTH -> Direction.WEST;
             case SOUTH -> Direction.EAST;
             case EAST -> Direction.NORTH;
@@ -158,7 +167,7 @@ public class AncestralCarvingBlock extends DirectionalBlock {
     public static Direction getPlaneDown(Direction facing, int rotation) {
         Direction down = switch (facing) {
             case UP -> Direction.NORTH;
-            case DOWN -> Direction.SOUTH;
+            case DOWN -> Direction.NORTH;
             case NORTH, SOUTH, EAST, WEST -> Direction.DOWN;
         };
         for (int i = 0; i < rotation; i++) down = rotateCW(down);

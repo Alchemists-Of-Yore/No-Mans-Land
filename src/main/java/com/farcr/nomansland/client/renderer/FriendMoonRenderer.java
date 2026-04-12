@@ -199,9 +199,9 @@ public class FriendMoonRenderer implements AutoCloseable {
     */
     private float trackedBasinTime = 0f;
     public BlockPos clientBlockPos;
-    public void setClientBlockPos(BlockPos clientBlockPos) {
+    public void setClientBlockPos(BlockPos clientBlockPos, boolean updateBasinTime) {
         this.clientBlockPos = clientBlockPos;
-        trackedBasinTime = 0f;
+        if (updateBasinTime) trackedBasinTime = 0f;
     }
     public void updateFriendMoonPosition(
         Entity cameraEntity, Quaternionf moonRotation,
@@ -215,10 +215,10 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         boolean fadeOut = true;
         float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
-        trackedBasinTime += deltaTime;
+        trackedBasinTime = Math.min(trackedBasinTime + deltaTime, FriendMoon.LEAVE_TIME_THRESHOLD);
 
-        float fadeSpeed = deltaTime / 25f;
-        float turnAnimateSpeed = deltaTime / (15f);
+        float fadeSpeed = (deltaTime / 25f);
+        float turnAnimateSpeed = (deltaTime / 15f);
 
         boolean isAwake = false;
         boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, 0.5f);
@@ -275,7 +275,9 @@ public class FriendMoonRenderer implements AutoCloseable {
                                 packet.applyPacket(player.level(), player);
                                 DialogueRenderer.getCurrentState()
                                     .setOverrideColor(DialogueUtil.NOBODY_CAME_TEXT_COLOR);
-                            }
+                            } else if (DialogueRenderer.getCurrentState() != null
+                            && !DialogueRenderer.getCurrentState().isPaused())
+                                DialogueRenderer.getCurrentState().reset();
                         }
                     }
                 }
@@ -539,9 +541,10 @@ public class FriendMoonRenderer implements AutoCloseable {
     private FriendMoon getClientMoon() {
         Player player = Minecraft.getInstance().player;
         if (player != null && clientBlockPos != null) {
-            Optional<MoonlightBasinBlockEntity> optionalBasin = player.level().getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
-            boolean isOrWasPreviouslyMet = FriendMoon.appearConditionsMet(player, clientBlockPos)
-                || (trackedBasinTime < FriendMoon.LEAVE_TIME_THRESHOLD);
+            Optional<MoonlightBasinBlockEntity> optionalBasin = player.level()
+                .getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
+            boolean isOrWasPreviouslyMet = (FriendMoon.appearConditionsMet(player, clientBlockPos)
+                || (trackedBasinTime < FriendMoon.LEAVE_TIME_THRESHOLD && FriendMoon.isNightTime(player.level())));
             if (isOrWasPreviouslyMet && optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null))
                 return optionalBasin.get().clientMoon;
         }

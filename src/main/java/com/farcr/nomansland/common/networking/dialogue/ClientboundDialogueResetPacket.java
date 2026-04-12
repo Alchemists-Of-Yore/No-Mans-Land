@@ -22,11 +22,8 @@ public record ClientboundDialogueResetPacket() implements CustomPacketPayload {
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
                 DialogueState state = DialogueRenderer.getCurrentState();
-                if (state != null) {
-                    if (state.ticks > 0)
-                        state.setTicks(DialogueState.FADE_TICKS);
-                    state.pause();
-                }
+                if (state != null)
+                    state.reset();
                 DialogueRenderer.setCurrentState(state);
             });
         }

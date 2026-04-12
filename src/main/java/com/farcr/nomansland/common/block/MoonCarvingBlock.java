@@ -76,10 +76,10 @@ public class MoonCarvingBlock extends AncestralCarvingBlock implements EntityBlo
         float pitch = context.getPlayer() != null ? context.getPlayer().getXRot() : 0;
         if (pitch > 60) {
             facing = Direction.UP;
-            rotation = getRotationForPlayer(context);
+            rotation = getRotationForPlayer(context, facing);
         } else if (pitch < -60) {
             facing = Direction.DOWN;
-            rotation = getRotationForPlayer(context);
+            rotation = getRotationForPlayer(context, facing);
         } else {
             facing = context.getHorizontalDirection().getOpposite();
             rotation = 0;

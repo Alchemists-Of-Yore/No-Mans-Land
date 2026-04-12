@@ -27,6 +27,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -637,10 +638,12 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
 
             if (hasModifier(PotModifier.INFESTED)) {
                 int count = random.nextInt(2, 4);
+                DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(blockPosition());
                 for (int i = 0; i < count; i++) {
                     Silverfish silverfish = EntityType.SILVERFISH.create(serverLevel);
                     if (silverfish != null) {
                         silverfish.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
+                        silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                         serverLevel.addFreshEntity(silverfish);
                         silverfish.spawnAnim();
                     }
@@ -650,11 +653,13 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
 
             if (hasModifier(PotModifier.OOZING)) {
                 int count = random.nextInt(2, 4);
+                DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(blockPosition());
                 for (int i = 0; i < count; i++) {
                     Slime slime = EntityType.SLIME.create(serverLevel);
                     if (slime != null) {
-                        slime.setSize(random.nextInt(1, 3), true);
                         slime.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
+                        slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                        slime.setSize(random.nextInt(1, 3), true);
                         serverLevel.addFreshEntity(slime);
                     }
                 }

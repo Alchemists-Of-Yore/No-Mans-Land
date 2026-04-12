@@ -20,6 +20,12 @@ public class DialogueState {
     public void setTicks(float newTicks) {
         this.ticks = newTicks;
     }
+
+    public void reset() {
+        if (ticks > 0) setTicks(FADE_TICKS);
+        pause();
+    }
+
     public static final int GRADIENT_FADE_TICKS = 8;
     public float elapsedTicks = 0f;
 
