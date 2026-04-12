@@ -28,6 +28,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.entity.monster.Slime;
@@ -205,10 +207,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
         if (pot.hasModifier(PotModifier.INFESTED)) {
             int amount = level.getRandom().nextInt(1, 4);
+            double spawnY = pos.getY() + (size == PotSize.LARGE ? 2 : 1);
+            DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(pos);
             for (int i = 0; i < amount; i++) {
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
-                    silverfish.moveTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0);
+                    silverfish.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
+                    silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
                 }
@@ -221,11 +226,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
 
         if (pot.hasModifier(PotModifier.OOZING)) {
             int amount = level.getRandom().nextInt(1, 4);
+            double spawnY = pos.getY() + (size == PotSize.LARGE ? 2 : 1);
+            DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(pos);
             for (int i = 0; i < amount; i++) {
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
+                    slime.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
+                    slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
-                    slime.moveTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0);
                     level.addFreshEntity(slime);
                 }
             }
@@ -383,7 +391,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     if (!pot.getStoredPotion().equals(PotionContents.EMPTY)) {
                         spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
                     }
-                    spawnModifierMobs(level, pos, pot);
+                    spawnModifierMobs((ServerLevel) level, pos, pot);
                     if (pot.variant.traits().contains(PotTrait.REGENERATES)) {
                         scheduleRegeneration((ServerLevel) level, pos, state, pot);
                     }
@@ -394,13 +402,14 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    private void spawnModifierMobs(Level level, BlockPos pos, PotBlockEntity pot) {
+    private void spawnModifierMobs(ServerLevel level, BlockPos pos, PotBlockEntity pot) {
         if (pot.hasModifier(PotModifier.INFESTED)) {
             int amount = level.getRandom().nextInt(1, 4);
             for (int i = 0; i < amount; i++) {
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    silverfish.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
                 }
@@ -411,8 +420,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             for (int i = 0; i < amount; i++) {
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
-                    slime.setSize(1, true);
                     slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+                    slime.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
+                    slime.setSize(1, true);
                     level.addFreshEntity(slime);
                 }
             }
