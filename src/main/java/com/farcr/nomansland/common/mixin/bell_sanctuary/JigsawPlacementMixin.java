@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin.bell_sanctuary;
 
-import com.farcr.nomansland.common.world.structure.bell_sanctuary.CenteredSinglePoolElement;
+import com.farcr.nomansland.common.world.structure.poolelements.CenteredSinglePoolElement;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;

@@ -45,6 +45,8 @@
     "SnowyDirtBlockMixin",
     "SpreadingSnowyDirtBlockMixin",
     "SteepMaterialConditionMixin",
+    "StructurePlaceSettingsMixin",
+    "StructureTemplateMixin",
     "SugarCaneBlockMixin",
     "ThrownPotionMixin",
     "TreeFeatureMixin",

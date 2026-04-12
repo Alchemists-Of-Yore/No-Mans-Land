@@ -1,4 +1,4 @@
-package com.farcr.nomansland.common.world.structure.bell_sanctuary;
+package com.farcr.nomansland.common.world.structure.poolelements;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
@@ -7,8 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
@@ -43,8 +41,7 @@ public class CenteredSinglePoolElement extends SinglePoolElement {
         public static final MapCodec<CenteredSinglePoolElement> CODEC = RecordCodecBuilder.mapCodec(
                 instance -> instance.group(
                                 templateCodec(), processorsCodec(), projectionCodec(), overrideLiquidSettingsCodec())
-                        .apply(instance, CenteredSinglePoolElement::new
-                        )
+                        .apply(instance, CenteredSinglePoolElement::new)
         );
 
         @Override
