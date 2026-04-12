@@ -1,8 +1,8 @@
 {
-  "block.minecraft.dirt_path": "Grass Path",
-  "block.minecraft.scaffolding": "Bamboo Scaffolding",
-  "item.minecraft.quartz": "Quartz",
-  "item.minecraft.chicken": "Raw Poultry",
-  "item.minecraft.cooked_chicken": "Cooked Poultry",
-  "block.minecraft.bookshelf": "Oak Bookshelf"
+  "block.minecraft.dirt_path": "Травяная тропа",
+  "block.minecraft.scaffolding": "Бамбуковые подмостки",
+  "item.minecraft.quartz": "Кварц",
+  "item.minecraft.chicken": "Сырая птица",
+  "item.minecraft.cooked_chicken": "Жареная птица",
+  "block.minecraft.bookshelf": "Дубовая книжная полка"
 }

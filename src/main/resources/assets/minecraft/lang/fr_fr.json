@@ -1,8 +1,8 @@
 {
-  "block.minecraft.dirt_path": "Grass Path",
-  "block.minecraft.scaffolding": "Bamboo Scaffolding",
+  "block.minecraft.dirt_path": "Chemin d'herbe",
+  "block.minecraft.scaffolding": "Échafaudage en bambou",
   "item.minecraft.quartz": "Quartz",
-  "item.minecraft.chicken": "Raw Poultry",
-  "item.minecraft.cooked_chicken": "Cooked Poultry",
-  "block.minecraft.bookshelf": "Oak Bookshelf"
+  "item.minecraft.chicken": "Volaille crue",
+  "item.minecraft.cooked_chicken": "Volaille cuite",
+  "block.minecraft.bookshelf": "Bibliothèque en chêne"
 }
