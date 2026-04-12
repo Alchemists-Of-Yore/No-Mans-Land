@@ -11,7 +11,7 @@
       { "variant": "nomansland:ancient_pot_small_6", "weight": 5 },
       { "variant": "nomansland:ancient_pot_large_1", "weight": 15 }
     ],
-    "tries": 10,
+    "tries": 18,
     "xz_spread": 4,
     "y_spread": 3,
     "loot_table": "nomansland:chests/ancient_pot_cave",

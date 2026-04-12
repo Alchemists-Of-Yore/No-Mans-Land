@@ -7,7 +7,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 10
     }
   ],
   "fallback": "minecraft:empty"
