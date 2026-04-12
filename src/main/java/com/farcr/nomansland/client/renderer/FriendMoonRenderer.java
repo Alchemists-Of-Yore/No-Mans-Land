@@ -124,6 +124,10 @@ public class FriendMoonRenderer implements AutoCloseable {
         public static final StreamCodec<ByteBuf, FriendMoonAnimation> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, FriendMoonAnimation::getId);
     }
 
+    public float getFriendMoonDarkeningStrength() {
+        return this.getFriendMoonOpacity() * 0.3F;
+    }
+
     private float friendMoonOpacity = 0.0f;
     public float getFriendMoonOpacity() {
         return friendMoonOpacity;

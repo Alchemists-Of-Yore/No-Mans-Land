@@ -22,6 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -139,6 +140,21 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             pulseUpdate();
     }
 
+    private float offeringBeamIntensity, previousOfferingBeamIntensity;
+    private void updateOfferingBeam() {
+        if (!level.isClientSide()) return;
+
+        previousOfferingBeamIntensity = offeringBeamIntensity;
+        if (this.clientMoon.getState() == FriendMoonState.OFFERING && this.clientMoon.isActive()) {
+            offeringBeamIntensity = Mth.lerp(0.1F, offeringBeamIntensity, 1.0F);
+        } else {
+            offeringBeamIntensity = Mth.lerp(0.1F, offeringBeamIntensity, 0.0F);
+        }
+    }
+    public float getOfferingBeamIntensity(float partialTick) {
+        return Mth.lerp(partialTick, this.offeringBeamIntensity, this.previousOfferingBeamIntensity);
+    }
+
     public static final int BLOCK_Y_REACH = 3;
     public static final int BLOCK_EXTEND_REACH = 10;
 
@@ -226,6 +242,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 blockEntity.trackedCandles = 0;
         }
 
+        blockEntity.updateOfferingBeam();
+
         if (!friendMoon.isActive()) {
             blockEntity.setInspectionContext(null, friendMoon);
             if (!level.isClientSide()) {
@@ -291,6 +309,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             }
         } else
             blockEntity.setInspectionContext(null, friendMoon);
+
 
         if (!level.isClientSide()) {
             // Determine offering context

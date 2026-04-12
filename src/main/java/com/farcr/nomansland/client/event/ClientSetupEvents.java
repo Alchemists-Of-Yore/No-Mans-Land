@@ -135,6 +135,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.FALLING_POT.get(), FallingPotRenderer::new);
 
         event.registerBlockEntityRenderer(NMLBlockEntities.INVERTED_BELL.get(), InvertedBellRenderer::new);
+        event.registerBlockEntityRenderer(NMLBlockEntities.MOONLIGHT_BASIN.get(), MoonlightBasinRenderer::new);
     }
 
     @SubscribeEvent
