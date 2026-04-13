@@ -2,7 +2,7 @@
   "type": "nomansland:alchemist_ruins",
   "start_pool":"nomansland:alchemist_ruins/core",
   "size": 16,
-  "max_distance_from_center": 100,
+  "max_distance_from_center": 116,
   "biomes": "#c:is_cave",
   "liquid_settings": "ignore_waterlogging",
   "start_height": {
@@ -16,7 +16,7 @@
   },
   "dimension_padding": 10,
   "step": "underground_structures",
-  "terrain_adaptation": "encapsulate",
+  "terrain_adaptation": "bury",
   "use_expansion_hack": false,
   "spawn_overrides": {}
 }
