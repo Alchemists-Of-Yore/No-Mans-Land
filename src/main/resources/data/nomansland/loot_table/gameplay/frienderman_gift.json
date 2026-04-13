@@ -2,25 +2,86 @@
   "type": "minecraft:barter",
   "pools": [
     {
-      "bonus_rolls": 0.0,
+      "bonus_rolls": 0,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [],
+          "name": "nomansland:ancient_bronze_mask",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "decoration": "nomansland:bell_sanctuary",
+              "function": "minecraft:exploration_map",
+              "skip_existing_chunks": false,
+              "zoom": 1,
+              "destination": "nomansland:bell_sanctuary"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:map_color": 5861946
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "nomansland.filled_map.bell_sanctuary"
+              },
+              "target": "item_name"
+            }
+          ],
+          "name": "minecraft:map",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "decoration": "nomansland:alchemist_ruins",
+              "function": "minecraft:exploration_map",
+              "skip_existing_chunks": false,
+              "zoom": 1,
+              "destination": "nomansland:alchemist_ruins"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:map_color": 8222546
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "nomansland.filled_map.alchemist_ruins"
+              },
+              "target": "item_name"
+            }
+          ],
+          "name": "minecraft:map",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 4.0
-              }
+                "max": 9,
+                "min": 3
+              },
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:ender_pearl",
-          "weight": 333
+          "weight": 10
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ]
 }

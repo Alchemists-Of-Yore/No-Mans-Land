@@ -336,7 +336,7 @@ public class CreativeModeTabHandler {
 
 
             insertAfter(BEDROCK, ANCESTRAL_CARVING);
-            insertAfter(BEDROCK, ANCESTRAL_CARVING);
+            insertAfter(BEDROCK, ANCESTRAL_EFFIGY);
 
 //            event.accept(REMAINS);
 
