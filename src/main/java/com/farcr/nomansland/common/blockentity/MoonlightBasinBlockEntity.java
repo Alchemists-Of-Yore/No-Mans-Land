@@ -43,6 +43,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
+import static com.farcr.nomansland.common.block.moonlight.MoonlightBasinBlock.MULTIBLOCK_SIZE;
+
 public class MoonlightBasinBlockEntity extends BlockEntity {
 
     public MoonlightBasinBlockEntity(BlockPos pos, BlockState blockState) {
@@ -219,17 +221,39 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                 for (int z = -range; z <= range; z++) {
                     BlockPos checkPos = basinPos.offset(x, y, z);
                     BlockState checkState = level.getBlockState(checkPos);
-                    if (checkState.hasProperty(BlockStateProperties.HAS_RECORD) && checkState.getValue(BlockStateProperties.HAS_RECORD))
+                    if (checkState.hasProperty(BlockStateProperties.HAS_RECORD)
+                    && checkState.getValue(BlockStateProperties.HAS_RECORD))
                         return checkPos;
                 }
             }
         }
         return null;
     }
+
+    private boolean basinIsLit = false;
+    public void setBasinLight(boolean shouldLight) {
+        if (shouldLight == basinIsLit) return;
+        BlockPos centerPosition = this.getBlockPos();
+        for (int i = 0; i < MULTIBLOCK_SIZE; i++) {
+            for (int j = 0; j < MULTIBLOCK_SIZE; j++) {
+                BlockPos newPosition = centerPosition.offset(new Vec3i(i - 1, 0, j - 1));
+                Level level = this.getLevel();
+                BlockState blockState = level.getBlockState(newPosition);
+                if (blockState.is(NMLBlocks.MOONLIGHT_BASIN))
+                    level.setBlock(newPosition, blockState.setValue(MoonlightCandleBlock.CANDLE_LIT, shouldLight), 3);
+            }
+        }
+        basinIsLit = shouldLight;
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, MoonlightBasinBlockEntity blockEntity) {
         @Nullable FriendMoon friendMoon = (!level.isClientSide() ? FriendMoon.getOrDefault(level.getServer().overworld()) : blockEntity.clientMoon);
-        if (friendMoon == null)
+        if (friendMoon == null) {
+            blockEntity.setBasinLight(false);
             return;
+        }
+
+        blockEntity.setBasinLight(friendMoon.isActive());
 
         AABB aabb = new AABB(pos).inflate(FRIENDSHIP_MAX_RANGE);
         if (!level.isClientSide()) {

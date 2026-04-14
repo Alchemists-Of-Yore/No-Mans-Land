@@ -307,7 +307,7 @@ public class NMLBlocks {
     // Moonlight
     /* Farcr doesn't want these to show up in the Creative Tabs, so I'm just manually registering the items. */
     public static final BlockDefinition<MoonlightBasinBlock> MOONLIGHT_BASIN = registerNoItem("moonlight_basin",
-        () -> new MoonlightBasinBlock(ofFullCopy(Blocks.BEDROCK).dynamicShape().sound(SoundType.COPPER)));
+        () -> new MoonlightBasinBlock(ofFullCopy(Blocks.BEDROCK).dynamicShape().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.COPPER)));
     public static final BlockDefinition<MoonlightCandleBlock> MOONLIGHT_CANDLE = registerNoItem("moonlight_candle",
         () -> new MoonlightCandleBlock(ofFullCopy(Blocks.BEDROCK).noOcclusion().lightLevel(MoonlightCandleBlock.LIGHT_EMISSION).sound(SoundType.CANDLE).offsetType(OffsetType.XZ).dynamicShape()));
 

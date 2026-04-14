@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.block.moonlight;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.mojang.math.OctahedralGroup;
 import com.mojang.serialization.MapCodec;
@@ -38,6 +39,7 @@ import org.joml.*;
 
 import java.lang.Math;
 import java.util.List;
+import java.util.function.ToIntFunction;
 
 public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
 {
@@ -115,8 +117,10 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 	public MoonlightBasinBlock(Properties properties) {
 		super(properties);
 		this.registerDefaultState(
-				this.stateDefinition.any().setValue(PART, MULTIBLOCK_CENTER)
-						.setValue(WATERLOGGED, false)
+				this.stateDefinition.any()
+                    .setValue(PART, MULTIBLOCK_CENTER)
+                    .setValue(WATERLOGGED, false)
+                    .setValue(MoonlightCandleBlock.CANDLE_LIT, false)
 		);
 	}
 
@@ -171,7 +175,7 @@ public class MoonlightBasinBlock extends BaseEntityBlock implements SimpleWaterl
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(WATERLOGGED).add(PART);
+		builder.add(WATERLOGGED).add(PART).add(MoonlightCandleBlock.CANDLE_LIT);
 	}
 
 	@Override
