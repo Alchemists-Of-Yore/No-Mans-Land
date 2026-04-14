@@ -1,7 +1,8 @@
 {
   "items": ["nomansland:field_mushroom",
+  "nomansland:shelf_mushroom",
   "minecraft:brown_mushroom",
   "minecraft:red_mushroom"
 ],
-  "happiness_duration": 400
+  "happiness_duration": 100
 }

@@ -9,7 +9,10 @@
     "nomansland:cattail",
     "nomansland:reeds",
     "nomansland:warding_effigy",
+    "nomansland:wooden_platform",
+    "nomansland:wooden_platform_stairs",
     "nomansland:crude_door",
+    "nomansland:crude_trapdoor",
     {
       "id": "nomansland:maple_cabinet",
       "required": false
