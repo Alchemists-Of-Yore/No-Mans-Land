@@ -48,7 +48,10 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         poseStack.mulPose(MoonlightDreamType.SKY_ROTATION);
 
         float starAlpha = getStarBrightness(0f, 0f);
+        float partialTicks = deltaTracker.getGameTimeDeltaTicks();
+        if (Minecraft.getInstance().isPaused()) partialTicks = 0.0F;
 
+        float finalPartialTicks = partialTicks;
         FriendMoonRenderer.drawWithColor(FriendMoonRenderer.getGradientColor(), starAlpha, () -> {
             if (levelRenderer.starBuffer == null)
                 levelRenderer.createStars();
@@ -60,7 +63,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
                 projectionMatrix, GameRenderer.getPositionShader());
             VertexBuffer.unbind();
 
-            renderDream(poseStack, deltaTracker, projectionMatrix);
+            renderDream(poseStack, projectionMatrix, finalPartialTicks);
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -92,12 +95,11 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.disableBlend();
         FogRenderer.setupNoFog();
 
-        handleCamera(deltaTracker);
+        this.handleCamera(partialTicks);
         return true;
     }
 
-    private void handleCamera(DeltaTracker deltaTracker) {
-        float partialTicks = deltaTracker.getGameTimeDeltaTicks();
+    private void handleCamera(float partialTicks) {
         float timeWithDelta = dreamInstance.moonPresenceTime + partialTicks;
         if (hasSeenMoon) ticksSinceSeenMoon += partialTicks;
         timeWithDelta = Math.max(timeWithDelta - 1f, 0);
@@ -159,7 +161,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
             .getDreamClientInstance();
 
     public void renderDream(
-        PoseStack poseStack, DeltaTracker deltaTracker, Matrix4f projectionMatrix
+        PoseStack poseStack, Matrix4f projectionMatrix, float partialTicks
     ) {
         poseStack.pushPose();
         poseStack.scale(100f, 100f, 100f);
@@ -167,9 +169,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.enableBlend();
         VertexBuffer skyBuffer = getSkyMesh();
 
-        elapsedTime += (deltaTracker.getGameTimeDeltaTicks() / 40);
-
-        float partialTicks = deltaTracker.getGameTimeDeltaTicks();
+        elapsedTime += (partialTicks / 40);
         float timeWithDelta = dreamInstance.moonPresenceTime + partialTicks;
         timeWithDelta = Math.max(timeWithDelta - 1f, 0);
 
