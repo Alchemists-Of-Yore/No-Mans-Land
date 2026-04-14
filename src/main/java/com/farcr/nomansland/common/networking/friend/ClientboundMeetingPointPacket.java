@@ -14,13 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 public record ClientboundMeetingPointPacket(
-    Optional<BlockPos> lastTrackedPosition,
     Optional<BlockPos> meetingPointPosition,
     boolean discard
 ) implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundMeetingPointPacket> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.optional(BlockPos.STREAM_CODEC),
-        ClientboundMeetingPointPacket::lastTrackedPosition,
         ByteBufCodecs.optional(BlockPos.STREAM_CODEC),
         ClientboundMeetingPointPacket::meetingPointPosition,
         ByteBufCodecs.BOOL,
@@ -37,13 +34,11 @@ public record ClientboundMeetingPointPacket(
     public void handleData(final IPayloadContext context) {
         if (context.flow().isClientbound()) {
             context.enqueueWork(() -> {
-                boolean shadowIsVisible = lastTrackedPosition.isPresent() && meetingPointPosition.isPresent();
                 FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
-                if (shadowIsVisible && !discard) {
+                if (meetingPointPosition.isPresent() && !discard) {
                     renderer.meetingPointContext =
                         new MeetingPointRenderContext(
                             true,
-                            lastTrackedPosition.get(),
                             meetingPointPosition.get()
                         );
                     return;

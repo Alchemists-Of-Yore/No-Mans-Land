@@ -541,7 +541,7 @@ public class FriendMoon extends SavedData {
                 if (state.exceedsDays()) return;
                 days = (cosmicBodyStateMap.get(player.getUUID()).daysCounted()) + 1;
             }
-            cosmicBodyStateMap.put(player.getUUID(), new CosmicBodyState(player.blockPosition(), player.getUUID(), days));
+            cosmicBodyStateMap.put(player.getUUID(), new CosmicBodyState(player.getUUID(), days));
             setDirty();
         }
         playerSendShadowPacket(player);
@@ -552,13 +552,11 @@ public class FriendMoon extends SavedData {
         UUID playerUUID = player.getUUID();
         CosmicBodyState state = cosmicBodyStateMap.get(playerUUID);
         if (state != null) {
-            Optional<BlockPos> lastPosition = Optional.ofNullable(state.playerPosition());
             Optional<BlockPos> meetingPointPosition = Optional.ofNullable(
                 getMeetingPointPosition(level)
             );
             PacketDistributor.sendToPlayer(player,
                 new ClientboundMeetingPointPacket(
-                    lastPosition,
                     meetingPointPosition,
                     state.exceedsDays()
                 )

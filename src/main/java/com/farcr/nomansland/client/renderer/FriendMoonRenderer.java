@@ -124,14 +124,11 @@ public class FriendMoonRenderer implements AutoCloseable {
         public static final StreamCodec<ByteBuf, FriendMoonAnimation> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, FriendMoonAnimation::getId);
     }
 
-    public float getFriendMoonDarkeningStrength() {
-        return this.getFriendMoonOpacity() * 0.3F;
-    }
+    private float friendMoonDarkneningOpacity = 0.0f;
+    public float getFriendMoonDarkeningStrength() { return this.friendMoonDarkneningOpacity * 0.3F; }
 
     private float friendMoonOpacity = 0.0f;
-    public float getFriendMoonOpacity() {
-        return friendMoonOpacity;
-    }
+    public float getFriendMoonOpacity() { return friendMoonOpacity; }
     private float friendShadowOpacity = 0.0f;
     private float friendShadowFaceOpacity = 0.0f;
 
@@ -196,7 +193,8 @@ public class FriendMoonRenderer implements AutoCloseable {
         return cast.getType() == HitResult.Type.BLOCK;
     }
 
-    /* Since the Friend Moon has a delay before leaving on the server
+    /*
+    * Since the Friend Moon has a delay before leaving on the server
     * this delay has to be tracked on the client as well so I've hacked together
     * a solution that should work for now since the player receives one of these packets
     * whenever they "gain friendship" as well. oh how I miss the status effect
@@ -293,6 +291,10 @@ public class FriendMoonRenderer implements AutoCloseable {
                 animationProgress = 0;
         }
 
+        float desiredDarkness = 0.0f;
+        if (isAwake) desiredDarkness = friendMoonOpacity;
+        friendMoonDarkneningOpacity = Mth.lerp(fadeSpeed, friendMoonDarkneningOpacity, desiredDarkness);
+
         RandomSource random = cameraEntity.getRandom();
         float pitch = cameraEntity.getViewXRot(partialTick) + 90;
         float yaw = -cameraEntity.getViewYRot(partialTick);
@@ -376,13 +378,6 @@ public class FriendMoonRenderer implements AutoCloseable {
         RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], lastOpacity);
     }
 
-    // hacky fix
-    private boolean moonWasWokenUp = false;
-
-    public static float OFFSET_MAX_AMOUNT = 30f;
-    public static float OFFSET_MAX_DISTANCE = 2500f;
-    public static float OFFSET_DIMINISH_DISTANCE = 2500f;
-
     public MeetingPointRenderContext meetingPointContext = MeetingPointRenderContext.fromDefault();
     public void renderFriendShadow(
         Matrix4f frustumMatrix, Matrix4f projectionMatrix,
@@ -400,18 +395,9 @@ public class FriendMoonRenderer implements AutoCloseable {
             poseStack.pushPose();
 
             BlockPos meetingPointPosition = meetingPointContext.meetingPointPosition();
-            BlockPos blockPos = meetingPointPosition.subtract(meetingPointContext.originalLocation());
-            float distanceMax = ((float) blockPos.distSqr(new Vec3i(0, 0, 0)) / (OFFSET_MAX_DISTANCE * OFFSET_MAX_DISTANCE));
-            float offsetCalculation = Math.clamp(distanceMax, 0, 1) * OFFSET_MAX_AMOUNT;
-
             float xDist = (float) (meetingPointPosition.getCenter().x - player.position().x);
             float yDist = (float) (meetingPointPosition.getCenter().z - player.position().z);
             float actualDegrees = (float) Math.toDegrees(Math.atan2(xDist, yDist));
-
-            float finalDegrees = Mth.lerp(
-                (float) Math.clamp(player.position().distanceToSqr(meetingPointPosition.getCenter())
-                    / (OFFSET_DIMINISH_DISTANCE * OFFSET_DIMINISH_DISTANCE), 0, 1), actualDegrees, (actualDegrees + offsetCalculation)
-            );
 
             float totalDistance = (float) Math.sqrt(xDist * xDist + yDist * yDist);
             boolean visible = (FriendMoon.isNightTime(player.level())
@@ -428,7 +414,7 @@ public class FriendMoonRenderer implements AutoCloseable {
 
             if (compositeOpacity <= 0.01f) return;
 
-            poseStack.mulPose(Axis.YP.rotationDegrees(finalDegrees));
+            poseStack.mulPose(Axis.YP.rotationDegrees(actualDegrees));
             poseStack.mulPose(Axis.XP.rotationDegrees(65));
 
             RenderSystem.disableCull();

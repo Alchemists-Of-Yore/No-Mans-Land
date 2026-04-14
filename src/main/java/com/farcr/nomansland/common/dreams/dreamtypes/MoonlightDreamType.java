@@ -5,7 +5,10 @@ import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
 import com.farcr.nomansland.common.friend.FriendMoon;
+import com.farcr.nomansland.common.friend.FriendMoonUpdate;
+import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
+import com.mojang.math.Axis;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -14,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.*;
@@ -28,6 +32,9 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -57,7 +64,8 @@ public class MoonlightDreamType extends DreamType {
         }
     }
 
-    public static final int MAX_MOON_GAZE_TIME = 200;
+    public static final int MAX_MOON_GAZE_TIME = 150;
+    public static final Quaternionf SKY_ROTATION = Axis.XP.rotationDegrees(55f);
 
     public static class MoonlightDreamTypeInstance extends DreamTypeInstance {
         private boolean hasSeenMoon = false;
@@ -66,8 +74,11 @@ public class MoonlightDreamType extends DreamType {
             super(dreamType);
         }
 
-        public void hasSeenMoon() {
-            hasSeenMoon = true;
+        public void hasSeenMoon(ServerPlayer player) {
+            if (!hasSeenMoon) {
+                FriendMoonUpdatePacket.toClient(player, FriendMoonUpdate.ToClient.DREAM_WAKE_UP_MOON);
+                hasSeenMoon = true;
+            }
         }
 
         private float moonGazeTime = 0f;
@@ -89,7 +100,6 @@ public class MoonlightDreamType extends DreamType {
             if (!playerList.isEmpty()) {
                 Player player = playerList.getFirst();
                 if (!boundingBox.contains(player.position())) {
-                    hasSeenMoon = false;
                     moonPresenceTime = 0f;
                     moonGazeTime = 0f;
                     // force player exit if out of bounds
@@ -100,8 +110,17 @@ public class MoonlightDreamType extends DreamType {
                     return;
                 }
                 moonPresenceTime++;
+                Vector3f targetPosition = player.getEyePosition().toVector3f()
+                    .add(new Vector3f(0, 100, 0).rotate(MoonlightDreamType.SKY_ROTATION)).normalize();
+                Vector3f facingDirection = player.getEyePosition().add(player.getViewVector(1.0f)).toVector3f().normalize();
+
+                NoMansLand.LOGGER.info(facingDirection.normalize().distance(targetPosition.normalize()));
+
+                if (facingDirection.normalize().distance(targetPosition.normalize()) <= 0.185
+                && player instanceof ServerPlayer serverPlayer) hasSeenMoon(serverPlayer);
+
                 if (level instanceof DreamServerLevel serverLevel && hasSeenMoon) {
-                    if (moonGazeTime > MAX_MOON_GAZE_TIME) serverLevel.endDream(true);
+                    if (moonGazeTime >= MAX_MOON_GAZE_TIME + 50) serverLevel.endDream(true);
                     moonGazeTime++;
                 }
             }

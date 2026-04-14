@@ -1,10 +1,13 @@
 package com.farcr.nomansland.common.friend;
 
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
+import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
 import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
+import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,16 +26,6 @@ public class FriendMoonUpdate {
         AWAKEN(0, (moon, player) -> {
             moon.awake = true;
             moon.wokenUpBy = player;
-        }),
-        SAW_MOON_IN_DREAM(1, (moon, player) -> {
-            DreamManager manager = DreamManager.getOrDefault(player.getServer());
-            DreamType dreamType = manager.playerGetDream(player);
-            if (manager.playerIsDreaming(player) && dreamType instanceof MoonlightDreamType) {
-                // "theres gotta be a better way to do this" -person who wrote the system
-                ((MoonlightDreamType.MoonlightDreamTypeInstance)
-                    DreamLevelHandler.getDreamLevel(player.getServer(), dreamType, player)
-                    .getDreamTypeInstance()).hasSeenMoon();
-            }
         });
 
         private final int id;
@@ -52,7 +45,10 @@ public class FriendMoonUpdate {
     }
 
     public enum ToClient {
-        DUMMY(0, (player) -> {});
+        DREAM_WAKE_UP_MOON(0, (player) -> {
+            if (ClientDreamRenderer.getInstance().getRenderer() instanceof MoonlightDreamRenderer moonRenderer)
+                moonRenderer.hasSeenMoon();
+        });
 
         private final int id;
         private final Consumer<Player> consumer;

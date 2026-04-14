@@ -61,7 +61,6 @@ public class LightTextureMixin {
         }
     }
 
-
     @Inject(
             method = "calculateDarknessScale",
             at = @At("TAIL"),

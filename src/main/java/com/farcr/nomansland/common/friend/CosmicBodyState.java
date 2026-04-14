@@ -12,13 +12,11 @@ import net.minecraft.network.codec.StreamCodec;
 import java.util.UUID;
 
 public record CosmicBodyState(
-    BlockPos playerPosition,
     UUID playerUUID,
     int daysCounted
 ) {
     public static final Codec<CosmicBodyState> CODEC = RecordCodecBuilder.create(instance ->
         instance.group(
-            BlockPos.CODEC.fieldOf("BlockPos").forGetter(CosmicBodyState::playerPosition),
             UUIDUtil.CODEC.fieldOf("UUID").forGetter(CosmicBodyState::playerUUID),
             Codec.INT.fieldOf("Time").forGetter(CosmicBodyState::daysCounted)
         ).apply(instance, CosmicBodyState::new)

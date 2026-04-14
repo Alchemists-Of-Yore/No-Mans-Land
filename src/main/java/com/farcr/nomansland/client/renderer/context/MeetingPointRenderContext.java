@@ -10,13 +10,11 @@ import net.minecraft.util.RandomSource;
  */
 public record MeetingPointRenderContext(
     boolean enabled,
-    BlockPos originalLocation,
     BlockPos meetingPointPosition
 ) {
     public static MeetingPointRenderContext fromDefault() {
         // additional information doesnt matter so long as we provide an empty one
         return new MeetingPointRenderContext(false,
-            new BlockPos(0, 0, 0),
             new BlockPos(0, 0, 0)
         );
     }

@@ -40,7 +40,7 @@ public class MoonCarvingBlockEntity extends BlockEntity {
         super(NMLBlockEntities.MOON_CARVING.get(), pos, blockState);
     }
 
-    private static final int VISION_RANGE = 7;
+    private static final int VISION_RANGE = 12;
     private static final int STARE_AT_TICKS = 40;
     private static final int DREAM_TIME = 24000 * 3;
 

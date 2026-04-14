@@ -33,8 +33,6 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     public static ShaderInstance DREAM_SKY_SHADER;
     public static ShaderInstance GRADIENT_SHADER;
 
-    public Quaternionf skyRotation = Axis.XP.rotationDegrees(55f);
-
     float speed = 1 / 40f;
 
     public boolean render(
@@ -47,7 +45,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.depthMask(false);
         poseStack.mulPose(frustumMatrix);
         poseStack.pushPose();
-        poseStack.mulPose(skyRotation);
+        poseStack.mulPose(MoonlightDreamType.SKY_ROTATION);
 
         float starAlpha = getStarBrightness(0f, 0f);
 
@@ -108,7 +106,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
             Entity camera = Minecraft.getInstance().getCameraEntity();
 
             Vec3 camPos = camera.getEyePosition(partialTicks);
-            Vector3f targetPosition = camPos.toVector3f().add(new Vector3f(0, 100, 0).rotate(skyRotation));
+            Vector3f targetPosition = camPos.toVector3f().add(new Vector3f(0, 100, 0).rotate(MoonlightDreamType.SKY_ROTATION));
 
             Vec3 target = new Vec3(targetPosition.x, targetPosition.y, targetPosition.z);
             Vec3 dir = target.subtract(camPos).normalize();
@@ -149,6 +147,9 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     }
 
     private boolean hasSeenMoon = false;
+    public void hasSeenMoon() {
+        hasSeenMoon = true;
+    }
 
     public float elapsedTime = 0.0f;
     private float ticksSinceSeenMoon = 0.0f;
@@ -208,12 +209,10 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         Matrix4f moonViewMatrix = poseStack.last().pose();
 
-        if (FriendMoonRenderer.moonOnScreen(Minecraft.getInstance(),
-            moonViewMatrix, projectionMatrix, FriendMoonRenderer.LOOKING_AT_THRESHOLD)
-        && dreamInstance.moonPresenceTime > 0) {
-            if (ticksSinceSeenMoon > STARE_AT_MOON_TICKS) FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.SAW_MOON_IN_DREAM);
-            hasSeenMoon = true;
-        }
+//        if (FriendMoonRenderer.moonOnScreen(Minecraft.getInstance(), moonViewMatrix, projectionMatrix, FriendMoonRenderer.LOOKING_AT_THRESHOLD)
+//        && dreamInstance.moonPresenceTime > 0) {
+//            hasSeenMoon = true;
+//        }
         float focusedOpacity = Math.clamp((ticksSinceSeenMoon - STARE_AT_MOON_TICKS) / 20f, 0, 1);
         FriendMoonRenderer.drawWithColor(
             Color.WHITE.getRGB(), 1f - focusedOpacity,

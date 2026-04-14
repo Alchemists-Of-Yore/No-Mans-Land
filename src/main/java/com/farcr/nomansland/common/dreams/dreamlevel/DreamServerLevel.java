@@ -77,7 +77,10 @@ public class DreamServerLevel extends ServerLevel {
         List<ServerPlayer> playerList = new ArrayList<>(players());
         for (ServerPlayer player : playerList) {
             DreamingPlayer dreamingPlayer = manager.getDreamingPlayer(player);
-            if (dreamingPlayer != null) dreamingPlayer.discardTether();
+            if (dreamingPlayer != null) {
+                dreamingPlayer.debug = false;
+                dreamingPlayer.discardTether();
+            }
             else DreamLevelHandler.playerTeleportFallback(player, false);
 
             if (success) manager.setDreamExperienced(dreamType, player);
