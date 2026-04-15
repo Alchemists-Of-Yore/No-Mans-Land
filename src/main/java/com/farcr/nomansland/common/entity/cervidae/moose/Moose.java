@@ -234,6 +234,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
                 .add(Attributes.FOLLOW_RANGE, 20.0D)
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(Attributes.ARMOR, 4.0D)
                 .add(Attributes.STEP_HEIGHT, 1);
     }
 
@@ -255,14 +256,14 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true, (e) -> targetMemory.isUpsetAt(e)));
 
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new MooseMeleeAttackGoal(this, 1.75f));
+        goalSelector.addGoal(1, new MooseMeleeAttackGoal(this, 2f));
         goalSelector.addGoal(2, new MooseStompGoal(this, STOMP_DISTANCE));
         goalSelector.addGoal(3, new ShedAntlersGoal(this));
         goalSelector.addGoal(4, new MooseBackOffBehaviorGoal(this, 0.25f, BACK_OFF_DISTANCE));
         goalSelector.addGoal(5, new MooseShakeOffSaddleGoal(this));
-        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.5f, 0.0005F));
+        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.4f, 0.0003F));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.0025f));
+        goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.002f));
     }
 
     @Override
@@ -477,9 +478,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         var heldItem = player.getItemInHand(hand);
 
-        var healInteraction = tryEatAndHeal(player, heldItem);
-        if (healInteraction.isPresent()) {
-            return healInteraction.get();
+        var eatInteraction = tryEatAndHeal(player, heldItem);
+        if (eatInteraction.isPresent()) {
+            return eatInteraction.get();
         }
         var mountInteraction = tryMount(player);
         if (mountInteraction.isPresent()) {
@@ -557,7 +558,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         if (getTarget() != null || (!isMooseFood && stack.getFoodProperties(player) != null)) {
             level.broadcastEntityEvent(this, REJECT_FOOD_EVENT);
             playSound(NMLSounds.MOOSE_REJECTS_FOOD.get(), 1f, 1f);
-            return Optional.of(InteractionResult.FAIL);
+            return Optional.of(InteractionResult.SUCCESS_NO_ITEM_USED);
         }
         if (isMooseFood && getHealth() < getMaxHealth()) {
             var isClientSide = level.isClientSide;
@@ -590,7 +591,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         if (getTarget() != null || (!isMooseFood && stack.getFoodProperties(player) != null)) {
             level.broadcastEntityEvent(this, REJECT_FOOD_EVENT);
             playSound(NMLSounds.MOOSE_REJECTS_FOOD.get(), 1f, 1f);
-            return Optional.of(InteractionResult.FAIL);
+            return Optional.of(InteractionResult.SUCCESS_NO_ITEM_USED);
         }
         if (isMooseFood) {
             var isClientSide = level.isClientSide;
@@ -615,7 +616,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
                 setPacificationStage(stage);
             }
 
-            return Optional.of(InteractionResult.sidedSuccess(isClientSide));
+            return Optional.of(InteractionResult.SUCCESS);
         }
         return Optional.empty();
     }
