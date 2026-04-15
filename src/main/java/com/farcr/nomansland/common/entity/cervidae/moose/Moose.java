@@ -907,7 +907,8 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         double zTargetDiff = target.getZ() - getZ();
         float toTarget = (float) (Mth.atan2(zTargetDiff, xTargetDiff) * 180.0F / (float) Math.PI) - 90.0F;
 
-        setYRot(getMoveControl().rotlerp(getYRot(), toTarget, 30.0F));
+        float rate = 8f + movementData.getMotion().length() * 32f;
+        setYRot(getMoveControl().rotlerp(getYRot(), toTarget, rate));
     }
 
     protected void addWarningFeedback() {
