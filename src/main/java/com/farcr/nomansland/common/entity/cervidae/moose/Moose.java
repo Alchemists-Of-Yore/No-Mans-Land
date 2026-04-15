@@ -83,7 +83,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     //Controls how long a nearby entity has to stay within the stomp radius in order for the Moose to stomp
     protected static final int STOMP_WINDUP = 30;
     //Controls how close an entity has to be for the moose to consider stomping
-    protected static final float STOMP_DISTANCE = 7f;
+    protected static final float STOMP_DISTANCE = 6f;
     //Controls how long the stomp action is considered to be. Should be equal to the animation length
     protected static final int STOMP_DURATION = 15;
     //Controls how long it takes before the moose can stomp again. Also applies after the moose attacks
@@ -97,22 +97,24 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     protected static final int AGGRO_TIMEOUT = 100;
     //Controls how long a nearby entity has to stay within the aggro radius in order for the Moose to start attacking them
     protected static final int AGGRO_WINDUP = 60;
+    //Adds a degree of randomness to aggro status accumulation.
+    protected static final float AGGRO_VARIANCE = 0.35f;
     //Controls how close an entity has to be after the moose stomps for the moose to charge at it
-    protected static final float IRRITATED_AGGRO_DISTANCE = 6f;
+    protected static final float IRRITATED_AGGRO_DISTANCE = 5f;
     //Controls how close an entity has to remain for the moose to continue charging at it. If the entity re-enters this radius, the moose will resume its charge
     protected static final float ACTIVE_AGGRO_DISTANCE = 16f;
 
     //Multiplies the movement speed of the moose during the stomp state
     protected static final float ACTIVE_STOMP_SPEED_MULTIPLIER = 0.3f;
-    //Multiplies the movement speed of the moose for a short duration after it stomps
-    protected static final float POST_STOMP_SPEED_MULTIPLIER = 1.5f;
     //Multiplies the movement speed of the moose while it is being ridden by a player
     protected static final float RIDDEN_SPEED_MULTIPLIER = 1.3f;
     //Multiplies the movement speed of the moose while it is being commanded to attack by a player
-    protected static final float CHARGING_ATTACK_SPEED_MULTIPLIER = 0.9f;
+    protected static final float CHARGING_ATTACK_SPEED_MULTIPLIER = 1.1f;
 
+    //Adds a degree of randomness to when the moose starts it's stomping sequence
+    protected static final float BACK_OFF_CHANCE = 0.4f;
     //Controls how far the moose will try to back away from the nearest target after it stomps, or after it attacks
-    protected static final float BACK_OFF_DISTANCE = 12f;
+    protected static final float BACK_OFF_DISTANCE = 8f;
     //Controls how long the moose will back off for after either stomping or attacking
     protected static final int BACK_OFF_DURATION = 120;
 
@@ -148,8 +150,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     public int stompTimer;
     public int stompCooldown;
     public long mostRecentStomp;
-
-    public int saddleShakeOffTimer;
 
     private int pacificationStage;
     private int chargeAttackCooldown;
@@ -196,8 +196,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         compound.putInt("StompCooldown", stompCooldown);
         compound.putLong("MostRecentStomp", mostRecentStomp);
 
-        compound.putInt("SaddleShakeOffTimer", saddleShakeOffTimer);
-
         compound.putInt("PacificationStage", getPacificationStage());
         compound.putInt("ChargeAttackCooldown", getChargeAttackCooldown());
 
@@ -219,8 +217,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         stompTimer = compound.getInt("StompTimer");
         stompCooldown = compound.getInt("StompCooldown");
         mostRecentStomp = compound.getInt("MostRecentStomp");
-
-        saddleShakeOffTimer = compound.getInt("SaddleShakeOffTimer");
 
         setPacificationStage(compound.getInt("PacificationStage"));
         setChargeAttackCooldown(compound.getInt("ChargeAttackCooldown"));
@@ -263,9 +259,10 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         goalSelector.addGoal(2, new MooseStompGoal(this, STOMP_DISTANCE));
         goalSelector.addGoal(3, new ShedAntlersGoal(this));
         goalSelector.addGoal(4, new MooseBackOffBehaviorGoal(this, 0.25f, BACK_OFF_DISTANCE));
-        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.75f));
-        goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.005f));
+        goalSelector.addGoal(5, new MooseShakeOffSaddleGoal(this));
+        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.5f, 0.0005F));
+        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.0025f));
     }
 
     @Override
@@ -295,17 +292,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
     @Override
     public boolean isSaddleable() {
-        if (hasStompedRecently(STOMP_FEAR_DURATION)) {
-            return false;
-        }
-        var target = getTarget();
-        if (target == null || !target.isAlive()) {
-            return true;
-        }
-        //I wish this method gave us a @Nullable LivingEntity saddleHolder
-        if (target instanceof Player player && player.isHolding(Items.SADDLE)) {
-            return !targetMemory.isUpsetAt(player);
-        }
         return true;
     }
 
@@ -335,7 +321,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         targetMemory.tick();
         movementData.update();
         tickStompState();
-        tickSaddleState();
         if (!isBaby()) {
             regrowLostAntlers(this);
         }
@@ -375,6 +360,9 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
                 }
             }
             else {
+                if (random.nextFloat() > AGGRO_VARIANCE) {
+                    return;
+                }
                 inAggroRadius += interval;
                 if (inAggroRadius >= AGGRO_WINDUP/4) {
                     tryShowWarning();
@@ -385,16 +373,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
                     }
                     inAggroRadius = 0;
                 }
-            }
-        }
-    }
-
-    public void tickSaddleState() {
-        if (isSaddled() && !isPacified()) {
-            saddleShakeOffTimer++;
-            if (saddleShakeOffTimer == SADDLE_SHAKEOFF_DELAY) {
-                shakeOffSaddle();
-                saddleShakeOffTimer = 0;
             }
         }
     }
@@ -643,16 +621,11 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     }
 
     public float getStompAdjustedMovementSpeed(float speed) {
-        if (canStartStomp()) {
-            return speed;
-        }
         if (isStomping) {
             //Actively stomping
             return speed * ACTIVE_STOMP_SPEED_MULTIPLIER;
-        } else {
-            //Hastened speed after stomp
-            return speed * POST_STOMP_SPEED_MULTIPLIER;
         }
+        return speed;
     }
 
     public boolean canStartStomp() {
@@ -1029,7 +1002,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
      */
     @Override
     public @Nullable LivingEntity getControllingPassenger() {
-        if (isSaddled()) {
+        if (isSaddled() && isPacified()) {
             if (getFirstPassenger() instanceof Player player) {
                 return player;
             }
@@ -1059,6 +1032,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     @Override
     protected void playStepSound(@NotNull BlockPos pos, @NotNull BlockState state) {
         playSound(NMLSounds.MOOSE_STEP.get(), 0.15F, 1.0F);
+    }
+
+    //Makes the moose produce step sounds less frequently when ridden
+    @Override
+    protected float nextStep() {
+        return this.moveDist + 1.5f;
     }
 
     @Override

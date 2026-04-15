@@ -130,9 +130,11 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         boolean isMounted = moose.isSaddled() && moose.isVehicle();
         setSaddleVisibility(false);
-        idleAnimations(isMounted, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         if (isMounted) {
             animateWalk(MooseAnimations.MOUNTED, limbSwing, limbSwingAmount, 1.2f, 1f);
+        }
+        else {
+            idleAnimations(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         }
         animate(moose.shakeAnimationState, MooseAnimations.SHAKE, ageInTicks);
         animate(moose.stompAnimationState, MooseAnimations.STOMPING, ageInTicks);
@@ -143,7 +145,7 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
         animate(moose.chargedAttackEndAnimationState, MooseAnimations.UPPERCUT, ageInTicks);
     }
 
-    public void idleAnimations(boolean isMounted, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void idleAnimations(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         // IDLE ANIMATION
         {
             float idleTime = ageInTicks * 0.01F;
@@ -187,9 +189,6 @@ public class MooseModel<T extends Moose> extends AgeableHierarchicalModel<T> {
             right_leg_back.yRot -= upperBodyYRot;
 
             this.dewlap.xRot -= Math.min(headPitch * Mth.DEG_TO_RAD, 0.1F);
-        }
-        if (isMounted) {
-            return;
         }
         // LOCOMOTION
         float runWeight = Math.clamp((limbSwingAmount - 0.8F) * 8, 0, 1);

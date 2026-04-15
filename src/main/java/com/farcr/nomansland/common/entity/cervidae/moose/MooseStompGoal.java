@@ -72,7 +72,14 @@ public class MooseStompGoal extends Goal {
         if (moose.distanceTo(stompTarget) < stompDistance) {
             inStompRadius++;
         }
-        return inStompRadius > Moose.STOMP_WINDUP;
+        if (inStompRadius >= Moose.STOMP_WINDUP) {
+            if (moose.getRandom().nextFloat() > Moose.BACK_OFF_CHANCE) {
+                inStompRadius -= 10;
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
