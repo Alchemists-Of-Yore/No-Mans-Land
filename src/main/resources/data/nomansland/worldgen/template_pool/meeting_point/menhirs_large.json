@@ -1,0 +1,293 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_big_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_big_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_big_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_big_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_big_5",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_big_crumbled",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_large_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_large_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_large_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_large_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_large_5",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_large_crumbled",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_shrine_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_shrine_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_shrine_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_shrine_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_shrine_5",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_stand_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_stand_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_stand_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_stand_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_stand_5",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_altar_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_altar_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_altar_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_altar_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_altar_5",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_huge_1",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_huge_2",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_huge_3",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_huge_4",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "location": "nomansland:meeting_point/menhirs/menhir_huge_5",
+        "processors": "nomansland:menhirs",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
