@@ -135,12 +135,12 @@ public class BuddyChunkAnchor extends SavedData {
 
                 // Replace data with previously saved buddy data
                 CompoundTag replacementData = existingBuddyData.getNBTData().get();
-                NoMansLand.LOGGER.info(replacementData);
                 for (String key : replacementData.getAllKeys())
                     fallbackTag.put(key, Objects.requireNonNull(replacementData.get(key)));
 
-                NoMansLand.LOGGER.info(fallbackTag);
                 buddy.load(fallbackTag);
+            } else {
+                buddy.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlock), MobSpawnType.NATURAL, null);
             }
 
             // Replace last anchor
