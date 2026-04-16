@@ -37,8 +37,8 @@ public class BuddyModel<T extends Buddy> extends PlayerModel<T> {
         PartDefinition LeftArm = partdefinition.getChild("left_arm");
         PartDefinition RightArm = partdefinition.getChild("right_arm");
 
-        Head.addOrReplaceChild("head_fungus1", CubeListBuilder.create().texOffs(24, 0).addBox(-3.0F, -4.0F, 0.0F, 6.0F, 4.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.0F, -8.0F, -1.0F, 0.0F, -0.7854F, 0.0F));
-        Head.addOrReplaceChild("head_fungus2", CubeListBuilder.create().texOffs(24, 0).addBox(-3.0F, -4.0F, 0.0F, 6.0F, 4.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.0F, -8.0F, -1.0F, 0.0F, 0.7854F, 0.0F));
+        Head.addOrReplaceChild("head_fungus1", CubeListBuilder.create().texOffs(24, 0).addBox(-3.0F, -6.0F, 0.0F, 6.0F, 6.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.0F, -8.0F, -1.0F, 0.0F, -0.7854F, 0.0F));
+        Head.addOrReplaceChild("head_fungus2", CubeListBuilder.create().texOffs(24, 0).addBox(-3.0F, -6.0F, 0.0F, 6.0F, 6.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.0F, -8.0F, -1.0F, 0.0F, 0.7854F, 0.0F));
 
         LeftArm.addOrReplaceChild("left_arm_fungus1", CubeListBuilder.create().texOffs(54, 40).addBox(0.0F, 0.0F, 0.0F, 4.0F, 8.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.0F, 0.0F, 0.0F, 0.0F, -0.3927F, 0.0F));
         LeftArm.addOrReplaceChild("left_arm_fungus2", CubeListBuilder.create().texOffs(54, 32).addBox(0.0F, 0.0F, 0.0F, 4.0F, 8.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(2.0F, 0.0F, 0.0F, 0.0F, 0.3927F, 0.0F));
