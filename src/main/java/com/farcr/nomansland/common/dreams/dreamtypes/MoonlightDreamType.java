@@ -9,7 +9,10 @@ import com.farcr.nomansland.common.friend.FriendMoonUpdate;
 import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.mojang.math.Axis;
-import net.minecraft.core.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.SectionPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -17,10 +20,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
-import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -32,7 +33,6 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -44,7 +44,7 @@ public class MoonlightDreamType extends DreamType {
             .setCanSprint(false).setHUDHidden(true)
             .setRenderer(MoonlightDreamRenderer::new)
             .setChunkGenerator(this::moonlightChunkGenerator)
-            .setSpawnPoint(new Vec3(0, MONOLITH_HEIGHT + 2, -20))
+            .setSpawnPoint(new Vec3(0.5, MONOLITH_HEIGHT + 2, -19.5))
             .setInstanceSupplier(() -> new MoonlightDreamTypeInstance(this));
     }
 
