@@ -34,14 +34,15 @@ public class MeetingPointStructure extends Structure {
         ).apply(instance, MeetingPointStructure::new)
     );
 
-    private static final int FIELD_RADIUS = 260;
-    private static final int SLOT_ATTEMPTS = 7000;
     private static final int PATH_COUNT = 6;
-    private static final double PATH_HALF_WIDTH = 9;
+    private static final double PATH_HALF_WIDTH = 6;
     private static final double PATH_WOBBLE_AMPLITUDE = 0.18;
     private static final double PATH_WOBBLE_NOISE_SCALE = 0.04;
-    private static final double DENSITY_DECAY_SCALE = 80.0;
-    private static final double MIN_DISTANCE_FROM_ALTAR = 8;
+    private static final double MIN_DISTANCE_FROM_ALTAR = 6;
+
+    private static final int SLOT_ATTEMPTS = 6000;
+    private static final double FIELD_RADIUS = 128.0;
+    private static final double DENSITY_FALLOFF_EXPONENT = 2.2;
 
     private final Holder<StructureTemplatePool> startPool;
     private final Holder<StructureTemplatePool> menhirSmallPool;
@@ -100,14 +101,14 @@ public class MeetingPointStructure extends Structure {
                 double radius = normalizedRadius * FIELD_RADIUS;
                 if (radius < MIN_DISTANCE_FROM_ALTAR) continue;
 
+                double acceptance = Math.pow(1.0 - normalizedRadius, DENSITY_FALLOFF_EXPONENT);
+                if (placementRandom.nextDouble() > acceptance) continue;
+
                 int menhirX = fieldCenterX + (int) Math.round(Math.cos(angle) * radius);
                 int menhirZ = fieldCenterZ + (int) Math.round(Math.sin(angle) * radius);
 
                 double candidateAngle = Math.atan2(menhirZ - fieldCenterZ, menhirX - fieldCenterX);
                 if (lyingOnRadialPath(candidateAngle, radius, pathsBaseAngle, pathWobbleNoise)) continue;
-
-                double distanceFalloff = Math.exp(-radius / DENSITY_DECAY_SCALE);
-                if (placementRandom.nextDouble() > distanceFalloff) continue;
 
                 int groundY = context.chunkGenerator().getFirstOccupiedHeight(
                     menhirX, menhirZ, Heightmap.Types.OCEAN_FLOOR_WG,

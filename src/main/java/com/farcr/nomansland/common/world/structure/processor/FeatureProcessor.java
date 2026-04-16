@@ -64,7 +64,7 @@ public class FeatureProcessor extends StructureProcessor {
 
             BlockState replacement = Blocks.AIR.defaultBlockState();
             for (Direction direction : Direction.values()) {
-                if (level.getBlockState(info.pos().relative(direction)).is(Blocks.WATER)) {
+                if (direction != Direction.DOWN && level.getBlockState(info.pos().relative(direction)).is(Blocks.WATER)) {
                     replacement = Blocks.WATER.defaultBlockState();
                     break;
                 }
