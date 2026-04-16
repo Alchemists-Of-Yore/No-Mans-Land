@@ -94,6 +94,8 @@ public class InvertedBellClientHandler {
         if (animationTimer > 0) {
             animationTimer--;
         }
+        this.previousIntensity = this.intensity;
+        if (Minecraft.getInstance().isPaused()) return;
         switch (this.state) {
             case FADE_IN -> {
                 this.fadeTimer++;
@@ -125,7 +127,6 @@ public class InvertedBellClientHandler {
                 }
             }
         }
-        this.previousIntensity = this.intensity;
         this.intensity = (float) Mth.lerp(0.5, this.intensity, this.state.getIntensity(this.fadeTimer));
         if (this.intensity < 1E-4) {
             this.intensity = 0;

@@ -119,7 +119,9 @@ public class ClientDreamRenderer implements AutoCloseable {
     private float storedTicks = 0f;
     public float getSleepTicks(DeltaTracker deltaTracker) {
         if (dreamShouldRender()) {
-            storedTicks += (deltaTracker.getGameTimeDeltaTicks() / 2.5f);
+            float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
+            if (Minecraft.getInstance().isPaused()) deltaTicks = 0f;
+            storedTicks += (deltaTicks / 2.5f);
             return Math.max(0f, MAX_SLEEP_TICKS - storedTicks);
         }
         storedTicks = 0f;
