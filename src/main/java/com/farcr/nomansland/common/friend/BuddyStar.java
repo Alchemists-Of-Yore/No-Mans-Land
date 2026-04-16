@@ -44,9 +44,21 @@ public record BuddyStar(
 
     public float getDistance(int index) {
         RandomSource r = RandomSource.create(seed);
-        r.nextFloat();
+        r.nextFloat(); // angle
         float range = Math.min(MIN_RANGE + index * RANGE_PER_STAR, MAX_RANGE);
         return MIN_DISTANCE + r.nextFloat() * range;
+    }
+
+    public static final float MIN_STICKINESS = 0.2f;
+    public static final float MAX_STICKINESS = 1.0f;
+
+    public float getStickiness() {
+        RandomSource r = RandomSource.create(seed);
+        r.nextFloat(); // angle
+        r.nextFloat(); // distance
+        float t = r.nextFloat();
+        t = t * t * (3f - 2f * t);
+        return MIN_STICKINESS + t * (MAX_STICKINESS - MIN_STICKINESS);
     }
 
     public float getFlickerAlpha(long timeMs) {

@@ -3,34 +3,28 @@ package com.farcr.nomansland.client.renderer;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.Meshes;
 import com.farcr.nomansland.client.ambience.fogmodifiers.FriendMoonFogModifier;
+import com.farcr.nomansland.client.renderer.context.MeetingPointRenderContext;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
-import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.BuddyStar;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.FriendMoonUpdate;
-import com.farcr.nomansland.client.renderer.context.MeetingPointRenderContext;
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -41,18 +35,17 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
-import java.lang.Math;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.IntFunction;
 
 public class FriendMoonRenderer implements AutoCloseable {
@@ -159,6 +152,8 @@ public class FriendMoonRenderer implements AutoCloseable {
     public float friendMoonYawDirection = 0f;
     public float friendMoonPitchStep = 0;
     public float friendMoonYawStep = 0;
+
+    private final Map<Long, float[]> starAngles = new HashMap<>();
 
     public static boolean moonOnScreen(Minecraft mc, Matrix4f moonViewMatrix, Matrix4f projectionMatrix, float threshold) {
         Vector3f worldPosition = moonViewMatrix.transformPosition(0f, MOON_DISTANCE, 0F, new Vector3f());
@@ -354,6 +349,37 @@ public class FriendMoonRenderer implements AutoCloseable {
         }
 
         friendMoonPitchAngle = Math.min(friendMoonPitchAngle, pitchClamp - 25f);
+
+        updateStarAngles(speed);
+    }
+
+    private void updateStarAngles(float moonSpeed) {
+        FriendMoon moon = getClientMoon();
+        if (moon == null) {
+            if (!starAngles.isEmpty()) starAngles.clear();
+            return;
+        }
+        List<BuddyStar> stars = moon.getBuddyStars();
+        if (stars.isEmpty()) {
+            if (!starAngles.isEmpty()) starAngles.clear();
+            return;
+        }
+
+        Set<Long> seen = new HashSet<>(stars.size());
+        for (BuddyStar star : stars) {
+            long seed = star.seed();
+            seen.add(seed);
+            float[] angles = starAngles.get(seed);
+            if (angles == null) {
+                angles = new float[]{friendMoonPitchAngle, friendMoonYawAngle};
+                starAngles.put(seed, angles);
+                continue;
+            }
+            float t = Mth.clamp(moonSpeed * star.getStickiness(), 0f, 1f);
+            angles[0] = Mth.lerp(t, angles[0], friendMoonPitchAngle);
+            angles[1] = Mth.lerp(t, angles[1], friendMoonYawAngle);
+        }
+        if (starAngles.size() > seen.size()) starAngles.keySet().retainAll(seen);
     }
 
     public static void renderFriendMoonInternal(Tesselator tesselator, Matrix4f matrix4f1,
@@ -602,6 +628,8 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         poseStack.mulPose(frustumMatrix);
 
+        Matrix4f skyMatrix = new Matrix4f(poseStack.last().pose());
+
         // Moon Rotation in the sky
         Quaternionf rotationQuaternion = Axis.YP.rotationDegrees(friendMoonYawAngle)
             .mul(Axis.XP.rotationDegrees(friendMoonPitchAngle));
@@ -651,7 +679,7 @@ public class FriendMoonRenderer implements AutoCloseable {
             GL11.GL_KEEP
         );
 
-        renderBuddyStars(tesselator, matrix4f1, getFriendMoonOpacity());
+        renderBuddyStars(tesselator, skyMatrix, getFriendMoonOpacity());
 
         RenderSystem.enableCull();
         poseStack.popPose();
@@ -660,7 +688,7 @@ public class FriendMoonRenderer implements AutoCloseable {
     private static final ResourceLocation BUDDY_STAR_TEXTURE = NoMansLand.location("textures/misc/buddy_star.png");
     public static final float STAR_SIZE = 1.0f;
 
-    public void renderBuddyStars(Tesselator tesselator, Matrix4f moonMatrix, float opacity) {
+    public void renderBuddyStars(Tesselator tesselator, Matrix4f skyMatrix, float opacity) {
         if (clientBlockPos == null || opacity <= 0)
             return;
 
@@ -691,15 +719,23 @@ public class FriendMoonRenderer implements AutoCloseable {
             float y = MOON_DISTANCE;
             float z = (float) (Math.cos(angleRad)) * dist;
 
+            float[] angles = starAngles.get(star.seed());
+            float starPitch = angles != null ? angles[0] : friendMoonPitchAngle;
+            float starYaw = angles != null ? angles[1] : friendMoonYawAngle;
+
+            Matrix4f starMatrix = new Matrix4f(skyMatrix)
+                .rotate(Axis.YP.rotationDegrees(starYaw))
+                .rotate(Axis.XP.rotationDegrees(starPitch));
+
             float[] rgb = star.getRgb();
             float flicker = star.getFlickerAlpha(timeMs);
             RenderSystem.setShaderColor(rgb[0], rgb[1], rgb[2], opacity * flicker);
 
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-            buffer.addVertex(moonMatrix, x - STAR_SIZE, y, z - STAR_SIZE).setUv(0, 1);
-            buffer.addVertex(moonMatrix, x + STAR_SIZE, y, z - STAR_SIZE).setUv(1, 1);
-            buffer.addVertex(moonMatrix, x + STAR_SIZE, y, z + STAR_SIZE).setUv(1, 0);
-            buffer.addVertex(moonMatrix, x - STAR_SIZE, y, z + STAR_SIZE).setUv(0, 0);
+            buffer.addVertex(starMatrix, x - STAR_SIZE, y, z - STAR_SIZE).setUv(0, 1);
+            buffer.addVertex(starMatrix, x + STAR_SIZE, y, z - STAR_SIZE).setUv(1, 1);
+            buffer.addVertex(starMatrix, x + STAR_SIZE, y, z + STAR_SIZE).setUv(1, 0);
+            buffer.addVertex(starMatrix, x - STAR_SIZE, y, z + STAR_SIZE).setUv(0, 0);
             BufferUploader.drawWithShader(buffer.buildOrThrow());
         }
         RenderSystem.setShaderColor(prevColor[0], prevColor[1], prevColor[2], prevColor[3]);
