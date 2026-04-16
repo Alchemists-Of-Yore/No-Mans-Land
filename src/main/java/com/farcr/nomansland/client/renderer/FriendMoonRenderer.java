@@ -5,6 +5,7 @@ import com.farcr.nomansland.client.Meshes;
 import com.farcr.nomansland.client.ambience.fogmodifiers.FriendMoonFogModifier;
 import com.farcr.nomansland.client.renderer.context.MeetingPointRenderContext;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
+import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
 import com.farcr.nomansland.common.friend.BuddyStar;
 import com.farcr.nomansland.common.friend.FriendMoon;
@@ -39,10 +40,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
@@ -119,6 +117,26 @@ public class FriendMoonRenderer implements AutoCloseable {
 
     private float friendMoonDarkneningOpacity = 0.0f;
     public float getFriendMoonDarkeningStrength() { return this.friendMoonDarkneningOpacity * 0.3F; }
+
+    public float modifyAmbientLightFactor(float ambientLight) {
+        float darkeningAmount = 1 - this.friendMoonDarkneningOpacity;
+        return ambientLight * darkeningAmount;
+    }
+    public void modifySkyLightColor(Vector3f color, int skyLightLevel) {
+        float darkeningAmount = 1 - this.friendMoonDarkneningOpacity;
+        color.set(
+                color.x * darkeningAmount,
+                color.x * darkeningAmount,
+                color.x * darkeningAmount
+        );
+    }
+    public void modifyBlockLightColor(Vector3f color, int blockLightLevel) {
+        if (blockLightLevel < MoonlightCandleBlock.LIGHT_LEVEL) {
+            float factor = Mth.map(blockLightLevel, 0, MoonlightCandleBlock.LIGHT_LEVEL, 0, 1);
+            factor = (float) Math.pow(factor, Mth.lerp(this.friendMoonDarkneningOpacity, 1, 5));
+            color.mul(factor);
+        }
+    }
 
     private float friendMoonOpacity = 0.0f;
     public float getFriendMoonOpacity() { return friendMoonOpacity; }

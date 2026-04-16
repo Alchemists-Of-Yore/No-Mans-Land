@@ -69,6 +69,9 @@
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
 				"south": {"uv": [0, 0, 16, 16], "texture": "#1"}
+			},
+			"neoforge_data": {
+				"block_light": 15
 			}
 		},
 		{
@@ -79,6 +82,9 @@
 			"faces": {
 				"east": {"uv": [0, 0, 16, 16], "texture": "#1"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#1"}
+			},
+			"neoforge_data": {
+				"block_light": 15
 			}
 		}
 	]

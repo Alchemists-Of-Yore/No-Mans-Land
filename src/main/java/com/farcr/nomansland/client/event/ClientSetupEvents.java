@@ -218,7 +218,7 @@ public class ClientSetupEvents {
                 -> new MoonlightRayParticle(clientLevel, d, e, f, g, h, i));
         event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_FLAME.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-                -> new FlameParticle(clientLevel, d, e, f, g, h, i, sprites));
+                -> new MoonlightCandleFlameParticle(clientLevel, d, e, f, g, h, i, sprites));
         event.registerSpriteSet(NMLParticleTypes.MOONLIGHT_SPARK.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new MoonlightSparkParticle(clientLevel, d, e, f, g, h, i, sprites));

@@ -2,18 +2,20 @@ package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.world.entity.LivingEntity;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 
 /*
@@ -22,7 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LightTexture.class)
 @IfModAbsent("delightmap")
 public class LightTextureMixin {
-    @Final @Shadow
+    @Final
+    @Shadow
     private NativeImage lightPixels;
 
     @Unique
@@ -35,8 +38,8 @@ public class LightTextureMixin {
         final float f = l > 0 ? Math.min(1, lTarget / l) : 0;
 
         return f == 1f ? c
-            : 0xFF000000 | Math.round(f * r * 255) | (Math.round(f * g * 255) << 8)
-            | (Math.round(f * b * 255) << 16);
+                : 0xFF000000 | Math.round(f * r * 255) | (Math.round(f * g * 255) << 8)
+                | (Math.round(f * b * 255) << 16);
     }
 
     @Unique
@@ -45,10 +48,10 @@ public class LightTextureMixin {
     }
 
     @Inject(method = "updateLightTexture",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;upload()V"
-        )
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;upload()V"
+            )
     )
     private void nml$trueDarknessUpload(float partialTicks, CallbackInfo ci) {
         if (ClientDreamRenderer.getInstance().dreamShouldRender() && lightPixels != null) {
@@ -61,14 +64,36 @@ public class LightTextureMixin {
         }
     }
 
-    @Inject(
-            method = "calculateDarknessScale",
-            at = @At("TAIL"),
-            cancellable = true
+    @ModifyArg(method = "updateLightTexture",
+               at = @At(
+                       value = "INVOKE",
+                       target = "Lorg/joml/Vector3f;add(Lorg/joml/Vector3fc;)Lorg/joml/Vector3f;"
+               ),
+               index = 0
     )
-    private void nml$friendMoonDarken(LivingEntity entity, float gamma, float partialTick, CallbackInfoReturnable<Float> cir) {
-        float currentDarknessIntensity = cir.getReturnValue();
-        float darknessStrength = FriendMoonRenderer.getInstance().getFriendMoonDarkeningStrength();
-        if (darknessStrength > 0.001F) cir.setReturnValue(Math.max(currentDarknessIntensity, darknessStrength));
+    private Vector3fc nml$friendMoonDarkenSkyLight(Vector3fc v, @Local(ordinal = 0) int skyLight, @Local(ordinal = 2) Vector3f skyLightColor) {
+        FriendMoonRenderer.getInstance().modifySkyLightColor(skyLightColor, skyLight);
+        return skyLightColor;
+    }
+    @Inject(method = "updateLightTexture",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/joml/Vector3f;set(FFF)Lorg/joml/Vector3f;",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void nml$friendMoonDarkenBlockLight(float partialTicks, CallbackInfo ci, @Local(ordinal = 1) int blockLight, @Local(ordinal = 1) Vector3f blockLightColor) {
+        FriendMoonRenderer.getInstance().modifyBlockLightColor(blockLightColor, blockLight);
+    }
+    @ModifyArg(method = "updateLightTexture",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/joml/Vector3f;lerp(Lorg/joml/Vector3fc;F)Lorg/joml/Vector3f;",
+                    ordinal = 2
+            ),
+            index = 1
+    )
+    private float nml$friendMoonDarkenAmbientLight(float ambientLight) {
+        return FriendMoonRenderer.getInstance().modifyAmbientLightFactor(ambientLight);
     }
 }
