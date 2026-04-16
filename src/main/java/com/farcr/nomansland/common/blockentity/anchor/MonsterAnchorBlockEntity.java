@@ -164,7 +164,7 @@ public class MonsterAnchorBlockEntity extends BlockEntity implements GameEventLi
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         timeIdle = tag.getInt("TimeIdle");
         timeResurrecting = tag.getInt("TimeResurrecting");
-        range = Math.min(tag.getInt("Range"), 16);
+        range = tag.contains("Range") ? Math.min(tag.getInt("Range"), 16) : 7;
         int i = 0;
         Tag foundTag = tag.get("Entity0");
         while(foundTag instanceof CompoundTag entityTag) {
