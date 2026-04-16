@@ -43,6 +43,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.Math;
 import java.util.*;
 import java.util.function.IntFunction;
 
