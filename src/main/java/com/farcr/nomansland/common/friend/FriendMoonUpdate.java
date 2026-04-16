@@ -2,16 +2,9 @@ package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
-import com.farcr.nomansland.common.dreams.DreamManager;
-import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamServerLevel;
-import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
-import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +17,7 @@ import java.util.function.IntFunction;
 public class FriendMoonUpdate {
     public enum ToServer {
         AWAKEN(0, (moon, player) -> {
+            if (moon.awake) return;
             moon.awake = true;
             moon.wokenUpBy = player;
         });

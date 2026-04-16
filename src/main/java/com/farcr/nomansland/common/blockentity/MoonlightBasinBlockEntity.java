@@ -1,13 +1,11 @@
 package com.farcr.nomansland.common.blockentity;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
-import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
@@ -26,7 +24,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -122,6 +119,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     public static final float FRIENDSHIP_MAX_RANGE = 16;
 
     private OfferingContext inspectionContext;
+    private UUID pendingInspectionUUID;
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
         // clear previous inspection context
         if (inspectionContext != null)
@@ -140,6 +138,22 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
         if (!level.isClientSide())
             pulseUpdate();
+    }
+
+    private boolean tryResolveInspection() {
+        if (pendingInspectionUUID == null || level == null) return false;
+        if (inspectionContext != null && inspectionContext.entity() != null
+            && pendingInspectionUUID.equals(inspectionContext.entity().getUUID()))
+            return true;
+        UUID uuid = pendingInspectionUUID;
+        AABB searchBox = new AABB(getBlockPos()).inflate(FRIENDSHIP_MAX_RANGE);
+        for (Entity entity : level.getEntitiesOfClass(Entity.class, searchBox, EntitySelector.ENTITY_STILL_ALIVE)) {
+            if (entity.getUUID().equals(uuid)) {
+                setInspectionContext(new OfferingContext(entity, null), clientMoon);
+                return true;
+            }
+        }
+        return false;
     }
 
     private float offeringBeamIntensity, previousOfferingBeamIntensity;
@@ -254,6 +268,12 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }
 
         blockEntity.setBasinLight(friendMoon.isActive());
+
+        // Client may have received the inspection UUID before the entity was synced (or before it
+        // entered render distance). Retry the lookup until the entity shows up.
+        if (level.isClientSide() && blockEntity.pendingInspectionUUID != null
+            && blockEntity.inspectionContext == null)
+            blockEntity.tryResolveInspection();
 
         AABB aabb = new AABB(pos).inflate(FRIENDSHIP_MAX_RANGE);
         if (!level.isClientSide()) {
@@ -419,14 +439,12 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         super.loadAdditional(tag, registries);
 
         if (tag.contains("InspectionUUID") && level != null) {
-            UUID uuid = UUID.fromString(tag.getString("InspectionUUID"));
-            OfferingContext offeringContext = loopBasinEntities((entity) -> {
-                if (entity.getUUID().equals(uuid))
-                    return new OfferingContext(entity, null);
-                return null;
-            }, level, getBlockPos());
-            if (offeringContext != null)
-                setInspectionContext(offeringContext, clientMoon);
+            pendingInspectionUUID = UUID.fromString(tag.getString("InspectionUUID"));
+            tryResolveInspection();
+        } else if (pendingInspectionUUID != null) {
+            pendingInspectionUUID = null;
+            if (level != null && level.isClientSide() && inspectionContext != null)
+                setInspectionContext(null, clientMoon);
         }
 
         if (clientMoon == null)

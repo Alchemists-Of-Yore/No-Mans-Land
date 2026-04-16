@@ -7,14 +7,13 @@ import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
-import com.farcr.nomansland.common.friend.dialogue.*;
+import com.farcr.nomansland.common.friend.dialogue.DialogueLocation;
+import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
-import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import com.farcr.nomansland.common.registry.NMLDreamTypes;
-import com.farcr.nomansland.common.registry.NMLParticleTypes;
-import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
@@ -30,9 +29,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -45,7 +44,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
-import com.farcr.nomansland.common.registry.NMLMapDecorationTypes;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -53,7 +51,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -616,6 +613,11 @@ public class FriendMoon extends SavedData {
                         (registry) -> leavingFilter(registry, finalSomeoneDied)
                     ).dispatch(level, withRemovedPlayers)
                 );
+                return;
+            }
+
+            if (!withRemovedPlayers.isEmpty() && lastFriendshipPlayers.isEmpty()) {
+                resetValues();
                 return;
             }
 
