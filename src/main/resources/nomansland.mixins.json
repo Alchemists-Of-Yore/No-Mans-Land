@@ -9,6 +9,7 @@
     "BaseRailBlockMixin",
     "BaseSpawnerMixin",
     "BiomeMixin",
+    "BlockBehaviourAccessModifier",
     "BlockBehaviourMixin",
     "BrewingStandBlockEntityMixin",
     "CactusBlockMixin",

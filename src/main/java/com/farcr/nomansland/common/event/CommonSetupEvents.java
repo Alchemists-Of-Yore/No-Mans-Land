@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.event;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.commands.DreamCommand;
@@ -10,37 +11,35 @@ import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
-import com.farcr.nomansland.common.entity.frienderman.Frienderman;
-import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
+import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.farcr.nomansland.common.integration.FDIntegration;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
-import com.farcr.nomansland.common.networking.ClientboundCandleLightPacket;
-import com.farcr.nomansland.common.networking.ClientboundDistantChunkPacket;
-import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
-import com.farcr.nomansland.common.networking.ClientboundSunDogStatePacket;
+import com.farcr.nomansland.common.mixin.BlockBehaviourAccessModifier;
+import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
+import com.farcr.nomansland.common.networking.dream.ClientboundDreamPacket;
 import com.farcr.nomansland.common.networking.dream.ServerboundDreamAcknowledgePacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
-import com.farcr.nomansland.common.networking.*;
-import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
-import com.farcr.nomansland.common.networking.dream.ClientboundDreamPacket;
-import com.farcr.nomansland.common.networking.friend.*;
+import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -63,8 +62,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -103,6 +101,8 @@ public class CommonSetupEvents {
             NMLFlammables.register();
             if (Mods.CREATE.isLoaded()) CreateIntegration.registerOpenPipeEffects();
 
+            overrideMushroomSounds();
+
             for (BlockDefinition<?> definition : NMLBlocks.BLOCK_DEFINITIONS) {
                 if (definition.get() instanceof FlowerPotBlock flowerPotBlock) {
                     flowerPotBlock.getEmptyPot().addPlant(BuiltInRegistries.BLOCK.getKey(flowerPotBlock.getPotted()), () -> flowerPotBlock);
@@ -117,6 +117,20 @@ public class CommonSetupEvents {
                 if (item instanceof BoatItem boat) DispenserBlock.registerBehavior(item, new BoatDispenseItemBehavior(boat.type, boat.hasChest));
             }
         });
+    }
+
+    private static void overrideMushroomSounds() {
+        setSoundType(Blocks.RED_MUSHROOM, NMLSounds.MUSHROOM_CAP);
+        setSoundType(Blocks.BROWN_MUSHROOM, NMLSounds.MUSHROOM_CAP);
+        setSoundType(Blocks.RED_MUSHROOM_BLOCK, NMLSounds.MUSHROOM_CAP);
+        setSoundType(Blocks.BROWN_MUSHROOM_BLOCK, NMLSounds.MUSHROOM_CAP);
+        setSoundType(Blocks.MUSHROOM_STEM, NMLSounds.MUSHROOM_CAP);
+
+        if (Mods.FARMERSDELIGHT.isLoaded()) FDIntegration.overrideMushroomColonySounds();
+    }
+
+    public static void setSoundType(Block block, SoundType soundType) {
+        ((BlockBehaviourAccessModifier) block).nml$setSoundType(soundType);
     }
 
     @SubscribeEvent

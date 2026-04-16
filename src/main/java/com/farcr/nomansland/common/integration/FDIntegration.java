@@ -9,6 +9,8 @@ import com.farcr.nomansland.common.block.cauldrons.WitchStewCauldron;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.BlockProperties;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
+import com.farcr.nomansland.common.event.CommonSetupEvents;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLFoods;
 import com.farcr.nomansland.common.registry.items.NMLItems;
@@ -32,6 +34,7 @@ import vectorwing.farmersdelight.common.item.ConsumableItem;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 import vectorwing.farmersdelight.common.item.MushroomColonyItem;
 import vectorwing.farmersdelight.common.registry.ModBlockEntityTypes;
+import vectorwing.farmersdelight.common.registry.ModBlocks;
 import vectorwing.farmersdelight.common.registry.ModEffects;
 
 import static net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy;
@@ -52,7 +55,7 @@ public class FDIntegration {
             () -> new CabinetBlock(ofFullCopy(Blocks.BARREL)));
 
     public static final BlockDefinition<MushroomColonyBlock> FIELD_MUSHROOM_COLONY = NMLBlocks.registerNoItem("field_mushroom_colony",
-            () -> new MushroomColonyBlock(NMLItems.FIELD_MUSHROOM, Block.Properties.ofFullCopy(NMLBlocks.FIELD_MUSHROOM.get())));
+            () -> new MushroomColonyBlock(NMLItems.FIELD_MUSHROOM, Block.Properties.ofFullCopy(NMLBlocks.FIELD_MUSHROOM.get()).sound(NMLSounds.MUSHROOM_CAP)));
 
     public static final ItemDefinition<MushroomColonyItem> FIELD_MUSHROOM_COLONY_ITEM = NMLItems.register("field_mushroom_colony",
             () -> new MushroomColonyItem(FIELD_MUSHROOM_COLONY.get(), new Item.Properties()));
@@ -165,6 +168,11 @@ public class FDIntegration {
             () -> new DrinkableItem(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16).food(FDIntegration.PESTO_BOTTLE_FOOD)));
 
     public static final FoodProperties PESTO_BOTTLE_FOOD = new FoodProperties.Builder().nutrition(3).saturationModifier(1.2F).build();
+
+    public static void overrideMushroomColonySounds() {
+        CommonSetupEvents.setSoundType(ModBlocks.BROWN_MUSHROOM_COLONY.get(), NMLSounds.MUSHROOM_CAP);
+        CommonSetupEvents.setSoundType(ModBlocks.RED_MUSHROOM_COLONY.get(), NMLSounds.MUSHROOM_CAP);
+    }
 
     public static void addBlockEntities(final BlockEntityTypeAddBlocksEvent event) {
         event.modify(
