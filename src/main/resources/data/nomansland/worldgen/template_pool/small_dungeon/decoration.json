@@ -2,7 +2,7 @@
   "fallback": "minecraft:empty",
   "elements": [
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/decoration/chest",
         "processors": "nomansland:small_dungeon",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/decoration/trapped_chest",
         "processors": "nomansland:small_dungeon",
@@ -20,7 +20,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/decoration/cauldron",
         "processors": "nomansland:small_dungeon",
@@ -29,7 +29,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/decoration/dead_bush",
         "processors": "nomansland:small_dungeon",
@@ -38,7 +38,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/decoration/brown_mushroom",
         "processors": "nomansland:small_dungeon",
@@ -47,7 +47,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/decoration/bookshelf_small",
         "processors": "nomansland:small_dungeon",
@@ -56,7 +56,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/decoration/bookshelf",
         "processors": "nomansland:small_dungeon",
@@ -65,7 +65,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/decoration/bookshelf_large",
         "processors": "nomansland:small_dungeon",
@@ -74,7 +74,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/decoration/torch",
         "processors": "nomansland:small_dungeon",
@@ -83,7 +83,7 @@
       }
     },
     {
-      "weight": 2,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/decoration/sconce_torch",
         "processors": "nomansland:small_dungeon",

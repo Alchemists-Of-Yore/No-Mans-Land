@@ -2,7 +2,7 @@
   "fallback": "minecraft:empty",
   "elements": [
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/doorway/arch_corner",
         "processors": "nomansland:small_dungeon",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:small_dungeon/doorway/closed_corner",
         "processors": "nomansland:small_dungeon",
@@ -20,7 +20,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:small_dungeon/doorway/dead_end_corner",
         "processors": "nomansland:small_dungeon",
@@ -29,7 +29,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:small_dungeon/doorway/hidden_corner",
         "processors": "nomansland:small_dungeon",
@@ -38,7 +38,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/doorway/open_corner",
         "processors": "nomansland:small_dungeon",
@@ -47,7 +47,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 7,
       "element": {
         "location": "nomansland:small_dungeon/doorway/small_corner",
         "processors": "nomansland:small_dungeon",

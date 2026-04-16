@@ -2,7 +2,7 @@
   "fallback": "minecraft:empty",
   "elements": [
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/monster_anchor_dead_end",
         "processors": "nomansland:small_dungeon",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/room_2",
         "processors": "nomansland:small_dungeon",
@@ -20,7 +20,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/room_3",
         "processors": "nomansland:small_dungeon",
@@ -29,7 +29,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/room_descent",
         "processors": "nomansland:small_dungeon",
@@ -38,7 +38,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_descent_connection",
         "processors": "nomansland:small_dungeon",
@@ -47,7 +47,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_descent_flooded",
         "processors": "nomansland:small_dungeon",
@@ -56,7 +56,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_descent_loft",
         "processors": "nomansland:small_dungeon",
@@ -65,7 +65,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_descent_trap",
         "processors": "nomansland:small_dungeon",
@@ -74,7 +74,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/room_kitchen",
         "processors": "nomansland:small_dungeon",
@@ -83,7 +83,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_spike_parkour",
         "processors": "nomansland:small_dungeon",
@@ -92,7 +92,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/room_spike_pit",
         "processors": "nomansland:small_dungeon",
@@ -101,7 +101,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/spike_dead_end",
         "processors": "nomansland:small_dungeon",
@@ -110,7 +110,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_graveyard",
         "processors": "nomansland:small_dungeon",
@@ -119,7 +119,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/hallway/dead_end",
         "processors": "nomansland:small_dungeon",
@@ -128,7 +128,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "nomansland:small_dungeon/hallway/exit",
         "processors": "nomansland:small_dungeon",
@@ -137,7 +137,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/hallway/iron_door",
         "processors": "nomansland:small_dungeon",
@@ -146,7 +146,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/hallway/spikes",
         "processors": "nomansland:small_dungeon",
@@ -155,7 +155,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/hallway/straight",
         "processors": "nomansland:small_dungeon",
@@ -164,7 +164,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
       "element": {
         "location": "nomansland:small_dungeon/hallway/turn",
         "processors": "nomansland:small_dungeon",

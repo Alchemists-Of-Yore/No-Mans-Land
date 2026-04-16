@@ -11,7 +11,7 @@
       }
     },
     {
-      "weight": 9,
+      "weight": 8,
       "element": {
         "location": "nomansland:small_dungeon/spawner/zombie_spawner",
         "processors": "minecraft:empty",
@@ -20,9 +20,36 @@
       }
     },
     {
-      "weight": 9,
+      "weight": 7,
       "element": {
         "location": "nomansland:small_dungeon/spawner/spider_spawner",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 5,
+      "element": {
+        "location": "nomansland:small_dungeon/spawner/skeleton_spawner_trapped",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "location": "nomansland:small_dungeon/spawner/zombie_spawner_trapped",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 3,
+      "element": {
+        "location": "nomansland:small_dungeon/spawner/spider_spawner_trapped",
         "processors": "minecraft:empty",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
