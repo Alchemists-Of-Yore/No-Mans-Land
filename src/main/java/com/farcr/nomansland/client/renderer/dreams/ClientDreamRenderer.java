@@ -1,10 +1,7 @@
 package com.farcr.nomansland.client.renderer.dreams;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
-import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,11 +10,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.util.FastColor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ClientDreamRenderer implements AutoCloseable {
@@ -81,6 +75,10 @@ public class ClientDreamRenderer implements AutoCloseable {
 
             if (dream != null) getDreamClientInstance()
                 .tick(Minecraft.getInstance().level);
+
+            if (dream != null && DreamManager.innerDreaming(dream, player) && getRenderer() != null) {
+                getRenderer().tick();
+            }
         }
     }
 

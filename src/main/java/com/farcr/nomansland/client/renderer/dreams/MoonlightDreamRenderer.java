@@ -1,13 +1,8 @@
 package com.farcr.nomansland.client.renderer.dreams;
 
-import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.Meshes;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamtypes.MoonlightDreamType;
-import com.farcr.nomansland.common.friend.FriendMoon;
-import com.farcr.nomansland.common.friend.FriendMoonUpdate;
-import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -15,16 +10,16 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.math.Axis;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.ColorRGBA;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.awt.*;
@@ -34,6 +29,16 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     public static ShaderInstance GRADIENT_SHADER;
 
     float speed = 1 / 40f;
+
+    private DreamAmbientSoundInstance ambientSound;
+
+    @Override
+    public void tick() {
+        if (ambientSound == null) {
+            ambientSound = new DreamAmbientSoundInstance();
+            Minecraft.getInstance().getSoundManager().play(ambientSound);
+        }
+    }
 
     public boolean render(
         LevelRenderer levelRenderer,
