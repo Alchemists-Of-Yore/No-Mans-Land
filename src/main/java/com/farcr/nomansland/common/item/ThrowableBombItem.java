@@ -50,6 +50,7 @@ public abstract class ThrowableBombItem extends Item implements ProjectileItem {
 
         if (!level.isClientSide()) {
             ThrowableBombEntity bomb = asProjectile(level, entity.getEyePosition(), stack, entity.getNearestViewDirection());
+            bomb.setOwner(entity);
             bomb.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), 0.0F, 0.8F, 1.0F);
             level.addFreshEntity(bomb);
         }
