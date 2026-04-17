@@ -92,7 +92,7 @@
       }
     },
     {
-      "weight": 20,
+      "weight": 10,
       "element": {
         "location": "nomansland:small_dungeon/room_spike_pit",
         "processors": "nomansland:small_dungeon",
