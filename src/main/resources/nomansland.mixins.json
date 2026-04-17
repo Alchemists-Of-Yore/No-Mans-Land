@@ -13,6 +13,7 @@
     "BlockBehaviourMixin",
     "BrewingStandBlockEntityMixin",
     "CactusBlockMixin",
+    "ChunkGeneratorMixin",
     "ChunkGeneratorStructureStateMixin",
     "EntityMixin",
     "FallLocationMixin",
