@@ -33,6 +33,7 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -282,8 +283,9 @@ public class FriendMoonRenderer implements AutoCloseable {
                         animationProgress = 0;
                         setFriendMoonAnimation(FriendMoonAnimation.PHASES);
                         if (friendMoonOpacity >= 1) {
-                            badOmenWaitTime += deltaTime;
-                            if (badOmenWaitTime > MAX_BAD_OMEN_WAIT_TIME) {
+                            boolean hasBadOmen = player.hasEffect(MobEffects.BAD_OMEN);
+                            if (hasBadOmen) badOmenWaitTime += deltaTime;
+                            if (hasBadOmen && badOmenWaitTime > MAX_BAD_OMEN_WAIT_TIME) {
                                 ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
                                     NoMansLand.location("nobody_came"),
                                     NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
