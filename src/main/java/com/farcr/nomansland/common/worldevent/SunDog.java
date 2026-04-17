@@ -84,11 +84,31 @@ public class SunDog extends SavedData {
         return true;
     }
 
-    void end() {
+    public void end() {
         active = false;
         startTime = -1;
         this.setDirty();
         PacketDistributor.sendToPlayersInDimension(level, new ClientboundSunDogStatePacket(level.dimension(), false, false));
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void forceStart() {
+        long currentTime = level.getGameTime();
+        boolean wasActive = active;
+        active = true;
+
+        int duration = 20 * level.getRandom().nextIntBetweenInclusive(5 * 60, 10 * 60);
+        if (!wasActive) startTime = currentTime;
+        endTime = currentTime + duration;
+
+        this.setDirty();
+        if (!wasActive) {
+            PacketDistributor.sendToPlayersInDimension(level, new ClientboundSunDogStatePacket(level.dimension(), true, false));
+            NoMansLand.LOGGER.info("sun dog initiated (forced)!");
+        }
     }
 
     public void maybeStartFromMorning() {

@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.commands.DreamCommand;
+import com.farcr.nomansland.common.commands.SunDogCommand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
@@ -67,7 +68,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -333,9 +333,8 @@ public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void registerListeners(RegisterCommandsEvent event) {
-        if (!FMLLoader.isProduction()) {
-            DreamCommand.register(event.getDispatcher(), event.getBuildContext());
-        }
+        DreamCommand.register(event.getDispatcher(), event.getBuildContext());
+        SunDogCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
