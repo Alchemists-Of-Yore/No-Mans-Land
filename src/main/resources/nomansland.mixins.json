@@ -80,6 +80,7 @@
     "client.GuiMixin",
     "client.HumanoidModelMixin",
     "client.InBedChatScreenMixin",
+    "client.ItemInHandRendererMixin",
     "client.ItemRendererMixin",
     "client.ItemStackMixin",
     "client.LevelRendererMixin",
