@@ -2,14 +2,14 @@ package com.farcr.nomansland.common.entity.living_pot;
 
 import com.farcr.nomansland.common.block.pots.*;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
-import com.farcr.nomansland.common.registry.entities.NMLEntities;
-import net.minecraft.core.Registry;
-import net.minecraft.util.RandomSource;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,6 +25,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.DifficultyInstance;
@@ -52,9 +53,9 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.ticks.ContainerSingleItem;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.ticks.ContainerSingleItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -644,6 +645,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                     if (silverfish != null) {
                         silverfish.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
                         silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                        ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                         serverLevel.addFreshEntity(silverfish);
                         silverfish.spawnAnim();
                     }
@@ -660,6 +662,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                         slime.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
                         slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                         slime.setSize(random.nextInt(1, 3), true);
+                        ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                         serverLevel.addFreshEntity(slime);
                     }
                 }

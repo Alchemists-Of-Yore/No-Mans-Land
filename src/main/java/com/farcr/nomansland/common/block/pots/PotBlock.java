@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.block.pots;
 
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.entity.FallingPotEntity;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.item.AncientPotDebugItem;
 import com.farcr.nomansland.common.item.AncientPotItem;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -28,16 +29,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.entity.monster.Slime;
@@ -68,7 +61,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -214,6 +206,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
                     silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                    ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
                 }
@@ -234,6 +227,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     slime.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
                     slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
+                    ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(slime);
                 }
             }
@@ -410,10 +404,12 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
                     silverfish.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
+                    ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
                 }
             }
+            pot.removeModifier(PotModifier.INFESTED);
         }
         if (pot.hasModifier(PotModifier.OOZING)) {
             int amount = level.getRandom().nextInt(1, 4);
@@ -423,9 +419,11 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
                     slime.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
+                    ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(slime);
                 }
             }
+            pot.removeModifier(PotModifier.OOZING);
         }
     }
 
