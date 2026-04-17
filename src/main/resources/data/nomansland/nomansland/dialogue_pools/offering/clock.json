@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:clock"
+    },
+    "weight": 1,
+    "text": "How ingeniously/ you measure my skybound fellows.//\nVery/ modern… for their flow/ never has been as consistent as it seems."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:equipment_conditional",
+        "items": "minecraft:elytra"
+    },
+    "weight": 1,
+    "text": "Wings!//// Oh,/ how I envy// you."
+}

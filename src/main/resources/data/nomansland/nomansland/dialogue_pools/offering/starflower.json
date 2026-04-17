@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "nomansland:starflower"
+    },
+    "weight": 1,
+    "text": "A small sky/ in your palm.//\nIt grew,/// looking upward/ as always."
+}

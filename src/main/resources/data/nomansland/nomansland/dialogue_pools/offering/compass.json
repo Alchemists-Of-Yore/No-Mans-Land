@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:compass"
+    },
+    "weight": 1,
+    "text": "You seek a place./\nI hope it is still// waiting for you."
+}

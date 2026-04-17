@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:bat"
+    },
+    "weight": 1,
+    "text": "Little scrap of the dusk.//\nIt sees/ by listening./\nA lesson in there,// somewhere."
+}

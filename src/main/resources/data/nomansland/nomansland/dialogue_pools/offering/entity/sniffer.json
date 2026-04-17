@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:sniffer"
+    },
+    "weight": 1,
+    "text": "Oh!/// It cannot be…//\nBack then,/ these were/ common/ as cattle.//\nThey had little names./ Silly names./ Kind ones.//\nHeartwarming it is,/ to see that our past has not been forgotten…\nIt merely lies / buried/ in the layers of time."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "nomansland:goose"
+    },
+    "weight": 1,
+    "text": "Loud, wrathful beast!///\nI admire its conviction."
+}

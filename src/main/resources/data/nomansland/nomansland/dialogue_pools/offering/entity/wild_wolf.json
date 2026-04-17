@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:wolf"
+    },
+    "weight": 1,
+    "text": "Teeth,/ and trust,/ held apart/ by very little.//\nFriendship can tame our wild nature."
+}

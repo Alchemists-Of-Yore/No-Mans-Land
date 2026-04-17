@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#nomansland:offering/mob_heads"
+    },
+    "weight": 1,
+    "text": "A trophy?///\nI hope it was taken with sorrow,/ not pride."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:phantom_membrane"
+    },
+    "weight": 1,
+    "text": "You have seen them - the fiends from dreams.\nPerhaps it sends your thoughts afloat, regarding what else you take for granted could, in truth,\n be a manifestation of your mind.\nIndeed, our thoughts shape our world."
+}

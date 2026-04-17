@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:panda"
+    },
+    "weight": 1,
+    "text": "Rare, soft thing./\nDelightfully slothful, or rather,/ pursuing its own motion at a pace we ought not judge.\nI wonder/ if it knows/ how loved it is.// Do you?"
+}

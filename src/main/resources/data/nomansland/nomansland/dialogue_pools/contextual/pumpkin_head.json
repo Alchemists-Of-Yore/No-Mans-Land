@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:equipment_conditional",
+        "items": "minecraft:carved_pumpkin"
+    },
+    "weight": 1,
+    "text": "…/Is that// you/ in there,/ Friend?\nAlmost didn't recognize you!"
+}

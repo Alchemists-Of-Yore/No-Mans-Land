@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:equipment_conditional",
+        "items": "minecraft:carved_pumpkin"
+    },
+    "weight": 1,
+    "text": "A face/ over a face.///\nWhich one/ am I speaking to?"
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "nomansland:tortoise"
+    },
+    "weight": 1,
+    "text": "Patience incarnate./\nWere I/ to choose a shape,/\n perhaps I would choose theirs."
+}

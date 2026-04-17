@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "#nomansland:offering/cattle"
+    },
+    "weight": 1,
+    "text": "Generous creatures.\nThey give and give, and only ask for grass."
+}

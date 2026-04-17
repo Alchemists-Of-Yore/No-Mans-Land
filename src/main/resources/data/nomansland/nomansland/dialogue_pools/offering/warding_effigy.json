@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["nomansland:warding_effigy", "nomansland:ancestral_effigy"]
+    },
+    "weight": 1,
+    "text": "A modest representation of company.\nThey watched over my Friends/ once.///\nWill they watch over you,/ too?"
+}

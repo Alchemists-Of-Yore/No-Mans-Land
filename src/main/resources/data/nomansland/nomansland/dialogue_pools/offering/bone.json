@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:bone"
+    },
+    "weight": 1,
+    "text": "A small scaffold of life.//\nEverything else softens,/ and returns,\n but this,// this waits."
+}

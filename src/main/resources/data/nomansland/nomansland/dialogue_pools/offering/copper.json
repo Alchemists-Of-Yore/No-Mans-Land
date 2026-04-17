@@ -1,8 +1,8 @@
 {
     "condition": {
         "type": "nomansland:item_conditional",
-        "items": "#nomansland:offering/offering_copper"
+        "items": "#nomansland:offering/copper"
     },
     "weight": 2,
-    "text": "A wondrous channel between mundane and arcane, its red tinge a display of the world’s visceral ties,\n and its oxide a sedimentation of the inherent change therein.\n The arts often began in metalworking, and there is no better place to start than here."
+    "text": "A wondrous channel between mundane and arcane, its red tinge a display of the world’s visceral ties,\n and its oxide a sedimentation of the inherent change therein.\nThe arts often began in metalworking, and there is no better place to start than here."
 }

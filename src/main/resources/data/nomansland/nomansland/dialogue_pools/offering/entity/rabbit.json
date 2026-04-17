@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:rabbit"
+    },
+    "weight": 1,
+    "text": "All ears,/ and all fear.\nA brave life,/ to live so small// in so large a world."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": ["nomansland:aconite", "nomansland:thistle", "nomansland:wild_mint"]
+    },
+    "weight": 1,
+    "text": "Bitter/ leaves./ Medicine is often bitter.//\nSo is truth."
+}

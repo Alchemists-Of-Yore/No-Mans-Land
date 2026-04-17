@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "#nomansland:offering/tamed_mob"
+    },
+    "weight": 1,
+    "text": "You keep company./\nGood.//\nSolitude/ should be chosen, never inherited."
+}

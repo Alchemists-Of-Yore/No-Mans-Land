@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:parrot"
+    },
+    "weight": 1,
+    "text": "A bright little pet that learned your speech.///\nWill it pass on your knowledge,/ or merely mimic your sounds?"
+}

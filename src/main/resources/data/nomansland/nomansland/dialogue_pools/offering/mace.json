@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "minecraft:mace"
+    },
+    "weight": 1,
+    "text": "A heavy/ heavy/ thing./\nGravity is your accomplice.//\nBut a weapon weighs much heavier on the heart, no matter the strain your body claims."
+}

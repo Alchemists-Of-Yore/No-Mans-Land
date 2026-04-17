@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "#nomansland:offering/bricks"
+    },
+    "weight": 1,
+    "text": "The wise man built his house on a rock, with the same bricks the foolish man forgot."
+}

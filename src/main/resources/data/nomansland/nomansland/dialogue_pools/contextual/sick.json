@@ -4,5 +4,5 @@
       "effects": ["minecraft:poison", "minecraft:slowness", "minecraft:hunger", "minecraft:weakness", "minecraft:wither" ]
     },
     "weight": 1,
-    "text": "You don't seem to be doing too good.../// \n Are you going to be alright?"
+    "text": "You don't seem to be doing too good...///\nAre you going to be alright?"
 }

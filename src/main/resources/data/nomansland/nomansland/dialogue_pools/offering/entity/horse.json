@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "#nomansland:offering/horse_like"
+    },
+    "weight": 1,
+    "text": "Four legs lent to two.\nLoyalty and friendship are two strands often knotted together.\nBe worthy of that bond."
+}

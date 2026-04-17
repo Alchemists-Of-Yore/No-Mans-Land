@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "nomansland:trinket"
+    },
+    "weight": 1,
+    "text": "A little thing/ with seemingly no purpose./\nOr perhaps/ its only purpose is to be kept.///\nThose things are the dearest of all."
+}

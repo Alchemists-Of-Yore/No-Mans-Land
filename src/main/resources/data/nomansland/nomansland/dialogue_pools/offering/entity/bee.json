@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:bee"
+    },
+    "weight": 1,
+    "text": "A busy one./\nEvery one of them knows its task/ without being told./\nHow must it feel,/// to never wonder// what one is for?"
+}

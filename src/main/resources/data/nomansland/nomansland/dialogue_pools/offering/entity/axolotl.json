@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:axolotl"
+    },
+    "weight": 1,
+    "text": "Vibrant/ and eternal./\nA tiny miracle.///\nDo not squander miracles."
+}

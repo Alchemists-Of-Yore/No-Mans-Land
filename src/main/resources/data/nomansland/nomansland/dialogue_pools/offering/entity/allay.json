@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:allay"
+    },
+    "weight": 1,
+    "text": "Ooh!// A courteous little thing./\nIt holds what it is given,/\n and gives what it holds./\nIf only all were so."
+}
