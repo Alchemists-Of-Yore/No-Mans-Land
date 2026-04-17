@@ -71,16 +71,12 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
             BlockState potState = (variant.size() == PotSize.LARGE ? NMLBlocks.LARGE_ANCIENT_POT.get() : NMLBlocks.ANCIENT_POT.get())
                     .defaultBlockState();
 
-            if (variant.size() == PotSize.LARGE) {
-                BlockPos abovePos = pos.above();
-                if (abovePos.getY() >= level.getMaxBuildHeight()) continue;
-                if (!level.getBlockState(abovePos).isAir()) continue;
-            }
+            if (variant.size() == PotSize.LARGE && !level.getBlockState(pos.above()).isAir()) continue;
 
             Direction facing = Direction.Plane.HORIZONTAL.getRandomDirection(random);
             potState = potState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
 
-            if (!level.setBlock(pos, potState, 2)) continue;
+            level.setBlock(pos, potState, 2);
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
                 pot.variant = variant;
                 for (Map.Entry<PotModifier, Float> entry : variant.modifierChances().entrySet()) {
@@ -101,6 +97,7 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
             }
 
             if (variant.size() == PotSize.LARGE) {
+                if (!level.getBlockState(pos).is(NMLBlocks.LARGE_ANCIENT_POT.get())) continue;
                 BlockState upperState = potState.setValue(
                         BlockStateProperties.DOUBLE_BLOCK_HALF,
                         DoubleBlockHalf.UPPER);
