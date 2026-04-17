@@ -42,6 +42,34 @@ public record BuddyStar(
         return r.nextFloat() * 360f;
     }
 
+    public static final float MIN_ORBIT_PERIOD_MS = 120_000f;
+    public static final float MAX_ORBIT_PERIOD_MS = 600_000f;
+
+    public float getOrbitPeriodMs() {
+        RandomSource r = RandomSource.create(seed);
+        r.nextFloat(); // angle
+        r.nextFloat(); // distance
+        r.nextFloat(); // stickiness
+        return MIN_ORBIT_PERIOD_MS + r.nextFloat() * (MAX_ORBIT_PERIOD_MS - MIN_ORBIT_PERIOD_MS);
+    }
+
+    public float getOrbitDirection() {
+        RandomSource r = RandomSource.create(seed);
+        r.nextFloat(); // angle
+        r.nextFloat(); // distance
+        r.nextFloat(); // stickiness
+        r.nextFloat(); // orbit period
+        return r.nextBoolean() ? 1f : -1f;
+    }
+
+    public float getAngle(long timeMs) {
+        float baseAngle = getAngle();
+        float period = getOrbitPeriodMs();
+        float direction = getOrbitDirection();
+        float orbitAngle = ((timeMs % (long) period) / period) * 360f * direction;
+        return baseAngle + orbitAngle;
+    }
+
     public float getDistance(int index) {
         RandomSource r = RandomSource.create(seed);
         r.nextFloat(); // angle

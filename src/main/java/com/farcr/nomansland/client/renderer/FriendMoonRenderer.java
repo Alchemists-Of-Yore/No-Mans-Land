@@ -40,10 +40,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
-import java.lang.Math;
 import java.util.*;
 import java.util.function.IntFunction;
 
@@ -731,7 +733,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         float[] prevColor = RenderSystem.getShaderColor();
         for (int i = 0; i < stars.size(); i++) {
             BuddyStar star = stars.get(i);
-            float angleRad = (float) Math.toRadians(star.getAngle());
+            float angleRad = (float) Math.toRadians(star.getAngle(timeMs));
             float dist = star.getDistance(i);
 
             float x = (float) (Math.sin(angleRad)) * dist;
