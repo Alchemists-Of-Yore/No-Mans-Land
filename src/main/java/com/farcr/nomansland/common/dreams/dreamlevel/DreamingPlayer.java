@@ -1,15 +1,15 @@
 package com.farcr.nomansland.common.dreams.dreamlevel;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -153,6 +152,20 @@ public class DreamingPlayer extends Mob {
         serverLevel.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(this.blockPosition()), 3, this.blockPosition());
     }
 
+    private void endDreamForTether() {
+        ServerPlayer tetheredPlayer = getTetheredPlayer();
+        if (tetheredPlayer == null) {
+            discardTether();
+            return;
+        }
+        if (tetheredPlayer.serverLevel() instanceof DreamServerLevel dreamLevel)
+            dreamLevel.endDream(false);
+        else {
+            debug = false;
+            discardTether();
+        }
+    }
+
     float tickCooldown = 0;
     float maxParticleTick = 15;
     @Override
@@ -181,7 +194,15 @@ public class DreamingPlayer extends Mob {
 //                discardTether();
         }
 
-        if (level() instanceof ServerLevel serverLevel) addChunkTicket(serverLevel);
+        if (level() instanceof ServerLevel serverLevel) {
+            addChunkTicket(serverLevel);
+
+            if (debug && getTetheredPlayer() != null) {
+                Optional<BlockPos> sleepingPos = this.getSleepingPos();
+                if (sleepingPos.isPresent() && !serverLevel.getBlockState(sleepingPos.get()).is(BlockTags.BEDS))
+                    endDreamForTether();
+            }
+        }
 
         this.setDeltaMovement(Vec3.ZERO);
         if (!isSleeping() && !debug) discardTether();
