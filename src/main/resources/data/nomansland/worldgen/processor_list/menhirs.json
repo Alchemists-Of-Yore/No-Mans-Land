@@ -46,19 +46,6 @@
             "Name": "minecraft:air"
           },
           "input_predicate": {
-            "block": "nomansland:warding_effigy",
-            "probability": 0.3,
-            "predicate_type": "minecraft:random_block_match"
-          },
-          "location_predicate": {
-            "predicate_type": "minecraft:always_true"
-          }
-        },
-        {
-          "output_state": {
-            "Name": "minecraft:air"
-          },
-          "input_predicate": {
             "block": "nomansland:pebbles",
             "probability": 0.75,
             "predicate_type": "minecraft:random_block_match"
@@ -98,7 +85,9 @@
       "placeholders": {
         "minecraft:green_concrete": "minecraft:patch_tall_grass",
         "minecraft:lime_concrete": "nomansland:patch_grass_sparse",
-        "minecraft:light_gray_concrete": "nomansland:patch_pebble"
+        "minecraft:light_gray_concrete": "nomansland:patch_pebble",
+        "minecraft:brown_concrete": "nomansland:coarse_dirt_patch",
+        "minecraft:purple_concrete": "nomansland:underground/patch_ancestral_effigy"
       }
     }
   ]

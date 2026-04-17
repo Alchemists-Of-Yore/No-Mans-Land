@@ -2,6 +2,11 @@
   "values": [
     "nomansland:warding_effigy",
     "nomansland:living_urn",
-    "nomansland:awkward_residue"
+    "nomansland:awkward_residue",
+    "nomansland:ancestral_effigy",
+    "nomansland:ancestral_carving",
+    "nomansland:moon_carving",
+    "nomansland:moonlight_basin",
+    "nomansland:inverted_bell"
   ]
 }
