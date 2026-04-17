@@ -38,7 +38,7 @@ public class MeetingPointStructure extends Structure {
     private static final double PATH_HALF_WIDTH = 6;
     private static final double PATH_WOBBLE_AMPLITUDE = 0.18;
     private static final double PATH_WOBBLE_NOISE_SCALE = 0.04;
-    private static final double MIN_DISTANCE_FROM_ALTAR = 6;
+    private static final double MIN_DISTANCE_FROM_ALTAR = 15;
 
     private static final int SLOT_ATTEMPTS = 6000;
     private static final double FIELD_RADIUS = 128.0;
@@ -75,7 +75,7 @@ public class MeetingPointStructure extends Structure {
             altarX, altarZ, Heightmap.Types.WORLD_SURFACE_WG,
             context.heightAccessor(), context.randomState()
         );
-        BlockPos altarPos = new BlockPos(altarX, altarY, altarZ);
+        BlockPos altarPos = new BlockPos(altarX, altarY - 1, altarZ);
 
         ImprovedNoise pathWobbleNoise = new ImprovedNoise(random.fork());
         RandomSource placementRandom = random.fork();
