@@ -1,8 +1,8 @@
 {
-  "block.minecraft.dirt_path": "Grass Path",
-  "block.minecraft.scaffolding": "Bamboo Scaffolding",
-  "item.minecraft.quartz": "Quartz",
-  "item.minecraft.chicken": "Raw Poultry",
-  "item.minecraft.cooked_chicken": "Cooked Poultry",
-  "block.minecraft.bookshelf": "Oak Bookshelf"
+  "block.minecraft.dirt_path": "Trawiasta ścieżka",
+  "block.minecraft.scaffolding": "Bambusowe rusztowanie",
+  "item.minecraft.quartz": "Kwarc",
+  "item.minecraft.chicken": "Surowy drób",
+  "item.minecraft.cooked_chicken": "Pieczony drób",
+  "block.minecraft.bookshelf": "Dębowa biblioteczka"
 }
