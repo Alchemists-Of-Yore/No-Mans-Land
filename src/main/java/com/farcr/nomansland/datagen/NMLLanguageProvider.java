@@ -109,6 +109,11 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitles.entity.goose.ambient", "Goose honks");
         add("nomansland.subtitles.particle.droplet.fall", "Droplet falls");
         add("nomansland.subtitles.entity.living_urn.shatter", "Living Urn shatters");
+        add("nomansland.subtitles.item.bandage.wrap", "Bandage wraps");
+        add("nomansland.subtitles.block.inverted_bell.ring", "Inverted Bell rings");
+        add("nomansland.subtitles.entity.buddy.bone_break", "Buddy's bones snap");
+        add("nomansland.subtitles.entity.friend_moon.speak", "Friend Moon speaks");
+        add("nomansland.subtitles.entity.friend_moon.speak_sad", "Friend Moon speaks sadly");
         add("death.attack.nomansland.icicle_pierce", "%1$s was pierced by an icicle");
         add("death.attack.nomansland.icicle_pierce.player", "%1$s was pierced by an icicle while fighting %2$s");
         add("death.attack.nomansland.spike_fall", "%1$s fell for a spike trap");

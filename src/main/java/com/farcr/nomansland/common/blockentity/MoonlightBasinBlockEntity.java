@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.blockentity;
 
+import com.farcr.nomansland.client.renderer.FriendMoonOfferingSoundStarter;
 import com.farcr.nomansland.common.block.moonlight.MoonlightCandleBlock;
 import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.friend.FriendMoon;
@@ -288,6 +289,16 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
         blockEntity.updateOfferingBeam();
 
+        if (level.isClientSide()) {
+            boolean shouldLoop = friendMoon.isActive() && friendMoon.getState() == FriendMoonState.OFFERING;
+            if (shouldLoop && (blockEntity.offeringSoundInstance == null
+                || !FriendMoonOfferingSoundStarter.isActive(blockEntity.offeringSoundInstance))) {
+                blockEntity.offeringSoundInstance = FriendMoonOfferingSoundStarter.start(pos);
+            } else if (!shouldLoop) {
+                blockEntity.offeringSoundInstance = null;
+            }
+        }
+
         if (!friendMoon.isActive()) {
             blockEntity.setInspectionContext(null, friendMoon);
             if (!level.isClientSide()) {
@@ -435,6 +446,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     }
 
     public FriendMoon clientMoon;
+    private Object offeringSoundInstance;
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
 

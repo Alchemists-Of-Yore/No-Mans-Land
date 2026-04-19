@@ -15,7 +15,6 @@ import com.farcr.nomansland.common.block.tap.TapBlock;
 import com.farcr.nomansland.common.block.torches.*;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.BlockProperties;
-import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.farcr.nomansland.common.registry.worldgen.NMLFeatures;
@@ -301,8 +300,8 @@ public class NMLBlocks {
     public static final BlockDefinition<AncestralCarvingBlock> ANCESTRAL_CARVING = register("ancestral_carving",
           () -> new AncestralCarvingBlock(ofFullCopy(Blocks.STONE)));
 
-    public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
-    public static final BlockDefinition<LargePotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new LargePotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
+    public static final BlockDefinition<PotBlock> ANCIENT_POT = registerNoItem("ancient_pot", () -> new PotBlock(PotSize.SMALL, of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().dynamicShape().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
+    public static final BlockDefinition<LargePotBlock> LARGE_ANCIENT_POT = registerNoItem("large_ancient_pot", () -> new LargePotBlock(of().mapColor(MapColor.TERRACOTTA_BROWN).noOcclusion().dynamicShape().strength(1, 3.5F).sound(SoundType.DECORATED_POT)));
 
     // Moonlight
     /* Farcr doesn't want these to show up in the Creative Tabs, so I'm just manually registering the items. */

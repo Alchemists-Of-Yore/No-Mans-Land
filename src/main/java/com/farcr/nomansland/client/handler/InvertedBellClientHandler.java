@@ -6,6 +6,7 @@ import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.extension.SoundInstanceExtension;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.mixin.client.GameRendererInvoker;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
@@ -14,7 +15,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
@@ -57,10 +57,10 @@ public class InvertedBellClientHandler {
         this.state = State.FADE_IN;
         ((LivingEntityExtension)Minecraft.getInstance().player).nml$beginBellParalysis();
         SimpleSoundInstance sound = new SimpleSoundInstance(
-                SoundEvents.BELL_BLOCK.getLocation(),
+                NMLSounds.INVERTED_BELL_BLACKOUT.get().getLocation(),
                 SoundSource.BLOCKS,
+                0.8f,
                 1.0f,
-                0.5f,
                 SoundInstance.createUnseededRandom(),
                 false,
                 0,

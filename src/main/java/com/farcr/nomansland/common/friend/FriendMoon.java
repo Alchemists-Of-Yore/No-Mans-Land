@@ -29,7 +29,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -423,13 +422,7 @@ public class FriendMoon extends SavedData {
             buddy.hurt(level.damageSources().magic(), 1f);
             if (buddy.getHealth() <= 1.5f)
                 buddy.setHealth(1.5f);
-        }
-
-        if (!level.isClientSide()) {
-            if (ascensionTicks >= ASCENSION_TRANSPARENCY_START) {
-                if (ascensionTicks % 50 == 0)
-                    level.playSound(null, buddy.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 0.12f, 1.5f + level.getRandom().nextFloat() * 0.3f);
-            }
+            level.playSound(null, buddy.blockPosition(), NMLSounds.BUDDY_BONE_BREAK.get(), SoundSource.NEUTRAL, 1.0f, 1.0f);
         }
 
         for (int i = 0; i < (ascensionTicks > ASCENSION_TRANSPARENCY_START ? 3 : 1); i++) {

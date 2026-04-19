@@ -55,6 +55,18 @@ public class DialogueContainer {
         return textLength;
     }
 
+    public boolean isInPause(int progress) {
+        if (textList == null) return false;
+        int totalText = 0;
+        for (String subString : textList) {
+            int end = totalText + subString.length();
+            if (progress >= totalText && progress < end)
+                return subString.contains("/");
+            totalText = end;
+        }
+        return false;
+    }
+
     private int getTotalText() {
         if (textList != null) {
             int textLength = 0;

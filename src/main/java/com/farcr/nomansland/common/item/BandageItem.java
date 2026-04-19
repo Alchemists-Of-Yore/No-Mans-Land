@@ -1,17 +1,22 @@
 package com.farcr.nomansland.common.item;
 
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +43,7 @@ public class BandageItem extends Item {
         if (!target.isDeadOrDying() && target != player) {
             TARGET_ENTITY.set(target);
             player.startUsingItem(hand);
+            player.level().playSound(null, player.blockPosition(), NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, 1.3f, 1.0f);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;
@@ -105,6 +111,7 @@ public class BandageItem extends Item {
 //    }
 
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        level.playSound(null, player.blockPosition(), NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, 1.3f, 1.0f);
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
 

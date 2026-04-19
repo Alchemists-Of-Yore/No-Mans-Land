@@ -2,11 +2,16 @@ package com.farcr.nomansland.client.renderer;
 
 import com.farcr.nomansland.common.friend.dialogue.DialogueState;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 
@@ -14,13 +19,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DialogueRenderer {
+    public static int SPEAK_INTERVAL_TICKS = 2;
+    public static final String NEGATIVE_CATEGORY = "negative";
+
     private static DialogueState currentState;
+    private static FriendMoonSpeechAmbientSound activeAmbient;
     public static DialogueState getCurrentState() {
         return currentState;
     }
 
     public static void setCurrentState(DialogueState newState) {
         currentState = newState;
+    }
+
+    private static void ensureAmbientPlaying(DialogueState state) {
+        if (state == null || state.doneTalking || state.isPaused())
+            return;
+        if (activeAmbient != null && Minecraft.getInstance().getSoundManager().isActive(activeAmbient))
+            return;
+        activeAmbient = new FriendMoonSpeechAmbientSound();
+        Minecraft.getInstance().getSoundManager().play(activeAmbient);
+    }
+
+    private static void tickSpeechSound(DialogueState state) {
+        if (state.doneTalking || state.isPaused() || !state.canSpeakCurrently())
+            return;
+        if (state.translateDialogue.isInPause((int) state.progress))
+            return;
+        if (NEGATIVE_CATEGORY.equals(state.category)) {
+            if (state.hasPlayedSad) return;
+            state.hasPlayedSad = true;
+            playSpeechSound(NMLSounds.FRIEND_MOON_SPEAK_SAD.get());
+        } else {
+            if (state.elapsedTicks - state.lastSpeakTick < SPEAK_INTERVAL_TICKS)
+                return;
+            state.lastSpeakTick = state.elapsedTicks;
+            playSpeechSound(NMLSounds.FRIEND_MOON_SPEAK.get());
+        }
+    }
+
+    private static void playSpeechSound(SoundEvent event) {
+        Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(
+            event.getLocation(),
+            SoundSource.VOICE,
+            1.0f, 1.0f,
+            SoundInstance.createUnseededRandom(),
+            false, 0,
+            SoundInstance.Attenuation.NONE,
+            0.0, 0.0, 0.0,
+            true
+        ));
     }
 
     public static final int TEXT_HEIGHT = 9;
@@ -48,6 +96,8 @@ public class DialogueRenderer {
             float lastOpacity = shaderColor[3];
             RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], totalOpacity);
             List<String> constructedText = currentState.progressText(deltaTime);
+            tickSpeechSound(currentState);
+            ensureAmbientPlaying(currentState);
 
             Font font = mc.gui.getFont();
             guiGraphics.pose().pushPose();

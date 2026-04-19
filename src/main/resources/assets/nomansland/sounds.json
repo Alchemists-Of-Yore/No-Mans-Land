@@ -1259,5 +1259,80 @@
       "volume": 0.75
     }],
     "subtitle": "subtitles.ambient.cave"
+  },
+  "item.bandage.wrap": {
+    "sounds": [
+      "nomansland:item/bandage/wrap"
+    ],
+    "subtitle": "nomansland.subtitles.item.bandage.wrap"
+  },
+  "block.inverted_bell.ring": {
+    "sounds": [
+      "nomansland:block/inverted_bell/ring1",
+      "nomansland:block/inverted_bell/ring2",
+      "nomansland:block/inverted_bell/ring3"
+    ],
+    "subtitle": "nomansland.subtitles.block.inverted_bell.ring"
+  },
+  "block.inverted_bell.blackout": {
+    "sounds": [
+      "nomansland:block/inverted_bell/blackout1",
+      "nomansland:block/inverted_bell/blackout2",
+      "nomansland:block/inverted_bell/blackout3"
+    ]
+  },
+  "entity.buddy.bone_break": {
+    "sounds": [
+      "nomansland:entity/buddy/bone_break1",
+      "nomansland:entity/buddy/bone_break2",
+      "nomansland:entity/buddy/bone_break3",
+      "nomansland:entity/buddy/bone_break4",
+      "nomansland:entity/buddy/bone_break5",
+      "nomansland:entity/buddy/bone_break6"
+    ],
+    "subtitle": "nomansland.subtitles.entity.buddy.bone_break"
+  },
+  "entity.friend_moon.speak": {
+    "sounds": [
+      "nomansland:entity/friend_moon/speak1",
+      "nomansland:entity/friend_moon/speak2",
+      "nomansland:entity/friend_moon/speak3",
+      "nomansland:entity/friend_moon/speak4",
+      "nomansland:entity/friend_moon/speak5",
+      "nomansland:entity/friend_moon/speak6",
+      "nomansland:entity/friend_moon/speak7",
+      "nomansland:entity/friend_moon/speak8",
+      "nomansland:entity/friend_moon/speak9",
+      "nomansland:entity/friend_moon/speak10",
+      "nomansland:entity/friend_moon/speak11",
+      "nomansland:entity/friend_moon/speak12"
+    ],
+    "subtitle": "nomansland.subtitles.entity.friend_moon.speak"
+  },
+  "entity.friend_moon.speak_sad": {
+    "sounds": [
+      "nomansland:entity/friend_moon/speak_sad1",
+      "nomansland:entity/friend_moon/speak_sad2",
+      "nomansland:entity/friend_moon/speak_sad3",
+      "nomansland:entity/friend_moon/speak_sad4",
+      "nomansland:entity/friend_moon/speak_sad5"
+    ],
+    "subtitle": "nomansland.subtitles.entity.friend_moon.speak_sad"
+  },
+  "entity.friend_moon.speak_ambient_loop": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/friend_moon/speak_ambient_loop",
+        "stream": true
+      }
+    ]
+  },
+  "entity.friend_moon.offering_loop": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/friend_moon/offering_loop",
+        "stream": true
+      }
+    ]
   }
 }

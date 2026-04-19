@@ -14,6 +14,9 @@ public class DialogueState {
     public boolean doneTalking = false;
     public DialogueContainer originalDialogue;
     public DialogueContainer translateDialogue;
+    public final String category;
+    public float lastSpeakTick = -1000f;
+    public boolean hasPlayedSad = false;
 
     public float ticks;
     public static final int FADE_TICKS = 20;
@@ -48,9 +51,9 @@ public class DialogueState {
         String defaultText = dialoguePool.text();
         originalDialogue = new DialogueContainer(defaultText);
 
-        String category = registryName.replace("dialogue_pools.", "");
+        this.category = registryName.replace("dialogue_pools.", "");
         String key = location.getPath().replace("/", ".");
-        String translatedText = DialogueLangLoader.INSTANCE.getString(category, key).orElse(defaultText);
+        String translatedText = DialogueLangLoader.INSTANCE.getString(this.category, key).orElse(defaultText);
         translateDialogue = new DialogueContainer(translatedText);
     }
 

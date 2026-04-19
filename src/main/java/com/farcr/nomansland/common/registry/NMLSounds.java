@@ -77,6 +77,18 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOON_CARVING_ACTIVATE = registerSound("block.moon_carving.activate");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_RING = registerSound("block.inverted_bell.ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_BLACKOUT = registerSound("block.inverted_bell.blackout");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUDDY_BONE_BREAK = registerSound("entity.buddy.bone_break");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK = registerSound("entity.friend_moon.speak");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_SAD = registerSound("entity.friend_moon.speak_sad");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_AMBIENT_LOOP = registerSound("entity.friend_moon.speak_ambient_loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_OFFERING_LOOP = registerSound("entity.friend_moon.offering_loop");
+
     public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
     public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);
     public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
