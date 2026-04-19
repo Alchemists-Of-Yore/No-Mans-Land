@@ -7,6 +7,8 @@
     "nomansland:siltstone",
     "nomansland:quartzite",
     "minecraft:tuff",
-    "minecraft:coal_ore"
+    "minecraft:coal_ore",
+    "minecraft:smooth_basalt",
+    "minecraft:basalt"
   ]
 }
