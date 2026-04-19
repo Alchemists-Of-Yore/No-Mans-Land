@@ -96,7 +96,8 @@
     "client.RenderBuffersMixin",
     "client.SkinManagerMixin",
     "client.SoundEngineAccessor",
-    "client.SoundEngineMixin"
+    "client.SoundEngineMixin",
+    "client.SoundInstanceMixin"
   ],
   "injectors": {
     "defaultRequire": 1
