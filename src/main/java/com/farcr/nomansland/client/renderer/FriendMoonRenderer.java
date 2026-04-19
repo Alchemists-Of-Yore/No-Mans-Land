@@ -41,6 +41,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -468,14 +469,14 @@ public class FriendMoonRenderer implements AutoCloseable {
 
             RenderSystem.disableCull();
             RenderTarget target = mc.getMainRenderTarget();
-            target.enableStencil();
+            if (!target.isStencilEnabled())
+                target.enableStencil();
 
             applyMultiplyBlendFunction();
 
             Matrix4f moonViewMatrix = poseStack.last().pose();
             drawWithColor(FastColor.ARGB32.color(255, 255, 255), compositeOpacity, () -> {
                 GL11.glEnable(GL11.GL_STENCIL_TEST);
-                GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 
                 boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, LOOKING_AT_THRESHOLD);
                 friendShadowFaceOpacity = Mth.lerp(t, friendShadowFaceOpacity, (moonIsVisible ? 1 : 0));
@@ -487,7 +488,7 @@ public class FriendMoonRenderer implements AutoCloseable {
 
                 applyMultiplyBlendFunction();
 
-                RenderSystem.stencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
+                RenderSystem.stencilFunc(GL11.GL_ALWAYS, stencilRef, 0xFF);
                 RenderSystem.stencilOp(
                     GL11.GL_KEEP,
                     GL11.GL_KEEP,
@@ -496,9 +497,9 @@ public class FriendMoonRenderer implements AutoCloseable {
 
                 RenderSystem.colorMask(false, false, false, false);
                 renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN_2, compositeOpacity, 0, false);
-                RenderSystem.colorMask(true, true, true, true);
+                RenderSystem.colorMask(true, true, true, false);
 
-                RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 1, 0xFF);
+                RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, stencilRef, 0xFF);
                 RenderSystem.stencilOp(
                     GL11.GL_KEEP,
                     GL11.GL_KEEP,
@@ -639,6 +640,20 @@ public class FriendMoonRenderer implements AutoCloseable {
         poseStack.popPose();
     }
 
+    public static @Nullable Integer stencilRef;
+    public static void setStencilRef() {
+        if (stencilRef == null) {
+            stencilRef = (highestStencilRef + 1);
+            NoMansLand.LOGGER.info("setting friend moon stencil ref to " + stencilRef);
+        }
+    }
+
+    private static int highestStencilRef = 0;
+    public static void setHighestStencilRef(int highest) {
+        if (highest > highestStencilRef)
+            highestStencilRef = highest;
+    }
+
     /*
     * Stencil code will have to be rewritten eventually because I don't
     * trust it but for the most part it's fine and works as intended.
@@ -674,8 +689,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         // Render Friend Moon Afterwards
         poseStack.pushPose();
 
-        RenderTarget target = mc.getMainRenderTarget();
-        target.enableStencil();
+//        RenderTarget target = mc.getMainRenderTarget();
+//        if (!target.isStencilEnabled())
+//            target.enableStencil();
 
         applySkyBlendFunction();
 
@@ -683,7 +699,8 @@ public class FriendMoonRenderer implements AutoCloseable {
         renderFriendMoonInternal(tesselator, matrix4f1, getFriendMoonAnimation(), getFriendMoonOpacity(), (int) animationProgress, false);
 
         GL11.glEnable(GL11.GL_STENCIL_TEST);
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
+
+        RenderSystem.stencilFunc(GL11.GL_ALWAYS, stencilRef, 0xFF);
         RenderSystem.stencilOp(
             GL11.GL_KEEP,
             GL11.GL_KEEP,
@@ -693,9 +710,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         // Rendering moon
         RenderSystem.colorMask(false, false, false, false);
         renderFriendMoonInternal(tesselator, matrix4f1, getFriendMoonAnimation(), getFriendMoonOpacity(), (int) animationProgress, true);
-        RenderSystem.colorMask(true, true, true, true);
+        RenderSystem.colorMask(true, true, true, false);
 
-        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 1, 0xFF);
+        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, stencilRef, 0xFF);
         RenderSystem.stencilOp(
             GL11.GL_KEEP,
             GL11.GL_KEEP,
@@ -765,7 +782,6 @@ public class FriendMoonRenderer implements AutoCloseable {
     }
 
     public static void renderFinalize(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Tesselator tesselator, float partialTick) {
-        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
         GL11.glDisable(GL11.GL_STENCIL_TEST);
     }
 }

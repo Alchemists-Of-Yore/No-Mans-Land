@@ -114,8 +114,6 @@ public class MoonlightDreamType extends DreamType {
                     .add(new Vector3f(0, 100, 0).rotate(MoonlightDreamType.SKY_ROTATION)).normalize();
                 Vector3f facingDirection = player.getEyePosition().add(player.getViewVector(1.0f)).toVector3f().normalize();
 
-                NoMansLand.LOGGER.info(facingDirection.normalize().distance(targetPosition.normalize()));
-
                 if (facingDirection.normalize().distance(targetPosition.normalize()) <= 0.185
                 && player instanceof ServerPlayer serverPlayer) hasSeenMoon(serverPlayer);
 

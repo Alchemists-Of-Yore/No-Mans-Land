@@ -90,7 +90,7 @@ public class DreamLevelHandler implements AutoCloseable {
     public static void playerTeleportFallback(ServerPlayer serverPlayer, boolean load) {
         NoMansLand.LOGGER.info(
             "Teleporting " + serverPlayer.getGameProfile().getName() +
-            " from a Dream to Respawn Point as a last resort! Did the server crash previously?"
+            " from a Dream to last valid point as a last resort! Did the server crash previously?"
         );
 
         MinecraftServer server = serverPlayer.getServer();

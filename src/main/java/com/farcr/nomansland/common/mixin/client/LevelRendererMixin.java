@@ -5,6 +5,7 @@ import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.pots.LargePotBlock;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -145,6 +146,7 @@ public abstract class LevelRendererMixin {
     ) {
         FRIEND_RENDER_CONTEXT = true;
         FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
+        FriendMoonRenderer.setStencilRef();
         renderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
         renderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
     }
