@@ -139,8 +139,6 @@ public class BuddyChunkAnchor extends SavedData {
                     fallbackTag.put(key, Objects.requireNonNull(replacementData.get(key)));
 
                 buddy.load(fallbackTag);
-            } else {
-                buddy.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnBlock), MobSpawnType.NATURAL, null);
             }
 
             // Replace last anchor

@@ -2,7 +2,7 @@
   "type": "mixed_litter:replace_textures_with_default",
   "group": "nomansland:bee",
   "conditions": {
-    "spawn_predicate": {
+    "entity_predicate": {
       "location": {
         "biomes": "#nomansland:entity/spawns_bumblebees"
       }

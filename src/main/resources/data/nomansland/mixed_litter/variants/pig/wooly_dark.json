@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_pigs",
   "conditions": {
-    "spawn_predicate": {
+    "entity_predicate": {
       "location": {
         "biomes": "#nomansland:entity/spawns_wooly_pigs"
       }

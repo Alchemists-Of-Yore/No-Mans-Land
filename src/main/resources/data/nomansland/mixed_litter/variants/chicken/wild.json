@@ -2,7 +2,7 @@
   "type": "mixed_litter:ageable_texture",
   "group": "mixed_litter:remodeled_chicken",
   "conditions": {
-    "spawn_predicate": {
+    "entity_predicate": {
       "location": {
         "biomes": "#nomansland:entity/spawns_wild_chickens"
       }

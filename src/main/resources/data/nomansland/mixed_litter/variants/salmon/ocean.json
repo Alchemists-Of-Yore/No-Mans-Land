@@ -2,7 +2,7 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:salmon",
   "conditions": {
-    "spawn_predicate": {
+    "entity_predicate": {
       "location": {
         "biomes": "#nomansland:entity/spawns_ocean_salmon"
       }

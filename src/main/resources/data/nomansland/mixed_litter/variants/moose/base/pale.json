@@ -2,7 +2,7 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:moose",
   "conditions": {
-    "spawn_predicate": {
+    "entity_predicate": {
       "location": {
         "biomes": "#c:is_snowy"
       }

@@ -2,7 +2,7 @@
   "type": "mixed_litter:simple_texture",
   "group": "nomansland:billhook_bass",
   "conditions": {
-    "spawn_predicate": {
+    "entity_predicate": {
       "location": {
         "biomes": "#nomansland:entity/spawns_blackwater_bass"
       }
