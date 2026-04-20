@@ -330,7 +330,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     );
 
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) return pot.variant.shape();
+        if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            VoxelShape variantShape = pot.variant.shape();
+            if (variantShape != null && !variantShape.isEmpty()) return variantShape;
+        }
         return size == PotSize.LARGE ? LARGE_FALLBACK : SMALL_FALLBACK;
     }
 

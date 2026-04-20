@@ -3,10 +3,10 @@ package com.farcr.nomansland.common.block.pots;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.entity.FallingPotEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -189,8 +189,9 @@ public class LargePotBlock extends PotBlock {
                 fullShape = pot.variant.shape();
             }
         }
-        if (fullShape == null) return Shapes.block();
-        return isUpper(state) ? offsetShape(fullShape, -1.0) : fullShape;
+        if (fullShape == null || fullShape.isEmpty()) return Shapes.block();
+        VoxelShape result = isUpper(state) ? clampToBlock(offsetShape(fullShape, -1.0)) : clampToBlock(fullShape);
+        return result.isEmpty() ? Shapes.block() : result;
     }
 
     @Override
@@ -264,5 +265,17 @@ public class LargePotBlock extends PotBlock {
             holder[0] = Shapes.or(holder[0], Shapes.box(minX, minY + yOffset, minZ, maxX, maxY + yOffset, maxZ));
         });
         return holder[0].isEmpty() ? Shapes.block() : holder[0];
+    }
+
+    private static VoxelShape clampToBlock(VoxelShape shape) {
+        final VoxelShape[] holder = { Shapes.empty() };
+        shape.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> {
+            double nMinX = Math.max(0.0, minX), nMinY = Math.max(0.0, minY), nMinZ = Math.max(0.0, minZ);
+            double nMaxX = Math.min(1.0, maxX), nMaxY = Math.min(1.0, maxY), nMaxZ = Math.min(1.0, maxZ);
+            if (nMinX < nMaxX && nMinY < nMaxY && nMinZ < nMaxZ) {
+                holder[0] = Shapes.or(holder[0], Shapes.box(nMinX, nMinY, nMinZ, nMaxX, nMaxY, nMaxZ));
+            }
+        });
+        return holder[0];
     }
 }
