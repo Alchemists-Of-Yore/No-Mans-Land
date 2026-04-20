@@ -670,9 +670,6 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         RenderSystem.stencilMask(0xFF);
-        RenderSystem.clearStencil(0); // doesnt seem to be doing anything!!!!
-        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
-//        RenderSystem.colorMask(true, true, true, true);
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, stencilRef, 0xFF);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
     }
@@ -689,6 +686,9 @@ public class FriendMoonRenderer implements AutoCloseable {
 
     public static void disableStencil() {
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        RenderSystem.stencilMask(0xFF);
+        RenderSystem.clearStencil(0);
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
         RenderSystem.stencilMask(0x00);
         GL11.glDisable(GL11.GL_STENCIL_TEST);
