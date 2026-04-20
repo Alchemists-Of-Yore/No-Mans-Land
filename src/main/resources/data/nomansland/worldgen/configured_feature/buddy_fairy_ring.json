@@ -1,0 +1,16 @@
+{
+  "type": "nomansland:buddy_fairy_ring",
+  "config": {
+    "radius": {
+      "type": "minecraft:uniform",
+      "min_inclusive": 3,
+      "max_inclusive": 5
+    },
+    "block_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "nomansland:field_mushroom"
+      }
+    }
+  }
+}

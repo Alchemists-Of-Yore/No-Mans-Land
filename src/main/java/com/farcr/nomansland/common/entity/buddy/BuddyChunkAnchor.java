@@ -5,28 +5,65 @@ import com.farcr.nomansland.common.extension.LevelChunkExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BuddyChunkAnchor extends SavedData {
-    private static String NAME = "buddy_anchor";
-    // Stores a list of retained values between buddy "respawning"
-    public final Map<BlockPos, BuddyData> buddyAnchors = new HashMap<>();
+    private static final String NAME = "buddy_anchor";
+
+    public final Map<BlockPos, BuddyData> buddyAnchors = new ConcurrentHashMap<>();
+
+    private static final ConcurrentHashMap<ResourceKey<Level>, ConcurrentLinkedQueue<BlockPos>> PENDING_ANCHORS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<ResourceKey<Level>, Set<Long>> CLAIMED_CHUNKS = new ConcurrentHashMap<>();
+
+    public static void queuePendingAnchor(ResourceKey<Level> dimension, BlockPos pos) {
+        PENDING_ANCHORS.computeIfAbsent(dimension, k -> new ConcurrentLinkedQueue<>()).offer(pos);
+    }
+
+    /**
+     * Atomically claims the chunk containing {@code pos} if no other claim
+     * exists within {@code minChunkDistance} chunks. Returns true if claimed,
+     * false if another claim is too close.
+     */
+    public static boolean tryClaimChunk(ResourceKey<Level> dimension, BlockPos pos, int minChunkDistance) {
+        Set<Long> claimed = CLAIMED_CHUNKS.computeIfAbsent(dimension, k -> ConcurrentHashMap.newKeySet());
+        int chunkX = pos.getX() >> 4;
+        int chunkZ = pos.getZ() >> 4;
+        int radiusSqr = minChunkDistance * minChunkDistance;
+        synchronized (claimed) {
+            for (Long packed : claimed) {
+                int otherX = ChunkPos.getX(packed);
+                int otherZ = ChunkPos.getZ(packed);
+                int dx = chunkX - otherX;
+                int dz = chunkZ - otherZ;
+                if (dx * dx + dz * dz < radiusSqr) return false;
+            }
+            claimed.add(ChunkPos.asLong(chunkX, chunkZ));
+            return true;
+        }
+    }
+
+    private void primeClaimedChunks() {
+        Set<Long> claimed = CLAIMED_CHUNKS.computeIfAbsent(level.dimension(), k -> ConcurrentHashMap.newKeySet());
+        for (BlockPos anchor : buddyAnchors.keySet()) {
+            claimed.add(ChunkPos.asLong(anchor.getX() >> 4, anchor.getZ() >> 4));
+        }
+    }
 
     public static BuddyChunkAnchor getOrDefault(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
@@ -68,6 +105,7 @@ public class BuddyChunkAnchor extends SavedData {
                 buddyAnchors.put(anchorPosition, buddyData);
             }
         }
+        primeClaimedChunks();
         return this;
     }
 
@@ -76,26 +114,45 @@ public class BuddyChunkAnchor extends SavedData {
         this.level = level;
     }
 
-    public static final ResourceKey<Structure> FAIRY_RING_KEY = ResourceKey.create(Registries.STRUCTURE, NoMansLand.location("buddy_fairy_ring"));
     public void tickChunk(LevelChunk chunk) {
         LevelChunkExtension extensionChunk = (LevelChunkExtension) chunk;
-        if (!extensionChunk.nml$shouldIgnoreBuddyAnchor()) {
-            int structuresFound = 0;
-            Structure fairyRingStructure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(FAIRY_RING_KEY);
-            if (fairyRingStructure != null) {
-                StructureManager structureManager = level.structureManager();
-                List<StructureStart> structureStarts = structureManager.startsForStructure(chunk.getPos(), structure -> structure.equals(fairyRingStructure));
-                for (StructureStart start : structureStarts) {
-                    queryBuddyStructure(start);
-                    structuresFound++;
+        if (extensionChunk.nml$shouldIgnoreBuddyAnchor()) return;
+
+        ChunkPos chunkPos = chunk.getPos();
+        boolean chunkHasAnchor = false;
+
+        ConcurrentLinkedQueue<BlockPos> pending = PENDING_ANCHORS.get(level.dimension());
+        if (pending != null) {
+            Iterator<BlockPos> it = pending.iterator();
+            while (it.hasNext()) {
+                BlockPos pos = it.next();
+                if (chunkContains(chunkPos, pos)) {
+                    it.remove();
+                    attemptSpawn(pos);
+                    chunkHasAnchor = true;
                 }
-                if (structuresFound <= 0)
-                    extensionChunk.nml$setIgnoreBuddyAnchor();
             }
+        }
+
+        for (Map.Entry<BlockPos, BuddyData> entry : buddyAnchors.entrySet()) {
+            BlockPos anchor = entry.getKey();
+            if (chunkContains(chunkPos, anchor)) {
+                chunkHasAnchor = true;
+                if (tryRespawning(entry.getValue())) {
+                    attemptSpawn(anchor);
+                }
+            }
+        }
+
+        if (!chunkHasAnchor) {
+            extensionChunk.nml$setIgnoreBuddyAnchor();
         }
     }
 
-    // Returns the cycle, not phase, the moon is currently on.
+    private static boolean chunkContains(ChunkPos chunkPos, BlockPos blockPos) {
+        return (blockPos.getX() >> 4) == chunkPos.x && (blockPos.getZ() >> 4) == chunkPos.z;
+    }
+
     public int getCurrentMoonCycle(long dayTime) {
         return (int)((dayTime / 24000L) / 8L);
     }
@@ -104,15 +161,11 @@ public class BuddyChunkAnchor extends SavedData {
         return existingBuddyData.getShouldRespawn() && (getCurrentMoonCycle(level.getDayTime()) > existingBuddyData.getMoonCycle());
     }
 
-    public void queryBuddyStructure(StructureStart start) {
-        BlockPos spawnBlock = start.getBoundingBox().getCenter();
+    private void attemptSpawn(BlockPos spawnBlock) {
         BuddyData existingBuddyData = buddyAnchors.get(spawnBlock);
+        boolean shouldSpawn = (existingBuddyData == null || tryRespawning(existingBuddyData));
+        if (!shouldSpawn) return;
 
-        boolean respawn = (existingBuddyData == null || tryRespawning(existingBuddyData));
-        if (!respawn)
-            return;
-
-        // Try spawning the buddy !!!
         Buddy buddy = NMLEntities.BUDDY.get().create(level);
         BlockPos heightmapSpawnPosition = level.getHeightmapPos(
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(spawnBlock.getX(), 0, spawnBlock.getZ())
@@ -123,17 +176,12 @@ public class BuddyChunkAnchor extends SavedData {
             level, MobSpawnType.EVENT, heightmapSpawnPosition, level.getRandom())
         ) {
             buddy.setPos(heightmapSpawnPosition.above().getBottomCenter());
-
-            // Prepare Buddy & Anchor
             buddy.prepareAnchor(spawnBlock);
 
-            // Load Buddy NBT Data
             if (existingBuddyData != null && existingBuddyData.getNBTData().isPresent()) {
-                // Save original buddy data as fallback
                 CompoundTag fallbackTag = new CompoundTag();
                 buddy.saveWithoutId(fallbackTag);
 
-                // Replace data with previously saved buddy data
                 CompoundTag replacementData = existingBuddyData.getNBTData().get();
                 for (String key : replacementData.getAllKeys())
                     fallbackTag.put(key, Objects.requireNonNull(replacementData.get(key)));
@@ -141,7 +189,6 @@ public class BuddyChunkAnchor extends SavedData {
                 buddy.load(fallbackTag);
             }
 
-            // Replace last anchor
             updateAnchors(spawnBlock, createData());
             level.addFreshEntity(buddy);
         }
@@ -171,7 +218,6 @@ public class BuddyChunkAnchor extends SavedData {
         }
         buddyData.setNBTData(storedSaveData);
 
-        // signal update to position
         updateAnchors(anchorPosition, buddyData);
     }
 }

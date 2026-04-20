@@ -12,6 +12,7 @@ import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.neoforged.fml.loading.FMLLoader;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -114,7 +115,7 @@ public class BellSanctuaryGrid extends SavedData {
             secondCell.addPair(newPair);
         }
 
-        NoMansLand.LOGGER.info("New pair generated between {}, Distance of {} chunks. Took {}ms", newPair, gatheredDistance, watch.getTime());
+        if (!FMLLoader.isProduction()) NoMansLand.LOGGER.info("New pair generated between {}, Distance of {} chunks. Took {}ms", newPair, gatheredDistance, watch.getTime());
         if (distanceFailures + pairingFailures > 0) {
             NoMansLand.LOGGER.info("Random position search took {} iterations due to {} distance fails and {} pairing fails ", distanceFailures + pairingFailures, distanceFailures, pairingFailures);
         }

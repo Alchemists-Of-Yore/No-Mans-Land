@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:mushroom_fields",
+  "features": [
+    "nomansland:buddy_fairy_ring"
+  ],
+  "step": "vegetal_decoration"
+}

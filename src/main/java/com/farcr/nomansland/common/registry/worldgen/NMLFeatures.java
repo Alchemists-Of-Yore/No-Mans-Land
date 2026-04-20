@@ -36,6 +36,9 @@ public class NMLFeatures {
     public static final Supplier<Feature<FoliageCircleFeatureConfiguration>> FOLIAGE_CIRCLE = FEATURES.register("foliage_circle",
             () -> new FoliageCircleFeature(FoliageCircleFeatureConfiguration.CODEC));
 
+    public static final Supplier<Feature<FoliageCircleFeatureConfiguration>> BUDDY_FAIRY_RING = FEATURES.register("buddy_fairy_ring",
+            () -> new BuddyFairyRingFeature(FoliageCircleFeatureConfiguration.CODEC));
+
     public static final Supplier<Feature<DitheredPatchFeatureConfiguration>> DITHERED_PATCH = FEATURES.register("dithered_patch",
             () -> new DitheredPatchFeature(DitheredPatchFeatureConfiguration.CODEC));
 
