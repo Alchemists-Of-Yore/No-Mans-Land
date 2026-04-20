@@ -54,6 +54,9 @@ public class NMLFeatures {
     public static final Supplier<Feature<AncestralEffigyFeature.Configuration>> ANCESTRAL_EFFIGY = FEATURES.register("ancestral_effigy",
             AncestralEffigyFeature::new);
 
+    public static final Supplier<Feature<NoneFeatureConfiguration>> ANCESTRAL_CARVING = FEATURES.register("ancestral_carving",
+            () -> new AncestralCarvingFeature(NoneFeatureConfiguration.CODEC));
+
     public static final ResourceKey<ConfiguredFeature<?, ?>> HUGE_FIELD_MUSHROOM = register("huge_field_mushroom");
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> OAK_APPLE_01 = register("oak_apple_01");
