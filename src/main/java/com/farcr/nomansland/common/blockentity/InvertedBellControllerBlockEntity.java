@@ -8,8 +8,8 @@ import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryCell;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
-import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -124,17 +124,11 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
                 case UNASSIGNED -> {
                     final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
-                    final BellSanctuaryCell cell = grid.getCell(pos.getX(), pos.getZ());
-
-                    if (cell != null) {
-                        ibbe.targetArea = getLikelyOtherSanctuary(cell, pos);
-                        if (ibbe.targetArea != null) {
-                            ibbe.state = PositionState.CHUNK;
-                        } else {
-                            ibbe.failureType = FAIL_TYPE.NO_PAIRING;
-                        }
+                    ibbe.targetArea = getLikelyOtherSanctuary(grid, pos);
+                    if (ibbe.targetArea != null) {
+                        ibbe.state = PositionState.CHUNK;
                     } else {
-                        ibbe.failureType = FAIL_TYPE.NO_CELL;
+                        ibbe.failureType = FAIL_TYPE.NO_PAIRING;
                         ibbe.state = PositionState.DONT_SEARCH;
                     }
 
@@ -147,14 +141,20 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     }
 
     @Nullable
-    private static ChunkPos getLikelyOtherSanctuary(final BellSanctuaryCell cell, final BlockPos pos) {
-        final ChunkPos currentPos = new ChunkPos(pos);
-
-        final BellSanctuaryCell.SanctuaryPair pair = cell.getPair(currentPos);
-        if (pair != null) {
-            return pair.getOther(currentPos);
+    private static ChunkPos getLikelyOtherSanctuary(final BellSanctuaryGrid grid, final BlockPos pos) {
+        // scan the neighbours for pair queries, as the bell can land next to the structure's placement chunk rather than in it
+        final ChunkPos beChunk = new ChunkPos(pos);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                final ChunkPos candidate = new ChunkPos(beChunk.x + dx, beChunk.z + dz);
+                final BellSanctuaryCell cell = grid.getCell(candidate.getMinBlockX(), candidate.getMinBlockZ());
+                if (cell == null) continue;
+                final BellSanctuaryCell.SanctuaryPair pair = cell.getPair(candidate);
+                if (pair != null) {
+                    return pair.getOther(candidate);
+                }
+            }
         }
-
         return null;
     }
 

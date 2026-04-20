@@ -17,6 +17,6 @@
       "absolute": -48
     }
   },
-  "use_expansion_hack": true,
+  "use_expansion_hack": false,
   "spawn_overrides": {}
 }
