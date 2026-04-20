@@ -228,7 +228,10 @@ public class FriendMoonRenderer implements AutoCloseable {
 
     boolean setFriendMoonAnimations(FriendMoon friendMoonInstance, Player player, boolean moonIsVisible, float deltaTime) {
         DialogueState currentState = DialogueRenderer.getCurrentState();
-        if (!canRenderMoonEffects() && !DialogueRenderer.isStateActive(currentState)) return true;
+        if (friendMoonInstance.getState().equals(FriendMoonState.UPSET)) {
+            setFriendMoonAnimation(FriendMoonAnimation.SURPRISED);
+            return true;
+        }
 
         boolean hasBadOmen = player.hasEffect(MobEffects.BAD_OMEN);
         if (friendMoonInstance.cannotObtainFriendship(player) && !hasBadOmen)
@@ -664,10 +667,6 @@ public class FriendMoonRenderer implements AutoCloseable {
     * fixing issues related to stencil calls easier and fix aeronautics issues
     */
     public static void enableStencil() {
-        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
-        if (!target.isStencilEnabled())
-            target.enableStencil();
-
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         RenderSystem.stencilMask(0xFF);
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, stencilRef, 0xFF);
@@ -692,6 +691,11 @@ public class FriendMoonRenderer implements AutoCloseable {
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
         RenderSystem.stencilMask(0x00);
         GL11.glDisable(GL11.GL_STENCIL_TEST);
+
+        // do this after everything so the render context is correct ?? idk
+        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        if (!target.isStencilEnabled())
+            target.enableStencil();
     }
 
     /*
