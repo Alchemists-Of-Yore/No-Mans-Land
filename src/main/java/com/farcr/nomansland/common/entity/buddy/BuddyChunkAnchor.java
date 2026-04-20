@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class BuddyChunkAnchor extends SavedData {
     private static final String NAME = "buddy_anchor";
 
+    // Stores a list of retained values between buddy "respawning"
     public final Map<BlockPos, BuddyData> buddyAnchors = new ConcurrentHashMap<>();
 
     private static final ConcurrentHashMap<ResourceKey<Level>, ConcurrentLinkedQueue<BlockPos>> PENDING_ANCHORS = new ConcurrentHashMap<>();
@@ -35,34 +36,28 @@ public class BuddyChunkAnchor extends SavedData {
         PENDING_ANCHORS.computeIfAbsent(dimension, k -> new ConcurrentLinkedQueue<>()).offer(pos);
     }
 
-    /**
-     * Atomically claims the chunk containing {@code pos} if no other claim
-     * exists within {@code minChunkDistance} chunks. Returns true if claimed,
-     * false if another claim is too close.
-     */
-    public static boolean tryClaimChunk(ResourceKey<Level> dimension, BlockPos pos, int minChunkDistance) {
+    public static boolean tryClaimArea(ResourceKey<Level> dimension, BlockPos center, int radiusChunks) {
         Set<Long> claimed = CLAIMED_CHUNKS.computeIfAbsent(dimension, k -> ConcurrentHashMap.newKeySet());
-        int chunkX = pos.getX() >> 4;
-        int chunkZ = pos.getZ() >> 4;
-        int radiusSqr = minChunkDistance * minChunkDistance;
+        int cx = center.getX() >> 4;
+        int cz = center.getZ() >> 4;
+        long centerKey = ChunkPos.asLong(cx, cz);
         synchronized (claimed) {
-            for (Long packed : claimed) {
-                int otherX = ChunkPos.getX(packed);
-                int otherZ = ChunkPos.getZ(packed);
-                int dx = chunkX - otherX;
-                int dz = chunkZ - otherZ;
-                if (dx * dx + dz * dz < radiusSqr) return false;
+            if (claimed.contains(centerKey)) return false;
+            int radiusSqr = radiusChunks * radiusChunks;
+            for (int dx = -radiusChunks; dx <= radiusChunks; dx++) {
+                for (int dz = -radiusChunks; dz <= radiusChunks; dz++) {
+                    if (dx * dx + dz * dz < radiusSqr) {
+                        claimed.add(ChunkPos.asLong(cx + dx, cz + dz));
+                    }
+                }
             }
-            claimed.add(ChunkPos.asLong(chunkX, chunkZ));
             return true;
         }
     }
 
-    private void primeClaimedChunks() {
-        Set<Long> claimed = CLAIMED_CHUNKS.computeIfAbsent(level.dimension(), k -> ConcurrentHashMap.newKeySet());
-        for (BlockPos anchor : buddyAnchors.keySet()) {
-            claimed.add(ChunkPos.asLong(anchor.getX() >> 4, anchor.getZ() >> 4));
-        }
+    private void releaseClaim(ChunkPos chunkPos) {
+        Set<Long> claimed = CLAIMED_CHUNKS.get(level.dimension());
+        if (claimed != null) claimed.remove(chunkPos.toLong());
     }
 
     public static BuddyChunkAnchor getOrDefault(ServerLevel level) {
@@ -105,7 +100,6 @@ public class BuddyChunkAnchor extends SavedData {
                 buddyAnchors.put(anchorPosition, buddyData);
             }
         }
-        primeClaimedChunks();
         return this;
     }
 
@@ -119,6 +113,8 @@ public class BuddyChunkAnchor extends SavedData {
         if (extensionChunk.nml$shouldIgnoreBuddyAnchor()) return;
 
         ChunkPos chunkPos = chunk.getPos();
+        releaseClaim(chunkPos);
+
         boolean chunkHasAnchor = false;
 
         ConcurrentLinkedQueue<BlockPos> pending = PENDING_ANCHORS.get(level.dimension());
@@ -153,6 +149,7 @@ public class BuddyChunkAnchor extends SavedData {
         return (blockPos.getX() >> 4) == chunkPos.x && (blockPos.getZ() >> 4) == chunkPos.z;
     }
 
+    // Returns the cycle, not phase, the moon is currently on.
     public int getCurrentMoonCycle(long dayTime) {
         return (int)((dayTime / 24000L) / 8L);
     }
@@ -166,6 +163,7 @@ public class BuddyChunkAnchor extends SavedData {
         boolean shouldSpawn = (existingBuddyData == null || tryRespawning(existingBuddyData));
         if (!shouldSpawn) return;
 
+        // Try spawning the buddy !!!
         Buddy buddy = NMLEntities.BUDDY.get().create(level);
         BlockPos heightmapSpawnPosition = level.getHeightmapPos(
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(spawnBlock.getX(), 0, spawnBlock.getZ())
@@ -176,12 +174,17 @@ public class BuddyChunkAnchor extends SavedData {
             level, MobSpawnType.EVENT, heightmapSpawnPosition, level.getRandom())
         ) {
             buddy.setPos(heightmapSpawnPosition.above().getBottomCenter());
+
+            // Prepare Buddy & Anchor
             buddy.prepareAnchor(spawnBlock);
 
+            // Load Buddy NBT Data
             if (existingBuddyData != null && existingBuddyData.getNBTData().isPresent()) {
+                // Save original buddy data as fallback
                 CompoundTag fallbackTag = new CompoundTag();
                 buddy.saveWithoutId(fallbackTag);
 
+                // Replace data with previously saved buddy data
                 CompoundTag replacementData = existingBuddyData.getNBTData().get();
                 for (String key : replacementData.getAllKeys())
                     fallbackTag.put(key, Objects.requireNonNull(replacementData.get(key)));
@@ -189,6 +192,7 @@ public class BuddyChunkAnchor extends SavedData {
                 buddy.load(fallbackTag);
             }
 
+            // Replace last anchor
             updateAnchors(spawnBlock, createData());
             level.addFreshEntity(buddy);
         }
@@ -218,6 +222,7 @@ public class BuddyChunkAnchor extends SavedData {
         }
         buddyData.setNBTData(storedSaveData);
 
+        // signal update to position
         updateAnchors(anchorPosition, buddyData);
     }
 }

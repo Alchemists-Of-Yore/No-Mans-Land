@@ -26,7 +26,7 @@ public class BuddyFairyRingFeature extends Feature<FoliageCircleFeatureConfigura
         FoliageCircleFeatureConfiguration config = context.config();
 
         ServerLevel serverLevel = level.getLevel();
-        if (!BuddyChunkAnchor.tryClaimChunk(serverLevel.dimension(), origin, MIN_CHUNK_DISTANCE)) {
+        if (!BuddyChunkAnchor.tryClaimArea(serverLevel.dimension(), origin, MIN_CHUNK_DISTANCE)) {
             return false;
         }
 
