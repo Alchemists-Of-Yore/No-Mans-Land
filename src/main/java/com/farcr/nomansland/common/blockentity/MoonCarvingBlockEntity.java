@@ -1,12 +1,10 @@
 package com.farcr.nomansland.common.blockentity;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.block.AncestralCarvingBlock;
 import com.farcr.nomansland.common.block.MoonCarvingBlock;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamStorage;
 import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.networking.ClientboundZoomEffectPacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
@@ -40,7 +38,7 @@ public class MoonCarvingBlockEntity extends BlockEntity {
         super(NMLBlockEntities.MOON_CARVING.get(), pos, blockState);
     }
 
-    private static final int VISION_RANGE = 12;
+    private static final int VISION_RANGE = 24;
     private static final int STARE_AT_TICKS = 40;
     private static final int DREAM_TIME = 24000 * 3;
 
