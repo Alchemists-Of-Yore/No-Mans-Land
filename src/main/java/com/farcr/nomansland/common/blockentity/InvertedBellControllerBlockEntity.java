@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGrid;
 import com.farcr.nomansland.common.handler.sanctuary_grid.BellSanctuaryGridHandler;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +17,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -74,7 +76,8 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
     public void ring(final int direction) {
         if (this.getLevel() instanceof final ServerLevel serverLevel) {
-            if (this.state == PositionState.BLOCK_POS && this.targetBell != null) {
+            serverLevel.playSound(null, this.getBlockPos(), NMLSounds.INVERTED_BELL_RING.get(), SoundSource.BLOCKS, 0.8f, 1.0f);
+            if (this.state == PositionState.BLOCK_POS && this.targetBell != null && serverLevel.getWorldBorder().isWithinBounds(this.targetBell)) {
                 InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
                         this.getBlockPos(), this.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
                         this.targetBell, this.targetDir

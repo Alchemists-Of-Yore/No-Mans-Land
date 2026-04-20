@@ -3,7 +3,6 @@ package com.farcr.nomansland.common.handler;
 import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
-import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,7 +10,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -45,7 +43,6 @@ public class InvertedBellServerHandler extends SavedData {
     private final List<ActiveTeleport> teleports = new ArrayList<>();
 
     public void beginTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, BlockPos toPos, Direction toDir) {
-        level.playSound(null, fromPos, NMLSounds.INVERTED_BELL_RING.get(), SoundSource.BLOCKS, 0.8f, 1.0f);
         this.teleports.add(new ActiveTeleport(level, fromPos, fromDir, toPos, toDir));
     }
 
