@@ -223,6 +223,84 @@ public class FriendMoonRenderer implements AutoCloseable {
         this.clientBlockPos = clientBlockPos;
         if (updateBasinTime) trackedBasinTime = 0f;
     }
+
+    public static final ResourceLocation NOBODY_CAME_LOCATION = NoMansLand.location("nobody_came");
+
+    boolean setFriendMoonAnimations(FriendMoon friendMoonInstance, Player player, boolean moonIsVisible, float deltaTime) {
+        DialogueState currentState = DialogueRenderer.getCurrentState();
+        if (!canRenderMoonEffects() && !DialogueRenderer.isStateActive(currentState)) return true;
+
+        boolean hasBadOmen = player.hasEffect(MobEffects.BAD_OMEN);
+        if (friendMoonInstance.cannotObtainFriendship(player) && !hasBadOmen)
+            return true;
+
+        if (!player.hasEffect(MobEffects.BAD_OMEN))
+            badOmenWaitTime = 0f;
+
+        // bad omen wait time handle
+        float turnAnimateSpeed = (deltaTime / 15f);
+        boolean isAwake = friendMoonInstance.isAwake();
+        if (hasBadOmen) {
+            if (!moonIsVisible && badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME) {
+                badOmenWaitTime = 0f;
+                return true;
+            }
+
+            if (!getFriendMoonAnimation().equals(FriendMoonAnimation.PHASES)) {
+                setFriendMoonAnimation(FriendMoonAnimation.PHASES);
+                animationProgress = FriendMoonAnimation.PHASES.getFrames();
+            }
+            animationProgress = Math.max(0, animationProgress - turnAnimateSpeed);
+
+            if (badOmenWaitTime >= MAX_BAD_OMEN_WAIT_TIME) {
+                if (friendMoonOpacity >= 1f) {
+                    ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
+                        NOBODY_CAME_LOCATION,
+                        NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
+                        Optional.of(player.getUUID()),
+                        player.getRandom()
+                    );
+                    packet.applyPacket(player.level(), player);
+                    DialogueRenderer.getCurrentState().setOverrideColor(DialogueUtil.NOBODY_CAME_TEXT_COLOR);
+                    DialogueRenderer.getCurrentState().mute();
+                }
+                return true;
+            } else {
+                badOmenWaitTime += deltaTime;
+                if (DialogueRenderer.isStateActive(currentState))
+                    DialogueRenderer.getCurrentState().reset();
+            }
+            return false;
+        }
+
+        if (!isAwake) {
+            if (!moonIsVisible || !FriendMoon.appearConditionsMet(player, clientBlockPos)) return true;
+            // moon rotation
+            if (friendMoonOpacity >= 1) {
+                animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
+                if (animationProgress >= getFriendMoonAnimation().getFrames())
+                    FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.AWAKEN);
+            } else {
+                setFriendMoonAnimation(FriendMoonAnimation.PHASES);
+                animationProgress = 0.0f;
+            }
+        } else {
+            // Set default animation to emotion (server chosen)
+            setFriendMoonAnimation(getFriendMoonEmotion(friendMoonInstance));
+            float talkSpeed = 1 / 3f;
+            NoMansLand.LOGGER.info(animationProgress);
+            if (DialogueRenderer.isStateActive(currentState)) {
+                if (currentState.canSpeakCurrently())
+                    talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
+                animationProgress = talkAnimationProgress;
+            } else {
+                talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
+                animationProgress = 0.0f;
+            }
+        }
+        return false;
+    }
+
     public void updateFriendMoonPosition(
         Entity cameraEntity, Quaternionf moonRotation,
         Matrix4f moonViewMatrix, Matrix4f projectionMatrix, float partialTick
@@ -232,83 +310,23 @@ public class FriendMoonRenderer implements AutoCloseable {
             return;
 
         LocalPlayer player = mc.player;
-
         boolean fadeOut = true;
         float deltaTime = mc.getTimer().getGameTimeDeltaTicks();
         trackedBasinTime = Math.min(trackedBasinTime + deltaTime, FriendMoon.LEAVE_TIME_THRESHOLD);
 
         float fadeSpeed = (deltaTime / 25f);
-        float turnAnimateSpeed = (deltaTime / 15f);
 
         boolean isAwake = false;
         boolean moonIsVisible = moonOnScreen(mc, moonViewMatrix, projectionMatrix, 0.5f);
         FriendMoon friendMoonInstance = getClientMoon();
         if (friendMoonInstance != null) {
-            boolean dontShowUp = friendMoonInstance.cannotObtainFriendship(player);
-            if (!dontShowUp) badOmenWaitTime = 0;
-
-            // Can stare up at the moon and it'll show up
-            if (!dontShowUp || (badOmenWaitTime < MAX_BAD_OMEN_WAIT_TIME)) {
-                isAwake = friendMoonInstance.isAwake();
-                if ((moonIsVisible || isAwake) && canRenderMoonEffects()) {
-                    fadeOut = false;
-                    friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
-                    // moon awakening logic
-                    if (!dontShowUp) {
-                        if (!isAwake) {
-                            // moon rotation
-                            if (friendMoonOpacity >= 1) {
-                                animationProgress = Math.min(animationProgress + turnAnimateSpeed, getFriendMoonAnimation().getFrames());
-                                if (animationProgress >= getFriendMoonAnimation().getFrames())
-                                    FriendMoonUpdatePacket.toServer(FriendMoonUpdate.ToServer.AWAKEN);
-                            } else
-                                setFriendMoonAnimation(FriendMoonAnimation.PHASES);
-                        } else {
-                            // Set default animation to emotion (server chosen)
-                            setFriendMoonAnimation(getFriendMoonEmotion(friendMoonInstance));
-                            DialogueState currentState = DialogueRenderer.getCurrentState();
-                            if (currentState != null) {
-                                float talkSpeed = 1 / 3f;
-                                if (currentState.canSpeakCurrently() && !currentState.doneTalking) {
-                                    talkAnimationProgress = (talkAnimationProgress + (deltaTime * talkSpeed)) % (getFriendMoonAnimation().getFrames() + 1);
-                                    animationProgress = talkAnimationProgress;
-                                } else {
-                                    talkAnimationProgress = (float) Math.floor(talkAnimationProgress);
-                                    animationProgress = 0;
-                                }
-                            } else
-                                animationProgress = 0;
-                        }
-                    } else {
-                        // not showing up takes precedent over everything else
-                        animationProgress = 0;
-                        setFriendMoonAnimation(FriendMoonAnimation.PHASES);
-                        if (friendMoonOpacity >= 1) {
-                            boolean hasBadOmen = player.hasEffect(MobEffects.BAD_OMEN);
-                            if (hasBadOmen) badOmenWaitTime += deltaTime;
-                            if (hasBadOmen && badOmenWaitTime > MAX_BAD_OMEN_WAIT_TIME) {
-                                ClientboundDialoguePacket packet = ClientboundDialoguePacket.timedDialoguePacket(
-                                    NoMansLand.location("nobody_came"),
-                                    NMLRegistries.SPECIAL_DIALOGUE_KEY.location(),
-                                    Optional.of(player.getUUID()),
-                                    player.getRandom()
-                                );
-                                packet.applyPacket(player.level(), player);
-                                DialogueRenderer.getCurrentState()
-                                    .setOverrideColor(DialogueUtil.NOBODY_CAME_TEXT_COLOR);
-                            } else if (DialogueRenderer.getCurrentState() != null
-                            && !DialogueRenderer.getCurrentState().isPaused())
-                                DialogueRenderer.getCurrentState().reset();
-                        }
-                    }
-                }
-            }
+            isAwake = friendMoonInstance.isAwake();
+            fadeOut = setFriendMoonAnimations(friendMoonInstance, player, moonIsVisible, deltaTime);
         }
         if (fadeOut) {
             friendMoonOpacity = Math.max(friendMoonOpacity - fadeSpeed, 0);
-            if (friendMoonOpacity <= 0)
-                animationProgress = 0;
-        }
+            if (friendMoonOpacity <= 0) animationProgress = 0;
+        } else friendMoonOpacity = Math.min(friendMoonOpacity + fadeSpeed, 1);
 
         float desiredDarkness = 0.0f;
         if (isAwake) desiredDarkness = friendMoonOpacity;
@@ -584,7 +602,8 @@ public class FriendMoonRenderer implements AutoCloseable {
             Optional<MoonlightBasinBlockEntity> optionalBasin = player.level()
                 .getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
             boolean isOrWasPreviouslyMet = (FriendMoon.appearConditionsMet(player, clientBlockPos)
-                || (trackedBasinTime < FriendMoon.LEAVE_TIME_THRESHOLD && FriendMoon.isNightTime(player.level())));
+                || (trackedBasinTime < FriendMoon.LEAVE_TIME_THRESHOLD && FriendMoon.isNightTime(player.level()))
+                || DialogueRenderer.isStateActive(DialogueRenderer.getCurrentState()));
             if (isOrWasPreviouslyMet && optionalBasin.isPresent() && (optionalBasin.get().clientMoon != null))
                 return optionalBasin.get().clientMoon;
         }
@@ -689,9 +708,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         // Render Friend Moon Afterwards
         poseStack.pushPose();
 
-//        RenderTarget target = mc.getMainRenderTarget();
-//        if (!target.isStencilEnabled())
-//            target.enableStencil();
+        RenderTarget target = mc.getMainRenderTarget();
+        if (!target.isStencilEnabled())
+            target.enableStencil();
 
         applySkyBlendFunction();
 

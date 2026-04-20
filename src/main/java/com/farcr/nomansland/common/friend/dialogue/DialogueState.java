@@ -34,9 +34,10 @@ public class DialogueState {
 
     private boolean paused = false;
     public void pause() { paused = true; }
-    public boolean isPaused() {
-        return paused;
-    }
+    public boolean isPaused() { return paused; }
+    private boolean muted = false;
+    public boolean isMuted() { return muted; }
+    public void mute() { muted = true; }
 
     public @Nullable Integer overrideColor;
     public void setOverrideColor(int overrideColor) {

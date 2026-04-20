@@ -31,9 +31,12 @@ public class DialogueRenderer {
     public static void setCurrentState(DialogueState newState) {
         currentState = newState;
     }
+    public static boolean isStateActive(DialogueState state) {
+        return state != null && !state.doneTalking && !state.isPaused();
+    }
 
     private static void ensureAmbientPlaying(DialogueState state) {
-        if (state == null || state.doneTalking || state.isPaused())
+        if (!isStateActive(state))
             return;
         if (activeAmbient != null && Minecraft.getInstance().getSoundManager().isActive(activeAmbient))
             return;
@@ -82,12 +85,10 @@ public class DialogueRenderer {
             float[] shaderColor = RenderSystem.getShaderColor();
 
             float deltaTime = deltaTracker.getGameTimeDeltaTicks();
-
             float initialFade = Math.min(currentState.elapsedTicks / DialogueState.GRADIENT_FADE_TICKS, 1);
             float totalOpacity = Math.min(initialFade, (DialogueState.FADE_TICKS + currentState.ticks) / DialogueState.FADE_TICKS);
             deltaTime = currentState.handleTime(deltaTime);
 
-            // Reset Text when the moon goes away
             if (initialFade >= 1 && totalOpacity <= 0.1f) {
                 setCurrentState(null);
                 return;
@@ -96,9 +97,10 @@ public class DialogueRenderer {
             float lastOpacity = shaderColor[3];
             RenderSystem.setShaderColor(shaderColor[0], shaderColor[1], shaderColor[2], totalOpacity);
             List<String> constructedText = currentState.progressText(deltaTime);
-            tickSpeechSound(currentState);
-            ensureAmbientPlaying(currentState);
-
+            if (!currentState.isMuted()) {
+                tickSpeechSound(currentState);
+                ensureAmbientPlaying(currentState);
+            }
             Font font = mc.gui.getFont();
             guiGraphics.pose().pushPose();
 
@@ -144,7 +146,6 @@ public class DialogueRenderer {
             for (int i = (totalStringSplits.size() - 1); i >= Math.max(0, totalStringSplits.size() - 3); i--) {
                 String text = totalStringSplits.get(i);
                 int leftPos = (int) (center - (font.width(text) / 2f));
-
                 double alpha = mc.options.textBackgroundOpacity().get();
                 if (alpha > 0) {
                     int padding = 2;
@@ -154,7 +155,6 @@ public class DialogueRenderer {
                         FastColor.ARGB32.colorFromFloat((float) alpha, 0f, 0f, 0f)
                     );
                 }
-
                 guiGraphics.drawString(font, text, leftPos, 0,
                     (currentState.overrideColor != null) ? currentState.overrideColor : DialogueUtil.FRIEND_MOON_TEXT_COLOR);
                 guiGraphics.pose().translate(0, -(TEXT_HEIGHT + 4), 0);
