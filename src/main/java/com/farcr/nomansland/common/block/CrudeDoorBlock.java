@@ -5,13 +5,18 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
@@ -21,6 +26,16 @@ public class CrudeDoorBlock extends DoorBlock {
                     .apply(instance, CrudeDoorBlock::new)
     );
 
+    private static final VoxelShape LOWER_PANEL_NORTH = Block.box(0, 3, 0, 16, 28, 3.0);
+    private static final VoxelShape LOWER_PANEL_SOUTH = Block.box(0, 3, 13, 16, 28, 16.0);
+    private static final VoxelShape LOWER_PANEL_WEST = Block.box(0, 3, 0, 3, 28, 16.0);
+    private static final VoxelShape LOWER_PANEL_EAST = Block.box(13, 3, 0, 16, 28, 16.0);
+
+    private static final VoxelShape UPPER_PANEL_NORTH = Block.box(0, -13, 0, 16, 12, 3.0);
+    private static final VoxelShape UPPER_PANEL_SOUTH = Block.box(0, -13, 13, 16, 12, 16.0);
+    private static final VoxelShape UPPER_PANEL_WEST = Block.box(0, -13, 0, 3, 12, 16.0);
+    private static final VoxelShape UPPER_PANEL_EAST = Block.box(13, -13, 0, 16, 12, 16.0);
+
     public CrudeDoorBlock(BlockSetType blockSetType, Properties properties) {
         super(blockSetType, properties);
     }
@@ -28,6 +43,31 @@ public class CrudeDoorBlock extends DoorBlock {
     @Override
     public MapCodec<? extends DoorBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        Direction panelDir;
+        if (!state.getValue(OPEN)) {
+            panelDir = state.getValue(FACING).getOpposite();
+        } else if (state.getValue(HINGE) == DoorHingeSide.LEFT) {
+            panelDir = state.getValue(FACING).getCounterClockWise();
+        } else {
+            panelDir = state.getValue(FACING).getClockWise();
+        }
+        boolean isLower = state.getValue(HALF) == DoubleBlockHalf.LOWER;
+        return switch (panelDir) {
+            case NORTH -> isLower ? LOWER_PANEL_NORTH : UPPER_PANEL_NORTH;
+            case SOUTH -> isLower ? LOWER_PANEL_SOUTH : UPPER_PANEL_SOUTH;
+            case WEST -> isLower ? LOWER_PANEL_WEST : UPPER_PANEL_WEST;
+            case EAST -> isLower ? LOWER_PANEL_EAST : UPPER_PANEL_EAST;
+            default -> isLower ? LOWER_PANEL_WEST : UPPER_PANEL_WEST;
+        };
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return getShape(state, level, pos, context);
     }
 
     private Direction getHingeDirection(BlockState state) {
