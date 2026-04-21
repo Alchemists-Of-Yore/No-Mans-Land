@@ -1,44 +1,44 @@
 package com.farcr.nomansland.common.entity.cervidae.moose;
 
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.*;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.navigation.*;
+import net.minecraft.world.entity.ai.targeting.*;
+import net.minecraft.world.entity.ai.util.*;
+import net.minecraft.world.entity.player.*;
+import net.minecraft.world.level.pathfinder.*;
+import net.minecraft.world.phys.*;
 
-import javax.annotation.Nullable;
-import java.util.EnumSet;
+import javax.annotation.*;
+import java.util.*;
 
 
 /**
  * Behavior similar to {@link net.minecraft.world.entity.ai.goal.AvoidEntityGoal}
- * Avoids specified entities from a certain radius. Moves faster after stomping.
+ * Walks away from a specific entity from a certain radius.
+ * Triggered after the Moose attacks.
  */
-public class MooseBackOffBehaviorGoal extends Goal {
+public class MooseBackOffGoal extends Goal {
 
-    private static final TargetingConditions INTROVERT_TARGETING = TargetingConditions.forNonCombat().range(Moose.BACK_OFF_DISTANCE);
+    private final TargetingConditions targetingConditions;
 
     protected final Moose moose;
     protected final double speedModifier;
-    protected final float introvertDistance;
+    protected final float backOffDistance;
     protected final PathNavigation pathNav;
 
     @Nullable
     protected Path path;
     protected Entity avoidedTarget;
 
-    public MooseBackOffBehaviorGoal(Moose moose, double speedModifier, float introvertDistance) {
+    public MooseBackOffGoal(Moose moose, double speedModifier, float backOffDistance) {
         this.moose = moose;
         this.speedModifier = speedModifier;
-        this.introvertDistance = introvertDistance;
+        this.backOffDistance = backOffDistance;
         this.pathNav = moose.getNavigation();
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        targetingConditions = TargetingConditions.forNonCombat().range(backOffDistance);
     }
 
     @Override
@@ -51,8 +51,7 @@ public class MooseBackOffBehaviorGoal extends Goal {
             return false;
         }
         if (entity instanceof Player) {
-            int duration = Moose.BACK_OFF_DURATION;
-            return moose.hasStompedRecently(duration) || moose.hasAttackedRecently(duration);
+            return moose.hasAttackedRecently(Moose.BACK_OFF_DURATION);
         }
         return false;
     }
@@ -62,19 +61,18 @@ public class MooseBackOffBehaviorGoal extends Goal {
         if (moose.isVehicle()) {
             return false;
         }
-        var introvertArea = moose.getBoundingBox().inflate(introvertDistance, 3.0, introvertDistance);
-        var level = moose
-                .level();
+        var introvertArea = moose.getBoundingBox().inflate(backOffDistance, 3.0, backOffDistance);
+        var level = moose.level();
         var avoided = level.getEntitiesOfClass(LivingEntity.class, introvertArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldAvoid));
 
         var avoidedTarget = level.getNearestEntity(
-                avoided, INTROVERT_TARGETING,
+                avoided, targetingConditions,
                 moose, moose.getX(), moose.getY(), moose.getZ());
 
         if (avoidedTarget == null) {
             return false;
         }
-        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, Mth.floor(introvertDistance), 6, avoidedTarget.position());
+        Vec3 escapePos = DefaultRandomPos.getPosAway(moose, Mth.floor(backOffDistance), 6, avoidedTarget.position());
         if (escapePos == null) {
             return false;
         }
@@ -100,6 +98,5 @@ public class MooseBackOffBehaviorGoal extends Goal {
     @Override
     public void tick() {
         moose.getNavigation().setSpeedModifier(moose.getStompAdjustedMovementSpeed((float) speedModifier));
-        moose.lookAtAndFaceTarget(avoidedTarget);
     }
 }

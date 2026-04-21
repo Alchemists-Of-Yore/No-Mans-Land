@@ -110,7 +110,6 @@ public class MooseMeleeAttackGoal extends MeleeAttackGoal {
         }
         if (canPerformAttack(target)) {
             moose.level().broadcastEntityEvent(moose, Moose.ATTACK_EVENT);
-            moose.setStompCooldown();
             cachedTarget = target;
             isReadyingAttack = true;
             attackDelay = 16;

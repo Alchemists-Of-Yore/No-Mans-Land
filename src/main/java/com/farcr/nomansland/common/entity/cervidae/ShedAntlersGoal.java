@@ -65,7 +65,7 @@ public class ShedAntlersGoal extends Goal {
 
     public void start() {
         shedAnimationTick = adjustedTickDelay(mob.getRandom().nextInt(40, 120));
-        mob.getNavigation().moveTo(path, 1);
+        mob.getNavigation().moveTo(path, 1f);
     }
 
     public boolean canContinueToUse() {

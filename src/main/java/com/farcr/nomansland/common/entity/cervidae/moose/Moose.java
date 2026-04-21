@@ -82,25 +82,31 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
     //Controls how long a nearby entity has to stay within the stomp radius in order for the Moose to stomp
     protected static final int STOMP_WINDUP = 30;
+    //Adds a degree of randomness to when the moose starts it's stomping sequence
+    protected static final float STOMP_CHANCE = 0.4f;
     //Controls how close an entity has to be for the moose to consider stomping
     protected static final float STOMP_DISTANCE = 6f;
     //Controls how long the stomp action is considered to be. Should be equal to the animation length
     protected static final int STOMP_DURATION = 15;
     //Controls how long it takes before the moose can stomp again. Also applies after the moose attacks
-    protected static final int STOMP_COOLDOWN = 200;
+    protected static final int STOMP_COOLDOWN = 400;
     //Controls how long certain mobs should be scared of the Moose after it stomps
     protected static final int STOMP_FEAR_DURATION = 300;
     //Controls how long after a stomp the moose should start looking for targets that haven't backed off.
     protected static final int STOMP_AGGRO_DELAY = 40;
 
-    //Controls how long the moose will ignore nearby entities that it would normally attack for after a successful attack
+    //Controls how long the moose will stay on guard after a stomp, during this time if any entity gets close the moose will charge at it
+    protected static final int AGGRO_STANCE_DURATION = 300;
+    //Controls how far from the moose will consider a nearby target as a threat, keeping their distance, after a stomp
+    protected static final float AGGRO_STANCE_DISTANCE = 12f;
+    //Controls how long the moose will ignore nearby entities that it would normally attack after a successful attack
     protected static final int AGGRO_TIMEOUT = 100;
     //Controls how long a nearby entity has to stay within the aggro radius in order for the Moose to start attacking them
     protected static final int AGGRO_WINDUP = 60;
     //Adds a degree of randomness to aggro status accumulation.
-    protected static final float AGGRO_VARIANCE = 0.35f;
+    protected static final float AGGRO_PROGRESS_CHANCE = 0.8f;
     //Controls how close an entity has to be after the moose stomps for the moose to charge at it
-    protected static final float IRRITATED_AGGRO_DISTANCE = 5f;
+    protected static final float IRRITATED_AGGRO_DISTANCE = 8f;
     //Controls how close an entity has to remain for the moose to continue charging at it. If the entity re-enters this radius, the moose will resume its charge
     protected static final float ACTIVE_AGGRO_DISTANCE = 16f;
 
@@ -111,12 +117,10 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     //Multiplies the movement speed of the moose while it is being commanded to attack by a player
     protected static final float CHARGING_ATTACK_SPEED_MULTIPLIER = 1.1f;
 
-    //Adds a degree of randomness to when the moose starts it's stomping sequence
-    protected static final float BACK_OFF_CHANCE = 0.4f;
-    //Controls how far the moose will try to back away from the nearest target after it stomps, or after it attacks
+    //Controls how far the moose will try to back away from the nearest target after it attacks
     protected static final float BACK_OFF_DISTANCE = 8f;
-    //Controls how long the moose will back off for after either stomping or attacking
-    protected static final int BACK_OFF_DURATION = 120;
+    //Controls how long the moose will walk away from a target for after attacking
+    protected static final int BACK_OFF_DURATION = 100;
 
     //Controls how far the moose will look at players from
     protected static final float LOOK_DISTANCE = 18f;
@@ -148,7 +152,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
     public boolean isStomping;
     public int stompTimer;
-    public int stompCooldown;
     public long mostRecentStomp;
 
     private int pacificationStage;
@@ -193,7 +196,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
         compound.putBoolean("IsInStompState", isStomping);
         compound.putInt("StompTimer", stompTimer);
-        compound.putInt("StompCooldown", stompCooldown);
         compound.putLong("MostRecentStomp", mostRecentStomp);
 
         compound.putInt("PacificationStage", getPacificationStage());
@@ -215,7 +217,6 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
 
         isStomping = compound.getBoolean("IsInStompState");
         stompTimer = compound.getInt("StompTimer");
-        stompCooldown = compound.getInt("StompCooldown");
         mostRecentStomp = compound.getInt("MostRecentStomp");
 
         setPacificationStage(compound.getInt("PacificationStage"));
@@ -259,11 +260,12 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         goalSelector.addGoal(1, new MooseMeleeAttackGoal(this, 2f));
         goalSelector.addGoal(2, new MooseStompGoal(this, STOMP_DISTANCE));
         goalSelector.addGoal(3, new ShedAntlersGoal(this));
-        goalSelector.addGoal(4, new MooseBackOffBehaviorGoal(this, 0.25f, BACK_OFF_DISTANCE));
-        goalSelector.addGoal(5, new MooseShakeOffSaddleGoal(this));
-        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.4f, 0.0003F));
-        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.002f));
+        goalSelector.addGoal(4, new MooseBackOffGoal(this, 0.75f, BACK_OFF_DISTANCE));
+        goalSelector.addGoal(5, new MooseAggroStanceGoal(this, 0.25f, AGGRO_STANCE_DISTANCE));
+        goalSelector.addGoal(6, new MooseShakeOffSaddleGoal(this));
+        goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.4f, 0.0003F));
+        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, LOOK_DISTANCE, 0.002f));
     }
 
     @Override
@@ -330,25 +332,26 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     }
 
     protected void tickStompState() {
-        if (stompCooldown > 0) {
-            stompCooldown--;
-            if (stompCooldown == 0) {
-                inAggroRadius = 0;
-            }
-            if (!hasAttackedRecently(AGGRO_TIMEOUT) && !hasStompedRecently(STOMP_AGGRO_DELAY)) {
-                tickPostStompTargetSearch();
-            }
-            return;
-        }
         if (isStomping) {
             stompTimer++;
             if (stompTimer == STOMP_DURATION) {
                 finalizeStomp();
             }
+            return;
         }
+        if (!hasStompedRecently(AGGRO_STANCE_DURATION)) {
+            return;
+        }
+        if (hasAttackedRecently(AGGRO_TIMEOUT)) {
+            return;
+        }
+        if (hasStompedRecently(STOMP_AGGRO_DELAY)) {
+            return;
+        }
+        takeAggroOnNearbyTargets();
     }
 
-    public void tickPostStompTargetSearch() {
+    public void takeAggroOnNearbyTargets() {
         var level = level();
         int interval = 4;
         if (level.getGameTime() % interval == 0) {
@@ -357,22 +360,22 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
             var attackTargets = level.getEntitiesOfClass(LivingEntity.class, attackArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(this::shouldAttackAfterStomp));
             if (attackTargets.isEmpty()) {
                 if (inAggroRadius > 0) {
-                    inAggroRadius = Math.max(inAggroRadius-interval*2, 0);
+                    inAggroRadius = Math.max(inAggroRadius-interval, 0);
                 }
             }
             else {
-                if (random.nextFloat() > AGGRO_VARIANCE) {
+                if (random.nextFloat() > AGGRO_PROGRESS_CHANCE) {
                     return;
                 }
                 inAggroRadius += interval;
-                if (inAggroRadius >= AGGRO_WINDUP/4) {
+                if (inAggroRadius >= AGGRO_WINDUP/2) {
                     tryShowWarning();
-                }
-                if (inAggroRadius >= AGGRO_WINDUP) {
-                    for (LivingEntity target : attackTargets) {
-                        targetMemory.addTarget(target, 3600);
+                    if (inAggroRadius >= AGGRO_WINDUP) {
+                        for (LivingEntity target : attackTargets) {
+                            targetMemory.addTarget(target, 3600);
+                        }
+                        inAggroRadius = 0;
                     }
-                    inAggroRadius = 0;
                 }
             }
         }
@@ -630,11 +633,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
     }
 
     public boolean canStartStomp() {
-        return !isStomping && !isStompOnCooldown();
-    }
-
-    public boolean isStompOnCooldown() {
-        return stompCooldown > 0;
+        return !isStomping && !hasStompedRecently(STOMP_COOLDOWN);
     }
 
     public boolean hasShownWarningRecently(int timeframe) {
@@ -668,12 +667,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         level().broadcastEntityEvent(this, Moose.ADD_STOMP_FEEDBACK_EVENT);
         isStomping = false;
         stompTimer = 0;
-        setStompCooldown();
         mostRecentStomp = level().getGameTime();
-    }
-
-    public void setStompCooldown() {
-        stompCooldown = STOMP_COOLDOWN;
     }
 
     public boolean shouldAttackAfterStomp(Entity entity) {
