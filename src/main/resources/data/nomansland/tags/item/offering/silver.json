@@ -1,7 +1,7 @@
 {
   "values": [
-    "#c:raw_materials/silver",
-    "#c:ingots/silver",
-    "#c:nuggets/silver"
+    { "id": "#c:raw_materials/silver", "required": false },
+    { "id": "#c:ingots/silver", "required": false },
+    { "id": "#c:nuggets/silver", "required": false }
   ]
 }
