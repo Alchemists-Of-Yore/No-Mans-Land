@@ -199,7 +199,8 @@ public class DreamingPlayer extends Mob {
 
             if (!debug && getTetheredPlayer() != null) {
                 Optional<BlockPos> sleepingPos = this.getSleepingPos();
-                if (sleepingPos.isPresent() && !serverLevel.getBlockState(sleepingPos.get()).is(BlockTags.BEDS))
+                if (sleepingPos.isPresent() && !serverLevel.getBlockState(sleepingPos.get())
+                    .isBed(serverLevel, sleepingPos.get(), this))
                     endDreamForTether();
             }
         }
