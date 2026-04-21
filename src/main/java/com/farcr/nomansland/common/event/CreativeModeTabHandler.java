@@ -71,11 +71,7 @@ public class CreativeModeTabHandler {
         if (path.startsWith("strong_") || path.startsWith("long_")) {
             return false;
         }
-        if (holder.is(Potions.WATER) || holder.is(Potions.AWKWARD) || holder.is(Potions.THICK) || holder.is(Potions.MUNDANE)) {
-            return false;
-        }
-        //TODO: This should be a tag.
-        return !holder.is(Potions.HARMING) && !holder.is(Potions.HEALING) && !holder.is(Potions.TURTLE_MASTER);
+        return !holder.is(Potions.WATER) && !holder.is(Potions.AWKWARD) && !holder.is(Potions.THICK) && !holder.is(Potions.MUNDANE);
     }
 
     private static ItemStack creatBandageEffectsStack(Item item, Holder<Potion> potion) {
