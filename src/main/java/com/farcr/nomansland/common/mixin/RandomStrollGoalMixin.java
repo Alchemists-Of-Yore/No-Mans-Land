@@ -25,8 +25,7 @@ public class RandomStrollGoalMixin {
     @Inject(method = "getPosition", at = @At("HEAD"), cancellable = true)
     private void getPosition(CallbackInfoReturnable<Vec3> cir) {
         if (mob instanceof Monster && mob.level() instanceof ServerLevel serverLevel) {
-            WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                    () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
+            WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
             if (wardedSpacesData.isWarded(mob.level(), mob.blockPosition())) {
                 BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.level(), mob.blockPosition()).orElse(null);

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -38,6 +39,11 @@ public class WardedSpacesData extends SavedData {
         Arrays.stream(tag.getIntArray("ranges")).forEachOrdered(ranges::add);
 
         return new WardedSpacesData(positions, ranges);
+    }
+
+    public static WardedSpacesData get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
+                () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
     }
 
     @Override
