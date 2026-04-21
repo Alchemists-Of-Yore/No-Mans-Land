@@ -56,6 +56,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.ContainerSingleItem;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -287,6 +288,11 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
     public boolean fireImmune() {
         PotVariant variant = getVariant();
         return variant == null || !variant.traits().contains(PotTrait.FLAMMABLE);
+    }
+
+    @Override
+    public boolean canDrownInFluidType(FluidType type) {
+        return false;
     }
 
     @Override
