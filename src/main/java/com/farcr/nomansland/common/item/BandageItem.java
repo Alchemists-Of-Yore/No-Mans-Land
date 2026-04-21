@@ -43,7 +43,7 @@ public class BandageItem extends Item {
         if (!target.isDeadOrDying() && target != player) {
             TARGET_ENTITY.set(target);
             player.startUsingItem(hand);
-            player.level().playSound(null, player.blockPosition(), NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, 2, 1.0f);
+            player.level().playSound(null, player.blockPosition(), NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, 3, 1.0f);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;
@@ -111,7 +111,7 @@ public class BandageItem extends Item {
 //    }
 
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
-        level.playSound(null, player.blockPosition(), NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, 2, 1.0f);
+        level.playSound(null, player.blockPosition(), NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, 3, 1.0f);
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
 
