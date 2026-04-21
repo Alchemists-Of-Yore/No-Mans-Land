@@ -338,11 +338,14 @@ public class FriendMoonRenderer implements AutoCloseable {
         float pitch = cameraEntity.getViewXRot(partialTick) + 90;
         float yaw = -cameraEntity.getViewYRot(partialTick);
         float speed = deltaTime / 30;
+        float starSpeed = speed;
         if (getFriendMoonOpacity() <= 0f)
             speed = 1;
 
-        if (!isAwake)
+        if (!isAwake) {
             speed /= 4f;
+            starSpeed /= 4f;
+        }
 
         float pitchClamp = 90;
 
@@ -394,13 +397,23 @@ public class FriendMoonRenderer implements AutoCloseable {
 
         friendMoonPitchAngle = Math.min(friendMoonPitchAngle, pitchClamp - 25f);
 
-        updateStarAngles(speed);
+        updateStarAngles(starSpeed);
     }
 
     private void updateStarAngles(float moonSpeed) {
-        FriendMoon moon = getClientMoon();
+        FriendMoon moon = null;
+        if (clientBlockPos != null) {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                Optional<MoonlightBasinBlockEntity> optionalBasin = player.level()
+                    .getBlockEntity(clientBlockPos, NMLBlockEntities.MOONLIGHT_BASIN.get());
+                if (optionalBasin.isPresent()) moon = optionalBasin.get().clientMoon;
+            }
+        }
         if (moon == null) {
-            if (!starAngles.isEmpty()) starAngles.clear();
+            // Preserve cached angles so stars keep their orbital lag across transient null
+            // states (fade cycles, chunk load glitches). Stale entries will be pruned by
+            // retainAll below once a moon with fresh star seeds comes back.
             return;
         }
         List<BuddyStar> stars = moon.getBuddyStars();
