@@ -389,10 +389,9 @@ public class MiscellaneousEvents {
         if (event.getLevel() instanceof ServerLevel serverLevel
                 && event.getSpawnType() == MobSpawnType.NATURAL
                 && event.getEntity() instanceof Monster) {
-            WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                    () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
+            WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
-            event.setSpawnCancelled(wardedSpacesData.isWarded(event.getEntity().blockPosition()));
+            event.setSpawnCancelled(wardedSpacesData.isWarded(serverLevel, event.getEntity().blockPosition()));
         }
 
         if (event.getLevel() instanceof ServerLevel serverLevel

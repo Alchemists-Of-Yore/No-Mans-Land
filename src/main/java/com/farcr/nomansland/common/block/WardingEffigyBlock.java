@@ -137,8 +137,7 @@ public class WardingEffigyBlock extends BaseEntityBlock {
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (level instanceof ServerLevel serverLevel) {
-            WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                    WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
+            WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
             wardedSpacesData.addEffigy(pos, getRange(state));
         }
