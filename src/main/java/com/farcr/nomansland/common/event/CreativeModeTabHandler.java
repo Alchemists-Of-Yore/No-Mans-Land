@@ -47,29 +47,35 @@ public class CreativeModeTabHandler {
         event.insertAfter(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }
 
-    private static void generateBandageEffectTypes(
-            BuildCreativeModeTabContentsEvent output,
-            HolderLookup.RegistryLookup<Potion> potions,
-            Item item,
-            FeatureFlagSet featureFlag) {
+    private static void generateBandageEffectTypes(BuildCreativeModeTabContentsEvent output, HolderLookup.RegistryLookup<Potion> potions, Item item, FeatureFlagSet featureFlag) {
         ItemStack wardingBandage = WARDING_BANDAGE.stack();
+
         List<ItemStack> stacks = potions.listElements()
-            .filter(holder -> holder.value().isEnabled(featureFlag))
-            .filter(holder -> !holder.is(Potions.WATER) && !holder.is(Potions.AWKWARD))
-            .filter(holder -> !holder.is(Potions.THICK) && !holder.is(Potions.MUNDANE))
-            .filter(holder -> !holder.is(Potions.HARMING) && !holder.is(Potions.STRONG_HARMING))
-            .filter(holder -> !holder.is(Potions.HEALING) && !holder.is(Potions.STRONG_HEALING))
-            .filter(holder -> !holder.is(Potions.TURTLE_MASTER) && !holder.is(Potions.LONG_TURTLE_MASTER) && !holder.is(Potions.STRONG_TURTLE_MASTER))
-            .filter(holder -> {
-                String path = holder.unwrapKey().map(k -> k.location().getPath()).orElse("");
-                return !path.startsWith("strong_") && !path.startsWith("long_");
-            })
-            .map(holder -> creatBandageEffectsStack(item, holder))
-            .toList();
+                .filter(h -> isValidPotionForBandage(h, featureFlag))
+                .map(holder -> creatBandageEffectsStack(item, holder))
+                .toList();
+
         // Inverted so insertAfter goes forward instead
         for (int i = stacks.size() - 1; i >= 0; i--) {
             output.insertAfter(wardingBandage, stacks.get(i), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
+    }
+
+    //TODO: Should probably call this inside the Brewing Stand Mixin
+    public static boolean isValidPotionForBandage(Holder.Reference<Potion> holder, FeatureFlagSet featureFlag) {
+        if (!holder.value().isEnabled(featureFlag)) {
+            return false;
+        }
+        var key = holder.key;
+        var path = key.location().getPath();
+        if (path.startsWith("strong_") || path.startsWith("long_")) {
+            return false;
+        }
+        if (holder.is(Potions.WATER) || holder.is(Potions.AWKWARD) || holder.is(Potions.THICK) || holder.is(Potions.MUNDANE)) {
+            return false;
+        }
+        //TODO: This should be a tag.
+        return !holder.is(Potions.HARMING) && !holder.is(Potions.HEALING) && !holder.is(Potions.TURTLE_MASTER);
     }
 
     private static ItemStack creatBandageEffectsStack(Item item, Holder<Potion> potion) {
