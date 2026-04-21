@@ -651,6 +651,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                     if (silverfish != null) {
                         silverfish.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
                         silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                        silverfish.skipDropExperience();
                         ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                         serverLevel.addFreshEntity(silverfish);
                         silverfish.spawnAnim();
@@ -668,6 +669,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                         slime.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
                         slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                         slime.setSize(random.nextInt(1, 3), true);
+                        slime.skipDropExperience();
                         ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                         serverLevel.addFreshEntity(slime);
                     }
