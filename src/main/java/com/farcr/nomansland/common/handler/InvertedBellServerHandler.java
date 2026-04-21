@@ -3,13 +3,16 @@ package com.farcr.nomansland.common.handler;
 import com.farcr.nomansland.common.blockentity.InvertedBellControllerBlockEntity;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.networking.ClientboundInvertedBellPacket;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -25,6 +28,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -42,7 +46,7 @@ public class InvertedBellServerHandler extends SavedData {
 
     private final List<ActiveTeleport> teleports = new ArrayList<>();
 
-    public void beginTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, BlockPos toPos, Direction toDir) {
+    public void beginTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, @Nullable BlockPos toPos, @Nullable Direction toDir) {
         this.teleports.add(new ActiveTeleport(level, fromPos, fromDir, toPos, toDir));
     }
 
@@ -87,10 +91,14 @@ public class InvertedBellServerHandler extends SavedData {
         private final List<ServerPlayer> teleportingPlayers;
         private final BlockPos fromPos;
         private final Direction fromDir;
-        private final BlockPos toPos;
-        private final Direction toDir;
+        private final @Nullable BlockPos toPos;
+        private final @Nullable Direction toDir;
 
-        private ActiveTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, BlockPos toPos, Direction toDir) {
+        private ActiveTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, @Nullable BlockPos toPos, @Nullable Direction toDir) {
+            if (toPos != null && !level.getWorldBorder().isWithinBounds(toPos)) {
+                toPos = null;
+                toDir = null;
+            }
             this.teleportingEntities = level.getEntities(null, new AABB(fromPos).inflate(16)).stream()
                     .filter(e -> InvertedBellServerHandler.canTeleport(e, fromPos.getCenter())).collect(Collectors.toList());
             this.teleportingPlayers = new ArrayList<>();
@@ -107,17 +115,26 @@ public class InvertedBellServerHandler extends SavedData {
             this.toPos = toPos;
             this.toDir = toDir;
 
-            ChunkPos fromChunk = new ChunkPos(toPos);
-            level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
-            ChunkPos toChunk = new ChunkPos(toPos);
-            level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
+            if (toPos != null) {
+                ChunkPos fromChunk = new ChunkPos(toPos);
+                level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
+                ChunkPos toChunk = new ChunkPos(toPos);
+                level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
+            }
 
             this.teleportingEntities.forEach(e -> {
                 if (e instanceof LivingEntityExtension extension) {
                     extension.nml$beginBellParalysis();
                 }
             });
-            this.teleportingPlayers.forEach(e -> PacketDistributor.sendToPlayer(e, ClientboundInvertedBellPacket.FADE_IN));
+            this.teleportingPlayers.forEach(e -> {
+                PacketDistributor.sendToPlayer(e, ClientboundInvertedBellPacket.FADE_IN);
+                e.connection.send(new ClientboundSoundPacket(
+                        NMLSounds.INVERTED_BELL_RING, SoundSource.BLOCKS,
+                        fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5,
+                        0.8f, 1.0f, level.getRandom().nextLong()
+                ));
+            });
         }
 
         public boolean tick(ServerLevel level) {
@@ -139,7 +156,8 @@ public class InvertedBellServerHandler extends SavedData {
                         entity.kill();
                     } else {
                         this.doTeleportEntity(entity, level);
-                        if (level.getBlockEntity(this.fromPos) instanceof InvertedBellControllerBlockEntity fromIbbe &&
+                        if (this.toPos != null &&
+                                level.getBlockEntity(this.fromPos) instanceof InvertedBellControllerBlockEntity fromIbbe &&
                                 level.getBlockEntity(this.toPos) instanceof InvertedBellControllerBlockEntity toIbbe) {
                             toIbbe.ringCooldown = fromIbbe.ringCooldown;
                         }
@@ -169,15 +187,17 @@ public class InvertedBellServerHandler extends SavedData {
                 return true;
             }
 
+            if (this.toPos == null || this.toDir == null) {
+                applyFailedTeleport(entity, level);
+                return false;
+            }
+
             float dYRot = this.fromDir.toYRot() - this.toDir.toYRot();
             diff = diff.yRot((float)(dYRot / 180 * Math.PI));
             Vec3 newPos = this.toPos.getCenter().add(diff);
 
             if (entityAtPositionIsColliding(entity, newPos, level)) {
-                entity.hurt(level.damageSources().cramming(), 10);
-                if (entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, FAILURE_NAUSEA_DURATION));
-                }
+                applyFailedTeleport(entity, level);
                 return false;
             } else {
                 if (!entity.isPassenger()) {
@@ -186,6 +206,13 @@ public class InvertedBellServerHandler extends SavedData {
                             entity.getYRot() - dYRot, entity.getXRot());
                 }
                 return true;
+            }
+        }
+
+        private static void applyFailedTeleport(Entity entity, ServerLevel level) {
+            entity.hurt(level.damageSources().cramming(), 10);
+            if (entity instanceof LivingEntity livingEntity) {
+                livingEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, FAILURE_NAUSEA_DURATION));
             }
         }
 
