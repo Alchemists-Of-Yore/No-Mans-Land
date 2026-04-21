@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.blockentity.anchor;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLTags;
+import dev.ryanhcode.sable.companion.SableCompanion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -68,30 +69,28 @@ public class AnchorListener implements GameEventListener {
             Vec3 sourcePos = positionSource.getPosition(level).orElseThrow();
             MonsterAnchorBlockEntity monsterAnchorBlockEntity = (MonsterAnchorBlockEntity) Optional.ofNullable(level.getBlockEntity(BlockPos.containing(sourcePos))).orElseThrow();
 
-            if (pos.distanceToSqr(sourcePos) > Mth.square(monsterAnchorBlockEntity.range)) return false;
+            if (SableCompanion.INSTANCE.distanceSquaredWithSubLevels(level, pos, sourcePos) > Mth.square(monsterAnchorBlockEntity.range)) return false;
 
-            if (GameEvent.ENTITY_DIE.is(gameEvent)) {
-                if (!(monster.getType().getTags().toList().contains(NMLTags.ANCHOR_BLACKLIST))) {
-                    if (!monster.wasExperienceConsumed()) {
+            if (!(monster.getType().getTags().toList().contains(NMLTags.ANCHOR_BLACKLIST))) {
+                if (!monster.wasExperienceConsumed()) {
 
-                        // Add the entity to the dead entity list
-                        CompoundTag tag = new CompoundTag();
-                        if (monster.save(tag)) monsterAnchorBlockEntity.entityQueue.add(tag);
+                    // Add the entity to the dead entity list
+                    CompoundTag tag = new CompoundTag();
+                    if (monster.save(tag)) monsterAnchorBlockEntity.entityQueue.add(tag);
 
-                        // Stop the mob from dropping experience and loot
-                        monster.skipDropExperience();
-                        monster.nml$skipDroppingDeathLoot();
+                    // Stop the mob from dropping experience and loot
+                    monster.skipDropExperience();
+                    monster.nml$skipDroppingDeathLoot();
 
-                        // Surround the bounding box of the monster with embers
-                        AABB boundingBox = monster.getBoundingBox();
-                        surroundBoundingBox(boundingBox, 0.2).forEach(point ->
-                                level.sendParticles(NMLParticleTypes.MALEVOLENT_EMBERS.get(), point.x, point.y, point.z, 1, 0, 0, 0, 0));
+                    // Surround the bounding box of the monster with embers
+                    AABB boundingBox = monster.getBoundingBox();
+                    surroundBoundingBox(boundingBox, 0.2).forEach(point ->
+                            level.sendParticles(NMLParticleTypes.MALEVOLENT_EMBERS.get(), point.x, point.y, point.z, 1, 0, 0, 0, 0));
 
-                        tryAwardAdvancement(level, monster);
-                    }
+                    tryAwardAdvancement(level, monster);
                 }
-                return true;
             }
+            return true;
         }
 
         return false;
