@@ -392,7 +392,7 @@ public class MiscellaneousEvents {
             WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
 
-            event.setSpawnCancelled(wardedSpacesData.isWarded(event.getEntity().blockPosition()));
+            event.setSpawnCancelled(wardedSpacesData.isWarded(serverLevel, event.getEntity().blockPosition()));
         }
 
         if (event.getLevel() instanceof ServerLevel serverLevel

@@ -17,7 +17,7 @@ public class PatrolSpawnerMixin {
         WardedSpacesData wardedSpacesData = instance.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
                 WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
 
-        if (wardedSpacesData.isWarded(pos)) {
+        if (wardedSpacesData.isWarded(instance, pos)) {
             return true;
         } else return original.call(instance, pos, sections);
     }

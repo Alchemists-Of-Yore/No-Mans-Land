@@ -23,8 +23,8 @@ public class WaterAvoidingRandomStrollGoalMixin extends RandomStrollGoalMixin {
             WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
                     () -> new WardedSpacesData(new ArrayList<>(), new ArrayList<>()), WardedSpacesData::create), WardedSpacesData.NAME);
 
-            if (wardedSpacesData.isWarded(mob.blockPosition())) {
-                BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.blockPosition()).orElse(null);
+            if (wardedSpacesData.isWarded(mob.level(), mob.blockPosition())) {
+                BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.level(), mob.blockPosition()).orElse(null);
                 if (effigyPos != null) {
                     int effigyRange = wardedSpacesData.ranges.get(wardedSpacesData.positions.indexOf(effigyPos));
 

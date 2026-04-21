@@ -1,13 +1,18 @@
 package com.farcr.nomansland.common.world.saved_data;
 
+import dev.ryanhcode.sable.companion.SableCompanion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class WardedSpacesData extends SavedData {
@@ -62,11 +67,13 @@ public class WardedSpacesData extends SavedData {
         }
     }
 
-    public boolean isWarded(BlockPos pos) {
+    public boolean isWarded(Level level, BlockPos pos) {
         if (positions.contains(pos)) return true;
 
         for (BlockPos wardedPos : positions) {
-            if (wardedPos.distSqr(pos) <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
+            double dist = SableCompanion.INSTANCE.distanceSquaredWithSubLevels(level, pos.getCenter(), wardedPos.getCenter());
+
+            if (dist <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
                 return true;
             }
         }
@@ -74,15 +81,20 @@ public class WardedSpacesData extends SavedData {
         return false;
     }
 
-    public Optional<BlockPos> getAffectingEffigyAt(BlockPos pos) {
+    public Optional<BlockPos> getAffectingEffigyAt(Level level, BlockPos pos) {
         if (positions.contains(pos)) return Optional.of(pos);
 
         BlockPos closestEffigy = null;
+        double closest = Double.MAX_VALUE;
         for (BlockPos wardedPos : positions) {
-            if (wardedPos.distSqr(pos) <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
+            double dist = SableCompanion.INSTANCE.distanceSquaredWithSubLevels(level, pos.getCenter(), wardedPos.getCenter());
+
+            if (dist <= Mth.square(ranges.get(positions.indexOf(wardedPos)))) {
                 if (closestEffigy == null) closestEffigy = wardedPos;
-                else if (wardedPos.distSqr(pos) < closestEffigy.distSqr(pos))
+                else if (dist < closest) {
                     closestEffigy = wardedPos;
+                    closest = dist;
+                }
             }
         }
 
