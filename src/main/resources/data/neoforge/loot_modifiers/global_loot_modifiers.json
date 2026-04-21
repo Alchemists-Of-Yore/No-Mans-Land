@@ -37,6 +37,7 @@
     "nomansland:chests/hardtack_shipwreck",
     "nomansland:chests/hardtack_stronghold",
 
-    "nomansland:archaeology/trinket"
+    "nomansland:archaeology/trinket",
+    "nomansland:archaeology/alchemist_maps_in_trail_ruins"
   ]
 }

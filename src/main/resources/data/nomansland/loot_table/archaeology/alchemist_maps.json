@@ -1,0 +1,69 @@
+{
+  "type": "minecraft:archaeology",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "decoration": "nomansland:bell_sanctuary",
+              "function": "minecraft:exploration_map",
+              "skip_existing_chunks": false,
+              "zoom": 1,
+              "destination": "nomansland:bell_sanctuary"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:map_color": 5861946
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "nomansland.filled_map.bell_sanctuary"
+              },
+              "target": "item_name"
+            }
+          ],
+          "name": "minecraft:map"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "decoration": "nomansland:alchemist_ruins",
+              "function": "minecraft:exploration_map",
+              "skip_existing_chunks": false,
+              "zoom": 1,
+              "destination": "nomansland:alchemist_ruins"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:map_color": 8222546
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "nomansland.filled_map.alchemist_ruins"
+              },
+              "target": "item_name"
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.05
+            }
+          ],
+          "name": "minecraft:map"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}
