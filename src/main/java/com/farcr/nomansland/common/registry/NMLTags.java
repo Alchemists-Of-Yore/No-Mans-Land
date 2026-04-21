@@ -40,6 +40,8 @@ public class NMLTags {
     public static final TagKey<EntityType<?>> INVERTED_BELL_UNAFFECTED = createEntityTag("inverted_bell_unaffected");
     public static final TagKey<EntityType<?>> INVERTED_BELL_REPULSED = createEntityTag("inverted_bell_repulsed");
     public static final TagKey<Structure> INVERTED_BELL_STRUCTURES = createStructureTag("inverted_bell");
+    public static final TagKey<Structure> BELL_SANCTUARY = createStructureTag("bell_sanctuary");
+    public static final TagKey<Structure> ALCHEMIST_RUINS = createStructureTag("alchemist_ruins");
 
     public static final TagKey<Biome> CAVES = createBiomeTag("caves");
     public static final TagKey<DamageType> IGNITES_FLAMMABLE = createDamageTypeTag("ignites_flammable");
