@@ -89,6 +89,10 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_AMBIENT_LOOP = registerSound("entity.friend_moon.speak_ambient_loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_OFFERING_LOOP = registerSound("entity.friend_moon.offering_loop");
 
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_MUSIC = registerSound("music.overworld.caves");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_DEPTH_MUSIC = registerSound("music.overworld.cave_depths");
+
     public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
     public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);
     public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
