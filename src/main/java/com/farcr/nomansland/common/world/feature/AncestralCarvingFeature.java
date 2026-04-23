@@ -25,26 +25,32 @@ public class AncestralCarvingFeature extends Feature<NoneFeatureConfiguration> {
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
-        BlockPos airOrigin = context.origin();
+        BlockPos origin = context.origin();
         RandomSource random = context.random();
 
-        if (!level.getBlockState(airOrigin).isAir()) return false;
+        if (!level.getBlockState(origin).isAir()) return false;
 
         int rotation = random.nextInt(4);
         int rolledSize = pickSize(random);
         Direction[] facings = shuffled(ALL_FACINGS, random);
 
         for (Direction facing : facings) {
-            BlockPos gridOrigin = airOrigin.relative(facing.getOpposite());
-            if (!level.getBlockState(gridOrigin).is(BlockTags.BASE_STONE_OVERWORLD)) continue;
+            BlockPos targetStone = origin.relative(facing.getOpposite());
+            if (!level.getBlockState(targetStone).is(BlockTags.BASE_STONE_OVERWORLD)) continue;
 
             Direction right = AncestralCarvingBlock.getPlaneRight(facing, rotation);
             Direction down = AncestralCarvingBlock.getPlaneDown(facing, rotation);
 
             for (int size = rolledSize; size >= 1; size--) {
-                if (fits(level, gridOrigin, facing, right, down, size)) {
-                    placeFormation(level, gridOrigin, facing, rotation, right, down, size, random);
-                    return true;
+                int[] anchorOrder = shuffledIndices(size * size, random);
+                for (int idx : anchorOrder) {
+                    int anchorCol = idx / size;
+                    int anchorRow = idx % size;
+                    BlockPos gridOrigin = targetStone.relative(right, -anchorCol).relative(down, -anchorRow);
+                    if (fits(level, gridOrigin, facing, right, down, size)) {
+                        placeFormation(level, gridOrigin, facing, rotation, right, down, size, random);
+                        return true;
+                    }
                 }
             }
         }
@@ -81,24 +87,27 @@ public class AncestralCarvingFeature extends Feature<NoneFeatureConfiguration> {
         if (size > 1) {
             int missing = pickMissing(random);
             if (missing > 0) {
-                int total = size * size;
-                int[] indices = new int[total];
-                for (int i = 0; i < total; i++) indices[i] = i;
-                for (int i = total - 1; i > 0; i--) {
-                    int j = random.nextInt(i + 1);
-                    int tmp = indices[i];
-                    indices[i] = indices[j];
-                    indices[j] = tmp;
-                }
+                int[] indices = shuffledIndices(size * size, random);
                 BlockState stone = Blocks.STONE.defaultBlockState();
                 for (int i = 0; i < missing; i++) {
                     int col = indices[i] / size;
                     int row = indices[i] % size;
-                    BlockPos p = gridOrigin.relative(right, col).relative(down, row);
-                    level.setBlock(p, stone, 2);
+                    level.setBlock(gridOrigin.relative(right, col).relative(down, row), stone, 2);
                 }
             }
         }
+    }
+
+    private static int[] shuffledIndices(int n, RandomSource random) {
+        int[] indices = new int[n];
+        for (int i = 0; i < n; i++) indices[i] = i;
+        for (int i = n - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            int tmp = indices[i];
+            indices[i] = indices[j];
+            indices[j] = tmp;
+        }
+        return indices;
     }
 
     private static Direction[] shuffled(Direction[] source, RandomSource random) {
