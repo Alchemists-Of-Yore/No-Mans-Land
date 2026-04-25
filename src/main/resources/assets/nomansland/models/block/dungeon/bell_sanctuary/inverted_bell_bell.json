@@ -1,7 +1,7 @@
 {
 	"format_version": "1.9.0",
 	"credit": "Made by Frenderman",
-  	"render_type": "minecraft:translucent",
+	"render_type": "minecraft:cutout_mipped",
 	"texture_size": [128, 128],
 	"textures": {
 		"0": "nomansland:block/dungeon/inverted_bell",
@@ -833,19 +833,6 @@
 			}
 		},
 		{
-			"from": [7, -16, 7],
-			"to": [9, 13, 9],
-			"rotation": {"angle": 0, "axis": "y", "origin": [8, 28, 8]},
-			"faces": {
-				"north": {"uv": [3.25, 8.875, 3.5, 12.5], "texture": "#0"},
-				"east": {"uv": [3.25, 8.875, 3.5, 12.5], "texture": "#0"},
-				"south": {"uv": [3.25, 8.875, 3.5, 12.5], "texture": "#0"},
-				"west": {"uv": [3.25, 8.875, 3.5, 12.5], "texture": "#0"},
-				"up": {"uv": [3.25, 8.375, 3.5, 8.625], "texture": "#0"},
-				"down": {"uv": [3.25, 8.625, 3.5, 8.875], "texture": "#0"}
-			}
-		},
-		{
 			"from": [-5, -16, 21],
 			"to": [21, 13, -5],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 28, 8]},
@@ -973,7 +960,7 @@
 					"origin": [-5, 13, 21],
 					"scope": 0,
 					"color": 0,
-					"children": [68, 69]
+					"children": [68]
 				}
 			]
 		}
