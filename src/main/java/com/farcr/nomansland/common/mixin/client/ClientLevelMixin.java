@@ -39,8 +39,6 @@ public abstract class ClientLevelMixin {
     )
     public void nml$friendMoonDarkensClouds(float partialTick, CallbackInfoReturnable<Vec3> cir) {
         Vec3 currentCloudColor = cir.getReturnValue();
-        float darknessStrength = FriendMoonRenderer.getInstance().getFriendMoonDarkeningStrength();
-        // same computation as LightTexture's darkness effect
-        if (darknessStrength > 0.001F) cir.setReturnValue(currentCloudColor.add(-darknessStrength, -darknessStrength, -darknessStrength));
+        cir.setReturnValue(FriendMoonRenderer.getInstance().modifyCloudColor(currentCloudColor));
     }
 }

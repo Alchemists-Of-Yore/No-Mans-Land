@@ -123,6 +123,7 @@ public class FriendMoonRenderer implements AutoCloseable {
     private float friendMoonDarkneningOpacity = 0.0f;
     public float getFriendMoonDarkeningStrength() { return this.friendMoonDarkneningOpacity * 0.3F; }
 
+
     public float modifyAmbientLightFactor(float ambientLight) {
         float darkeningAmount = 1 - this.friendMoonDarkneningOpacity;
         return ambientLight * darkeningAmount;
@@ -141,6 +142,10 @@ public class FriendMoonRenderer implements AutoCloseable {
             factor = (float) Math.pow(factor, Mth.lerp(this.friendMoonDarkneningOpacity, 1, 5));
             color.mul(factor);
         }
+    }
+    public Vec3 modifyCloudColor(Vec3 color) {
+        float darkeningAmount = 1 - this.friendMoonDarkneningOpacity;
+        return color.scale(darkeningAmount);
     }
 
     private float friendMoonOpacity = 0.0f;
