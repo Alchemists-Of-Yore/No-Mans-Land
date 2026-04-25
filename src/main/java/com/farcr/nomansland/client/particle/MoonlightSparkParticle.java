@@ -4,6 +4,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -27,6 +29,11 @@ public class MoonlightSparkParticle extends TextureSheetParticle {
         this.lifetime = 45;
 
         this.setSprite(this.spriteSet.get(offsetIndex, 3));
+    }
+
+    @Override
+    protected int getLightColor(float partialTick) {
+        return 240;
     }
 
     @Override

@@ -316,7 +316,9 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }
 
         // Offerings
-        if (friendMoon.getState() == FriendMoonState.OFFERING) {
+        if (friendMoon.getState() != FriendMoonState.OFFERING)
+            blockEntity.setInspectionContext(null, friendMoon);
+        else {
             OfferingContext inspectionContext = blockEntity.inspectionContext;
             if (inspectionContext != null && inspectionContext.getEntity() != null) {
                 Entity entity = inspectionContext.getEntity();
@@ -351,22 +353,30 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                             }
 
                             switch (inspectionContext.getOfferingType()) {
-                                case SPECIAL:
+                                case SPECIAL: {
                                     if (!friendMoon.specialInteraction(level, entity))
                                         blockEntity.setInspectionContext(null, friendMoon);
                                     break;
-                                case MAP:
+                                }
+                                case MAP: {
                                     if (!friendMoon.mapInteraction(level, entity, pos))
                                         blockEntity.setInspectionContext(null, friendMoon);
                                     break;
+                                }
+                                case BAD_OMEN: {
+                                    if (!friendMoon.badOmenInteraction(level, entity, pos)) {
+                                        friendMoon.setState(FriendMoonState.UPSET);
+                                        friendMoon.forFriendshipPlayers((player) -> friendMoon.setUpsetWith(player.getUUID()));
+                                        blockEntity.setInspectionContext(null, friendMoon);
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
-        } else
-            blockEntity.setInspectionContext(null, friendMoon);
-
+        }
 
         if (!level.isClientSide()) {
             // Determine offering context

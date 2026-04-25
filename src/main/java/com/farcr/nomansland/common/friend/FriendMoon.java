@@ -142,6 +142,7 @@ public class FriendMoon extends SavedData {
         abortAscension();
         mapInteractionActive = false;
         mapInteractionTicks = -1;
+        badOmenInteractionTicks = -1;
         targetJukeboxPos = null;
         jukeboxInteractionTicks = -1;
         setDirty();
@@ -151,21 +152,34 @@ public class FriendMoon extends SavedData {
     private int mapInteractionTicks = -1;
     public static final int MAP_PARTICLE_DURATION = 30;
 
-
     public static OfferingType getOfferingType(OfferingContext offeringContext) {
-        if (isSpecialInteraction(offeringContext)) return OfferingType.SPECIAL;
-        if (isMapOffering(offeringContext)) return OfferingType.MAP;
+        if (offeringContext.isValid()) {
+            if (isSpecialInteraction(offeringContext))
+                return OfferingType.SPECIAL;
+            // unwrapped this because its technically more optimized or smth idk
+            Entity entity = offeringContext.getEntity();
+            if (entity instanceof ItemEntity itemEntity) {
+                ItemStack stack = itemEntity.getItem();
+                if (stack.is(Items.FILLED_MAP) || stack.is(Items.MAP))
+                    return OfferingType.MAP;
+                if (stack.is(NMLItems.TRINKET))
+                    return OfferingType.BAD_OMEN;
+            }
+        }
         return OfferingType.REGULAR;
     }
 
-    public static boolean isMapOffering(OfferingContext offeringContext) {
-        if (!offeringContext.isValid()) return false;
-        Entity entity = offeringContext.getEntity();
-        if (entity instanceof ItemEntity itemEntity) {
-            ItemStack stack = itemEntity.getItem();
-            return stack.is(Items.FILLED_MAP) || stack.is(Items.MAP);
-        }
-        return false;
+    private int badOmenInteractionTicks = -1;
+    public static final int BAD_OMEN_INTERACTION_LENGTH = 40;
+    public int getBadOmenInteractionTicks() {
+        return this.badOmenInteractionTicks;
+    }
+    public boolean badOmenInteraction(Level level, Entity entity, BlockPos basinPos) {
+        setDirty();
+        badOmenInteractionTicks++;
+        if (badOmenInteractionTicks >= BAD_OMEN_INTERACTION_LENGTH)
+            return level.isClientSide;
+        return true;
     }
 
     public boolean mapInteraction(Level level, Entity entity, BlockPos basinPos) {
@@ -262,6 +276,7 @@ public class FriendMoon extends SavedData {
     }
 
     public List<UUID> upsetWith = new ArrayList<>();
+    // this specifies to play the bad omen animation specifically
     public void setUpsetWith(UUID playerUUID) {
         if (!upsetWith.contains(playerUUID)) {
             upsetWith.add(playerUUID);
@@ -311,6 +326,7 @@ public class FriendMoon extends SavedData {
 
         mapInteractionActive = tag.getBoolean("MapInteractionActive");
         mapInteractionTicks = tag.getInt("MapInteractionTicks");
+        badOmenInteractionTicks = tag.getInt("BadOmenInteractionTicks");
         jukeboxInteractionTicks = tag.getInt("JukeboxInteractionTicks");
         if (tag.contains("JukeboxX"))
             targetJukeboxPos = new BlockPos(tag.getInt("JukeboxX"), tag.getInt("JukeboxY"), tag.getInt("JukeboxZ"));
@@ -346,6 +362,7 @@ public class FriendMoon extends SavedData {
 
         tag.putBoolean("MapInteractionActive", mapInteractionActive);
         tag.putInt("MapInteractionTicks", mapInteractionTicks);
+        tag.putInt("BadOmenInteractionTicks", badOmenInteractionTicks);
         tag.putInt("JukeboxInteractionTicks", jukeboxInteractionTicks);
         if (targetJukeboxPos != null) {
             tag.putInt("JukeboxX", targetJukeboxPos.getX());
@@ -385,7 +402,8 @@ public class FriendMoon extends SavedData {
         && !friendMoon.cannotObtainFriendship(serverPlayer)) {
             friendMoon.lastFriendshipPlayers.put(serverPlayer, 0);
             grantedFriendship = true;
-        } else friendMoon.setUpsetWith(serverPlayer.getUUID());
+        } else if (serverPlayer.hasEffect(MobEffects.BAD_OMEN))
+            friendMoon.setUpsetWith(serverPlayer.getUUID());
         // inform of player regardless but let them know not to update the leave time
         PacketDistributor.sendToPlayer(serverPlayer, new ClientboundMoonlightBasinTrackPacket(pos, grantedFriendship));
     }
@@ -406,7 +424,7 @@ public class FriendMoon extends SavedData {
     }
 
     public static boolean isSpecialInteraction(OfferingContext offeringContext) {
-        return (offeringContext.isValid() && offeringContext.getEntity().getType().equals(NMLEntities.BUDDY.get()));
+        return offeringContext.getEntity().getType().equals(NMLEntities.BUDDY.get());
     }
 
     public boolean specialInteraction(Level level, Entity entity) {

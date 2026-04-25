@@ -238,12 +238,11 @@ public class FriendMoonRenderer implements AutoCloseable {
             return true;
         }
 
-        boolean hasBadOmen = player.hasEffect(MobEffects.BAD_OMEN);
+        boolean hasBadOmen = friendMoonInstance.upsetWith.contains(player.getUUID());
         if (friendMoonInstance.cannotObtainFriendship(player) && !hasBadOmen)
             return true;
 
-        if (!player.hasEffect(MobEffects.BAD_OMEN))
-            badOmenWaitTime = 0f;
+        if (!hasBadOmen) badOmenWaitTime = 0f;
 
         // bad omen wait time handle
         float turnAnimateSpeed = (deltaTime / 15f);
@@ -258,7 +257,7 @@ public class FriendMoonRenderer implements AutoCloseable {
                 setFriendMoonAnimation(FriendMoonAnimation.PHASES);
                 animationProgress = FriendMoonAnimation.PHASES.getFrames();
             }
-            animationProgress = Math.max(0, animationProgress - turnAnimateSpeed);
+            animationProgress = Math.max(0, animationProgress - (turnAnimateSpeed * 3f));
 
             if (badOmenWaitTime >= MAX_BAD_OMEN_WAIT_TIME) {
                 if (friendMoonOpacity >= 1f) {
@@ -293,6 +292,12 @@ public class FriendMoonRenderer implements AutoCloseable {
                 animationProgress = 0.0f;
             }
         } else {
+            // bad omen ticks force surprised animation
+            if (friendMoonInstance.getBadOmenInteractionTicks() > FriendMoon.BAD_OMEN_INTERACTION_LENGTH / 2) {
+                setFriendMoonAnimation(FriendMoonAnimation.SURPRISED);
+                return false;
+            }
+
             // Set default animation to emotion (server chosen)
             setFriendMoonAnimation(getFriendMoonEmotion(friendMoonInstance));
             float talkSpeed = 1 / 3f;
