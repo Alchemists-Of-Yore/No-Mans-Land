@@ -300,4 +300,9 @@ public class ClientSetupEvents {
             NoMansLand.LOGGER.warn("Failed to parse shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
         }
     }
+
+    @SubscribeEvent
+    public static void registerRenderBuffers(final RegisterRenderBuffersEvent event) {
+        event.registerRenderBuffer(MoonlightGlowRenderType.MOONLIGHT_GLOW);
+    }
 }

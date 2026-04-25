@@ -1,5 +1,6 @@
 package com.farcr.nomansland.client.renderer.rendertype;
 
+import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
@@ -31,8 +32,9 @@ public class MoonlightGlowRenderType {
                     float totalTime = (float) ((double) Util.getMillis() * Minecraft.getInstance().options.glintSpeed().get() / 2.0);
                     elapsedTime.set(totalTime);
 
-                    AbstractUniform alpha = MOONLIGHT_GLOW_SHADER.safeGetUniform("GlintAlpha");
-                    alpha.set(FriendMoonRenderer.getInstance().getFriendMoonOpacity());
+                    AbstractUniform glintAlpha = MOONLIGHT_GLOW_SHADER.safeGetUniform("GlintOpacity");
+                    float alpha = FriendMoonRenderer.getInstance().getFriendMoonOpacity();
+                    glintAlpha.set(alpha);
 
                     MOONLIGHT_GLOW_SHADER.apply();
                     return MOONLIGHT_GLOW_SHADER;
