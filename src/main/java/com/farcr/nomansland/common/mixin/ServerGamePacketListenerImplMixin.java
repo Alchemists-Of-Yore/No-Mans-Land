@@ -26,7 +26,7 @@ public class ServerGamePacketListenerImplMixin {
      * If the actual root issue of the Moose-Step-Up issue is identified, this method should be removed/adjusted.
      * @author SammySemicolon
      */
-    @ModifyConstant(method = "handleMoveVehicle", constant = @Constant(doubleValue = 0.0625))
+    @ModifyConstant(method = "handleMoveVehicle", constant = @Constant(doubleValue = 0.0625), require = 0)
     public double nml$makeMooseNormal(double constant) {
         if (this.player.getRootVehicle() instanceof Moose) {
             return modifyMooseMovedWronglyThreshold();
