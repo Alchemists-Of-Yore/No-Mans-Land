@@ -196,7 +196,6 @@ public class DreamingPlayer extends Mob {
 
         if (level() instanceof ServerLevel serverLevel) {
             addChunkTicket(serverLevel);
-
             if (!debug && getTetheredPlayer() != null) {
                 Optional<BlockPos> sleepingPos = this.getSleepingPos();
                 if (sleepingPos.isPresent() && !serverLevel.getBlockState(sleepingPos.get())

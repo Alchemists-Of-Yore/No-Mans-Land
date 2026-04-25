@@ -21,6 +21,7 @@ import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
@@ -98,8 +99,8 @@ public class DreamType {
     ) {}
 
     public Supplier<IDreamRenderer> dreamRenderer;
-    public DreamType setRenderer(Supplier<IDreamRenderer> dreamRenderer) {
-        this.dreamRenderer = dreamRenderer;
+    public DreamType setRenderer(Supplier<Supplier<IDreamRenderer>> dreamRenderer) {
+        if (FMLEnvironment.dist.isClient()) this.dreamRenderer = dreamRenderer.get();
         return this;
     }
 
