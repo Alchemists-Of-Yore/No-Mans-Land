@@ -1,6 +1,7 @@
 package com.farcr.nomansland.datagen;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.datagen.sound.*;
 import com.farcr.nomansland.datagen.tags.NMLBiomeTagsProvider;
 import com.farcr.nomansland.datagen.tags.NMLBlockTagsProvider;
 import com.farcr.nomansland.datagen.tags.NMLItemTagsProvider;
@@ -43,6 +44,9 @@ public class DataGenEvents {
                         lookupProvider
                 )
         );
+
+        //Sounds
+        generator.addProvider(server, new NMLSoundProvider(packOutput, existingFileHelper));
 
         // Tags
         generator.addProvider(server, new NMLBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));

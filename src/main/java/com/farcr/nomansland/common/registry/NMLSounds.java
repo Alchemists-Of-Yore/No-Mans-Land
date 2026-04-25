@@ -10,6 +10,18 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class NMLSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, NoMansLand.MODID);
 
+
+    //Blocks
+    public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
+    public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);
+    public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
+    public static final DeferredSoundType SEASHELLS = registerSoundType("seashells", 1, 1.2F);
+
+    public static final DeferredSoundType WOODEN_SCAFFOLDING = registerSoundType("wooden_scaffolding", 1, 1f);
+    public static final DeferredSoundType EARTHEN_TILES = registerSoundType("earthen_tiles", 1, 1f);
+    public static final DeferredSoundType THATCH = registerSoundType("thatch", 1, 1f);
+
+    //Block-Related
     public static final DeferredHolder<SoundEvent, SoundEvent> MONSTER_ANCHOR_ACTIVATE = registerSound("block.monster_anchor.activate");
     public static final DeferredHolder<SoundEvent, SoundEvent> MONSTER_ANCHOR_DEACTIVATE = registerSound("block.monster_anchor.deactivate");
     public static final DeferredHolder<SoundEvent, SoundEvent> MONSTER_ANCHOR_RESURRECTION = registerSound("block.monster_anchor.monster_resurrection");
@@ -29,21 +41,34 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WOODEN_PLATFORM_CRACKS = registerSound("block.wooden_platform.crack");
     public static final DeferredHolder<SoundEvent, SoundEvent> WOODEN_PLATFORM_BREAKS = registerSound("block.wooden_platform.break");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_RING = registerSound("block.inverted_bell.ring");
+    public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_BLACKOUT = registerSound("block.inverted_bell.blackout");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> MOON_CARVING_ACTIVATE = registerSound("block.moon_carving.activate");
+
+    //Items
+    public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_PRIMED = registerSound("item.bomb.primed");
+
+    //Cauldron Interactions
     public static final DeferredHolder<SoundEvent, SoundEvent> HONEYCOMB_CONSUMED = registerSound("item.honeycomb.consumed");
     public static final DeferredHolder<SoundEvent, SoundEvent> RESIN_CONSUMED = registerSound("item.resin.consumed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STICKY_CAULDRON_SLIDE = registerSound("entity.generic.sticky_cauldron_slide");
 
+    //Bass
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_AMBIENT = registerSound("entity.billhook_bass.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_DEATH = registerSound("entity.billhook_bass.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_FLOP = registerSound("entity.billhook_bass.flop");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_HURT = registerSound("entity.billhook_bass.hurt");
 
+    //Deer
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_AMBIENT = registerSound("entity.deer.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_DEATH = registerSound("entity.deer.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_HURT = registerSound("entity.deer.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_STEP = registerSound("entity.deer.step");
     public static final DeferredHolder<SoundEvent, SoundEvent> DEER_SHED_ANTLERS = registerSound("entity.deer.shed_antlers");
 
+    //Moose
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_AMBIENT = registerSound("entity.moose.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_DEATH = registerSound("entity.moose.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_HURT = registerSound("entity.moose.hurt");
@@ -59,44 +84,36 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_SHOWS_WARNING = registerSound("entity.moose.warn");
     public static final DeferredHolder<SoundEvent, SoundEvent> MOOSE_SHEDS_ANTLERS = registerSound("entity.moose.shed_antlers");
 
-
+    //Goose
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_AMBIENT = registerSound("entity.goose.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_DEATH = registerSound("entity.goose.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_HURT = registerSound("entity.goose.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_STEP = registerSound("entity.goose.step");
 
+    //Player
     public static final DeferredHolder<SoundEvent, SoundEvent> PLAYER_DRINK_MILK = registerSound("entity.player.drink_milk");
     public static final DeferredHolder<SoundEvent, SoundEvent> PLAYER_HURT_SPIKE_TRAP = registerSound("entity.player.hurt_spike_trap");
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> STICKY_CAULDRON_SLIDE = registerSound("entity.generic.sticky_cauldron_slide");
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> DROPLET_FALLS = registerSound("particle.droplet.fall");
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> LIVING_URN_SHATTERS = registerSound("entity.living_urn.shatter");
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
-    public static final DeferredHolder<SoundEvent, SoundEvent> MOON_CARVING_ACTIVATE = registerSound("block.moon_carving.activate");
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
-
-    public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_RING = registerSound("block.inverted_bell.ring");
-    public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_BLACKOUT = registerSound("block.inverted_bell.blackout");
-
+    //Buddy
     public static final DeferredHolder<SoundEvent, SoundEvent> BUDDY_BONE_BREAK = registerSound("entity.buddy.bone_break");
 
+    //Living Urn
+    public static final DeferredHolder<SoundEvent, SoundEvent> LIVING_URN_SHATTERS = registerSound("entity.living_urn.shatter");
+
+    //Friend Moon
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK = registerSound("entity.friend_moon.speak");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_SAD = registerSound("entity.friend_moon.speak_sad");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_AMBIENT_LOOP = registerSound("entity.friend_moon.speak_ambient_loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_OFFERING_LOOP = registerSound("entity.friend_moon.offering_loop");
 
-
+    //Music
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_MUSIC = registerSound("music.overworld.caves");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_DEPTH_MUSIC = registerSound("music.overworld.cave_depths");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
 
-    public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
-    public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);
-    public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
-    public static final DeferredSoundType SEASHELLS = registerSoundType("seashells", 1, 1.2F);
+    //Misc
+    public static final DeferredHolder<SoundEvent, SoundEvent> DROPLET_FALLS = registerSound("particle.droplet.fall");
+
 
     protected static DeferredSoundType registerSoundType(String name, float volume, float pitch) {
         return new DeferredSoundType(
