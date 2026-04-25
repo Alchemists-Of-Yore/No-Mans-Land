@@ -82,7 +82,7 @@ public class NMLBlocks {
             () -> new ExtinguishedWallTorchBlock(ParticleTypes.SOUL_FIRE_FLAME, of().noCollission().instabreak().sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY).noLootTable()), BlockProperties.custom(true));
 
     public static final BlockDefinition<WoodenScaffoldingBlock> WOODEN_SCAFFOLDING = registerNoItem("wooden_scaffolding",
-            () -> new WoodenScaffoldingBlock(Block.Properties.ofFullCopy(Blocks.SCAFFOLDING).noCollission().sound(SoundType.CHERRY_WOOD)), new BlockProperties(new SelfBlockLootType(), false));
+            () -> new WoodenScaffoldingBlock(Block.Properties.ofFullCopy(Blocks.SCAFFOLDING).noCollission().sound(NMLSounds.WOODEN_SCAFFOLDING)), new BlockProperties(new SelfBlockLootType(), false));
 
     public static final BlockDefinition<PlatformBlock> WOODEN_PLATFORM = register("wooden_platform",
             () -> new PlatformBlock(Block.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS).sound(SoundType.CHERRY_WOOD)), new BlockProperties(new SelfBlockLootType(), false));
@@ -323,7 +323,7 @@ public class NMLBlocks {
     public static final BlockDefinition<SlabBlock> MUNDANE_TILE_SLAB = register("mundane_tile_slab",
             () -> new SlabBlock(ofFullCopy(NMLBlocks.MUNDANE_TILES.get())), BlockProperties.stoneLikeSlab());
     public static final BlockDefinition<Block> EARTHEN_TILES = register("earthen_tiles",
-            () -> new Block(ofFullCopy(Blocks.PACKED_MUD)), BlockProperties.stoneLike());
+            () -> new Block(ofFullCopy(Blocks.PACKED_MUD).sound(NMLSounds.EARTHEN_TILES)), BlockProperties.stoneLike());
     public static final BlockDefinition<StairBlock> EARTHEN_TILE_STAIRS = register("earthen_tile_stairs",
             () -> new StairBlock(EARTHEN_TILES.get().defaultBlockState(), ofFullCopy(NMLBlocks.EARTHEN_TILES.get())), BlockProperties.stoneLikeStairs());
     public static final BlockDefinition<SlabBlock> EARTHEN_TILE_SLAB = register("earthen_tile_slab",
@@ -536,7 +536,7 @@ public class NMLBlocks {
             () -> new Block(ofFullCopy(Blocks.BARREL)), new BlockProperties(new SelfBlockLootType(), false));
     //Thatch
     public static final BlockDefinition<Block> THATCH = register("thatch",
-            () -> new Block(ofFullCopy(Blocks.HAY_BLOCK)), new BlockProperties(new SelfBlockLootType(), false));
+            () -> new Block(ofFullCopy(Blocks.HAY_BLOCK).sound(NMLSounds.THATCH)), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<StairBlock> THATCH_STAIRS = register("thatch_stairs",
             () -> new StairBlock(THATCH.get().defaultBlockState(), ofFullCopy(NMLBlocks.THATCH.get())), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<SlabBlock> THATCH_SLAB = register("thatch_slab",

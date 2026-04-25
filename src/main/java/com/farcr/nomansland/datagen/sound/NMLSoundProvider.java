@@ -23,10 +23,19 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         //Blocks
         add(NMLSounds.MONSTER_ANCHOR, "block/monster_anchor", b -> b.setStepHitFallSoundPaths("minecraft:block/spawner"));
         add(NMLSounds.MUSHROOM_CAP, "block/mushroom_cap", b -> b.modifyBreakPlaceSounds(se -> se.volume(0.7f)).modifyStepHitFallSounds(se -> se.volume(0.8f)));
-        add(NMLSounds.SCONCE_TORCH, "block/sconce_torch", b -> b.setBreakSoundPath("block.sconce_torch").setStepHitFallSoundPaths("minecraft:block/lantern").setHitSoundPath("minecraft:block/wood"));
         add(NMLSounds.SEASHELLS, "block/seashells", b -> b.modifyBreakPlaceSounds(se -> se.volume(0.6f)));
+        add(NMLSounds.SCONCE_TORCH, "block/sconce_torch", b -> b
+                .modifyBreakPlaceSounds(s -> s.pitch(1.1f).volume(0.6f))
+                .setStepSoundPath("minecraft:block/lantern").setStepSoundName("break")
+                .setHitSoundPath("minecraft:step").setHitSoundName("wood")
+                .setFallSoundPath("minecraft:block/lantern").setFallSoundName("break")
+                //Evil Block... Hoards ALL the hyper-specific sound preferences
+        );
 
-        add(NMLSounds.WOODEN_SCAFFOLDING, "block/wooden_scaffold");
+        add(NMLSounds.WOODEN_SCAFFOLDING, "block/wooden_scaffold", b -> b
+                .setStepHitFallSoundPaths("minecraft:step")
+                .setStepHitFallSoundNames("scaffold")
+                .modifyStepHitFallSounds(se -> se.pitch(0.85f)));
         add(NMLSounds.EARTHEN_TILES, "block/tiles");
         add(NMLSounds.THATCH, "block/thatch", b -> b.setStepHitFallSoundPaths("minecraft:block/moss"));
 
@@ -38,12 +47,12 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
 
 
         add(NMLSounds.SPIKE_TRAP_EXTEND, s -> s
-                .with(allSounds("block/spike_trap/extend", se -> se.volume(0.95f)))
-                .with(allSounds("block/spike_trap/extend", se -> se.volume(1.05f)))
+                .with(allSounds("block/spike_trap/extend", se -> se.pitch(0.95f)))
+                .with(allSounds("block/spike_trap/extend", se -> se.pitch(1.05f)))
         );
         add(NMLSounds.SPIKE_TRAP_RETRACT, s -> s
-                .with(allSounds("block/spike_trap/retract", se -> se.volume(0.95f)))
-                .with(allSounds("block/spike_trap/retract", se -> se.volume(1.05f)))
+                .with(allSounds("block/spike_trap/retract", se -> se.pitch(0.95f)))
+                .with(allSounds("block/spike_trap/retract", se -> se.pitch(1.05f)))
         );
 
         add(NMLSounds.TORCH_EXTINGUISH, s -> s.with(sound("block.candle.extinguish", EVENT).pitch(0.85f).volume(1.75f)));
@@ -67,10 +76,10 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.BOMB_PRIMED, s -> s.with(sound("minecraft:item/crossbow/loading_end"), sound("minecraft:item/crossbow/loading_end").pitch(1.3f)));
 
         //Cauldron Interactions
-        add(NMLSounds.HONEYCOMB_CONSUMED, s -> s.with(allSounds("minecraft:item/honeycomb/wax_on")));
-        add(NMLSounds.RESIN_CONSUMED, s -> s.with(allSounds("minecraft:block/honeyblock/break")));
+        add(NMLSounds.HONEYCOMB_CONSUMED, s -> s.subtitle("nomansland.subtitles.item.generic.consumed").with(allSounds("minecraft:item/honeycomb/wax_on")));
+        add(NMLSounds.RESIN_CONSUMED, s -> s.subtitle("nomansland.subtitles.item.generic.consumed").with(allSounds("minecraft:block/honeyblock/break")));
 
-        add(NMLSounds.BASS_AMBIENT);
+//        add(NMLSounds.BASS_AMBIENT); The EVIL Bass does not produce sound.
         add(NMLSounds.BASS_DEATH, s -> s.with(
                 allSounds("minecraft:entity/fish/hurt", se -> se.pitch(0.8f))
         ));
@@ -94,8 +103,8 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.MOOSE_EAT, s -> s.with(allSounds("minecraft:entity/horse/eat", se -> se.pitch(0.85f))));
         add(NMLSounds.MOOSE_REJECTS_FOOD, s -> s.with(allSounds("minecraft:mob/horse/breathe", se -> se.pitch(0.85f))));
         add(NMLSounds.MOOSE_REJECTS_SADDLE, s -> s
-                .with(sound("mob/horse/donkey/idle1").pitch(0.7f), sound("mob/horse/donkey/idle1").pitch(0.6f))
-                .with(allSounds("mob/horse/breathe", se -> se.pitch(0.85f))
+                .with(sound("minecraft:mob/horse/donkey/idle1").pitch(0.7f), sound("minecraft:mob/horse/donkey/idle1").pitch(0.6f))
+                .with(allSounds("minecraft:mob/horse/breathe", se -> se.pitch(0.85f))
         ));
         add(NMLSounds.MOOSE_SWINGS, s -> s.with(allSounds("entity/moose/swing")));
         add(NMLSounds.MOOSE_SWINGS_BLUNDER, s -> s.with(allSounds("entity/moose/swing", se -> se.pitch(0.5f))));
@@ -103,14 +112,14 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.MOOSE_HITS_TARGET, s -> s.with(sound("entity/moose/hit")));
         add(NMLSounds.MOOSE_STOMPS, s -> s.with(allSounds("entity/moose/stomp", se -> se.pitch(0.5f))));
         add(NMLSounds.MOOSE_SHOWS_WARNING, s -> s.with(allSounds("entity/moose/warn")));
-        add(NMLSounds.MOOSE_SHEDS_ANTLERS, s -> s.with(allSounds("item/axe/strip", se -> se.volume(0.9f))));
+        add(NMLSounds.MOOSE_SHEDS_ANTLERS, s -> s.with(allSounds("minecraft:item/axe/strip", se -> se.volume(0.9f))));
 
-        add(NMLSounds.STICKY_CAULDRON_SLIDE, s -> s.with(allSounds("block/honeyblock/slide", se -> se.volume(0.8f))));
+        add(NMLSounds.STICKY_CAULDRON_SLIDE, s -> s.with(allSounds("minecraft:block/honeyblock/slide", se -> se.volume(0.8f))));
 
         add(NMLSounds.GOOSE_AMBIENT, s -> s.with(allSounds("entity/goose/idle", se -> se.volume(0.8f))));
         add(NMLSounds.GOOSE_DEATH, s -> s.with(allSounds("entity/goose/death")));
         add(NMLSounds.GOOSE_HURT, s -> s.with(allSounds("entity/goose/hurt", se -> se.volume(0.8f))));
-        add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("mob/chicken/step", se -> se.pitch(0.75f))));
+        add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))));
 
         //Player
         add(NMLSounds.PLAYER_DRINK_MILK, s -> s.with(allSounds("minecraft:mob/wandering_trader/drink_milk")));
@@ -138,7 +147,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 sound("minecraft:music/game/mice_on_venus").stream(),
                 sound("minecraft:music/game/dry_hands").stream(),
                 sound("minecraft:music/game/one_more_day").stream().volume(0.4f),
-                sound("minecraft:music/game/firebugs").stream().volume(0.4f),
+                sound("minecraft:music/game/swamp/firebugs").stream().volume(0.4f),
                 sound("minecraft:music/game/floating_dream").stream().volume(0.4f),
                 sound("minecraft:music/game/watcher").stream().volume(0.4f),
                 sound("minecraft:music/game/puzzlebox").stream().volume(0.4f),
@@ -161,6 +170,6 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.with(sound("records/guidance").stream()));
 
         //Misc
-        add(NMLSounds.DROPLET_FALLS, s -> s.with(allSounds("minecraft:block/beehive/drip", se -> se.volume(0.3f))));
+        add(NMLSounds.DROPLET_FALLS, s -> s.with(allSounds("minecraft:block/beehive/drip", se -> se.attenuationDistance(8).volume(0.3f))));
     }
 }

@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.registry;
 import com.farcr.nomansland.NoMansLand;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -14,8 +15,8 @@ public class NMLSounds {
     //Blocks
     public static final DeferredSoundType MONSTER_ANCHOR = registerSoundType("monster_anchor", 1, 1.2F);
     public static final DeferredSoundType MUSHROOM_CAP = registerSoundType("mushroom_cap", 1, 1.2F);
-    public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
     public static final DeferredSoundType SEASHELLS = registerSoundType("seashells", 1, 1.2F);
+    public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
 
     public static final DeferredSoundType WOODEN_SCAFFOLDING = registerSoundType("wooden_scaffolding", 1, 1f);
     public static final DeferredSoundType EARTHEN_TILES = registerSoundType("earthen_tiles", 1, 1f);

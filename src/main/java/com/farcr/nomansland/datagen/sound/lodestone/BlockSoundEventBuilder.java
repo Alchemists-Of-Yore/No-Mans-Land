@@ -195,11 +195,11 @@ public class BlockSoundEventBuilder {
     }
 
     public void addSounds() {
-        add(breakSoundOptions, "place");
-        add(stepSoundOptions, "hit");
-        add(placeSoundOptions, "break");
-        add(hitSoundOptions, "step");
-        add(fallSoundOptions, "hit", "step");
+        add(breakSoundOptions.subtitle("subtitles.block.generic.break"), "place");
+        add(stepSoundOptions.subtitle("subtitles.block.generic.footsteps"), "hit");
+        add(placeSoundOptions.subtitle("subtitles.block.generic.place"), "break");
+        add(hitSoundOptions.subtitle("subtitles.block.generic.hit"), "step");
+        add(fallSoundOptions.subtitle("subtitles.block.generic.fall"), "hit", "step");
     }
 
     public SoundDefinition add(SoundOptions soundOptions, String... fallbacks) {
@@ -235,6 +235,10 @@ public class BlockSoundEventBuilder {
         public SoundOptions replaceSoundPath(String soundPathReplacement) {
             this.soundPathReplacement = soundPathReplacement;
             return this;
+        }
+
+        public SoundOptions subtitle(String subtitle) {
+            return modifyDefinition(se -> se.subtitle(subtitle));
         }
 
         public SoundOptions modifySound(Consumer<SoundDefinition.Sound> modifier) {
