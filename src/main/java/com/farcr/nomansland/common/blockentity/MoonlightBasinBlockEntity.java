@@ -8,6 +8,8 @@ import com.farcr.nomansland.common.friend.FriendMoonState;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
+import com.farcr.nomansland.common.friend.offering.OfferingContext;
+import com.farcr.nomansland.common.friend.offering.OfferingType;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -19,7 +21,6 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +28,6 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -63,16 +63,6 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     private static final AABB BASIN_BOUNDING_BOX =
         Block.box(-8d, 11d, -8d, 24d, 24d, 24d)
             .toAabbs().getFirst();
-
-    public record OfferingContext(Entity entity, ResourceLocation dialogueLocation){
-        public boolean isValid() {
-            if (entity instanceof ItemEntity itemEntity) {
-                if (itemEntity.getItem().getItem() == Items.AIR)
-                    return false;
-            }
-            return entity != null && entity.isAlive();
-        }
-    };
 
     public static OfferingContext loopBasinEntities(Function<Entity, OfferingContext> consumer, Level level, BlockPos pos) {
         AABB aabb = BASIN_BOUNDING_BOX.move(pos);
@@ -124,12 +114,12 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     private void setInspectionContext(OfferingContext newInspectionContext, FriendMoon friendMoon) {
         // clear previous inspection context
         if (inspectionContext != null)
-            inspectionContext.entity().NML$setInspectionState(false);
+            inspectionContext.getEntity().NML$setInspectionState(false);
 
         // assign new inspection context
         inspectionContext = newInspectionContext;
         if (newInspectionContext != null)
-            newInspectionContext.entity().NML$setInspectionState(true);
+            newInspectionContext.getEntity().NML$setInspectionState(true);
 
         assert level != null;
         if (friendMoon != null && newInspectionContext != null) {
@@ -143,8 +133,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
     private boolean tryResolveInspection() {
         if (pendingInspectionUUID == null || level == null) return false;
-        if (inspectionContext != null && inspectionContext.entity() != null
-            && pendingInspectionUUID.equals(inspectionContext.entity().getUUID()))
+        if (inspectionContext != null && inspectionContext.getEntity() != null
+            && pendingInspectionUUID.equals(inspectionContext.getEntity().getUUID()))
             return true;
         UUID uuid = pendingInspectionUUID;
         AABB searchBox = new AABB(getBlockPos()).inflate(FRIENDSHIP_MAX_RANGE);
@@ -174,8 +164,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
     public float getOfferingPeakHeight(float partialTick) {
         float fallback = 1.5F;
-        if (inspectionContext == null || inspectionContext.entity() == null) return fallback;
-        Entity entity = inspectionContext.entity();
+        if (inspectionContext == null || inspectionContext.getEntity() == null) return fallback;
+        Entity entity = inspectionContext.getEntity();
         if (!entity.isAlive()) return fallback;
         double entityY = Mth.lerp(partialTick, entity.yo, entity.getY());
         double centerY = entityY + entity.getBbHeight() * 0.5;
@@ -328,16 +318,13 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         // Offerings
         if (friendMoon.getState() == FriendMoonState.OFFERING) {
             OfferingContext inspectionContext = blockEntity.inspectionContext;
-            if (inspectionContext != null && inspectionContext.entity() != null) {
-                Entity entity = inspectionContext.entity();
+            if (inspectionContext != null && inspectionContext.getEntity() != null) {
+                Entity entity = inspectionContext.getEntity();
                 if (!entity.isAlive()) {
                     blockEntity.setInspectionContext(null, friendMoon);
                     if (!level.isClientSide) friendMoon.negative();
                     friendMoon.abortAscension();
                 } else {
-                    boolean specialOffering = FriendMoon.isSpecialInteraction(inspectionContext);
-                    boolean mapOffering = FriendMoon.isMapOffering(inspectionContext);
-
                     Vec3 newPosition = new Vec3(pos.getCenter().x, entity.position().y, pos.getCenter().z);
                     entity.setDeltaMovement(new Vec3(0, 0, 0));
 
@@ -346,27 +333,32 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
 
                     entity.addDeltaMovement(approachSpeed);
                     if (approachSpeed.lengthSqr() <= 0.001f) {
-                        int raiseDistance = specialOffering ? 4 : 2;
+                        int raiseDistance = inspectionContext.getOfferingType().equals(OfferingType.SPECIAL) ? 4 : 2;
                         Vec3 raisedPosition = pos.above(raiseDistance).getCenter();
                         Vec3 dist = raisedPosition.subtract(entity.position());
 
                         float speed = 1 / 20f;
                         entity.setDeltaMovement(
                             dist.multiply(new Vec3(new Vector3f(speed))));
-//                        if (entity instanceof Mob mob && mob.getTarget() != null) mob.setTarget(null);
 
                         if (dist.lengthSqr() <= 0.1f) {
-                            if (!level.isClientSide() && friendMoon.getDialogueTicks() < 0) {
-                                int dialogueLength = friendMoon.getDialogueFromLocation(NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.dialogueLocation())
+                            if (inspectionContext.getOfferingType().shouldContinueRegularInteraction()
+                            && (!level.isClientSide() && friendMoon.getDialogueTicks() < 0)) {
+                                int dialogueLength = friendMoon.getDialogueFromLocation(
+                                    NMLRegistries.OFFERING_DIALOGUE_KEY, inspectionContext.getDialogueLocation())
                                     .dispatch(level, friendMoon.getFriendshipPlayers());
                                 friendMoon.applyDialogueLength(dialogueLength - 80);
                             }
-                            if (specialOffering) {
-                                if (!friendMoon.specialInteraction(level, entity))
-                                    blockEntity.setInspectionContext(null, friendMoon);
-                            } else if (mapOffering) {
-                                if (!friendMoon.mapInteraction(level, entity, pos))
-                                    blockEntity.setInspectionContext(null, friendMoon);
+
+                            switch (inspectionContext.getOfferingType()) {
+                                case SPECIAL:
+                                    if (!friendMoon.specialInteraction(level, entity))
+                                        blockEntity.setInspectionContext(null, friendMoon);
+                                    break;
+                                case MAP:
+                                    if (!friendMoon.mapInteraction(level, entity, pos))
+                                        blockEntity.setInspectionContext(null, friendMoon);
+                                    break;
                             }
                         }
                     }
@@ -380,7 +372,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             // Determine offering context
             if (blockEntity.inspectionContext == null) {
                 OfferingContext context = getOfferingAbove(pos, level);
-                if (context != null && context.isValid() && context.entity.onGround())
+                if (context != null && context.isValid() && context.getEntity().onGround())
                     blockEntity.setInspectionContext(context, friendMoon);
             }
 
@@ -477,7 +469,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         if (inspectionContext != null && inspectionContext.isValid())
-            tag.putString("InspectionUUID", inspectionContext.entity().getStringUUID());
+            tag.putString("InspectionUUID", inspectionContext.getEntity().getStringUUID());
 
         // Store Friend Moon information in BlockEntity
         if (level != null && !level.isClientSide()) {

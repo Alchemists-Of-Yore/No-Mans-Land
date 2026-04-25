@@ -10,6 +10,8 @@ import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueLocation;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
+import com.farcr.nomansland.common.friend.offering.OfferingContext;
+import com.farcr.nomansland.common.friend.offering.OfferingType;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPacket;
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
@@ -149,9 +151,16 @@ public class FriendMoon extends SavedData {
     private int mapInteractionTicks = -1;
     public static final int MAP_PARTICLE_DURATION = 30;
 
-    public static boolean isMapOffering(MoonlightBasinBlockEntity.OfferingContext offeringContext) {
+
+    public static OfferingType getOfferingType(OfferingContext offeringContext) {
+        if (isSpecialInteraction(offeringContext)) return OfferingType.SPECIAL;
+        if (isMapOffering(offeringContext)) return OfferingType.MAP;
+        return OfferingType.REGULAR;
+    }
+
+    public static boolean isMapOffering(OfferingContext offeringContext) {
         if (!offeringContext.isValid()) return false;
-        Entity entity = offeringContext.entity();
+        Entity entity = offeringContext.getEntity();
         if (entity instanceof ItemEntity itemEntity) {
             ItemStack stack = itemEntity.getItem();
             return stack.is(Items.FILLED_MAP) || stack.is(Items.MAP);
@@ -396,8 +405,8 @@ public class FriendMoon extends SavedData {
             consumer.accept(serverPlayer);
     }
 
-    public static boolean isSpecialInteraction(MoonlightBasinBlockEntity.OfferingContext offeringContext) {
-        return (offeringContext.isValid() && offeringContext.entity().getType().equals(NMLEntities.BUDDY.get()));
+    public static boolean isSpecialInteraction(OfferingContext offeringContext) {
+        return (offeringContext.isValid() && offeringContext.getEntity().getType().equals(NMLEntities.BUDDY.get()));
     }
 
     public boolean specialInteraction(Level level, Entity entity) {
