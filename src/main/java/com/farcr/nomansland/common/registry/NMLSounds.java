@@ -19,7 +19,9 @@ public class NMLSounds {
     public static final DeferredSoundType SCONCE_TORCH = registerSoundType("sconce_torch", 1, 1.2F);
 
     public static final DeferredSoundType WOODEN_SCAFFOLDING = registerSoundType("wooden_scaffolding", 1, 1f);
-    public static final DeferredSoundType EARTHEN_TILES = registerSoundType("earthen_tiles", 1, 1f);
+    public static final DeferredSoundType EARTHEN_TILES = registerSoundType("earthen_tiles", 1, 1.25f);
+    public static final DeferredSoundType DROSS_TILES = registerSoundType("dross_tiles", 1, 1f);
+    public static final DeferredSoundType SILTSTONE = registerSoundType("siltstone", 1, 1f);
     public static final DeferredSoundType THATCH = registerSoundType("thatch", 1, 1f);
 
     //Block-Related

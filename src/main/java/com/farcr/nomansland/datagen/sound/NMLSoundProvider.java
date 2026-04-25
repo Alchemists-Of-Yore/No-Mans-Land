@@ -36,7 +36,9 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 .setStepHitFallSoundPaths("minecraft:step")
                 .setStepHitFallSoundNames("scaffold")
                 .modifyStepHitFallSounds(se -> se.pitch(0.85f)));
-        add(NMLSounds.EARTHEN_TILES, "block/tiles");
+        add(NMLSounds.EARTHEN_TILES, "block/tiles/earthen");
+        add(NMLSounds.DROSS_TILES, "block/tiles/dross", b -> b.modifySounds(se -> se.pitch(0.8f)));
+        add(NMLSounds.SILTSTONE, "block/siltstone");
         add(NMLSounds.THATCH, "block/thatch", b -> b.setStepHitFallSoundPaths("minecraft:block/moss"));
 
         //Block Related

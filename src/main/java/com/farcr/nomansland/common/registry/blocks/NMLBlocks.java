@@ -330,7 +330,7 @@ public class NMLBlocks {
             () -> new SlabBlock(ofFullCopy(NMLBlocks.EARTHEN_TILES.get())), BlockProperties.stoneLikeSlab());
 
     public static final BlockDefinition<Block> DROSS_TILES = register("dross_tiles",
-            () -> new Block(ofFullCopy(Blocks.PACKED_MUD)), BlockProperties.stoneLike());
+            () -> new Block(ofFullCopy(Blocks.PACKED_MUD).sound(NMLSounds.DROSS_TILES)), BlockProperties.stoneLike());
     public static final BlockDefinition<StairBlock> DROSS_TILE_STAIRS = register("dross_tile_stairs",
             () -> new StairBlock(DROSS_TILES.get().defaultBlockState(), ofFullCopy(NMLBlocks.DROSS_TILES.get())), BlockProperties.stoneLikeStairs());
     public static final BlockDefinition<SlabBlock> DROSS_TILE_SLAB = register("dross_tile_slab",
@@ -372,7 +372,7 @@ public class NMLBlocks {
 
 
     public static final BlockDefinition<Block> SILTSTONE = register("siltstone",
-            () -> new Block(ofFullCopy(Blocks.STONE)), BlockProperties.stoneLike());
+            () -> new Block(ofFullCopy(Blocks.STONE).sound(NMLSounds.SILTSTONE)), BlockProperties.stoneLike());
     public static final BlockDefinition<StairBlock> SILTSTONE_STAIRS = register("siltstone_stairs",
             () -> new StairBlock(SILTSTONE.get().defaultBlockState(), ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLikeStairs());
     public static final BlockDefinition<SlabBlock> SILTSTONE_SLAB = register("siltstone_slab",

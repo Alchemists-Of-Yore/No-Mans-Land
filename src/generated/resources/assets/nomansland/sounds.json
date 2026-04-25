@@ -1,56 +1,201 @@
 {
+  "block.dross_tiles.break": {
+    "sounds": [
+      {
+        "name": "nomansland:block/tiles/dross/break1",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break2",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break3",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break4",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break5",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break6",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.dross_tiles.fall": {
+    "sounds": [
+      {
+        "name": "nomansland:block/tiles/dross/step1",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step2",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step3",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step4",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step5",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step6",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.dross_tiles.hit": {
+    "sounds": [
+      {
+        "name": "nomansland:block/tiles/dross/step1",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step2",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step3",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step4",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step5",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step6",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.dross_tiles.place": {
+    "sounds": [
+      {
+        "name": "nomansland:block/tiles/dross/break1",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break2",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break3",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break4",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break5",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/break6",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.dross_tiles.step": {
+    "sounds": [
+      {
+        "name": "nomansland:block/tiles/dross/step1",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step2",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step3",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step4",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step5",
+        "pitch": 0.8
+      },
+      {
+        "name": "nomansland:block/tiles/dross/step6",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
   "block.earthen_tiles.break": {
     "sounds": [
-      "nomansland:block/tiles/break1",
-      "nomansland:block/tiles/break2",
-      "nomansland:block/tiles/break3",
-      "nomansland:block/tiles/break4",
-      "nomansland:block/tiles/break5",
-      "nomansland:block/tiles/break6"
+      "nomansland:block/tiles/earthen/break1",
+      "nomansland:block/tiles/earthen/break2",
+      "nomansland:block/tiles/earthen/break3",
+      "nomansland:block/tiles/earthen/break4",
+      "nomansland:block/tiles/earthen/break5",
+      "nomansland:block/tiles/earthen/break6"
     ],
     "subtitle": "subtitles.block.generic.break"
   },
   "block.earthen_tiles.fall": {
     "sounds": [
-      "nomansland:block/tiles/step1",
-      "nomansland:block/tiles/step2",
-      "nomansland:block/tiles/step3",
-      "nomansland:block/tiles/step4",
-      "nomansland:block/tiles/step5",
-      "nomansland:block/tiles/step6"
+      "nomansland:block/tiles/earthen/step1",
+      "nomansland:block/tiles/earthen/step2",
+      "nomansland:block/tiles/earthen/step3",
+      "nomansland:block/tiles/earthen/step4",
+      "nomansland:block/tiles/earthen/step5",
+      "nomansland:block/tiles/earthen/step6"
     ],
     "subtitle": "subtitles.block.generic.fall"
   },
   "block.earthen_tiles.hit": {
     "sounds": [
-      "nomansland:block/tiles/step1",
-      "nomansland:block/tiles/step2",
-      "nomansland:block/tiles/step3",
-      "nomansland:block/tiles/step4",
-      "nomansland:block/tiles/step5",
-      "nomansland:block/tiles/step6"
+      "nomansland:block/tiles/earthen/step1",
+      "nomansland:block/tiles/earthen/step2",
+      "nomansland:block/tiles/earthen/step3",
+      "nomansland:block/tiles/earthen/step4",
+      "nomansland:block/tiles/earthen/step5",
+      "nomansland:block/tiles/earthen/step6"
     ],
     "subtitle": "subtitles.block.generic.hit"
   },
   "block.earthen_tiles.place": {
     "sounds": [
-      "nomansland:block/tiles/break1",
-      "nomansland:block/tiles/break2",
-      "nomansland:block/tiles/break3",
-      "nomansland:block/tiles/break4",
-      "nomansland:block/tiles/break5",
-      "nomansland:block/tiles/break6"
+      "nomansland:block/tiles/earthen/break1",
+      "nomansland:block/tiles/earthen/break2",
+      "nomansland:block/tiles/earthen/break3",
+      "nomansland:block/tiles/earthen/break4",
+      "nomansland:block/tiles/earthen/break5",
+      "nomansland:block/tiles/earthen/break6"
     ],
     "subtitle": "subtitles.block.generic.place"
   },
   "block.earthen_tiles.step": {
     "sounds": [
-      "nomansland:block/tiles/step1",
-      "nomansland:block/tiles/step2",
-      "nomansland:block/tiles/step3",
-      "nomansland:block/tiles/step4",
-      "nomansland:block/tiles/step5",
-      "nomansland:block/tiles/step6"
+      "nomansland:block/tiles/earthen/step1",
+      "nomansland:block/tiles/earthen/step2",
+      "nomansland:block/tiles/earthen/step3",
+      "nomansland:block/tiles/earthen/step4",
+      "nomansland:block/tiles/earthen/step5",
+      "nomansland:block/tiles/earthen/step6"
     ],
     "subtitle": "subtitles.block.generic.footsteps"
   },
@@ -402,6 +547,65 @@
       "nomansland:block/seashells/step1",
       "nomansland:block/seashells/step2",
       "nomansland:block/seashells/step3"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "block.siltstone.break": {
+    "sounds": [
+      "nomansland:block/siltstone/break1",
+      "nomansland:block/siltstone/break2",
+      "nomansland:block/siltstone/break3",
+      "nomansland:block/siltstone/break4",
+      "nomansland:block/siltstone/break5",
+      "nomansland:block/siltstone/break6",
+      "nomansland:block/siltstone/break7",
+      "nomansland:block/siltstone/break8"
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.siltstone.fall": {
+    "sounds": [
+      "nomansland:block/siltstone/step1",
+      "nomansland:block/siltstone/step2",
+      "nomansland:block/siltstone/step3",
+      "nomansland:block/siltstone/step4",
+      "nomansland:block/siltstone/step5",
+      "nomansland:block/siltstone/step6"
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.siltstone.hit": {
+    "sounds": [
+      "nomansland:block/siltstone/step1",
+      "nomansland:block/siltstone/step2",
+      "nomansland:block/siltstone/step3",
+      "nomansland:block/siltstone/step4",
+      "nomansland:block/siltstone/step5",
+      "nomansland:block/siltstone/step6"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.siltstone.place": {
+    "sounds": [
+      "nomansland:block/siltstone/break1",
+      "nomansland:block/siltstone/break2",
+      "nomansland:block/siltstone/break3",
+      "nomansland:block/siltstone/break4",
+      "nomansland:block/siltstone/break5",
+      "nomansland:block/siltstone/break6",
+      "nomansland:block/siltstone/break7",
+      "nomansland:block/siltstone/break8"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.siltstone.step": {
+    "sounds": [
+      "nomansland:block/siltstone/step1",
+      "nomansland:block/siltstone/step2",
+      "nomansland:block/siltstone/step3",
+      "nomansland:block/siltstone/step4",
+      "nomansland:block/siltstone/step5",
+      "nomansland:block/siltstone/step6"
     ],
     "subtitle": "subtitles.block.generic.footsteps"
   },
