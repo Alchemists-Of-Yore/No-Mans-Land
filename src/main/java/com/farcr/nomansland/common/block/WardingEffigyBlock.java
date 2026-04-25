@@ -37,9 +37,9 @@ public class WardingEffigyBlock extends BaseEntityBlock {
     protected static final VoxelShape X_FULL_AABB = Block.box(1.5, 0, 1.5, 14.5, 10, 14.5);
 
 
-    public WardingEffigyBlock(Properties properties) {
+    public WardingEffigyBlock(final Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(EFFIGIES, 1));
+        this.registerDefaultState(this.stateDefinition.any().setValue(EFFIGIES, 1));
     }
 
     @Override
@@ -48,14 +48,14 @@ public class WardingEffigyBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(final BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Nullable
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockEntity blockEntity = context.getLevel().getBlockEntity(context.getClickedPos());
-        BlockState state;
+    public BlockState getStateForPlacement(final BlockPlaceContext context) {
+        final BlockEntity blockEntity = context.getLevel().getBlockEntity(context.getClickedPos());
+        final BlockState state;
         if (blockEntity != null) {
             state = blockEntity.getBlockState();
         } else {
@@ -69,21 +69,21 @@ public class WardingEffigyBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
-    public static int getRange(BlockState state) {
-        int i = state.getValue(EFFIGIES);
+    public static int getRange(final BlockState state) {
+        final int i = state.getValue(EFFIGIES);
         return 24+20*(i-1)-2*(i-1)*(i-2);
     }
 
-    protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean mayPlaceOn(final BlockState state, final BlockGetter level, final BlockPos pos) {
         return !state.getCollisionShape(level, pos).getFaceShape(Direction.UP).isEmpty() || state.isFaceSturdy(level, pos, Direction.UP);
     }
 
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        BlockPos blockpos = pos.below();
+    protected boolean canSurvive(final BlockState state, final LevelReader level, final BlockPos pos) {
+        final BlockPos blockpos = pos.below();
         return this.mayPlaceOn(level.getBlockState(blockpos), level, blockpos);
     }
 
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
         return switch (state.getValue(EFFIGIES)) {
             case 2 -> switch (state.getValue(FACING)) {
                 case EAST, WEST -> X_TWO_AABB;
@@ -100,33 +100,33 @@ public class WardingEffigyBlock extends BaseEntityBlock {
         };
     }
 
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, EFFIGIES);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    protected BlockState rotate(final BlockState state, final Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    protected BlockState mirror(final BlockState state, final Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
-    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
+    protected boolean isPathfindable(final BlockState state, final PathComputationType pathComputationType) {
         return false;
     }
 
-    protected boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
+    protected boolean canBeReplaced(final BlockState state, final BlockPlaceContext useContext) {
         return !useContext.isSecondaryUseActive() && useContext.getItemInHand().is(this.asItem()) && state.getValue(EFFIGIES) < 4 || super.canBeReplaced(state, useContext);
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (level instanceof ServerLevel serverLevel) {
-            WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                    WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
+    protected void onRemove(final BlockState state, final Level level, final BlockPos pos, final BlockState newState, final boolean movedByPiston) {
+        if (level instanceof final ServerLevel serverLevel) {
+            final WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
+                    WardedSpacesData::new, WardedSpacesData::load), WardedSpacesData.NAME);
 
             wardedSpacesData.removeEffigy(pos);
         }
@@ -135,9 +135,9 @@ public class WardingEffigyBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (level instanceof ServerLevel serverLevel) {
-            WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
+    protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
+        if (level instanceof final ServerLevel serverLevel) {
+            final WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
             wardedSpacesData.addEffigy(pos, getRange(state));
         }
@@ -147,7 +147,7 @@ public class WardingEffigyBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
         return new WardingEffigyBlockEntity(pos, state);
     }
 }

@@ -12,17 +12,17 @@ import net.minecraft.world.level.saveddata.SavedData;
 import static com.farcr.nomansland.common.block.WardingEffigyBlock.getRange;
 
 public class WardingEffigyBlockEntity extends BlockEntity {
-    public WardingEffigyBlockEntity(BlockPos pos, BlockState state) {
+    public WardingEffigyBlockEntity(final BlockPos pos, final BlockState state) {
         super(NMLBlockEntities.WARDING_EFFIGY.get(), pos, state);
     }
 
     @Override
-    public void setLevel(Level level) {
-        if (level instanceof ServerLevel serverLevel) {
-            WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
+    public void setLevel(final Level level) {
+        if (level instanceof final ServerLevel serverLevel) {
+            final WardedSpacesData wardedSpacesData = serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
+                WardedSpacesData::new, WardedSpacesData::load), WardedSpacesData.NAME);
 
-            wardedSpacesData.addEffigy(getBlockPos(), getRange(getBlockState()));
+            wardedSpacesData.addEffigy(this.getBlockPos(), getRange(this.getBlockState()));
         }
 
         super.setLevel(level);

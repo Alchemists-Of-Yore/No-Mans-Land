@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.world.saved_data.WardedSpacesData;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
@@ -17,19 +18,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RandomStrollGoal.class)
 public class RandomStrollGoalMixin {
-    @Shadow @Final protected PathfinderMob mob;
+    @Shadow @Final
+    protected PathfinderMob mob;
 
     @Inject(method = "getPosition", at = @At("HEAD"), cancellable = true)
-    private void getPosition(CallbackInfoReturnable<Vec3> cir) {
-        if (mob instanceof Monster && mob.level() instanceof ServerLevel serverLevel) {
-            WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
+    private void getPosition(final CallbackInfoReturnable<Vec3> cir) {
+        if (this.mob instanceof Monster && this.mob.level() instanceof final ServerLevel serverLevel) {
+            final WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
-            if (wardedSpacesData.isWarded(mob.level(), mob.blockPosition())) {
-                BlockPos effigyPos = wardedSpacesData.getAffectingEffigyAt(mob.level(), mob.blockPosition()).orElse(null);
-                if (effigyPos != null) {
-                    int effigyRange = wardedSpacesData.ranges.get(wardedSpacesData.positions.indexOf(effigyPos));
+            if (wardedSpacesData.isWarded(this.mob.level(), this.mob.blockPosition())) {
+                final Pair<BlockPos, Integer> pair = wardedSpacesData.getAffectingEffigyAt(this.mob.level(), this.mob.blockPosition());
 
-                    Vec3 newPosition = LandRandomPos.getPosAway(mob, mob.getRandom().nextInt(effigyRange / 4, effigyRange + effigyRange / 4), 10, Vec3.atCenterOf(effigyPos));
+                if (pair != null) {
+                    final BlockPos effigyPos = pair.left();
+                    final int effigyRange = pair.right();
+
+                    final Vec3 newPosition = LandRandomPos.getPosAway(this.mob, this.mob.getRandom().nextInt(effigyRange / 4, effigyRange + effigyRange / 4), 10, Vec3.atCenterOf(effigyPos));
                     if (newPosition != null) cir.setReturnValue(newPosition);
                 }
             }

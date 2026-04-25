@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PatrolSpawner.class)
 public class PatrolSpawnerMixin {
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isCloseToVillage(Lnet/minecraft/core/BlockPos;I)Z"))
-    private boolean isWarded(ServerLevel instance, BlockPos pos, int sections, Operation<Boolean> original) {
-        WardedSpacesData wardedSpacesData = instance.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
-                WardedSpacesData::new, WardedSpacesData::create), WardedSpacesData.NAME);
+    private boolean isWarded(final ServerLevel instance, final BlockPos pos, final int sections, final Operation<Boolean> original) {
+        final WardedSpacesData wardedSpacesData = instance.getDataStorage().computeIfAbsent(new SavedData.Factory<>(
+                WardedSpacesData::new, WardedSpacesData::load), WardedSpacesData.NAME);
 
         if (wardedSpacesData.isWarded(instance, pos)) {
             return true;
