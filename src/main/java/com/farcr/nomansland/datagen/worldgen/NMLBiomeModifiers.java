@@ -2,6 +2,7 @@ package com.farcr.nomansland.datagen.worldgen;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -297,6 +298,7 @@ public class NMLBiomeModifiers {
                         8622426,
                         7631435
                 )
+                .changeMusic(new Music(NMLSounds.CAVE_MUSIC, 12000, 24000, false))
                 .changeParticle(NMLParticleTypes.CAVE_DUST.get(), 0.01F)
                 .addFeatures(new FeatureWithStep(feature("underground/ore_silt"), GenerationStep.Decoration.UNDERGROUND_ORES))
                 .build(featureToBiomes);
@@ -509,6 +511,7 @@ public class NMLBiomeModifiers {
                 .build(featureToBiomes);
 
         modifyBiome(Biomes.LUSH_CAVES)
+                .changeMusic(new Music(NMLSounds.CAVE_MUSIC, 12000, 24000, false))
                 .changeColors(
                         11071699,
                         5536348,

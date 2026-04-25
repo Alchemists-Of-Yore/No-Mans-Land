@@ -206,6 +206,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
                     silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                    silverfish.skipDropExperience();
                     ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
@@ -227,6 +228,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     slime.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
                     slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
+                    slime.skipDropExperience();
                     ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(slime);
                 }
@@ -407,6 +409,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
                     silverfish.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
+                    silverfish.skipDropExperience();
                     ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
@@ -422,6 +425,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                     slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
                     slime.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
+                    slime.skipDropExperience();
                     ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(slime);
                 }

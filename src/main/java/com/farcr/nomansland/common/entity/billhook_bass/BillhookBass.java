@@ -97,7 +97,10 @@ public class BillhookBass extends AbstractFish implements NeutralMob {
 
     @Override
     public boolean killedEntity(ServerLevel level, LivingEntity entity) {
-        if (entity instanceof AbstractFish) entity.nml$skipDroppingDeathLoot();
+        if (entity instanceof AbstractFish fish) {
+            fish.skipDropExperience();
+            entity.nml$skipDroppingDeathLoot();
+        }
         if (entity.getType() == EntityType.PUFFERFISH) addEffect(new MobEffectInstance(MobEffects.POISON, 12000));
         return super.killedEntity(level, entity);
     }

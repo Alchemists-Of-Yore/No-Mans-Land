@@ -12,4 +12,7 @@ public interface EntityExtension {
     default boolean NML$wasPreviouslyInspected() throws NotImplementedException {
         throw new NotImplementedException();
     }
+    default float NML$getInspectionFade(float partialTick) throws NotImplementedException {
+        throw new NotImplementedException();
+    }
 }

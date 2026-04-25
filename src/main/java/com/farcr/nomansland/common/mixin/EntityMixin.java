@@ -2,13 +2,11 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -22,8 +20,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -75,6 +71,8 @@ public abstract class EntityMixin implements EntityExtension {
 
     @Unique private boolean NML$offering = false;
     @Unique private boolean NML$previouslyInspected = false;
+    @Unique private float NML$inspectionFade = 0f;
+    @Unique private float NML$prevInspectionFade = 0f;
     public void NML$setInspectionState(boolean isInspecting) {
         NML$offering = isInspecting;
         if (isInspecting)
@@ -87,6 +85,10 @@ public abstract class EntityMixin implements EntityExtension {
 
     public boolean NML$wasPreviouslyInspected() {
         return NML$previouslyInspected;
+    }
+
+    public float NML$getInspectionFade(float partialTick) {
+        return Mth.lerp(partialTick, NML$prevInspectionFade, NML$inspectionFade);
     }
 
     @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true)
@@ -118,6 +120,15 @@ public abstract class EntityMixin implements EntityExtension {
     @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo ci) {
         trackStartFallingPosition();
+        NML$updateInspectionFade();
+    }
+
+    @Unique
+    private void NML$updateInspectionFade() {
+        if (!level().isClientSide()) return;
+        NML$prevInspectionFade = NML$inspectionFade;
+        float target = NML$offering ? 1f : 0f;
+        NML$inspectionFade = Mth.lerp(0.1f, NML$inspectionFade, target);
     }
 
     @Unique

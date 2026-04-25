@@ -43,14 +43,14 @@ import java.io.IOException;
 @EventBusSubscriber(modid = NoMansLand.MODID, value = Dist.CLIENT)
 public class ClientSetupEvents {
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
+    public static void onClientSetup(final FMLClientSetupEvent event) {
         AmbienceHandler.FOG_MODIFIER_HANDLER.fillFogModifiers();
         ContextualMusicHandler.buildMusicContext();
 
         event.enqueueWork(() -> {
             ItemProperties.register(NMLItems.BANDAGE.get(), NoMansLand.location("has_potion"),
                     (stack, level, entity, seed) -> {
-                        PotionContents potionContents = stack.get(DataComponents.POTION_CONTENTS);
+                        final PotionContents potionContents = stack.get(DataComponents.POTION_CONTENTS);
                         if (potionContents != null && potionContents.getAllEffects().iterator().hasNext()) {
                             return 1.0F;
                         }
@@ -60,27 +60,28 @@ public class ClientSetupEvents {
     }
 
     @SubscribeEvent
-    public static void registerModels(ModelEvent.RegisterAdditional event) {
+    public static void registerModels(final ModelEvent.RegisterAdditional event) {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/firebomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
         event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BELL_MODEL.id()));
+        event.register(ModelResourceLocation.standalone(InvertedBellRenderer.CLAPPER_MODEL.id()));
         event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BEAM_MODEL.id()));
         if (Mods.NIRVANA.isLoaded()) event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/fat_joint")));
 
         //Load all the pot models here otherwise you die
         for (int i = 0; i < 6; i++) {
-            var path = "block/ancient_pots/ancient_pot_small_" + (i+1);
+            final var path = "block/ancient_pots/ancient_pot_small_" + (i+1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/ancient_pot_small_1alt")));
         for (int i = 0; i < 1; i++) {
-            var path = "block/ancient_pots/ancient_pot_large_" + (i + 1);
+            final var path = "block/ancient_pots/ancient_pot_large_" + (i + 1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
         for (int i = 0; i < 6; i++) {
-            var path = "block/ancient_pots/alchemist_pot_small_" + (i+1);
+            final var path = "block/ancient_pots/alchemist_pot_small_" + (i+1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_1alt")));
@@ -93,7 +94,7 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_stern")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_small_2_face_happy")));
         for (int i = 0; i < 1; i++) {
-            var path = "block/ancient_pots/alchemist_pot_large_" + (i+1);
+            final var path = "block/ancient_pots/alchemist_pot_large_" + (i+1);
             event.register(ModelResourceLocation.standalone(NoMansLand.location(path)));
         }
         event.register(ModelResourceLocation.standalone(NoMansLand.location("block/ancient_pots/alchemist_pot_large_1_face_stern")));
@@ -105,7 +106,7 @@ public class ClientSetupEvents {
     }
 
     @SubscribeEvent
-    public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    public static void registerEntityRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NMLEntities.BILLHOOK_BASS.get(), BillhookBassRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.DEER.get(), DeerRenderer::new);
@@ -139,27 +140,27 @@ public class ClientSetupEvents {
     }
 
     @SubscribeEvent
-    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+    public static void registerLayers(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         NMLModelLayers.registerLayers(event);
     }
 
     @SubscribeEvent
-    public static void addLayers(EntityRenderersEvent.AddLayers event) {
+    public static void addLayers(final EntityRenderersEvent.AddLayers event) {
         NMLArmorModels.addLayers(event);
     }
 
     @SubscribeEvent
-    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+    public static void registerClientExtensions(final RegisterClientExtensionsEvent event) {
         NMLClientExtensions.registerClientExtensions(event);
     }
 
     @SubscribeEvent
-    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+    public static void registerReloadListeners(final RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(DialogueLangLoader.INSTANCE);
     }
 
     @SubscribeEvent
-    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+    public static void registerParticleProviders(final RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(NMLParticleTypes.PALE_CHERRY_LEAVES.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new FallingParticle(clientLevel, d, e, f, sprites));
@@ -229,7 +230,7 @@ public class ClientSetupEvents {
     }
 
     @SubscribeEvent
-    public static void registerShaders(RegisterShadersEvent event) throws IOException {
+    public static void registerShaders(final RegisterShadersEvent event) throws IOException {
         event.registerShader(
                 new ShaderInstance(
                         event.getResourceProvider(),
@@ -285,17 +286,17 @@ public class ClientSetupEvents {
                     Minecraft.getInstance().getMainRenderTarget(),
                     InvertedBellClientHandler.INVERTED_BELL_SHADER
             );
-        } catch (IOException e) {
+        } catch (final IOException e) {
             NoMansLand.LOGGER.warn("Failed to load shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             NoMansLand.LOGGER.warn("Failed to parse shader: {}", InvertedBellClientHandler.INVERTED_BELL_SHADER, e);
         }
         // Accumulate Zoom Shader
         try {
             AccumulateZoomRenderer.getInstance().setupPostChain();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             NoMansLand.LOGGER.warn("Failed to parse shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
         }
     }

@@ -172,6 +172,16 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         return Mth.lerp(partialTick, this.offeringBeamIntensity, this.previousOfferingBeamIntensity);
     }
 
+    public float getOfferingPeakHeight(float partialTick) {
+        float fallback = 1.5F;
+        if (inspectionContext == null || inspectionContext.entity() == null) return fallback;
+        Entity entity = inspectionContext.entity();
+        if (!entity.isAlive()) return fallback;
+        double entityY = Mth.lerp(partialTick, entity.yo, entity.getY());
+        double centerY = entityY + entity.getBbHeight() * 0.5;
+        return (float) (centerY - getBlockPos().getY() - 1.0);
+    }
+
     public static final int BLOCK_Y_REACH = 3;
     public static final int BLOCK_EXTEND_REACH = 10;
 

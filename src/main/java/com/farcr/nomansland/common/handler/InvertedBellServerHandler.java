@@ -18,6 +18,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.BlockCollisions;
 import net.minecraft.world.level.ChunkPos;
@@ -151,6 +152,7 @@ public class InvertedBellServerHandler extends SavedData {
                 if (entity.distanceToSqr(this.fromPos.getCenter()) < InvertedBellServerHandler.RANGE_SQUARED) {
                     if (entity.getType().is(NMLTags.INVERTED_BELL_REPULSED)) {
                         if (entity instanceof LivingEntityExtension extension) {
+                            if (entity instanceof Mob mob) mob.skipDropExperience();
                             extension.nml$skipDroppingDeathLoot();
                         }
                         entity.kill();

@@ -22,16 +22,17 @@ import org.joml.Quaternionf;
 
 public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> implements BlockEntityRenderer<T> {
     public static final ModelResourceLocation BELL_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/dungeon/bell_sanctuary/inverted_bell_bell"));
+    public static final ModelResourceLocation CLAPPER_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/dungeon/bell_sanctuary/inverted_bell_clapper"));
     public static final ModelResourceLocation BEAM_MODEL = ModelResourceLocation.standalone(NoMansLand.location("block/dungeon/bell_sanctuary/inverted_bell_beam"));
 
     private final BlockRenderDispatcher blockRenderer;
 
-    public InvertedBellRenderer(BlockEntityRendererProvider.Context context) {
+    public InvertedBellRenderer(final BlockEntityRendererProvider.Context context) {
         this.blockRenderer = context.getBlockRenderDispatcher();
     }
 
     @Override
-    public void render(T bell, float pt, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
+    public void render(final T bell, final float pt, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int packedLight, final int packedOverlay) {
         poseStack.pushPose();
         poseStack.rotateAround(
                 Axis.YP.rotationDegrees(180 - bell.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING).toYRot()),
@@ -41,27 +42,30 @@ public class InvertedBellRenderer<T extends InvertedBellControllerBlockEntity> i
         poseStack.pushPose();
         // cursed to have a static value affect all bell block entities
         // but there's only ever intended to be at most one on screen and this removes the pain of having a block entity thousands of blocks away ticking on the client
-        Quaternionf rotation = InvertedBellClientHandler.instance.getBellAnimationRotation(pt);
+        final Quaternionf rotation = InvertedBellClientHandler.instance.getBellAnimationRotation(pt);
         if (rotation != null) {
             poseStack.rotateAround(rotation, 0.5f, 2f - 4 / 16f, 0.5f);
         }
 
         BakedModel model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BELL_MODEL);
-        for (RenderType renderType : model.getRenderTypes(bell.getBlockState(), RandomSource.create(), ModelData.EMPTY)) {
-            this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(renderType, true)), bell.getBlockState(), model,
-                    1, 1, 1, packedLight, packedOverlay);
-        }
+        this.renderModel(bell, poseStack, multiBufferSource, packedLight, packedOverlay, model);
+        model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(CLAPPER_MODEL);
+        this.renderModel(bell, poseStack, multiBufferSource, packedLight, packedOverlay, model);
         poseStack.popPose();
 
         poseStack.pushPose();
         poseStack.translate(0, 1, 0);
         model = this.blockRenderer.getBlockModelShaper().getModelManager().getModel(BEAM_MODEL);
-        for (RenderType renderType : model.getRenderTypes(bell.getBlockState(), RandomSource.create(), ModelData.EMPTY)) {
+        this.renderModel(bell, poseStack, multiBufferSource, packedLight, packedOverlay, model);
+        poseStack.popPose();
+        poseStack.popPose();
+    }
+
+    private void renderModel(final T bell, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int packedLight, final int packedOverlay, final BakedModel model) {
+        for (final RenderType renderType : model.getRenderTypes(bell.getBlockState(), RandomSource.create(), ModelData.EMPTY)) {
             this.blockRenderer.getModelRenderer().renderModel(poseStack.last(), multiBufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(renderType, true)), bell.getBlockState(), model,
                     1, 1, 1, packedLight, packedOverlay);
         }
-        poseStack.popPose();
-        poseStack.popPose();
     }
 
     @Override

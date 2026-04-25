@@ -327,31 +327,138 @@
           "weight": 20
         },
         {
-          "type": "minecraft:item",
-          "functions": [
+          "type": "minecraft:alternatives",
+          "children": [
             {
-              "decoration": "nomansland:bell_sanctuary",
-              "function": "minecraft:exploration_map",
-              "skip_existing_chunks": false,
-              "zoom": 1,
-              "destination": "nomansland:bell_sanctuary"
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:location_check",
+                  "predicate": {
+                    "structures": "nomansland:alchemist_ruins"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "decoration": "nomansland:bell_sanctuary",
+                  "function": "minecraft:exploration_map",
+                  "skip_existing_chunks": false,
+                  "zoom": 1,
+                  "destination": "nomansland:bell_sanctuary"
+                },
+                {
+                  "function": "minecraft:set_components",
+                  "components": {
+                    "minecraft:map_color": 5861946
+                  }
+                },
+                {
+                  "function": "minecraft:set_name",
+                  "name": {
+                    "translate": "nomansland.filled_map.bell_sanctuary"
+                  },
+                  "target": "item_name"
+                }
+              ],
+              "name": "minecraft:map",
+              "weight": 5
             },
             {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:map_color": 5861946
-              }
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:location_check",
+                  "predicate": {
+                    "structures": "nomansland:bell_sanctuary"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "decoration": "nomansland:alchemist_ruins",
+                  "function": "minecraft:exploration_map",
+                  "skip_existing_chunks": false,
+                  "zoom": 1,
+                  "destination": "nomansland:alchemist_ruins"
+                },
+                {
+                  "function": "minecraft:set_components",
+                  "components": {
+                    "minecraft:map_color": 8222546
+                  }
+                },
+                {
+                  "function": "minecraft:set_name",
+                  "name": {
+                    "translate": "nomansland.filled_map.alchemist_ruins"
+                  },
+                  "target": "item_name"
+                }
+              ],
+              "name": "minecraft:map",
+              "weight": 5
             },
             {
-              "function": "minecraft:set_name",
-              "name": {
-                "translate": "nomansland.filled_map.bell_sanctuary"
-              },
-              "target": "item_name"
+              "type": "minecraft:group",
+              "children": [
+                {
+                  "type": "minecraft:item",
+                  "weight": 5,
+                  "functions": [
+                    {
+                      "decoration": "nomansland:bell_sanctuary",
+                      "function": "minecraft:exploration_map",
+                      "skip_existing_chunks": false,
+                      "zoom": 1,
+                      "destination": "nomansland:bell_sanctuary"
+                    },
+                    {
+                      "function": "minecraft:set_components",
+                      "components": {
+                        "minecraft:map_color": 5861946
+                      }
+                    },
+                    {
+                      "function": "minecraft:set_name",
+                      "name": {
+                        "translate": "nomansland.filled_map.bell_sanctuary"
+                      },
+                      "target": "item_name"
+                    }
+                  ],
+                  "name": "minecraft:map"
+                },
+                {
+                  "type": "minecraft:item",
+                  "weight": 5,
+                  "functions": [
+                    {
+                      "decoration": "nomansland:alchemist_ruins",
+                      "function": "minecraft:exploration_map",
+                      "skip_existing_chunks": false,
+                      "zoom": 1,
+                      "destination": "nomansland:alchemist_ruins"
+                    },
+                    {
+                      "function": "minecraft:set_components",
+                      "components": {
+                        "minecraft:map_color": 8222546
+                      }
+                    },
+                    {
+                      "function": "minecraft:set_name",
+                      "name": {
+                        "translate": "nomansland.filled_map.alchemist_ruins"
+                      },
+                      "target": "item_name"
+                    }
+                  ],
+                  "name": "minecraft:map"
+                }
+              ]
             }
-          ],
-          "name": "minecraft:map",
-          "weight": 5
+          ]
         }
       ],
       "rolls": 1

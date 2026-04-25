@@ -10,8 +10,44 @@
             "Name": "minecraft:air"
           },
           "input_predicate": {
-            "block": "nomansland:warding_effigy",
-            "probability": 0.3,
+            "block": "nomansland:ancestral_effigy",
+            "probability": 0.1,
+            "predicate_type": "minecraft:random_block_match"
+          },
+          "location_predicate": {
+            "predicate_type": "minecraft:always_true"
+          }
+        },
+        {
+          "output_state": {
+          "Name": "nomansland:wooden_platform",
+          "Properties": {
+          "unstable": "true"
+            }
+          },
+          "input_predicate": {
+            "block": "nomansland:wooden_platform",
+            "probability": 0.43,
+            "predicate_type": "minecraft:random_block_match"
+          },
+          "location_predicate": {
+            "predicate_type": "minecraft:always_true"
+          }
+        },
+        {
+          "output_state": {
+            "Name": "minecraft:suspicious_gravel",
+            "Properties": {
+              "dusted": "0"
+            }
+          },
+          "block_entity_modifier": {
+            "type": "minecraft:append_loot",
+            "loot_table": "nomansland:archaeology/alchemist_ruins"
+          },
+          "input_predicate": {
+            "block": "minecraft:gravel",
+            "probability": 0.2,
             "predicate_type": "minecraft:random_block_match"
           },
           "location_predicate": {
@@ -23,6 +59,21 @@
     },
     {
       "processor_type": "nomansland:candles"
+    },
+    {
+      "processor_type": "nomansland:feature",
+      "placeholders": {
+        "minecraft:blue_concrete": "nomansland:pots/pots_alchemist_treasure",
+        "minecraft:red_concrete": "nomansland:pots/pots_alchemist_potions",
+        "minecraft:yellow_concrete": "nomansland:pots/pots_alchemist_alchemy",
+        "minecraft:orange_concrete": "nomansland:pots/pots_alchemist_artisanship"
+      }
+    },
+    {
+      "processor_type": "nomansland:ore_vein",
+      "blocks": [
+        "nomansland:siltstone"
+      ]
     }
   ]
 }
