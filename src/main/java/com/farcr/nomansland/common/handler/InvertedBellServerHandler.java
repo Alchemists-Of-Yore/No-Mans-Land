@@ -212,9 +212,17 @@ public class InvertedBellServerHandler extends SavedData {
         }
 
         private static void applyFailedTeleport(Entity entity, ServerLevel level) {
-            entity.hurt(level.damageSources().cramming(), 10);
             if (entity instanceof LivingEntity livingEntity) {
+                float damage = Math.max(0.0F, livingEntity.getHealth() - 1.0F);
+                if (damage > 0.0F) {
+                    livingEntity.hurt(level.damageSources().cramming(), damage);
+                }
+                if (livingEntity.getHealth() > 1.0F) {
+                    livingEntity.setHealth(1.0F);
+                }
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, FAILURE_NAUSEA_DURATION));
+            } else {
+                entity.hurt(level.damageSources().cramming(), 10);
             }
         }
 

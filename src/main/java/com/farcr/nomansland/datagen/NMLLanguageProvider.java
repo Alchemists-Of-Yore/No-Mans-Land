@@ -190,7 +190,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("block.nomansland.maple_syrup_cauldron", "Cauldron Filled with Maple Syrup");
         add("block.nomansland.resin_oil_cauldron", "Cauldron Filled with Resin Oil");
         add("block.nomansland.milk_cauldron", "Cauldron Filled with Milk");
-        add("block.nomansland.inverted_bell.bad_teleport", "Feels like you crashed head-first into a wall...");
+        add("block.nomansland.inverted_bell.bad_teleport", "The bell's ringing leaves you battered...");
         add("block_type.nomansland.trimmed_planks", "Trimmed %s Planks");
         add("block_type.nomansland.bookshelf", "%s Bookshelf");
         add("design.nomansland.tortoise.sandy", "Sandy");
