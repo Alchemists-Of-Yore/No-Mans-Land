@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.entity.buddy;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.extension.LevelChunkExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.BlockPos;
@@ -80,7 +79,6 @@ public class BuddyChunkAnchor extends SavedData {
             BuddyData buddyData = entry.getValue();
 
             CompoundTag entryTag = new CompoundTag();
-            NoMansLand.LOGGER.info("attempting to save : " + pos + " : " + buddyData);
             entryTag.put("Pos", NbtUtils.writeBlockPos(pos));
             entryTag.put("BuddyData", BuddyData.CODEC.encodeStart(NbtOps.INSTANCE, buddyData).getOrThrow());
 

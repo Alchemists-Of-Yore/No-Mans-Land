@@ -33,7 +33,6 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -674,7 +673,6 @@ public class FriendMoonRenderer implements AutoCloseable {
     public static void setStencilRef() {
         if (stencilRef == null) {
             stencilRef = (highestStencilRef + 1);
-            NoMansLand.LOGGER.info("setting friend moon stencil ref to " + stencilRef);
         }
     }
 

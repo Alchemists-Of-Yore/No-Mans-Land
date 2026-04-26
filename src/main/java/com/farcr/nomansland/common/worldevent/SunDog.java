@@ -79,7 +79,6 @@ public class SunDog extends SavedData {
         this.setDirty();
         if (!isAlreadyStarted) {
             PacketDistributor.sendToPlayersInDimension(level, new ClientboundSunDogStatePacket(level.dimension(), true, false));
-            NoMansLand.LOGGER.info("sun dog initiated!");
         }
         return true;
     }
@@ -107,7 +106,6 @@ public class SunDog extends SavedData {
         this.setDirty();
         if (!wasActive) {
             PacketDistributor.sendToPlayersInDimension(level, new ClientboundSunDogStatePacket(level.dimension(), true, false));
-            NoMansLand.LOGGER.info("sun dog initiated (forced)!");
         }
     }
 

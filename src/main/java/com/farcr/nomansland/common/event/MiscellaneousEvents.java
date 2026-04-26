@@ -74,7 +74,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -96,7 +95,6 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -406,7 +404,6 @@ public class MiscellaneousEvents {
                 frienderman.moveTo(event.getEntity().position());
                 frienderman.setYRot(event.getEntity().getYRot());
                 serverLevel.addFreshEntity(frienderman);
-                System.out.println("spawned");
             }
         }
     }
