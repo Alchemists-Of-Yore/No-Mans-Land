@@ -30,7 +30,8 @@ public record PotVariant(PotSize size, ResourceLocation model, VoxelShape shape,
         return shape;
     }, shape -> {
         List<List<Double>> boxes = new ArrayList<>();
-        shape.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> boxes.add(List.of(minX, minY, minZ, maxX, maxY, maxZ)));
+        shape.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ)
+            -> boxes.add(List.of(minX * 16, minY * 16, minZ * 16, maxX * 16, maxY * 16, maxZ * 16)));
         return boxes;
     });
 
