@@ -27,6 +27,8 @@ public class NMLStructureProcessorTypes {
             FEATURE = register("feature", FeatureProcessor.CODEC);
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<OreVeinProcessor>>
             ORE_VEIN = register("ore_vein", OreVeinProcessor.CODEC);
+    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<BlockStateModifierProcessor>>
+            BLOCKSTATE_MODIFIER = register("blockstate_modifier", BlockStateModifierProcessor.CODEC);
 
     private static <P extends StructureProcessor> DeferredHolder<StructureProcessorType<?>, StructureProcessorType<P>> register (String name, MapCodec<P> codec) {
         return STRUCTURE_PROCESSOR_TYPES.register(name, () -> () -> codec);
