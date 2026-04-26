@@ -6,12 +6,12 @@
   "biomes": "#c:is_cave",
   "liquid_settings": "ignore_waterlogging",
   "start_height": {
-    "type": "uniform",
+    "type": "biased_to_bottom",
     "max_inclusive": {
-      "absolute": 40
+      "absolute": -24
     },
     "min_inclusive": {
-      "absolute": 10
+      "absolute": -48
     }
   },
   "dimension_padding": 10,

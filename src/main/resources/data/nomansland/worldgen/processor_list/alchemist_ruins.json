@@ -17,22 +17,6 @@
         },
         {
           "output_state": {
-          "Name": "nomansland:wooden_platform",
-          "Properties": {
-          "unstable": "true"
-            }
-          },
-          "input_predicate": {
-            "block": "nomansland:wooden_platform",
-            "probability": 0.43,
-            "predicate_type": "minecraft:random_block_match"
-          },
-          "location_predicate": {
-            "predicate_type": "minecraft:always_true"
-          }
-        },
-        {
-          "output_state": {
             "Name": "minecraft:suspicious_gravel",
             "Properties": {
               "dusted": "0"
@@ -54,6 +38,12 @@
       ],
       "processor_type": "minecraft:rule"
     },
+    {
+  "processor_type": "nomansland:blockstate_modifier",
+  "block": "nomansland:wooden_platform",
+  "properties": { "unstable": "true" },
+  "chance": 0.2
+},
     {
       "processor_type": "nomansland:candles"
     },
