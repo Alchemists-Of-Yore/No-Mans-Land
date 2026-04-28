@@ -611,34 +611,37 @@ public class FriendMoon extends SavedData {
                 return;
             }
 
-            // query players that had friendship
-            boolean someoneLeft = false, someoneDied = false;
-            ArrayList<ServerPlayer> withRemovedPlayers = new ArrayList<>(lastFriendshipPlayers.keySet());
-            boolean silentlyRemove = (getState() == FriendMoonState.OFFERING || isJukeboxInteractionActive()) && (lastTotalPlayers > 1);
-            for (ServerPlayer player : withRemovedPlayers) {
-                lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
-                if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying() || cannotObtainFriendship(player)) {
-                    if (!silentlyRemove && !cannotObtainFriendship(player)) {
-                        setState(FriendMoonState.PASSIVE);
-                        if (player.isDeadOrDying()) someoneDied = true;
-                        someoneLeft = true;
-                    } else if (silentlyRemove) PacketDistributor.sendToPlayer(player, new ClientboundDialogueResetPacket());
-                    lastFriendshipPlayers.remove(player);
+            if (getState() != FriendMoonState.UPSET) {
+                // query players that had friendship
+                boolean someoneLeft = false, someoneDied = false;
+                ArrayList<ServerPlayer> withRemovedPlayers = new ArrayList<>(lastFriendshipPlayers.keySet());
+                boolean silentlyRemove = (getState() == FriendMoonState.OFFERING || isJukeboxInteractionActive()) && (lastTotalPlayers > 1);
+                for (ServerPlayer player : withRemovedPlayers) {
+                    lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
+                    if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying() || cannotObtainFriendship(player)) {
+                        if (!silentlyRemove && !cannotObtainFriendship(player)) {
+                            setState(FriendMoonState.PASSIVE);
+                            if (player.isDeadOrDying()) someoneDied = true;
+                            someoneLeft = true;
+                        } else if (silentlyRemove)
+                            PacketDistributor.sendToPlayer(player, new ClientboundDialogueResetPacket());
+                        lastFriendshipPlayers.remove(player);
+                    }
                 }
-            }
-            if (someoneLeft) {
-                boolean finalSomeoneDied = someoneDied;
-                applyDialogueLength(
-                    getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
-                        (registry) -> leavingFilter(registry, finalSomeoneDied)
-                    ).dispatch(level, withRemovedPlayers)
-                );
-                return;
-            }
+                if (someoneLeft) {
+                    boolean finalSomeoneDied = someoneDied;
+                    applyDialogueLength(
+                        getDialogueFromStream(NMLRegistries.LEAVING_DIALOGUE_KEY,
+                            (registry) -> leavingFilter(registry, finalSomeoneDied)
+                        ).dispatch(level, withRemovedPlayers)
+                    );
+                    return;
+                }
 
-            if (!withRemovedPlayers.isEmpty() && lastFriendshipPlayers.isEmpty()) {
-                resetValues();
-                return;
+                if (!withRemovedPlayers.isEmpty() && lastFriendshipPlayers.isEmpty()) {
+                    resetValues();
+                    return;
+                }
             }
 
             // Grant players advancement if they do not have it
