@@ -8,15 +8,15 @@
   "start_height": {
     "type": "biased_to_bottom",
     "max_inclusive": {
-      "absolute": -24
+      "absolute": 40
     },
     "min_inclusive": {
-      "absolute": -48
+      "absolute": 10
     }
   },
   "dimension_padding": 10,
   "step": "underground_structures",
-  "terrain_adaptation": "bury",
+  "terrain_adaptation": "encapsulate",
   "use_expansion_hack": false,
   "spawn_overrides": {}
 }
