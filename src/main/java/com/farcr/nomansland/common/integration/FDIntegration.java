@@ -156,7 +156,7 @@ public class FDIntegration {
             () -> new CandleFruitCakeBlock(Blocks.BLACK_CANDLE, ofFullCopy(CANDLE_FRUIT_CAKE.block())), BlockProperties.candleCake(Blocks.BLACK_CANDLE));
 
     public static final ItemDefinition<BlockItem> FRUIT_CAKE_ITEM = NMLItems.register("fruit_cake",
-            () -> new BlockItem(FRUIT_CAKE.get(), new Item.Properties()));
+            () -> new BlockItem(FRUIT_CAKE.get(), new Item.Properties().stacksTo(1)));
 
     public static final ItemDefinition<DrinkableItem> PEAR_JUICE = NMLItems.register("pear_juice",
             () -> new DrinkableItem(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16).food(FDIntegration.PEAR_JUICE_FOOD), true));
