@@ -34,6 +34,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 import vectorwing.farmersdelight.common.tag.ModTags;
 import vectorwing.farmersdelight.common.utility.ItemUtils;
@@ -90,7 +91,7 @@ public class CandleFruitCakeBlock extends AbstractCandleBlock {
             }
         }
 
-        if (stack.is(ModTags.KNIVES)) {
+        if (stack.is(ModTags.Items.KNIVES)) {
             level.setBlock(pos, FDIntegration.FRUIT_CAKE.get().defaultBlockState().setValue(CakeBlock.BITES, 1), 3);
             Block.dropResources(state, level, pos);
             ItemUtils.spawnItemEntity(level, new ItemStack(FDIntegration.FRUIT_CAKE_SLICE.get()),

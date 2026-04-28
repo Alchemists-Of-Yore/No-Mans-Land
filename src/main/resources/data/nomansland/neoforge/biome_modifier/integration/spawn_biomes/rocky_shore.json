@@ -1,0 +1,13 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "spawn"
+    }
+  ],
+  "type": "nomansland:change_colors",
+  "biomes": "spawn:rocky_shore",
+    "sky_color": 6800872,
+    "water_color": 3906239,
+    "water_fog_color": 2979747
+}

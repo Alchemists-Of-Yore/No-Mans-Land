@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "spawn"
+    }
+  ],
+  "type": "nomansland:change_colors",
+  "biomes": "spawn:cold_island",
+    "grass_color": 8942931,
+    "foliage_color": 8942931,
+    "fog_color": 12639487,
+    "sky_color": 8431871,
+    "water_color": 3899064,
+    "water_fog_color": 2386591
+}

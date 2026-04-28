@@ -42,7 +42,7 @@ public class FruitCakeBlock extends CakeBlock {
             }
         }
 
-        if (stack.is(ModTags.KNIVES)) {
+        if (stack.is(ModTags.Items.KNIVES)) {
             if (bites < 6) {
                 level.setBlockAndUpdate(pos, state.setValue(CakeBlock.BITES, bites + 1));
             } else level.removeBlock(pos, false);

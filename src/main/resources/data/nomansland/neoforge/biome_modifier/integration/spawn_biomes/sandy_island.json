@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "spawn"
+    }
+  ],
+  "type": "nomansland:change_colors",
+  "biomes": "spawn:sandy_island",
+    "grass_color": 12564307,
+    "grass_color_modifier": "none",
+    "fog_color": 12711423,
+    "sky_color": 6800872,
+    "water_color": 3906239,
+    "water_fog_color": 2979747
+}

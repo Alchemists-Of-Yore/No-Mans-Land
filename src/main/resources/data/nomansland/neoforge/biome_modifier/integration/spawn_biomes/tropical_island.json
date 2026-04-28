@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "spawn"
+    }
+  ],
+  "type": "nomansland:change_colors",
+  "biomes": "spawn:tropical_island",
+    "fog_color": 12711423,
+    "grass_color": 7264820,
+    "foliage_color": 9815848,
+    "sky_color": 6800872,
+    "water_color": 4106959,
+    "water_fog_color": 3048361
+}
