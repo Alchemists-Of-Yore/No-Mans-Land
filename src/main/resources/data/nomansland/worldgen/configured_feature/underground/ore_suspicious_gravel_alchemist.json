@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:ore",
+  "config": {
+    "size": 3,
+   "discard_chance_on_air_exposure": 0.0,
+    "targets": [
+      {
+        "state": {
+          "Name": "minecraft:suspicious_gravel"
+        },
+        "target": {
+          "predicate_type": "minecraft:block_match",
+          "block": "minecraft:gravel"
+        }
+      }
+    ]
+  }
+}
