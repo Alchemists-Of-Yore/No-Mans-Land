@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:chicken"
+    },
+    "weight": 1,
+    "text": "A bird that forgot it could fly.//\nMaybe/ that explains the hurry.//\nStill searching,/ one step at a time,/ for what it put/ down."
+}

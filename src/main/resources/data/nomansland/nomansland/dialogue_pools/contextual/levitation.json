@@ -1,0 +1,8 @@
+{
+    "condition": {
+      "type": "nomansland:effect_conditional",
+      "effects": ["minecraft:levitation"]
+    },
+    "weight": 1,
+    "text": "Paying me a visit?\nMight prove difficult, I fear."
+}

@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:frog"
+    },
+    "weight": 1,
+    "text": "Moving in leaps, in rhythm/ with the world’s heartbeat.\nIt does not/ seem to think much, but would one so in tune/ even need to?"
+}

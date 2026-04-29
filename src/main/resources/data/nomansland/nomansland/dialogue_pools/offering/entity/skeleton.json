@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:skeleton"
+    },
+    "weight": 1,
+    "text": "A memory refusing to fade.\nBones are a foundation,/ and the last to let go."
+}

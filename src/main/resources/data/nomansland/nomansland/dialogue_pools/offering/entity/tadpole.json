@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": "minecraft:tadpole"
+    },
+    "weight": 1,
+    "text": "The beginning of life spares no time for complexity.//\nUnderstandably,/ someone has to// mind the water."
+}
