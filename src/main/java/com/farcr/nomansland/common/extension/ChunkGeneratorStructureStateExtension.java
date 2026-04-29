@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ChunkGeneratorStructureStateExtension {
     default @Nullable ChunkPos meetingPointPosition() throws NotImplementedException {
         throw new NotImplementedException();
-    };
+    }
 
     default @Nullable ChunkGenerator nomansland$chunkGenerator() {
         return null;

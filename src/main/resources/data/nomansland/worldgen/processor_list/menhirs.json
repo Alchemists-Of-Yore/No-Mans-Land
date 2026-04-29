@@ -79,16 +79,6 @@
       "block": "nomansland:reeds",
       "chance": 0.35,
       "processor_type": "nomansland:tall_block_remover"
-    },
-    {
-      "processor_type": "nomansland:feature",
-      "placeholders": {
-        "minecraft:green_concrete": "minecraft:patch_tall_grass",
-        "minecraft:lime_concrete": "nomansland:patch_grass_sparse",
-        "minecraft:light_gray_concrete": "nomansland:patch_pebble",
-        "minecraft:brown_concrete": "nomansland:coarse_dirt_patch",
-        "minecraft:purple_concrete": "nomansland:underground/patch_ancestral_effigy"
-      }
     }
   ]
 }

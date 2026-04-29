@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.world.orevein;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.world.InterpolatedNoiseField;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
@@ -24,9 +23,7 @@ import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
-import net.neoforged.fml.loading.FMLLoader;
 
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -168,7 +165,7 @@ public class OreVeinSystem {
         return oreVeinsInChunk;
     }
 
-    private void fill(List<OreVeinInstance> oreVeinsInChunk, WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
+    public static void fill(List<OreVeinInstance> oreVeinsInChunk, WorldGenLevel level, ChunkAccess chunk, RandomState randomState) {
         ChunkPos chunkpos = chunk.getPos();
         int chunkMinX = chunkpos.getMinBlockX(),
             chunkMinZ = chunkpos.getMinBlockZ();
@@ -221,7 +218,7 @@ public class OreVeinSystem {
         }
     }
 
-    private void fillColumnForVein(OreVeinInstance veinInstance,
+    private static void fillColumnForVein(OreVeinInstance veinInstance,
                                    int localX, int localZ, int worldX, int worldZ, int chunkMinY, BlockPos.MutableBlockPos pos,
                                    InterpolatedNoiseField oreVeinAField, InterpolatedNoiseField oreVeinBField, InterpolatedNoiseField oreGapField,
                                    WorldGenLevel level, ChunkAccess chunk, RandomSource fillRandom) {
@@ -281,5 +278,5 @@ public class OreVeinSystem {
         }
     }
 
-    private record OreVeinInstance(OreVeinType type, int x, int z, int minY, int maxY, int radius, int radiusSquared, float veinRadius) {}
+    public record OreVeinInstance(OreVeinType type, int x, int z, int minY, int maxY, int radius, int radiusSquared, float veinRadius) {}
 }

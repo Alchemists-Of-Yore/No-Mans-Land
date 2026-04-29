@@ -23,10 +23,6 @@ public class NMLStructureProcessorTypes {
             BLOCK_REMOVER = register("block_remover", BlockRemoverProcessor.CODEC);
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<InvertedBellProcessor>>
             BELL_PROCESSOR = register("inverted_bell", InvertedBellProcessor.CODEC);
-    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<FeatureProcessor>>
-            FEATURE = register("feature", FeatureProcessor.CODEC);
-    public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<OreVeinProcessor>>
-            ORE_VEIN = register("ore_vein", OreVeinProcessor.CODEC);
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<BlockStateModifierProcessor>>
             BLOCKSTATE_MODIFIER = register("blockstate_modifier", BlockStateModifierProcessor.CODEC);
 

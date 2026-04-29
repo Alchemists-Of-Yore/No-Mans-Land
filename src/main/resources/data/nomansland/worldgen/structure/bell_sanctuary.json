@@ -17,5 +17,11 @@
     }
   },
   "use_expansion_hack": false,
-  "spawn_overrides": {}
+  "spawn_overrides": {},
+  "feature_placeholders": {
+    "minecraft:blue_concrete": "nomansland:pots/pots_alchemist_treasure",
+    "minecraft:red_concrete": "nomansland:pots/pots_alchemist_potions",
+    "minecraft:yellow_concrete": "nomansland:pots/pots_alchemist_alchemy",
+    "minecraft:orange_concrete": "nomansland:pots/pots_alchemist_artisanship"
+  }
 }

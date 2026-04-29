@@ -49,21 +49,6 @@
 },
     {
       "processor_type": "nomansland:candles"
-    },
-    {
-      "processor_type": "nomansland:feature",
-      "placeholders": {
-        "minecraft:blue_concrete": "nomansland:pots/pots_alchemist_treasure",
-        "minecraft:red_concrete": "nomansland:pots/pots_alchemist_potions",
-        "minecraft:yellow_concrete": "nomansland:pots/pots_alchemist_alchemy",
-        "minecraft:orange_concrete": "nomansland:pots/pots_alchemist_artisanship"
-      }
-    },
-    {
-      "processor_type": "nomansland:ore_vein",
-      "blocks": [
-        "nomansland:siltstone"
-      ]
     }
   ]
 }

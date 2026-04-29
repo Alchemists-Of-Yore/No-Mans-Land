@@ -1,16 +1,16 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "nomansland:menhir",
   "start_pool": "nomansland:menhirs/grand_menhir",
-  "size": 10,
-  "max_distance_from_center": 64,
   "biomes": "#nomansland:classic_soil",
   "step": "surface_structures",
-  "liquid_settings": "ignore_waterlogging",
   "terrain_adaptation": "beard_thin",
-  "start_height": {
-    "absolute": 0
-  },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
-  "use_expansion_hack": false,
-  "spawn_overrides": {}
+  "spawn_overrides": {},
+  "feature_placeholders": {
+    "minecraft:green_concrete": "minecraft:patch_tall_grass",
+    "minecraft:lime_concrete": "nomansland:patch_grass_sparse",
+    "minecraft:light_gray_concrete": "nomansland:patch_pebble",
+    "minecraft:brown_concrete": "nomansland:coarse_dirt_patch",
+    "minecraft:purple_concrete": "nomansland:underground/patch_ancestral_effigy"
+  }
 }

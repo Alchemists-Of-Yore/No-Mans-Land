@@ -1,18 +1,28 @@
 package com.farcr.nomansland.common.world.structure;
 
 import com.farcr.nomansland.common.registry.worldgen.NMLStructureTypes;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
@@ -21,6 +31,7 @@ import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class MeetingPointStructure extends Structure {
@@ -30,7 +41,11 @@ public class MeetingPointStructure extends Structure {
             StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(s -> s.startPool),
             StructureTemplatePool.CODEC.fieldOf("menhir_small_pool").forGetter(s -> s.menhirSmallPool),
             StructureTemplatePool.CODEC.fieldOf("menhir_pool").forGetter(s -> s.menhirPool),
-            StructureTemplatePool.CODEC.fieldOf("menhir_large_pool").forGetter(s -> s.menhirLargePool)
+            StructureTemplatePool.CODEC.fieldOf("menhir_large_pool").forGetter(s -> s.menhirLargePool),
+            Codec.unboundedMap(
+                BuiltInRegistries.BLOCK.byNameCodec(),
+                ResourceKey.codec(Registries.CONFIGURED_FEATURE)
+            ).optionalFieldOf("feature_placeholders", Map.of()).forGetter(s -> s.featurePlaceholders)
         ).apply(instance, MeetingPointStructure::new)
     );
 
@@ -48,19 +63,28 @@ public class MeetingPointStructure extends Structure {
     private final Holder<StructureTemplatePool> menhirSmallPool;
     private final Holder<StructureTemplatePool> menhirPool;
     private final Holder<StructureTemplatePool> menhirLargePool;
+    private final Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders;
 
     public MeetingPointStructure(
             StructureSettings settings,
             Holder<StructureTemplatePool> startPool,
             Holder<StructureTemplatePool> menhirSmallPool,
             Holder<StructureTemplatePool> menhirPool,
-            Holder<StructureTemplatePool> menhirLargePool
+            Holder<StructureTemplatePool> menhirLargePool,
+            Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders
     ) {
         super(settings);
         this.startPool = startPool;
         this.menhirSmallPool = menhirSmallPool;
         this.menhirPool = menhirPool;
         this.menhirLargePool = menhirLargePool;
+        this.featurePlaceholders = featurePlaceholders;
+    }
+
+    @Override
+    public void afterPlace(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random, BoundingBox box, ChunkPos chunkPos, PiecesContainer pieces) {
+        super.afterPlace(level, structureManager, generator, random, box, chunkPos, pieces);
+        StructureFeatureHelper.replacePlaceholders(featurePlaceholders, level, generator, random, chunkPos, pieces);
     }
 
     @Override
