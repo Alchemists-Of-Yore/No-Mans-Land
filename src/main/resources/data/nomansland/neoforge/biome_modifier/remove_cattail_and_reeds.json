@@ -1,6 +1,6 @@
 {
   "type": "neoforge:remove_features",
-  "biomes": "#nomansland:feature_removal/no_cattail",
+  "biomes": "#nomansland:feature_removal/no_water_plants",
   "features": [
     "nomansland:patch_cattail",
     "nomansland:patch_reeds"

@@ -1,6 +1,6 @@
 {
   "type": "neoforge:remove_features",
-  "biomes": "#c:is_aquatic",
+  "biomes": "#nomansland:feature_removal/no_water_plants",
   "features": [
     "nomansland:patch_waterlily_common"
   ]
