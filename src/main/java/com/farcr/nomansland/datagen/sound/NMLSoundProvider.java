@@ -95,13 +95,13 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.DEER_AMBIENT, s -> s.with(allSounds("minecraft:mob/fox/idle", se -> se.pitch(0.4f))));
         add(NMLSounds.DEER_DEATH, s -> s.with(allSounds("minecraft:mob/fox/death", se -> se.pitch(0.4f).volume(0.9f))));
         add(NMLSounds.DEER_HURT, s -> s.with(allSounds("minecraft:mob/fox/hurt", se -> se.pitch(0.4f).volume(0.75f))));
-        add(NMLSounds.DEER_STEP, s -> s.with(allSounds("minecraft:mob/cow/step", se -> se.pitch(1.5f))));
+        add(NMLSounds.DEER_STEP, s -> s.with(allSounds("minecraft:mob/cow/step", se -> se.pitch(1.5f))).subtitle("subtitles.block.generic.footsteps"));
         add(NMLSounds.DEER_SHED_ANTLERS, s -> s.with(allSounds("minecraft:item/axe/strip", se -> se.volume(0.9f))));
 
         add(NMLSounds.MOOSE_AMBIENT, s -> s.with(allSounds("minecraft:mob/ravager/idle", se -> se.pitch(0.8f).volume(0.6f))));
         add(NMLSounds.MOOSE_DEATH, s -> s.with(allSounds("minecraft:mob/ravager/death", se -> se.pitch(1.4f).volume(0.9f))));
         add(NMLSounds.MOOSE_HURT, s -> s.with(allSounds("minecraft:mob/ravager/hurt", se -> se.pitch(1.4f).volume(0.75f))));
-        add(NMLSounds.MOOSE_STEP, s -> s.with(allSounds("minecraft:mob/cow/step", se -> se.pitch(0.5f))));
+        add(NMLSounds.MOOSE_STEP, s -> s.with(allSounds("minecraft:mob/cow/step", se -> se.pitch(0.5f))).subtitle("subtitles.block.generic.footsteps"));
         add(NMLSounds.MOOSE_EAT, s -> s.with(allSounds("minecraft:entity/horse/eat", se -> se.pitch(0.85f))));
         add(NMLSounds.MOOSE_REJECTS_FOOD, s -> s.with(allSounds("minecraft:mob/horse/breathe", se -> se.pitch(0.85f))));
         add(NMLSounds.MOOSE_REJECTS_SADDLE, s -> s
@@ -121,7 +121,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.GOOSE_AMBIENT, s -> s.with(allSounds("entity/goose/idle", se -> se.volume(0.8f))));
         add(NMLSounds.GOOSE_DEATH, s -> s.with(allSounds("entity/goose/death")));
         add(NMLSounds.GOOSE_HURT, s -> s.with(allSounds("entity/goose/hurt", se -> se.volume(0.8f))));
-        add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))));
+        add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))).subtitle("subtitles.block.generic.footsteps"));
 
         //Player
         add(NMLSounds.PLAYER_DRINK_MILK, s -> s.with(allSounds("minecraft:mob/wandering_trader/drink_milk")));

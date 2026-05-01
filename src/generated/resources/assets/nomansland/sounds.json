@@ -1189,7 +1189,7 @@
         "pitch": 1.5
       }
     ],
-    "subtitle": "nomansland.subtitle.entity.deer.step"
+    "subtitle": "subtitles.block.generic.footsteps"
   },
   "entity.friend_moon.offering_loop": {
     "sounds": [
@@ -1321,7 +1321,7 @@
         "pitch": 0.75
       }
     ],
-    "subtitle": "nomansland.subtitle.entity.goose.step"
+    "subtitle": "subtitles.block.generic.footsteps"
   },
   "entity.living_urn.shatter": {
     "sounds": [
@@ -1536,7 +1536,7 @@
         "pitch": 0.5
       }
     ],
-    "subtitle": "nomansland.subtitle.entity.moose.step"
+    "subtitle": "subtitles.block.generic.footsteps"
   },
   "entity.moose.stomp": {
     "sounds": [
