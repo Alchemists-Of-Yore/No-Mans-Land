@@ -1197,8 +1197,7 @@
         "name": "nomansland:entity/friend_moon/offering_loop",
         "stream": true
       }
-    ],
-    "subtitle": "nomansland.subtitle.entity.friend_moon.offering_loop"
+    ]
   },
   "entity.friend_moon.speak": {
     "sounds": [
@@ -1223,8 +1222,7 @@
         "name": "nomansland:entity/friend_moon/speak_ambient_loop",
         "stream": true
       }
-    ],
-    "subtitle": "nomansland.subtitle.entity.friend_moon.speak_ambient_loop"
+    ]
   },
   "entity.friend_moon.speak_sad": {
     "sounds": [

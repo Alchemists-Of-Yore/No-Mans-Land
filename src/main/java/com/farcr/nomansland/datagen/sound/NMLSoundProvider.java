@@ -139,8 +139,8 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         //Friend Moon
         add(NMLSounds.FRIEND_MOON_SPEAK, s -> s.with(allSounds("entity/friend_moon/speak")));
         add(NMLSounds.FRIEND_MOON_SPEAK_SAD, s -> s.with(allSounds("entity/friend_moon/speak_sad")));
-        add(NMLSounds.FRIEND_MOON_SPEAK_AMBIENT_LOOP, s -> s.with(sound("entity/friend_moon/speak_ambient_loop").stream()));
-        add(NMLSounds.FRIEND_MOON_OFFERING_LOOP, s -> s.with(sound("entity/friend_moon/offering_loop").stream()));
+        add(NMLSounds.FRIEND_MOON_SPEAK_AMBIENT_LOOP, s -> s.with(sound("entity/friend_moon/speak_ambient_loop").stream()).subtitle(null));
+        add(NMLSounds.FRIEND_MOON_OFFERING_LOOP, s -> s.with(sound("entity/friend_moon/offering_loop").stream()).subtitle(null));
 
         //Music
         add(NMLSounds.CAVE_MUSIC, s -> s.with(
