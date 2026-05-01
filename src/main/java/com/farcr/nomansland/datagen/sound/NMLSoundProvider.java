@@ -128,6 +128,9 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.PLAYER_HURT_SPIKE_TRAP, s -> s.with(allSounds("entity/player/hurt_spike_trap")));
 
         //Buddy
+        add(NMLSounds.BUDDY_AMBIENT, s -> s.with(allSounds("entity/buddy/idle", se -> se.volume(0.75f))));
+        add(NMLSounds.BUDDY_DEATH, s -> s.with(allSounds("entity/buddy/death")));
+        add(NMLSounds.BUDDY_HURT, s -> s.with(allSounds("entity/buddy/hurt", se -> se.volume(0.9f))));
         add(NMLSounds.BUDDY_BONE_BREAK, s -> s.with(allSounds("entity/buddy/bone_break")));
 
         //Living Urn

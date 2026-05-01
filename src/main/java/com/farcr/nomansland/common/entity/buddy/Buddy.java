@@ -3,6 +3,7 @@ package com.farcr.nomansland.common.entity.buddy;
 import com.farcr.nomansland.common.entity.variant_action.SetBuddyMushroom;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.registry.NMLRegistries;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.serialization.Dynamic;
 import dev.tazer.mixed_litter.MLRegistries;
@@ -20,6 +21,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -41,6 +43,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -132,6 +135,24 @@ public class Buddy extends PathfinderMob implements Npc {
             return lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
         }
         return "red";
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return NMLSounds.BUDDY_AMBIENT.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return NMLSounds.BUDDY_HURT.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return NMLSounds.BUDDY_DEATH.get();
     }
 
     @Override

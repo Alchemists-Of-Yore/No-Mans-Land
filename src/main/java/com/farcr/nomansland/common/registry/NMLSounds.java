@@ -98,6 +98,9 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> PLAYER_HURT_SPIKE_TRAP = registerSound("entity.player.hurt_spike_trap");
 
     //Buddy
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUDDY_AMBIENT = registerSound("entity.buddy.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUDDY_DEATH = registerSound("entity.buddy.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUDDY_HURT = registerSound("entity.buddy.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> BUDDY_BONE_BREAK = registerSound("entity.buddy.bone_break");
 
     //Living Urn

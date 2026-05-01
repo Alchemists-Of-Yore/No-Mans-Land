@@ -1024,6 +1024,27 @@
     ],
     "subtitle": "nomansland.subtitle.entity.billhook_bass.hurt"
   },
+  "entity.buddy.ambient": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/buddy/idle1",
+        "volume": 0.75
+      },
+      {
+        "name": "nomansland:entity/buddy/idle2",
+        "volume": 0.75
+      },
+      {
+        "name": "nomansland:entity/buddy/idle3",
+        "volume": 0.75
+      },
+      {
+        "name": "nomansland:entity/buddy/idle4",
+        "volume": 0.75
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.buddy.ambient"
+  },
   "entity.buddy.bone_break": {
     "sounds": [
       "nomansland:entity/buddy/bone_break1",
@@ -1034,6 +1055,30 @@
       "nomansland:entity/buddy/bone_break6"
     ],
     "subtitle": "nomansland.subtitle.entity.buddy.bone_break"
+  },
+  "entity.buddy.death": {
+    "sounds": [
+      "nomansland:entity/buddy/death1",
+      "nomansland:entity/buddy/death2"
+    ],
+    "subtitle": "nomansland.subtitle.entity.buddy.death"
+  },
+  "entity.buddy.hurt": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/buddy/hurt1",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/buddy/hurt2",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/buddy/hurt3",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.buddy.hurt"
   },
   "entity.deer.ambient": {
     "sounds": [
