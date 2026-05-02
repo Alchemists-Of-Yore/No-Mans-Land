@@ -21,6 +21,10 @@ import net.neoforged.neoforge.common.Tags;
 public class NMLSurfaceRules {
     private static final SurfaceRules.RuleSource COARSE_DIRT = makeStateRule(Blocks.COARSE_DIRT);
     private static final SurfaceRules.RuleSource PODZOL = makeStateRule(Blocks.PODZOL);
+    private static final SurfaceRules.RuleSource PODZOL_OVER_DIRT = SurfaceRules.sequence(
+            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, PODZOL),
+            SurfaceRules.ifTrue(SurfaceRules.UNDER_FLOOR, SurfaceRules.state(Blocks.DIRT.defaultBlockState()))
+    );
     private static final SurfaceRules.RuleSource MUD = makeStateRule(Blocks.MUD);
     private static final SurfaceRules.RuleSource SILT = makeStateRule(NMLBlocks.SILT.get());
     private static final SurfaceRules.RuleSource WATER = makeStateRule(Blocks.WATER);
@@ -75,19 +79,19 @@ public class NMLSurfaceRules {
 
         SurfaceRules.RuleSource darkForest = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(Biomes.DARK_FOREST),
-                SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), PODZOL)
+                SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), PODZOL_OVER_DIRT)
         );
 
         SurfaceRules.RuleSource autumnalForest = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.AUTUMNAL_FOREST),
                 SurfaceRules.sequence(
-                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.75), COARSE_DIRT),
-                        SurfaceRules.ifTrue(surfaceNoiseAbove(-0.95), PODZOL))
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.75), SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, COARSE_DIRT)),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(-0.95), PODZOL_OVER_DIRT))
         );
 
         SurfaceRules.RuleSource mapleForest = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.MAPLE_FOREST),
-                SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), PODZOL)
+                SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), PODZOL_OVER_DIRT)
         );
 
         SurfaceRules.RuleSource oldGrowthForest = SurfaceRules.ifTrue(
@@ -114,7 +118,8 @@ public class NMLSurfaceRules {
         SurfaceRules.RuleSource bayou = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.BAYOU),
                 SurfaceRules.sequence(
-                        SurfaceRules.ifTrue(surfaceNoiseAbove(2.0), MUD), SurfaceRules.ifTrue(surfaceNoiseAbove(1.75), PODZOL),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(2.0), SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, MUD)),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.75), PODZOL_OVER_DIRT),
                         SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(62), 0),
                                 SurfaceRules.ifTrue(SurfaceRules.not(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(63), 0)),
                                         SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), WATER))))
@@ -123,7 +128,7 @@ public class NMLSurfaceRules {
         SurfaceRules.RuleSource darkSwamp = SurfaceRules.ifTrue(
                 SurfaceRules.isBiome(NMLBiomes.DARK_SWAMP),
                 SurfaceRules.sequence(
-                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), PODZOL),
+                        SurfaceRules.ifTrue(surfaceNoiseAbove(1.25), PODZOL_OVER_DIRT),
                         SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(62), 0),
                                 SurfaceRules.ifTrue(SurfaceRules.not(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(63), 0)),
                                         SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), WATER))))
@@ -230,6 +235,13 @@ public class NMLSurfaceRules {
                                         desert_river,
                                         mud_beach,
                                         tropical_beach),
+                                // biome modifiers that handle their own ON_FLOOR/UNDER_FLOOR substrate
+                                SurfaceRules.ifTrue(SurfaceRules.waterBlockCheck(0, 0),
+                                        SurfaceRules.sequence(
+                                                darkForest, autumnalForest,
+                                                mapleForest, bayou, darkSwamp
+                                        )
+                                ),
                                 // top layer biome modifiers - grasses, etc.
                                 SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
                                     SurfaceRules.sequence(
@@ -237,12 +249,9 @@ public class NMLSurfaceRules {
                                             SurfaceRules.ifTrue(SurfaceRules.waterBlockCheck(0, 0),
                                                     SurfaceRules.sequence(
                                                             jungle,
-                                                            darkForest, autumnalForest,
-                                                            mapleForest, oldGrowthForest,
+                                                            oldGrowthForest,
                                                             frozenWoods,
-                                                            bog,
-                                                            bayou,
-                                                            darkSwamp
+                                                            bog
                                                     )
                                             ),
                                             // below water, or if nothing generated in the previous step

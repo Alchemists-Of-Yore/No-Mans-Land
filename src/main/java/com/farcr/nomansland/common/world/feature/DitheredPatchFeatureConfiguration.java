@@ -10,6 +10,8 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 
+import java.util.Optional;
+
 public record DitheredPatchFeatureConfiguration (
         IntProvider radius,
         IntProvider depth,
@@ -17,6 +19,7 @@ public record DitheredPatchFeatureConfiguration (
         FloatProvider noiseStrength,
         FloatProvider ditherStrength,
         BlockStateProvider blockProvider,
+        Optional<BlockStateProvider> substrateProvider,
         BlockPredicate target
 ) implements FeatureConfiguration {
     public static final Codec<DitheredPatchFeatureConfiguration> CODEC = RecordCodecBuilder.create(
@@ -27,6 +30,7 @@ public record DitheredPatchFeatureConfiguration (
                     FloatProvider.CODEC.fieldOf("noise_strength" ).orElse(ConstantFloat.of(5.0F)).forGetter(DitheredPatchFeatureConfiguration::noiseStrength),
                     FloatProvider.CODEC.fieldOf("dither_strength").orElse(ConstantFloat.of(3.0F)).forGetter(DitheredPatchFeatureConfiguration::ditherStrength),
                     BlockStateProvider.CODEC.fieldOf("block_provider").forGetter(DitheredPatchFeatureConfiguration::blockProvider),
+                    BlockStateProvider.CODEC.optionalFieldOf("substrate_provider").forGetter(DitheredPatchFeatureConfiguration::substrateProvider),
                     BlockPredicate.CODEC.fieldOf("target").forGetter(DitheredPatchFeatureConfiguration::target)
             ).apply(record, DitheredPatchFeatureConfiguration::new)
     );

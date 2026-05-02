@@ -98,6 +98,7 @@ public class DitheredPatchFeature extends Feature<DitheredPatchFeatureConfigurat
 
         BlockPredicate targetPredicate = config.target();
         BlockStateProvider blockProvider = config.blockProvider();
+        BlockStateProvider substrateProvider = config.substrateProvider().orElse(blockProvider);
         float maxValue = radius * radiusStrength + noiseStrength + (15/16.0F) * ditherStrength;
 
         boolean placedBlock = false;
@@ -120,7 +121,8 @@ public class DitheredPatchFeature extends Feature<DitheredPatchFeatureConfigurat
                     for (int yOffset = 0; yOffset < depthAtPos; yOffset++) {
                         mutableBlockPos.set(x, y - yOffset, z);
                         if (targetPredicate.test(level, mutableBlockPos)) {
-                            level.setBlock(mutableBlockPos, blockProvider.getState(random, mutableBlockPos), 2);
+                            BlockStateProvider provider = yOffset == 0 ? blockProvider : substrateProvider;
+                            level.setBlock(mutableBlockPos, provider.getState(random, mutableBlockPos), 2);
                             placedBlock = true;
                         }
                     }

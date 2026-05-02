@@ -7,6 +7,12 @@
         "Name": "minecraft:grass_block"
       }
     },
+    "substrate_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:dirt"
+      }
+    },
     "target": {
       "type": "minecraft:matching_blocks",
       "blocks": [
