@@ -75,7 +75,9 @@
       "minecraft:disk_clay",
       "minecraft:disk_gravel"
     ],
-    [],
+    [
+      "nomansland:underground/ore_suspicious_gravel_alchemist"
+    ],
     [
       "nomansland:underground/patch_ancestral_effigy",
       "nomansland:underground/ancestral_carving"

@@ -13,6 +13,13 @@
       "heightmap": "MOTION_BLOCKING_NO_LEAVES"
     },
     {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:gravel",
+        "blocks": "minecraft:water"
+      }
+    },
+    {
       "type": "minecraft:biome"
     }
   ]
