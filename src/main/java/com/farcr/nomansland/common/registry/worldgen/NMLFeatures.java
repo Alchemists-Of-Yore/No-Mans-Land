@@ -60,6 +60,9 @@ public class NMLFeatures {
     public static final Supplier<Feature<NoneFeatureConfiguration>> ANCESTRAL_CARVING = FEATURES.register("ancestral_carving",
             () -> new AncestralCarvingFeature(NoneFeatureConfiguration.CODEC));
 
+    public static final Supplier<Feature<SuspiciousOreFeatureConfiguration>> SUSPICIOUS_ORE = FEATURES.register("suspicious_ore",
+            () -> new SuspiciousOreFeature(SuspiciousOreFeatureConfiguration.CODEC));
+
     public static final ResourceKey<ConfiguredFeature<?, ?>> HUGE_FIELD_MUSHROOM = register("huge_field_mushroom");
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> OAK_APPLE_01 = register("oak_apple_01");
