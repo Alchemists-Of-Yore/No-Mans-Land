@@ -96,7 +96,6 @@
     "client.MusicManagerMixin",
     "client.ReceivingLevelScreenMixin",
     "client.RenderBuffersMixin",
-    "client.RenderSystemMixin",
     "client.SkinManagerMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",

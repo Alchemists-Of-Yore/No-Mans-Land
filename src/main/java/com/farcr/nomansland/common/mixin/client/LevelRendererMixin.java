@@ -146,7 +146,6 @@ public abstract class LevelRendererMixin {
     ) {
         FRIEND_RENDER_CONTEXT = true;
         FriendMoonRenderer renderer = FriendMoonRenderer.getInstance();
-        FriendMoonRenderer.setStencilRef();
         renderer.renderFriendMoon(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
         renderer.renderFriendShadow(frustumMatrix, projectionMatrix, Tesselator.getInstance(), new PoseStack(), partialTick);
     }

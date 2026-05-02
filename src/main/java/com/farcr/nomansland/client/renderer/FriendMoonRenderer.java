@@ -669,19 +669,6 @@ public class FriendMoonRenderer implements AutoCloseable {
         poseStack.popPose();
     }
 
-    public static @Nullable Integer stencilRef;
-    public static void setStencilRef() {
-        if (stencilRef == null) {
-            stencilRef = (highestStencilRef + 1);
-        }
-    }
-
-    private static int highestStencilRef = 0;
-    public static void setHighestStencilRef(int highest) {
-        if (highest > highestStencilRef)
-            highestStencilRef = highest;
-    }
-
     /*
     * encapsulated stencil calls to make sure that everything is clean
     * no more calling these individually, should help make
@@ -690,12 +677,12 @@ public class FriendMoonRenderer implements AutoCloseable {
     public static void enableStencil() {
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         RenderSystem.stencilMask(0xFF);
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, stencilRef, 0xFF);
+        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0xFF, 0xFF);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
     }
 
     public static void stencilHideState() {
-        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, stencilRef, 0xFF);
+        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 0xFF, 0xFF);
         RenderSystem.stencilMask(0x00);
         RenderSystem.stencilOp(
             GL11.GL_KEEP,
