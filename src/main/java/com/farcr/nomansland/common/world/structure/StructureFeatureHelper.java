@@ -16,6 +16,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ public final class StructureFeatureHelper {
 
         var featureRegistry = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        Map<BlockPos, ResourceKey<ConfiguredFeature<?, ?>>> features = new HashMap<>();
 
         for (BoundingBox pb : pieceBoxes) {
             int x0 = Math.max(pb.minX(), chunkMinX);
@@ -72,12 +74,16 @@ public final class StructureFeatureHelper {
 
                         BlockPos placePos = cursor.immutable();
                         level.setBlock(placePos, replacement, 2);
-                        featureRegistry.getHolder(featureKey).ifPresent(holder ->
-                            holder.value().place(level, generator, random, placePos)
-                        );
+                        features.put(placePos, featureKey);
                     }
                 }
             }
+        }
+
+        for (Map.Entry<BlockPos, ResourceKey<ConfiguredFeature<?, ?>>> entry : features.entrySet()) {
+            featureRegistry.getHolder(entry.getValue()).ifPresent(holder ->
+                holder.value().place(level, generator, random, entry.getKey())
+            );
         }
     }
 }

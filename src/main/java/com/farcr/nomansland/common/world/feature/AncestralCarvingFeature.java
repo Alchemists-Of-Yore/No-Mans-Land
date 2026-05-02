@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.world.feature;
 
 import com.farcr.nomansland.common.block.AncestralCarvingBlock;
+import com.farcr.nomansland.common.block.CarvingFormation;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -70,18 +71,17 @@ public class AncestralCarvingFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     private static void placeFormation(WorldGenLevel level, BlockPos gridOrigin, Direction facing, int rotation, Direction right, Direction down, int size) {
-        BlockState carving = NMLBlocks.ANCESTRAL_CARVING.get().defaultBlockState()
+        BlockState base = NMLBlocks.ANCESTRAL_CARVING.get().defaultBlockState()
                 .setValue(AncestralCarvingBlock.FACING, facing)
                 .setValue(AncestralCarvingBlock.ROTATION, rotation);
 
         for (int col = 0; col < size; col++) {
             for (int row = 0; row < size; row++) {
-                if (col == 0 && row == 0) continue;
                 BlockPos p = gridOrigin.relative(right, col).relative(down, row);
-                level.setBlock(p, carving, 2);
+                BlockState withFormation = base.setValue(AncestralCarvingBlock.FORMATION, CarvingFormation.getForPosition(size, col, row));
+                level.setBlock(p, withFormation, 2);
             }
         }
-        level.setBlock(gridOrigin, carving, 2);
     }
 
     private static int[] shuffledIndices(int n, RandomSource random) {
