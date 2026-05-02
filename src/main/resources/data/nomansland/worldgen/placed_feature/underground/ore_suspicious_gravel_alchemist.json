@@ -15,8 +15,8 @@
     {
       "type": "minecraft:block_predicate_filter",
       "predicate": {
-        "type": "minecraft:gravel",
-        "blocks": "minecraft:water"
+        "type": "minecraft:matching_blocks",
+        "blocks": "minecraft:gravel"
       }
     },
     {
