@@ -26,15 +26,15 @@ public class CrudeDoorBlock extends DoorBlock {
                     .apply(instance, CrudeDoorBlock::new)
     );
 
-    private static final VoxelShape LOWER_PANEL_NORTH = Block.box(0, 3, 0, 16, 28, 3.0);
-    private static final VoxelShape LOWER_PANEL_SOUTH = Block.box(0, 3, 13, 16, 28, 16.0);
-    private static final VoxelShape LOWER_PANEL_WEST = Block.box(0, 3, 0, 3, 28, 16.0);
-    private static final VoxelShape LOWER_PANEL_EAST = Block.box(13, 3, 0, 16, 28, 16.0);
+    private static final VoxelShape LOWER_PANEL_NORTH = Block.box(0, 3, 0, 16, 29, 3.0);
+    private static final VoxelShape LOWER_PANEL_SOUTH = Block.box(0, 3, 13, 16, 29, 16.0);
+    private static final VoxelShape LOWER_PANEL_WEST = Block.box(0, 3, 0, 3, 29, 16.0);
+    private static final VoxelShape LOWER_PANEL_EAST = Block.box(13, 3, 0, 16, 29, 16.0);
 
-    private static final VoxelShape UPPER_PANEL_NORTH = Block.box(0, -13, 0, 16, 12, 3.0);
-    private static final VoxelShape UPPER_PANEL_SOUTH = Block.box(0, -13, 13, 16, 12, 16.0);
-    private static final VoxelShape UPPER_PANEL_WEST = Block.box(0, -13, 0, 3, 12, 16.0);
-    private static final VoxelShape UPPER_PANEL_EAST = Block.box(13, -13, 0, 16, 12, 16.0);
+    private static final VoxelShape UPPER_PANEL_NORTH = Block.box(0, -13, 0, 16, 13, 3.0);
+    private static final VoxelShape UPPER_PANEL_SOUTH = Block.box(0, -13, 13, 16, 13, 16.0);
+    private static final VoxelShape UPPER_PANEL_WEST = Block.box(0, -13, 0, 3, 13, 16.0);
+    private static final VoxelShape UPPER_PANEL_EAST = Block.box(13, -13, 0, 16, 13, 16.0);
 
     public CrudeDoorBlock(BlockSetType blockSetType, Properties properties) {
         super(blockSetType, properties);
