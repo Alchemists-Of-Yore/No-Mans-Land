@@ -1,7 +1,30 @@
 {
-  "parent": "nomansland:block/alt_trapdoor_open",
-  "textures": {
-    "front": "nomansland:block/building/crude_trapdoor",
-    "side": "nomansland:block/building/crude_trapdoor_sides"
-  }
+	"credit": "Made by Sheddmer",
+	"parent": "nomansland:block/alt_trapdoor_open",
+	"render_type": "minecraft:cutout",
+	"textures": {
+		"front": "nomansland:block/building/crude_trapdoor",
+		"side": "nomansland:block/building/crude_trapdoor_sides"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 13],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 16, 16, 0], "texture": "#front"},
+				"east": {"uv": [16, 4, 0, 7], "rotation": 90, "texture": "#side", "cullface": "east"},
+				"south": {"uv": [0, 16, 16, 0], "texture": "#front", "cullface": "south"},
+				"west": {"uv": [0, 11, 16, 8], "rotation": 90, "texture": "#side", "cullface": "west"},
+				"down": {"uv": [16, 3, 0, 0], "texture": "#side", "cullface": "down"}
+			}
+		},
+		{
+			"from": [0, 14, 13],
+			"to": [16, 14, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 14, 13]},
+			"faces": {
+				"up": {"uv": [0, 12, 16, 15], "texture": "#side"}
+			}
+		}
+	]
 }
