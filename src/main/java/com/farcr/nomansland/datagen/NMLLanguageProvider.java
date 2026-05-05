@@ -165,8 +165,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("item.nomansland.bandage.effect.weakness", "Weakness Bandage");
         add("item.nomansland.bandage.effect.weaving", "Weaving Bandage");
         add("item.nomansland.bandage.effect.wind_charged", "Wind Charging Bandage");
-        add("item.nomansland.bandage.effect.wind_charged", "Healing Bandage");
-        add("item.nomansland.bandage.effect.wind_charged", "Harming Bandage");
+        add("item.nomansland.bandage.effect.instant_health", "Healing Bandage");
+        add("item.nomansland.bandage.effect.instant_harming", "Harming Bandage");
         add("nomansland.advancements.use_tap.title", "Tree Juice");
         add("nomansland.advancements.use_tap.description", "Collect Resin or Maple Syrup with a Tap and a Cauldron");
         add("nomansland.advancements.kill_anchored_mob.title", "Can't Even Die Right");

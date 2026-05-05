@@ -1,5 +1,5 @@
 {
-  "parent": "farmersdelight:block/pie_slice2",
+  "parent": "farmersdelight:block/template_pie_slice2",
   "textures": {
     "particle": "nomansland:block/food/pear_cobbler_top",
     "bottom": "farmersdelight:block/pie_bottom",
