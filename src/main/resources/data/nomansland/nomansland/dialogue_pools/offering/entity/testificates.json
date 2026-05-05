@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:entity_conditional",
+        "entity": ["minecraft:villager", "minecraft:wandering_trader", "minecraft:witch"]
+    },
+    "weight": 1,
+    "text": "For time immeasurable have I tried contacting them, the smooth-headed.\n I hoped that in them I would find company, and perhaps answers... To the whereabouts of my fellows.\n Yet my invitations were met with silence. For their dreams remained tethered to the soil from which their crops, and townships, modestly grow.\n We seem to not be cut from the same cloth, not at all..."
+}
