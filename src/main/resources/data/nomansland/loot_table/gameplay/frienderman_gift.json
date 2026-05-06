@@ -35,7 +35,7 @@
             }
           ],
           "name": "minecraft:map",
-          "weight": 10
+          "weight": 5
         },
         {
           "type": "minecraft:item",
@@ -62,7 +62,7 @@
             }
           ],
           "name": "minecraft:map",
-          "weight": 10
+          "weight": 5
         },
         {
           "type": "minecraft:item",
