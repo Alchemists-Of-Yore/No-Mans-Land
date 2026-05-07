@@ -64,12 +64,14 @@ public class AlterGroundDecoratorMixin {
 
                 if (distance > maxDistance) continue;
 
-                if (Feature.isGrassOrDirt(context.level(), current)) {
+                if (context.level().isStateAtPosition(current.above(), state -> !state.isSolid())) {
                     context.setBlock(current, eventProvider.getState(random, current));
                     spreadCount++;
+                }
 
-                    for (Direction direction : Direction.values()) {
-                        BlockPos neighbor = current.relative(direction);
+                for (Direction direction : Direction.Plane.HORIZONTAL) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        BlockPos neighbor = current.relative(direction).above(dy);
 
                         if (!visited.contains(neighbor) && Feature.isGrassOrDirt(context.level(), neighbor) && random.nextFloat() < 0.8f) {
                             visited.add(neighbor);
