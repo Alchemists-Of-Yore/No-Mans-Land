@@ -5,8 +5,6 @@ import com.farcr.nomansland.common.world.orevein.OreVeinSystem;
 import com.farcr.nomansland.common.world.orevein.OreVeinSystem.OreVeinInstance;
 import com.farcr.nomansland.common.world.orevein.OreVeinType;
 import net.minecraft.core.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -138,16 +136,20 @@ public final class StructureBiomeHelper {
         PiecesContainer pieces
     ) {
         if (level.getLevel().dimension() != Level.OVERWORLD) return;
+        if (pieces.pieces().isEmpty()) return;
+
+        Optional<BoundingBox> maybeOverall = BoundingBox.encapsulatingBoxes(
+            pieces.pieces().stream().map(StructurePiece::getBoundingBox).toList()
+        );
+        if (maybeOverall.isEmpty()) return;
+        BoundingBox overall = maybeOverall.get();
 
         Registry<OreVeinType> registry = level.registryAccess().registryOrThrow(NMLRegistries.ORE_VEIN_KEY);
         RandomState randomState = level.getLevel().getChunkSource().randomState();
         ChunkGenerator generator = level.getLevel().getChunkSource().getGenerator();
         WorldGenerationContext context = new WorldGenerationContext(generator, level);
 
-        int chunkMinX = chunkPos.getMinBlockX();
-        int chunkMinZ = chunkPos.getMinBlockZ();
-
-        List<OreVeinInstance> veinsInChunk = new ArrayList<>();
+        List<OreVeinInstance> veins = new ArrayList<>();
 
         for (Holder.Reference<OreVeinType> typeHolder : registry.holders().toList()) {
             OreVeinType type = typeHolder.value();
@@ -155,87 +157,60 @@ public final class StructureBiomeHelper {
             HolderSet<Biome> allowed = type.biomes().get();
             if (!allowed.contains(targetBiome)) continue;
 
-            ResourceLocation typeId = typeHolder.key().location();
-            int centerCellX = Math.floorDiv(chunkMinX, type.spacing());
-            int centerCellZ = Math.floorDiv(chunkMinZ, type.spacing());
+            int spacing = type.spacing();
+            int window = spacing - type.separation();
+            int minCellX = Math.floorDiv(overall.minX() - window + 1, spacing);
+            int maxCellX = Math.floorDiv(overall.maxX(), spacing);
+            int minCellZ = Math.floorDiv(overall.minZ() - window + 1, spacing);
+            int maxCellZ = Math.floorDiv(overall.maxZ(), spacing);
 
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    Optional<OreVeinInstance> maybeInstance = createVeinForBiome(
-                        type, typeId, centerCellX + dx, centerCellZ + dz, allowed,
-                        context, randomState, generator, level, pieces
-                    );
-                    if (maybeInstance.isEmpty()) continue;
+            for (int cellX = minCellX; cellX <= maxCellX; cellX++) {
+                for (int cellZ = minCellZ; cellZ <= maxCellZ; cellZ++) {
+                    int cellMinX = cellX * spacing;
+                    int cellMinZ = cellZ * spacing;
+                    int rangeMinX = Math.max(cellMinX, overall.minX());
+                    int rangeMaxX = Math.min(cellMinX + window, overall.maxX() + 1);
+                    int rangeMinZ = Math.max(cellMinZ, overall.minZ());
+                    int rangeMaxZ = Math.min(cellMinZ + window, overall.maxZ() + 1);
+                    if (rangeMinX >= rangeMaxX || rangeMinZ >= rangeMaxZ) continue;
 
-                    OreVeinInstance instance = maybeInstance.get();
-                    if (Mth.length(chunkMinX - instance.x(), chunkMinZ - instance.z()) > instance.radius() + 24) continue;
+                    RandomSource veinRandom = randomState
+                        .getOrCreateRandomFactory(typeHolder.key().location())
+                        .at(cellX, 0, cellZ);
 
-                    veinsInChunk.add(instance);
+                    if (veinRandom.nextFloat() > type.probability()) continue;
+
+                    int minY = type.minHeight().sample(veinRandom, context);
+                    int maxY = type.maxHeight().sample(veinRandom, context);
+                    if (minY > maxY) continue;
+
+                    int centerX = veinRandom.nextInt(rangeMinX, rangeMaxX);
+                    int centerZ = veinRandom.nextInt(rangeMinZ, rangeMaxZ);
+
+                    int sampleY = type.sampleBiomeAtSurface()
+                        ? generator.getBaseHeight(centerX, centerZ, Heightmap.Types.OCEAN_FLOOR, level, randomState)
+                        : (minY + maxY) / 2;
+                    Holder<Biome> sourceBiome = generator.getBiomeSource().getNoiseBiome(
+                        QuartPos.fromBlock(centerX), QuartPos.fromBlock(sampleY), QuartPos.fromBlock(centerZ),
+                        randomState.sampler());
+                    if (allowed.contains(sourceBiome)) continue;
+
+                    int radius = type.radius().sample(veinRandom);
+                    if (radius <= 0) continue;
+                    float veinRadius = type.veinRadius().sample(veinRandom);
+                    if (veinRadius <= 0) continue;
+
+                    veins.add(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, radius * radius, veinRadius));
                 }
             }
         }
 
-        if (veinsInChunk.isEmpty()) return;
+        if (veins.isEmpty()) return;
 
-        veinsInChunk.sort(Comparator
+        veins.sort(Comparator
             .comparingInt((OreVeinInstance i) -> i.type().generationOrder())
             .thenComparingInt(i -> Math.abs(i.x()) + Math.abs(i.z())));
 
-        OreVeinSystem.fill(veinsInChunk, level, chunk, randomState);
-    }
-
-    private static Optional<OreVeinInstance> createVeinForBiome(
-        OreVeinType type, ResourceLocation typeId, int cellX, int cellZ,
-        HolderSet<Biome> allowedBiomes,
-        WorldGenerationContext context, RandomState randomState, ChunkGenerator generator,
-        WorldGenLevel level,
-        PiecesContainer pieces
-    ) {
-        RandomSource veinRandom = randomState.getOrCreateRandomFactory(typeId).at(cellX, 0, cellZ);
-
-        if (veinRandom.nextFloat() > type.probability()) return Optional.empty();
-
-        int minY = type.minHeight().sample(veinRandom, context);
-        int maxY = type.maxHeight().sample(veinRandom, context);
-        if (minY > maxY) return Optional.empty();
-
-        int centerY = (minY + maxY) / 2;
-
-        int minX = cellX * type.spacing();
-        int minZ = cellZ * type.spacing();
-        int maxX = minX + (type.spacing() - type.separation());
-        int maxZ = minZ + (type.spacing() - type.separation());
-        int centerX = veinRandom.nextInt(minX, maxX);
-        int centerZ = veinRandom.nextInt(minZ, maxZ);
-
-        int sampleY = centerY;
-        if (type.sampleBiomeAtSurface()) {
-            sampleY = generator.getBaseHeight(centerX, centerZ, Heightmap.Types.OCEAN_FLOOR, level, randomState);
-        }
-
-        Holder<Biome> sourceBiome = generator.getBiomeSource().getNoiseBiome(
-            QuartPos.fromBlock(centerX), QuartPos.fromBlock(sampleY), QuartPos.fromBlock(centerZ),
-            randomState.sampler());
-        if (allowedBiomes.contains(sourceBiome)) return Optional.empty();
-
-        if (!isInPieces(centerX, sampleY, centerZ, pieces)) return Optional.empty();
-
-        int radius = type.radius().sample(veinRandom);
-        if (radius <= 0) return Optional.empty();
-
-        float veinRadius = type.veinRadius().sample(veinRandom);
-        if (veinRadius <= 0) return Optional.empty();
-
-        return Optional.of(new OreVeinInstance(type, centerX, centerZ, minY, maxY, radius, radius * radius, veinRadius));
-    }
-
-    private static boolean isInPieces(int x, int y, int z, PiecesContainer pieces) {
-        for (StructurePiece piece : pieces.pieces()) {
-            BoundingBox b = piece.getBoundingBox();
-            if (x >= b.minX() && x <= b.maxX() && y >= b.minY() && y <= b.maxY() && z >= b.minZ() && z <= b.maxZ()) {
-                return true;
-            }
-        }
-        return false;
+        OreVeinSystem.fill(veins, level, chunk, randomState);
     }
 }

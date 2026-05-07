@@ -59,7 +59,6 @@ public class CrudeDoorBlock extends DoorBlock {
         return switch (panelDir) {
             case NORTH -> isLower ? LOWER_PANEL_NORTH : UPPER_PANEL_NORTH;
             case SOUTH -> isLower ? LOWER_PANEL_SOUTH : UPPER_PANEL_SOUTH;
-            case WEST -> isLower ? LOWER_PANEL_WEST : UPPER_PANEL_WEST;
             case EAST -> isLower ? LOWER_PANEL_EAST : UPPER_PANEL_EAST;
             default -> isLower ? LOWER_PANEL_WEST : UPPER_PANEL_WEST;
         };

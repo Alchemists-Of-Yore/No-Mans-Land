@@ -19,8 +19,14 @@ public abstract class ChunkGeneratorMixin implements ChunkGeneratorExtension {
     @Unique
     private ChunkGeneratorStructureState nomansland$structureState = null;
 
+    @Inject(method = "createState", at = @At("HEAD"))
+    private void nomansland$publishGeneratorForState(HolderLookup<StructureSet> structureSetLookup, RandomState randomState, long seed, CallbackInfoReturnable<ChunkGeneratorStructureState> cir) {
+        ChunkGeneratorStructureStateExtension.CURRENT_GENERATOR.set((ChunkGenerator) (Object) this);
+    }
+
     @Inject(method = "createState", at = @At("RETURN"))
     private void nomansland$attachSelfToState(HolderLookup<StructureSet> structureSetLookup, RandomState randomState, long seed, CallbackInfoReturnable<ChunkGeneratorStructureState> cir) {
+        ChunkGeneratorStructureStateExtension.CURRENT_GENERATOR.remove();
         ChunkGeneratorStructureState state = cir.getReturnValue();
         if (state instanceof ChunkGeneratorStructureStateExtension extension) {
             extension.nomansland$setChunkGenerator((ChunkGenerator) (Object) this);

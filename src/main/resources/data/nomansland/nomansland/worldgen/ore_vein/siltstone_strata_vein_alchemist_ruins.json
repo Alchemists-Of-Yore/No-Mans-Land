@@ -3,7 +3,7 @@
   "separation": 64,
   "probability": 1.0,
   "generation_order": 33,
-  "biomes": "nomansland:alchemist_ruins",
+  "biomes": ["nomansland:alchemist_ruins"],
 
   "radius": {
     "type": "uniform",

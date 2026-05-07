@@ -67,6 +67,9 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
     @Inject(method = "lambda$generatePositions$4", at = @At("TAIL"))
     private void generateMeetingPointPosition(Set<Holder<StructureSet>> possibleStructureSets, Holder<StructureSet> setHolder, CallbackInfo ci, @Local boolean hasAnyPlaceableStructures) {
         if (hasAnyPlaceableStructures && setHolder.value().placement() instanceof MeetingPointStructurePlacement meetingPointPlacement) {
+            if (nomansland$chunkGenerator == null) {
+                nomansland$chunkGenerator = ChunkGeneratorStructureStateExtension.CURRENT_GENERATOR.get();
+            }
             meetingPointPosition = generateMeetingPointPosition(setHolder.value(), meetingPointPlacement);
         }
     }
@@ -82,7 +85,7 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
                 () -> {
                     Pair<BlockPos, Holder<Biome>> closestBiome = null;
                     int tries = 0;
-                    while (closestBiome == null && tries < 25) {
+                    while (closestBiome == null && tries < 50) {
                         double angle = random.nextDouble() * Math.PI * 2.0;
                         double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
                         int x = (int) Math.round(Math.cos(angle) * distance);

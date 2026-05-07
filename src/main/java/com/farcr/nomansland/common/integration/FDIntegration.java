@@ -10,6 +10,7 @@ import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.BlockProperties;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.event.CommonSetupEvents;
+import com.farcr.nomansland.common.item.PestoBottleItem;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLFoods;
@@ -164,8 +165,8 @@ public class FDIntegration {
     public static final FoodProperties PEAR_JUICE_FOOD = new FoodProperties.Builder().nutrition(9).saturationModifier(1.0F).alwaysEdible()
             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 300, 0), 1).build();
 
-    public static final ItemDefinition<DrinkableItem> PESTO_BOTTLE = NMLItems.register("pesto_bottle",
-            () -> new DrinkableItem(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16).food(FDIntegration.PESTO_BOTTLE_FOOD)));
+    public static final ItemDefinition<PestoBottleItem> PESTO_BOTTLE = NMLItems.register("pesto_bottle",
+            () -> new PestoBottleItem(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16).food(FDIntegration.PESTO_BOTTLE_FOOD)));
 
     public static final FoodProperties PESTO_BOTTLE_FOOD = new FoodProperties.Builder().nutrition(3).saturationModifier(1.2F).build();
 
