@@ -329,6 +329,8 @@ public class CommonSetupEvents {
 
         registrar.playToClient(ClientboundInvertedBellPacket.TYPE, ClientboundInvertedBellPacket.STREAM_CODEC, ClientboundInvertedBellPacket::handleData);
         registrar.playToClient(ClientboundDistantChunkPacket.TYPE, ClientboundDistantChunkPacket.STREAM_CODEC, ClientboundDistantChunkPacket::handleData);
+
+        registrar.playToClient(ClientboundBandageSoundPacket.TYPE, ClientboundBandageSoundPacket.STREAM_CODEC, ClientboundBandageSoundPacket::handleData);
     }
 
     @SubscribeEvent
