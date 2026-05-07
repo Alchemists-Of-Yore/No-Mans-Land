@@ -111,7 +111,7 @@ public class MeetingPointStructure extends Structure {
             StructurePoolElement altarElement = startPool.value().getRandomTemplate(placementRandom);
             BoundingBox altarBox = altarElement.getBoundingBox(templates, altarPos, Rotation.NONE);
             builder.addPiece(new PoolElementStructurePiece(
-                templates, altarElement, altarPos, 0, Rotation.NONE, altarBox,
+                templates, altarElement, altarPos, 2, Rotation.NONE, altarBox,
                 LiquidSettings.IGNORE_WATERLOGGING
             ));
             placedBoxes.add(altarBox);

@@ -20,7 +20,9 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -43,19 +45,22 @@ public class MenhirStructure extends Structure {
             Codec.unboundedMap(
                 BuiltInRegistries.BLOCK.byNameCodec(),
                 ResourceKey.codec(Registries.CONFIGURED_FEATURE)
-            ).optionalFieldOf("feature_placeholders", Map.of()).forGetter(s -> s.featurePlaceholders)
+            ).optionalFieldOf("feature_placeholders", Map.of()).forGetter(s -> s.featurePlaceholders),
+            HeightProvider.CODEC.optionalFieldOf("start_height").forGetter(s -> s.startHeight)
         ).apply(instance, MenhirStructure::new)
     );
 
     private final Holder<StructureTemplatePool> startPool;
     private final Heightmap.Types projectStartToHeightmap;
     private final Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders;
+    private final Optional<HeightProvider> startHeight;
 
-    public MenhirStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool, Heightmap.Types projectStartToHeightmap, Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders) {
+    public MenhirStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool, Heightmap.Types projectStartToHeightmap, Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders, Optional<HeightProvider> startHeight) {
         super(settings);
         this.startPool = startPool;
         this.projectStartToHeightmap = projectStartToHeightmap;
         this.featurePlaceholders = featurePlaceholders;
+        this.startHeight = startHeight;
     }
 
     @Override
@@ -66,10 +71,13 @@ public class MenhirStructure extends Structure {
 
         int centerX = chunkPos.getMiddleBlockX();
         int centerZ = chunkPos.getMiddleBlockZ();
-        int surfaceY = context.chunkGenerator().getFirstOccupiedHeight(
+        int surfaceY = context.chunkGenerator().getFirstFreeHeight(
             centerX, centerZ, projectStartToHeightmap,
             context.heightAccessor(), context.randomState()
         );
+        if (startHeight.isPresent()) {
+            surfaceY += startHeight.get().sample(random, new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
+        }
         BlockPos blockPos = new BlockPos(centerX, surfaceY, centerZ);
 
         Rotation rotation = rotationTowardMeetingPoint(context, centerX, centerZ, random);

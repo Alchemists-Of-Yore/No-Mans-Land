@@ -6,6 +6,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 public interface ChunkGeneratorStructureStateExtension {
+    ThreadLocal<ChunkGenerator> CURRENT_GENERATOR = new ThreadLocal<>();
+
     default @Nullable ChunkPos meetingPointPosition() throws NotImplementedException {
         throw new NotImplementedException();
     }
