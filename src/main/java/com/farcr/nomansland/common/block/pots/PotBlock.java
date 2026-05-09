@@ -12,7 +12,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
@@ -67,7 +66,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbilities;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, Fallable {
     public static final MapCodec<PotBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -87,6 +85,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         super(properties);
         this.size = size;
         registerDefaultState(stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH).setValue(WATERLOGGED, false).setValue(BRITTLE, false).setValue(POWERED, false));
+    }
+
+    public PotSize getSize() {
+        return size;
     }
 
     public MapCodec<PotBlock> codec() {
@@ -213,9 +215,6 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 }
             }
             pot.removeModifier(PotModifier.INFESTED);
-            pot.setChanged();
-            level.sendBlockUpdated(pos, state, state, 3);
-            return ItemInteractionResult.SUCCESS;
         }
 
         if (pot.hasModifier(PotModifier.OOZING)) {
@@ -234,9 +233,6 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 }
             }
             pot.removeModifier(PotModifier.OOZING);
-            pot.setChanged();
-            level.sendBlockUpdated(pos, state, state, 3);
-            return ItemInteractionResult.SUCCESS;
         }
 
         if (stack.isEmpty()) {
@@ -364,8 +360,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
             if (pot.variant == null) {
-                List<Holder.Reference<PotVariant>> variants = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).holders().filter(variant -> variant.value().size() == size).toList();
-                pot.variant = variants.get(level.getRandom().nextInt(variants.size())).value();
+                pot.ensureVariant(size);
             } else if (state.getValue(BRITTLE) != pot.variant.traits().contains(PotTrait.BRITTLE)) state.setValue(BRITTLE, pot.variant.traits().contains(PotTrait.BRITTLE));
         }
 

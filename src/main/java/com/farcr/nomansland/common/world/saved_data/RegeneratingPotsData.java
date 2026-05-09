@@ -5,7 +5,6 @@ import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotVariant;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -16,7 +15,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
 public class RegeneratingPotsData extends SavedData {
-    public final Long2ObjectMap<Pair<PotData, Integer>> regeneratingPots = new Long2ObjectOpenHashMap<>();
+    public static final class Entry {
+        public PotData data;
+        public int delay;
+
+        public Entry(PotData data, int delay) {
+            this.data = data;
+            this.delay = delay;
+        }
+    }
+
+    public final Long2ObjectMap<Entry> regeneratingPots = new Long2ObjectOpenHashMap<>();
     public final ServerLevel level;
     public static final String NAME = "regenerating_pots";
 
@@ -45,7 +54,7 @@ public class RegeneratingPotsData extends SavedData {
                 final PotData potData = PotData.read(dataTag.getCompound("potData"), registries);
                 final int delay = dataTag.getInt("delay");
 
-                this.regeneratingPots.put(pos.asLong(), Pair.of(potData, delay));
+                this.regeneratingPots.put(pos.asLong(), new Entry(potData, delay));
             }
         }
 
@@ -57,15 +66,14 @@ public class RegeneratingPotsData extends SavedData {
         final ListTag listTag = new ListTag();
 
         final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        for (final Long2ObjectMap.Entry<Pair<PotData, Integer>> entry : this.regeneratingPots.long2ObjectEntrySet()) {
+        for (final Long2ObjectMap.Entry<Entry> entry : this.regeneratingPots.long2ObjectEntrySet()) {
             final BlockPos pos = mutableBlockPos.set(entry.getLongKey());
-            final PotData potData = entry.getValue().getFirst();
-            final Integer delay = entry.getValue().getSecond();
+            final Entry value = entry.getValue();
 
             final CompoundTag entryTag = new CompoundTag();
             entryTag.put("pos", NbtUtils.writeBlockPos(pos));
-            entryTag.put("potData", potData.write());
-            entryTag.put("delay", IntTag.valueOf(delay));
+            entryTag.put("potData", value.data.write());
+            entryTag.put("delay", IntTag.valueOf(value.delay));
             listTag.add(entryTag);
         }
 
@@ -75,45 +83,49 @@ public class RegeneratingPotsData extends SavedData {
     }
 
     public void tick() {
-        final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        if (this.regeneratingPots.isEmpty()) return;
 
+        final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         final var iter = this.regeneratingPots.long2ObjectEntrySet().iterator();
+        boolean changed = false;
 
         while (iter.hasNext()) {
-            final Long2ObjectMap.Entry<Pair<PotData, Integer>> entry = iter.next();
-            final BlockPos pos = mutableBlockPos.set(entry.getLongKey());
+            final Long2ObjectMap.Entry<Entry> mapEntry = iter.next();
+            final BlockPos pos = mutableBlockPos.set(mapEntry.getLongKey());
+            final Entry entry = mapEntry.getValue();
 
             if (!this.level.getBlockState(pos).isAir()) {
-                this.setDirty();
                 iter.remove();
+                changed = true;
                 continue;
             }
 
-            if (entry.getValue().getSecond() <= 0) {
-                final PotData potData = entry.getValue().getFirst();
-                this.level.setBlockAndUpdate(pos, potData.state());
+            if (entry.delay <= 0) {
+                this.level.setBlockAndUpdate(pos, entry.data.state());
                 if (this.level.getBlockEntity(pos) instanceof final PotBlockEntity pot) {
                     final Registry<PotVariant> variants = this.level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-                    pot.variant = variants.get(potData.variant());
-                    for (final PotModifier mod : potData.modifiers()) {
+                    final PotVariant restored = variants.get(entry.data.variant());
+                    if (restored != null) {
+                        pot.variant = restored;
+                    }
+                    for (final PotModifier mod : entry.data.modifiers()) {
                         pot.addModifier(mod);
                     }
                 }
 
-                this.setDirty();
                 iter.remove();
+                changed = true;
                 continue;
             }
 
-            this.regeneratingPots.replace(pos.asLong(), Pair.of(entry.getValue().getFirst(), entry.getValue().getSecond() - 1));
-            if (!this.isDirty()) {
-                this.setDirty();
-            }
+            entry.delay--;
         }
+
+        if (changed) this.setDirty();
     }
 
-    public void addPot(final BlockPos pos, final PotData data, final Integer delay) {
-        this.regeneratingPots.put(pos.asLong(), Pair.of(data, delay));
+    public void addPot(final BlockPos pos, final PotData data, final int delay) {
+        this.regeneratingPots.put(pos.asLong(), new Entry(data, delay));
         this.setDirty();
     }
 

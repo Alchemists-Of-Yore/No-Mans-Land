@@ -38,13 +38,15 @@ public class LivingPotModel<T extends LivingPot> extends HierarchicalModel<T> {
 
         PartDefinition legs = bone.addOrReplaceChild("legs", CubeListBuilder.create(), PartPose.offset(3, -5, 0));
 
+        CubeDeformation legDeform = new CubeDeformation(-0.01F);
+
         PartDefinition left = legs.addOrReplaceChild("Left", CubeListBuilder.create(), PartPose.offset(0, 0, 0));
-        left.addOrReplaceChild("small", CubeListBuilder.create().texOffs(0, 9).addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)), PartPose.ZERO);
-        left.addOrReplaceChild("large", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0F, -1.0F, 7.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offset(5.0F, 0.0F, -8.0F));
+        left.addOrReplaceChild("small", CubeListBuilder.create().texOffs(0, 9).addBox(-1, 0, -1, 2, 5, 2, legDeform), PartPose.ZERO);
+        left.addOrReplaceChild("large", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0F, -1.0F, 7.0F, 3.0F, 6.0F, 3.0F, legDeform), PartPose.offset(5.0F, 0.0F, -8.0F));
 
         PartDefinition right = legs.addOrReplaceChild("Right", CubeListBuilder.create(), PartPose.offset(-6, 0, 0));
-        right.addOrReplaceChild("small", CubeListBuilder.create().texOffs(0, 9).mirror().addBox(-1, 0, -1, 2, 5, 2, new CubeDeformation(0)).mirror(false), PartPose.ZERO);
-        right.addOrReplaceChild("large", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-13.0F, -1.0F, 7.0F, 3.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(11.0F, 0.0F, -8.0F));
+        right.addOrReplaceChild("small", CubeListBuilder.create().texOffs(0, 9).mirror().addBox(-1, 0, -1, 2, 5, 2, legDeform).mirror(false), PartPose.ZERO);
+        right.addOrReplaceChild("large", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-13.0F, -1.0F, 7.0F, 3.0F, 6.0F, 3.0F, legDeform).mirror(false), PartPose.offset(11.0F, 0.0F, -8.0F));
 
         return LayerDefinition.create(meshdefinition, 16, 16);
     }

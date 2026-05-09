@@ -21,9 +21,14 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @OnlyIn(Dist.CLIENT)
 public class PotShatterParticle extends TextureSheetParticle {
+
+    private static final AtomicInteger COUNT = new AtomicInteger();
+    private static final int SOFT_CAP = 400;
+    private static final int HARD_CAP = 1500;
 
     private final float uo;
     private final float vo;
@@ -42,6 +47,7 @@ public class PotShatterParticle extends TextureSheetParticle {
 
     PotShatterParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite, int persistTicks, List<List<Double>> shapeBoxes, int blockX, int blockY, int blockZ) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
+        COUNT.incrementAndGet();
         setSprite(sprite);
         this.gravity = 1.0F;
         this.rCol = 0.6F;
@@ -210,6 +216,14 @@ public class PotShatterParticle extends TextureSheetParticle {
     }
 
     @Override
+    public void remove() {
+        if (!this.removed) {
+            COUNT.decrementAndGet();
+        }
+        super.remove();
+    }
+
+    @Override
     public ParticleRenderType getRenderType() {
         return ParticleRenderType.TERRAIN_SHEET;
     }
@@ -218,6 +232,12 @@ public class PotShatterParticle extends TextureSheetParticle {
     public static class Provider implements ParticleProvider<PotShatterParticleOption> {
         @Override
         public Particle createParticle(PotShatterParticleOption option, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+            int live = COUNT.get();
+            if (live >= HARD_CAP) return null;
+            if (live > SOFT_CAP) {
+                float keepChance = 1.0F - (float) (live - SOFT_CAP) / (HARD_CAP - SOFT_CAP);
+                if (level.random.nextFloat() > keepChance) return null;
+            }
             ModelManager manager = Minecraft.getInstance().getModelManager();
             ModelResourceLocation mrl = ModelResourceLocation.standalone(option.model().withPrefix("block/"));
             BakedModel model = manager.getModel(mrl);

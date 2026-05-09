@@ -1,17 +1,11 @@
 package com.farcr.nomansland.common.blockentity;
 
-import com.farcr.nomansland.common.block.pots.PotModifier;
-import com.farcr.nomansland.common.block.pots.PotVariant;
+import com.farcr.nomansland.common.block.pots.*;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
-import com.farcr.nomansland.common.block.pots.PotionTable;
-import com.farcr.nomansland.common.block.pots.SeededPotionTable;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,10 +22,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.item.component.SeededContainerLoot;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -62,6 +52,22 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
 
     public PotBlockEntity(BlockPos pos, BlockState state) {
         super(NMLBlockEntities.POT.get(), pos, state);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (variant == null && level != null && !level.isClientSide && getBlockState().getBlock() instanceof PotBlock potBlock) {
+            ensureVariant(potBlock.getSize());
+        }
+    }
+
+    public void ensureVariant(PotSize size) {
+        if (variant != null || level == null || level.isClientSide) return;
+        Registry<PotVariant> registry = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
+        List<Holder.Reference<PotVariant>> matching = registry.holders().filter(h -> h.value().size() == size).toList();
+        variant = matching.get(level.getRandom().nextInt(matching.size())).value();
+        setChanged();
     }
 
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
@@ -98,7 +104,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         super.loadAdditional(tag, registries);
 
         if (tag.contains("Variant")) {
-            variant = registries.lookupOrThrow(NMLRegistries.POT_VARIANT_KEY).get(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, ResourceLocation.parse(tag.getString("Variant")))).orElseThrow().value();
+            registries.lookupOrThrow(NMLRegistries.POT_VARIANT_KEY)
+                    .get(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, ResourceLocation.parse(tag.getString("Variant"))))
+                    .ifPresent(holder -> variant = holder.value());
         }
 
         modifiers.clear();
@@ -161,7 +169,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         super.applyImplicitComponents(componentInput);
 
         Optional.ofNullable(componentInput.get(NMLDataComponents.POT_VARIANT)).ifPresent(key -> {
-            variant = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getOptional(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, key)).orElse(null);
+            level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY)
+                    .getOptional(ResourceKey.create(NMLRegistries.POT_VARIANT_KEY, key))
+                    .ifPresent(v -> variant = v);
         });
 
         modifiers.clear();
