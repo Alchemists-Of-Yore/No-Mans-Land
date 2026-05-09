@@ -16,7 +16,7 @@ public class BandageSoundInstance extends AbstractTickableSoundInstance {
         this.x = player.getX();
         this.y = player.getY();
         this.z = player.getZ();
-        this.volume = 5;
+        this.volume = 1;
         this.pitch = 1;
     }
 
