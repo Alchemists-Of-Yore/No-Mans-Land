@@ -1,13 +1,16 @@
 {
-   "type": "nomansland:suspicious_ore",
-   "config": {
-     "size": 3,
-     "targets": [
-       {
-         "state": { "Name": "minecraft:suspicious_gravel" },
-         "target": { "predicate_type": "minecraft:block_match", "block": "minecraft:gravel" }
-       }
-     ],
-     "loot_table": "nomansland:archaeology/alchemist_ruins"
-   }
- }
+  "type": "nomansland:suspicious_ore",
+  "config": {
+    "size": 33,
+    "discard_chance_on_air_exposure": 0.0,
+    "targets": [
+      {
+        "state": { "Name": "minecraft:gravel" },
+        "target": { "predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables" }
+      }
+    ],
+    "suspicious_state": { "Name": "minecraft:suspicious_gravel" },
+    "suspicious_chance": 0.1,
+    "loot_table": "nomansland:archaeology/alchemist_ruins"
+  }
+}

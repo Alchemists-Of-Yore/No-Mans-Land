@@ -121,11 +121,11 @@ public class SuspiciousOreFeature extends Feature<SuspiciousOreFeatureConfigurat
                         BlockState existing = level.getBlockState(mutable);
                         for (OreConfiguration.TargetBlockState target : config.targetStates()) {
                             if (canPlaceOre(existing, level::getBlockState, random, config, target, mutable)) {
-                                level.setBlock(mutable, target.state, 2);
-                                if (lootKey != null) {
-                                    if (level.getBlockEntity(mutable) instanceof BrushableBlockEntity brushable) {
-                                        brushable.setLootTable(lootKey, random.nextLong());
-                                    }
+                                boolean suspicious = random.nextFloat() < config.suspiciousChance();
+                                BlockState toPlace = suspicious ? config.suspiciousState() : target.state;
+                                level.setBlock(mutable, toPlace, 2);
+                                if (suspicious && lootKey != null && level.getBlockEntity(mutable) instanceof BrushableBlockEntity brushable) {
+                                    brushable.setLootTable(lootKey, random.nextLong());
                                 }
                                 placed++;
                                 break;

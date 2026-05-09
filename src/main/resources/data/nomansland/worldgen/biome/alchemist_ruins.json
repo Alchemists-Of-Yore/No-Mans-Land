@@ -45,7 +45,7 @@
     [],
     [
       "minecraft:ore_dirt",
-      "minecraft:ore_gravel",
+      "nomansland:underground/ore_suspicious_gravel_alchemist",
       "minecraft:ore_granite_upper",
       "minecraft:ore_granite_lower",
       "minecraft:ore_diorite_upper",
@@ -73,9 +73,7 @@
       "minecraft:disk_clay",
       "minecraft:disk_gravel"
     ],
-    [
-      "nomansland:underground/ore_suspicious_gravel_alchemist"
-    ],
+    [],
     [
       "nomansland:underground/patch_ancestral_effigy",
       "nomansland:underground/ancestral_carving"
