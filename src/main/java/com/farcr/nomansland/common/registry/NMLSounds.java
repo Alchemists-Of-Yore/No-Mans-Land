@@ -3,7 +3,6 @@ package com.farcr.nomansland.common.registry;
 import com.farcr.nomansland.NoMansLand;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -48,6 +47,11 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> INVERTED_BELL_BLACKOUT = registerSound("block.inverted_bell.blackout");
 
     public static final DeferredHolder<SoundEvent, SoundEvent> MOON_CARVING_ACTIVATE = registerSound("block.moon_carving.activate");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUDE_DOOR_OPEN = registerSound("block.crude_door.open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUDE_DOOR_CLOSE = registerSound("block.crude_door.close");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUDE_TRAPDOOR_OPEN = registerSound("block.crude_trapdoor.open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUDE_TRAPDOOR_CLOSE = registerSound("block.crude_trapdoor.close");
 
     //Items
     public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");

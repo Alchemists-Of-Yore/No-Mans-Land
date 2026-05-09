@@ -89,9 +89,9 @@ public class NMLBlocks {
     public static final BlockDefinition<PlatformStairsBlock> WOODEN_PLATFORM_STAIRS = register("wooden_platform_stairs",
             () -> new PlatformStairsBlock(Block.Properties.ofFullCopy(NMLBlocks.WOODEN_PLATFORM.get())), new BlockProperties(new SelfBlockLootType(), false));
     public static final BlockDefinition<CrudeDoorBlock> CRUDE_DOOR = register("crude_door",
-            () -> new CrudeDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion().pushReaction(PushReaction.DESTROY)), new BlockProperties(new DoorBlockLootType(), false));
-    public static final BlockDefinition<TrapDoorBlock> CRUDE_TRAPDOOR = register("crude_trapdoor",
-            () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new SelfBlockLootType(), false));
+            () -> new CrudeDoorBlock(crudeBlockSetType(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion().pushReaction(PushReaction.DESTROY)), new BlockProperties(new DoorBlockLootType(), false));
+    public static final BlockDefinition<CrudeTrapDoorBlock> CRUDE_TRAPDOOR = register("crude_trapdoor",
+            () -> new CrudeTrapDoorBlock(crudeBlockSetType(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)), new BlockProperties(new SelfBlockLootType(), false));
 
     public static final BlockDefinition<ResinCauldron> RESIN_CAULDRON = registerNoItem("resin_cauldron", ResinCauldron::new, BlockProperties.custom(true));
 
@@ -612,6 +612,28 @@ public class NMLBlocks {
 
     public static <T extends Block> BlockDefinition<T> register(String name, Supplier<T> block) {
         return register(name, block, BlockProperties.custom(false));
+    }
+
+    private static BlockSetType crudeBlockSetType;
+
+    private static BlockSetType crudeBlockSetType() {
+        if (crudeBlockSetType == null) {
+            crudeBlockSetType = BlockSetType.register(new BlockSetType(
+                    NoMansLand.MODID + ":crude",
+                    true, true, true,
+                    BlockSetType.PressurePlateSensitivity.EVERYTHING,
+                    SoundType.WOOD,
+                    NMLSounds.CRUDE_DOOR_CLOSE.get(),
+                    NMLSounds.CRUDE_DOOR_OPEN.get(),
+                    NMLSounds.CRUDE_TRAPDOOR_CLOSE.get(),
+                    NMLSounds.CRUDE_TRAPDOOR_OPEN.get(),
+                    SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF,
+                    SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON,
+                    SoundEvents.WOODEN_BUTTON_CLICK_OFF,
+                    SoundEvents.WOODEN_BUTTON_CLICK_ON
+            ));
+        }
+        return crudeBlockSetType;
     }
 
     public static class Woodset {

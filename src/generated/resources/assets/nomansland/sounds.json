@@ -1,4 +1,40 @@
 {
+  "block.crude_door.close": {
+    "sounds": [
+      "nomansland:block/crude_door/close1",
+      "nomansland:block/crude_door/close2",
+      "nomansland:block/crude_door/close3",
+      "nomansland:block/crude_door/close4"
+    ],
+    "subtitle": "subtitles.block.door.toggle"
+  },
+  "block.crude_door.open": {
+    "sounds": [
+      "nomansland:block/crude_door/open1",
+      "nomansland:block/crude_door/open2",
+      "nomansland:block/crude_door/open3",
+      "nomansland:block/crude_door/open4"
+    ],
+    "subtitle": "subtitles.block.door.toggle"
+  },
+  "block.crude_trapdoor.close": {
+    "sounds": [
+      "nomansland:block/crude_door/close1",
+      "nomansland:block/crude_door/close2",
+      "nomansland:block/crude_door/close3",
+      "nomansland:block/crude_door/close4"
+    ],
+    "subtitle": "subtitles.block.trapdoor.toggle"
+  },
+  "block.crude_trapdoor.open": {
+    "sounds": [
+      "nomansland:block/crude_door/open1",
+      "nomansland:block/crude_door/open2",
+      "nomansland:block/crude_door/open3",
+      "nomansland:block/crude_door/open4"
+    ],
+    "subtitle": "subtitles.block.trapdoor.toggle"
+  },
   "block.dross_tiles.break": {
     "sounds": [
       {

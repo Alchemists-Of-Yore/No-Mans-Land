@@ -1,15 +1,12 @@
 package com.farcr.nomansland.datagen.sound;
 
-import com.farcr.nomansland.*;
-import com.farcr.nomansland.common.registry.*;
-import com.farcr.nomansland.datagen.sound.lodestone.*;
-import net.minecraft.data.*;
-import net.neoforged.neoforge.common.data.*;
-import net.neoforged.neoforge.common.data.SoundDefinition.*;
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLSounds;
+import com.farcr.nomansland.datagen.sound.lodestone.LodestoneBlockSoundEventSystem;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.*;
-
-import static net.neoforged.neoforge.common.data.SoundDefinition.SoundType.*;
+import static net.neoforged.neoforge.common.data.SoundDefinition.SoundType.EVENT;
 
 
 public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
@@ -72,6 +69,11 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.INVERTED_BELL_BLACKOUT, s -> s.with(allSounds("block/inverted_bell/blackout")));
 
         add(NMLSounds.MOON_CARVING_ACTIVATE, s -> s.with(sound("minecraft:ambient/cave/cave1").volume(0.75f)));
+
+        add(NMLSounds.CRUDE_DOOR_OPEN, s -> s.subtitle("subtitles.block.door.toggle").with(allSounds("block/crude_door/open")));
+        add(NMLSounds.CRUDE_DOOR_CLOSE, s -> s.subtitle("subtitles.block.door.toggle").with(allSounds("block/crude_door/close")));
+        add(NMLSounds.CRUDE_TRAPDOOR_OPEN, s -> s.subtitle("subtitles.block.trapdoor.toggle").with(allSounds("block/crude_door/open")));
+        add(NMLSounds.CRUDE_TRAPDOOR_CLOSE, s -> s.subtitle("subtitles.block.trapdoor.toggle").with(allSounds("block/crude_door/close")));
 
         //Items
         add(NMLSounds.BANDAGE_WRAP, s -> s.with(sound("item/bandage/wrap")));

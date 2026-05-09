@@ -148,7 +148,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("item.nomansland.bandage.effect.empty", "Uncraftable Bandage");
         add("item.nomansland.bandage.effect.fire_resistance", "Fire Resistance Bandage");
         add("item.nomansland.bandage.effect.instant_harming", "Harming Bandage");
-        add("item.nomansland.bandage.effect.instant_healing", "Healing Bandage");
+        add("item.nomansland.bandage.effect.instant_health", "Healing Bandage");
         add("item.nomansland.bandage.effect.infested", "Infestation Bandage");
         add("item.nomansland.bandage.effect.invisibility", "Invisibility Bandage");
         add("item.nomansland.bandage.effect.jump_boost", "Leaping Bandage");
@@ -165,8 +165,6 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("item.nomansland.bandage.effect.weakness", "Weakness Bandage");
         add("item.nomansland.bandage.effect.weaving", "Weaving Bandage");
         add("item.nomansland.bandage.effect.wind_charged", "Wind Charging Bandage");
-        add("item.nomansland.bandage.effect.instant_health", "Healing Bandage");
-        add("item.nomansland.bandage.effect.instant_harming", "Harming Bandage");
         add("nomansland.advancements.use_tap.title", "Tree Juice");
         add("nomansland.advancements.use_tap.description", "Collect Resin or Maple Syrup with a Tap and a Cauldron");
         add("nomansland.advancements.kill_anchored_mob.title", "Can't Even Die Right");
