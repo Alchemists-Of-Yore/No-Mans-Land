@@ -1,8 +1,8 @@
 {
-  "item.farmersdelight.chicken_cuts": "Poultry Cuts",
-  "item.farmersdelight.cooked_chicken_cuts": "Cooked Poultry Cuts",
-  "item.farmersdelight.roast_chicken": "Roast Poultry",
-  "block.farmersdelight.roast_chicken_block": "Roast Poultry",
-  "item.farmersdelight.chicken_sandwich": "Poultry Sandwich",
-  "item.farmersdelight.chicken_soup": "Poultry Soup"
+  "item.farmersdelight.chicken_cuts": "Шматочки птиці",
+  "item.farmersdelight.cooked_chicken_cuts": "Смажені шматочки птиці",
+  "item.farmersdelight.roast_chicken": "Запечена птиця",
+  "block.farmersdelight.roast_chicken_block": "Запечена птиця",
+  "item.farmersdelight.chicken_sandwich": "Сендвіч із птицею",
+  "item.farmersdelight.chicken_soup": "Суп із птиці"
 }
