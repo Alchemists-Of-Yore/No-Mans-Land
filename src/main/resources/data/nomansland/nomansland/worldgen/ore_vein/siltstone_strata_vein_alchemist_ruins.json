@@ -1,6 +1,6 @@
 {
-  "spacing": 64,
-  "separation": 32,
+  "spacing": 32,
+  "separation": 16,
   "probability": 1.0,
   "generation_order": 33,
   "biomes": ["nomansland:alchemist_ruins"],
