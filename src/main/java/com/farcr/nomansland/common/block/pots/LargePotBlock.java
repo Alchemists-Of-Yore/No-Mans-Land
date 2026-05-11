@@ -72,7 +72,10 @@ public class LargePotBlock extends PotBlock {
 
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (isUpper(state) && direction == Direction.DOWN && !neighborState.is(this)) {
+        if (isUpper(state) && direction == Direction.DOWN && (!neighborState.is(this) || isUpper(neighborState))) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        if (!isUpper(state) && direction == Direction.UP && (!neighborState.is(this) || !isUpper(neighborState))) {
             return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);

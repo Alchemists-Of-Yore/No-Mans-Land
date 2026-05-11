@@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
@@ -76,33 +78,30 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
             Direction facing = Direction.Plane.HORIZONTAL.getRandomDirection(random);
             potState = potState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
 
-            level.setBlock(pos, potState, 2);
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
-                pot.variant = variant;
-                for (Map.Entry<PotModifier, Float> entry : variant.modifierChances().entrySet()) {
-                    if (random.nextFloat() < entry.getValue()) {
-                        pot.addModifier(entry.getKey());
-                    }
-                }
-
-                config.lootTable().ifPresent(id ->
-                        pot.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id), random.nextLong())
-                );
-
-                if (potionTableId != null && random.nextFloat() < config.potionChance()) {
-                    pot.setPotionTable(potionTableId, random.nextLong());
-                }
-
-                pot.setChanged();
-            }
+            if (!level.setBlock(pos, potState, 2)) continue;
 
             if (variant.size() == PotSize.LARGE) {
-                if (!level.getBlockState(pos).is(NMLBlocks.LARGE_ANCIENT_POT.get())) continue;
-                BlockState upperState = potState.setValue(
-                        BlockStateProperties.DOUBLE_BLOCK_HALF,
-                        DoubleBlockHalf.UPPER);
-                level.setBlock(pos.above(), upperState, 2);
+                BlockState upperState = potState.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
+                if (!level.setBlock(pos.above(), upperState, 2)) {
+                    continue;
+                }
             }
+
+            PotBlockEntity pot = new PotBlockEntity(pos.immutable(), potState);
+            pot.variant = variant;
+            for (Map.Entry<PotModifier, Float> entry : variant.modifierChances().entrySet()) {
+                if (random.nextFloat() < entry.getValue()) {
+                    pot.addModifier(entry.getKey());
+                }
+            }
+            config.lootTable().ifPresent(id ->
+                    pot.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id), random.nextLong())
+            );
+            if (potionTableId != null && random.nextFloat() < config.potionChance()) {
+                pot.setPotionTable(potionTableId, random.nextLong());
+            }
+            ChunkAccess chunk = level.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
+            chunk.setBlockEntity(pot);
 
             placed++;
         }
