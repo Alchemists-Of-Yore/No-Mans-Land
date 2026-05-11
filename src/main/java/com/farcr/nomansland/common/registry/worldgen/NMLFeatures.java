@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.VegetationPatchConfiguration;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -60,8 +61,8 @@ public class NMLFeatures {
     public static final Supplier<Feature<NoneFeatureConfiguration>> ANCESTRAL_CARVING = FEATURES.register("ancestral_carving",
             () -> new AncestralCarvingFeature(NoneFeatureConfiguration.CODEC));
 
-    public static final Supplier<Feature<SuspiciousOreFeatureConfiguration>> SUSPICIOUS_ORE = FEATURES.register("suspicious_ore",
-            () -> new SuspiciousOreFeature(SuspiciousOreFeatureConfiguration.CODEC));
+    public static final Supplier<Feature<VegetationPatchConfiguration>> SUSPICIOUS_VEGETATION_PATCH = FEATURES.register("suspicious_vegetation_patch",
+            () -> new SuspiciousVegetationPatchFeature(SuspiciousVegetationPatchConfiguration.CODEC));
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> HUGE_FIELD_MUSHROOM = register("huge_field_mushroom");
 
