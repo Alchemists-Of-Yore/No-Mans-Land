@@ -457,7 +457,7 @@ public class Moose extends PathfinderMob implements PlayerRideable, PlayerRideab
         float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE) * attackStrength;
         if (target.hurt(damageSource, damage)) {
             double knockbackResistance = target instanceof LivingEntity living ? living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 0;
-            double knockup = attackStrength * 0.4F * Math.max(0, 1 - knockbackResistance);
+            double knockup = attackStrength * 0.5F * Math.max(0, 1 - knockbackResistance);
             target.setDeltaMovement(target.getDeltaMovement().add(getDeltaMovement()).add(0, knockup, 0));
             if (target instanceof ServerPlayer player) {
                 targetMemory.clearAggression(player);
