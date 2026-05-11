@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -46,7 +47,8 @@ public class MenhirStructure extends Structure {
                 BuiltInRegistries.BLOCK.byNameCodec(),
                 ResourceKey.codec(Registries.CONFIGURED_FEATURE)
             ).optionalFieldOf("feature_placeholders", Map.of()).forGetter(s -> s.featurePlaceholders),
-            HeightProvider.CODEC.optionalFieldOf("start_height").forGetter(s -> s.startHeight)
+            HeightProvider.CODEC.optionalFieldOf("start_height").forGetter(s -> s.startHeight),
+            Direction.CODEC.optionalFieldOf("template_facing", Direction.NORTH).forGetter(s -> s.templateFacing)
         ).apply(instance, MenhirStructure::new)
     );
 
@@ -54,13 +56,15 @@ public class MenhirStructure extends Structure {
     private final Heightmap.Types projectStartToHeightmap;
     private final Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders;
     private final Optional<HeightProvider> startHeight;
+    private final Direction templateFacing;
 
-    public MenhirStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool, Heightmap.Types projectStartToHeightmap, Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders, Optional<HeightProvider> startHeight) {
+    public MenhirStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool, Heightmap.Types projectStartToHeightmap, Map<Block, ResourceKey<ConfiguredFeature<?, ?>>> featurePlaceholders, Optional<HeightProvider> startHeight, Direction templateFacing) {
         super(settings);
         this.startPool = startPool;
         this.projectStartToHeightmap = projectStartToHeightmap;
         this.featurePlaceholders = featurePlaceholders;
         this.startHeight = startHeight;
+        this.templateFacing = templateFacing;
     }
 
     @Override
@@ -100,25 +104,34 @@ public class MenhirStructure extends Structure {
         StructureFeatureHelper.replacePlaceholders(featurePlaceholders, level, generator, random, chunkPos, pieces);
     }
 
-    private static Rotation rotationTowardMeetingPoint(GenerationContext context, int centerX, int centerZ, RandomSource random) {
+    private Rotation rotationTowardMeetingPoint(GenerationContext context, int centerX, int centerZ, RandomSource random) {
         ChunkGeneratorStructureState state = ((ChunkGeneratorExtension) context.chunkGenerator()).nomansland$structureState();
         if (state instanceof ChunkGeneratorStructureStateExtension extension) {
             ChunkPos meetingPoint = extension.meetingPointPosition();
             if (meetingPoint != null) {
                 int dx = meetingPoint.getMiddleBlockX() - centerX;
                 int dz = meetingPoint.getMiddleBlockZ() - centerZ;
-                return facingRotation(dx, dz);
+                return rotationFromTo(templateFacing, directionTo(dx, dz));
             }
         }
         return Rotation.getRandom(random);
     }
 
-    private static Rotation facingRotation(int dx, int dz) {
+    private static Direction directionTo(int dx, int dz) {
         if (Math.abs(dx) > Math.abs(dz)) {
-            return dx > 0 ? Rotation.COUNTERCLOCKWISE_90 : Rotation.CLOCKWISE_90;
-        } else {
-            return dz >= 0 ? Rotation.NONE : Rotation.CLOCKWISE_180;
+            return dx > 0 ? Direction.EAST : Direction.WEST;
         }
+        return dz >= 0 ? Direction.SOUTH : Direction.NORTH;
+    }
+
+    private static Rotation rotationFromTo(Direction from, Direction to) {
+        int delta = (to.get2DDataValue() - from.get2DDataValue() + 4) & 3;
+        return switch (delta) {
+            case 1 -> Rotation.CLOCKWISE_90;
+            case 2 -> Rotation.CLOCKWISE_180;
+            case 3 -> Rotation.COUNTERCLOCKWISE_90;
+            default -> Rotation.NONE;
+        };
     }
 
     @Override

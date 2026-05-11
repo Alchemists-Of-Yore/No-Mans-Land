@@ -8,6 +8,7 @@
     "absolute": -1
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "template_facing": "east",
   "spawn_overrides": {},
   "feature_placeholders": {
     "minecraft:green_concrete": "minecraft:patch_tall_grass",
