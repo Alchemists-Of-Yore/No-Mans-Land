@@ -106,7 +106,7 @@ public class BiomeModifierBuilder {
     public final BiomeModifierBuilder removeSpawns(EntityType<?>... entityTypes) {
         List<Holder<EntityType<?>>> entityTypeHolders = new ArrayList<>();
         List.of(entityTypes).forEach(entityType ->
-                entityTypeHolders.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(EntityType.ZOMBIE)));
+                entityTypeHolders.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityType)));
 
         this.removeSpawns = new RemoveSpawnsBiomeModifier(biome, HolderSet.direct(entityTypeHolders));
         return this;

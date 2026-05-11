@@ -2,7 +2,7 @@
   "type": "neoforge:remove_spawns",
   "biomes": "minecraft:windswept_savanna",
   "entity_types": [
-    "minecraft:zombie",
-    "minecraft:zombie"
+    "minecraft:sheep",
+    "minecraft:armadillo"
   ]
 }
