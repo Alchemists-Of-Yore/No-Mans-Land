@@ -1,9 +1,7 @@
 package com.farcr.nomansland.common.networking;
 
 import com.farcr.nomansland.NoMansLand;
-import com.farcr.nomansland.client.sound.BandageSoundInstance;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,7 +27,7 @@ public record ClientboundBandageSoundPacket(int playerId) implements CustomPacke
             context.enqueueWork(() -> {
                 Entity entity = context.player().level().getEntity(playerId());
                 if (entity instanceof Player p) {
-                    Minecraft.getInstance().getSoundManager().play(new BandageSoundInstance(p));
+                    com.farcr.nomansland.client.sound.BandageSoundInstance.play(p);
                 }
             });
         }

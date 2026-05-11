@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.sound;
 
 import com.farcr.nomansland.common.item.BandageItem;
 import com.farcr.nomansland.common.registry.NMLSounds;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -9,6 +10,10 @@ import net.minecraft.world.entity.player.Player;
 
 public class BandageSoundInstance extends AbstractTickableSoundInstance {
     private final Player player;
+
+    public static void play(Player player) {
+        Minecraft.getInstance().getSoundManager().play(new BandageSoundInstance(player));
+    }
 
     public BandageSoundInstance(Player player) {
         super(NMLSounds.BANDAGE_WRAP.get(), SoundSource.PLAYERS, RandomSource.create());
