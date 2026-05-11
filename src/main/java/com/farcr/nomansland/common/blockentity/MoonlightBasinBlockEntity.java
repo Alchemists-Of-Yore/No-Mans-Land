@@ -283,8 +283,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                     FriendMoon.grantPlayerFriendship(friendMoon, serverPlayer, pos);
                 if (friendMoon.shouldPulseUpdate())
                     blockEntity.pulseUpdate();
-            } else
-                blockEntity.trackedCandles = 0;
+            }
         }
 
         blockEntity.updateOfferingBeam();
@@ -300,6 +299,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
         }
 
         if (!friendMoon.isActive()) {
+            blockEntity.trackedCandles = 0;
             blockEntity.setInspectionContext(null, friendMoon);
             if (!level.isClientSide()) {
                 ArrayList<BlockPos> candleList = getCandles(level, pos);
