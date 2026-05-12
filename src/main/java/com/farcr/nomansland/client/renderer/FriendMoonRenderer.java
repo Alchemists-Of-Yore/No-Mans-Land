@@ -692,6 +692,10 @@ public class FriendMoonRenderer implements AutoCloseable {
     }
 
     public static void disableStencil() {
+        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        if (target.isStencilEnabled())
+            target.bindWrite(false);
+
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
         RenderSystem.stencilMask(0xFF);
         RenderSystem.clearStencil(0);
@@ -700,7 +704,10 @@ public class FriendMoonRenderer implements AutoCloseable {
         RenderSystem.stencilMask(0x00);
         GL11.glDisable(GL11.GL_STENCIL_TEST);
 
-        // do this after everything so the render context is correct ?? idk
+        RenderSystem.colorMask(true, true, true, true);
+    }
+
+    public static void enableStencilTarget() {
         RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
         if (!target.isStencilEnabled())
             target.enableStencil();

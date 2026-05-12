@@ -49,6 +49,11 @@ public abstract class LevelRendererMixin {
 
     @Unique private LevelRenderer nml$Self = (LevelRenderer) (Object) this;
 
+    @Inject(method = "graphicsChanged", at = @At("HEAD"))
+    private void nml$enableStencilTarget(CallbackInfo ci) {
+        FriendMoonRenderer.enableStencilTarget();
+    }
+
     /*
     * TODO replace this !!!
     */
