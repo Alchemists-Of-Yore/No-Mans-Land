@@ -6,13 +6,8 @@ import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.tazer.mixed_litter.VariantUtil;
-import dev.tazer.mixed_litter.registry.MLDataAttachmentTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.GlobalPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.MobSpawnType;
@@ -23,6 +18,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.neoforged.neoforge.event.EventHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,10 +82,9 @@ public class TortoiseBurrowFeature extends Feature<TortoiseBurrowFeature.Configu
                             if (tortoise != null) {
                                 tortoiseSpawned = true;
                                 tortoise.moveTo(tortoiseSpawnPos.getX(), tortoiseSpawnPos.getY(), tortoiseSpawnPos.getZ(), 0, 0);
-                                tortoise.finalizeSpawn(worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
+                                EventHooks.finalizeMobSpawn(tortoise, worldgenlevel, worldgenlevel.getCurrentDifficultyAt(blockpos), MobSpawnType.STRUCTURE, null);
                                 tortoise.setHomePos(tortoiseSpawnPos);
 //                                tortoise.setData(MLDataAttachmentTypes.SPAWN_LOCATION, GlobalPos.of(tortoise.level().dimension(), tortoise.blockPosition()));
-                                VariantUtil.applySuitableVariants(tortoise);
                                 worldgenlevel.addFreshEntityWithPassengers(tortoise);
                             }
                         }
