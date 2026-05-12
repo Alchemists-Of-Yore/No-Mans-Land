@@ -338,7 +338,7 @@
         "volume": 0.75
       }
     ],
-    "subtitle": "nomansland.subtitle.block.moon_carving.activate"
+    "subtitle": "subtitles.ambient.cave"
   },
   "block.mushroom_cap.break": {
     "sounds": [

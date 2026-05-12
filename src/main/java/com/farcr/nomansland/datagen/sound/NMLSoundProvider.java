@@ -68,7 +68,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.INVERTED_BELL_RING, s -> s.with(allSounds("block/inverted_bell/ring")));
         add(NMLSounds.INVERTED_BELL_BLACKOUT, s -> s.with(allSounds("block/inverted_bell/blackout")));
 
-        add(NMLSounds.MOON_CARVING_ACTIVATE, s -> s.with(sound("minecraft:ambient/cave/cave1").volume(0.75f)));
+        add(NMLSounds.MOON_CARVING_ACTIVATE, s -> s.with(sound("minecraft:ambient/cave/cave1").volume(0.75f)).subtitle("subtitles.ambient.cave"));
 
         add(NMLSounds.CRUDE_DOOR_OPEN, s -> s.subtitle("subtitles.block.door.toggle").with(allSounds("block/crude_door/open")));
         add(NMLSounds.CRUDE_DOOR_CLOSE, s -> s.subtitle("subtitles.block.door.toggle").with(allSounds("block/crude_door/close")));
