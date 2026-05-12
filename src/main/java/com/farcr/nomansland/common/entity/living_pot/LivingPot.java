@@ -56,6 +56,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.ContainerSingleItem;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
@@ -650,7 +651,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                     Silverfish silverfish = EntityType.SILVERFISH.create(serverLevel);
                     if (silverfish != null) {
                         silverfish.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
-                        silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                        EventHooks.finalizeMobSpawn(silverfish, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                         silverfish.skipDropExperience();
                         ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                         serverLevel.addFreshEntity(silverfish);
@@ -667,7 +668,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                     Slime slime = EntityType.SLIME.create(serverLevel);
                     if (slime != null) {
                         slime.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
-                        slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                        EventHooks.finalizeMobSpawn(slime, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                         slime.setSize(random.nextInt(1, 3), true);
                         slime.skipDropExperience();
                         ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();

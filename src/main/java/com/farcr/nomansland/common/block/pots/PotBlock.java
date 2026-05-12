@@ -64,6 +64,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
 
@@ -207,7 +208,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
-                    silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                    EventHooks.finalizeMobSpawn(silverfish, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     silverfish.skipDropExperience();
                     ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
@@ -225,7 +226,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
                     slime.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
-                    slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                    EventHooks.finalizeMobSpawn(slime, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
                     slime.skipDropExperience();
                     ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
@@ -403,7 +404,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                    silverfish.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
+                    EventHooks.finalizeMobSpawn(silverfish, level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
                     silverfish.skipDropExperience();
                     ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
@@ -418,7 +419,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
                     slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                    slime.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
+                    EventHooks.finalizeMobSpawn(slime, level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
                     slime.skipDropExperience();
                     ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
