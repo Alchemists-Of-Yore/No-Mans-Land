@@ -73,29 +73,31 @@ public class MenhirStructure extends Structure {
         RandomSource random = context.random();
         StructureTemplateManager templates = context.structureTemplateManager();
 
-        int centerX = chunkPos.getMiddleBlockX();
-        int centerZ = chunkPos.getMiddleBlockZ();
-        int surfaceY = context.chunkGenerator().getFirstFreeHeight(
-            centerX, centerZ, projectStartToHeightmap,
-            context.heightAccessor(), context.randomState()
-        );
-        if (startHeight.isPresent()) {
-            surfaceY += startHeight.get().sample(random, new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
-        }
-        BlockPos blockPos = new BlockPos(centerX, surfaceY, centerZ);
+        int startY = startHeight
+            .map(h -> h.sample(random, new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor())))
+            .orElse(0);
+        BlockPos pos = new BlockPos(chunkPos.getMiddleBlockX(), startY, chunkPos.getMiddleBlockZ());
 
-        Rotation rotation = rotationTowardMeetingPoint(context, centerX, centerZ, random);
+        Rotation rotation = rotationTowardMeetingPoint(context, pos.getX(), pos.getZ(), random);
 
         StructurePoolElement element = startPool.value().getRandomTemplate(random);
-        BoundingBox box = element.getBoundingBox(templates, blockPos, rotation);
-        Rotation finalRotation = rotation;
+        BoundingBox box = element.getBoundingBox(templates, pos, rotation);
+        PoolElementStructurePiece piece = new PoolElementStructurePiece(
+            templates, element, pos, element.getGroundLevelDelta(), rotation, box,
+            LiquidSettings.IGNORE_WATERLOGGING
+        );
 
-        return Optional.of(new GenerationStub(blockPos, builder ->
-            builder.addPiece(new PoolElementStructurePiece(
-                templates, element, blockPos, 0, finalRotation, box,
-                LiquidSettings.IGNORE_WATERLOGGING
-            ))
-        ));
+        int bbCenterX = (box.maxX() + box.minX()) / 2;
+        int bbCenterZ = (box.maxZ() + box.minZ()) / 2;
+        int k = pos.getY() + context.chunkGenerator().getFirstFreeHeight(
+            bbCenterX, bbCenterZ, projectStartToHeightmap,
+            context.heightAccessor(), context.randomState()
+        );
+        int l = box.minY() + piece.getGroundLevelDelta();
+        piece.move(0, k - l, 0);
+
+        BlockPos stubPos = new BlockPos(bbCenterX, k, bbCenterZ);
+        return Optional.of(new GenerationStub(stubPos, builder -> builder.addPiece(piece)));
     }
 
     @Override
