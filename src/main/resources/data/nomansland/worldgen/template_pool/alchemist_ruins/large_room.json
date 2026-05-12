@@ -165,6 +165,42 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/small_well",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 10
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/residence_1",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 15
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/residence_2",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 15
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "nomansland:alchemist_ruins/rooms/large/bell_room",
+        "processors": "nomansland:alchemist_ruins",
+        "projection": "rigid"
+      },
+      "weight": 10
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
         "location": "nomansland:alchemist_ruins/archways/grand_1",
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
@@ -223,7 +259,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -232,7 +268,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -241,7 +277,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -250,7 +286,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -259,7 +295,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -268,7 +304,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -277,7 +313,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -286,7 +322,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -295,7 +331,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -304,7 +340,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     },
     {
       "element": {
@@ -313,7 +349,7 @@
         "processors": "nomansland:alchemist_ruins",
         "projection": "rigid"
       },
-      "weight": 10
+      "weight": 5
     }
   ],
   "fallback": "minecraft:empty"
