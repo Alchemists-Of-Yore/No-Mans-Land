@@ -147,7 +147,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("effect.nomansland.happiness", "Happiness");
         add("item.nomansland.bandage.effect.empty", "Uncraftable Bandage");
         add("item.nomansland.bandage.effect.fire_resistance", "Fire Resistance Bandage");
-        add("item.nomansland.bandage.effect.instant_harming", "Harming Bandage");
+        add("item.nomansland.bandage.effect.instant_damage", "Harming Bandage");
         add("item.nomansland.bandage.effect.instant_health", "Healing Bandage");
         add("item.nomansland.bandage.effect.infested", "Infestation Bandage");
         add("item.nomansland.bandage.effect.invisibility", "Invisibility Bandage");
