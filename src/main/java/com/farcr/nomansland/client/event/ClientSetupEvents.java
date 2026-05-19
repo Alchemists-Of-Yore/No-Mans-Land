@@ -301,8 +301,8 @@ public class ClientSetupEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void registerRenderBuffers(final RegisterRenderBuffersEvent event) {
-        event.registerRenderBuffer(MoonlightGlowRenderType.MOONLIGHT_GLOW);
-    }
+//    @SubscribeEvent
+//    public static void registerRenderBuffers(final RegisterRenderBuffersEvent event) {
+//        event.registerRenderBuffer(MoonlightGlowRenderType.MOONLIGHT_GLOW);
+//    }
 }

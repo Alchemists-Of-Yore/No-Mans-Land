@@ -1796,8 +1796,7 @@
         "name": "nomansland:records/guidance",
         "stream": true
       }
-    ],
-    "subtitle": "nomansland.subtitle.music_disc.guidance"
+    ]
   },
   "particle.droplet.fall": {
     "sounds": [
