@@ -29,11 +29,13 @@ public record ServerboundMooseBeginJumpSequencePacket(UUID mooseID) implements C
     }
 
     public void handleData(IPayloadContext context) {
-        Player player = context.player();
-        if (player.level() instanceof ServerLevel level) {
-            if (level.getEntity(mooseID) instanceof Moose moose) {
-                moose.onPlayerStartChargingJump();
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player.level() instanceof ServerLevel level) {
+                if (level.getEntity(mooseID) instanceof Moose moose) {
+                    moose.onPlayerStartChargingJump();
+                }
             }
-        }
+        });
     }
 }
