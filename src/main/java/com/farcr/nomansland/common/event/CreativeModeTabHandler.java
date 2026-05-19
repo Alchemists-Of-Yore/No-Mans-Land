@@ -38,12 +38,14 @@ public class CreativeModeTabHandler {
     private void insertBefore(Item existingEntry, ItemLikeDefinition<?, ?> newEntry) {
         ItemStack existingStack = existingEntry.getDefaultInstance();
         ItemStack newStack = newEntry.stack();
+        event.remove(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         event.insertBefore(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }
 
     private void insertAfter(Item existingEntry, ItemLikeDefinition<?, ?> newEntry) {
         ItemStack existingStack = existingEntry.getDefaultInstance();
         ItemStack newStack = newEntry.stack();
+        event.remove(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         event.insertAfter(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
     }
 
@@ -202,6 +204,7 @@ public class CreativeModeTabHandler {
             insertBefore(MANGROVE_LOG, WILLOW.button());
 
             insertAfter(OAK_SLAB, TRIMMED_OAK_PLANKS);
+            event.remove(BOOKSHELF.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
             event.insertAfter(OAK_SLAB.getDefaultInstance(), BOOKSHELF.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
             insertAfter(SPRUCE_SLAB, TRIMMED_SPRUCE_PLANKS);
             insertAfter(SPRUCE_SLAB, SPRUCE_BOOKSHELF);
@@ -476,7 +479,10 @@ public class CreativeModeTabHandler {
             );
 
 //            insertAfter(TROPICAL_FISH_BUCKET, CAVE_CARP_BUCKET);
-            if (!event.getFlags().contains(FeatureFlags.BUNDLE)) event.insertBefore(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            if (!event.getFlags().contains(FeatureFlags.BUNDLE)) {
+                event.remove(BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                event.insertBefore(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            }
         }
 
         if (tab == CreativeModeTabs.COMBAT) {
