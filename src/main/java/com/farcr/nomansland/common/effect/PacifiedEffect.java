@@ -11,8 +11,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Enemy;
 
 public class PacifiedEffect extends MobEffect {
     public PacifiedEffect(MobEffectCategory category) {
@@ -60,9 +61,9 @@ public class PacifiedEffect extends MobEffect {
         if (livingEntity instanceof NeutralMob neutralMob) {
             neutralMob.stopBeingAngry();
             livingEntity.removeEffect(NMLEffects.PACIFIED);
-        } else if (livingEntity instanceof Monster monster) {
-            monster.setTarget(null);
-            monster.targetSelector.addGoal(-1, new PacifiedAttackGoal(monster));
+        } else if (livingEntity instanceof Mob mob && livingEntity instanceof Enemy) {
+            mob.setTarget(null);
+            mob.targetSelector.addGoal(-1, new PacifiedAttackGoal(mob));
         } else {
             livingEntity.removeEffect(NMLEffects.PACIFIED);
         }

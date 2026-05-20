@@ -7,10 +7,10 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 
-public class PacifiedAttackGoal extends NearestAttackableTargetGoal<LivingEntity> {
+public class PacifiedAttackGoal extends NearestAttackableTargetGoal<Mob> {
 
     public PacifiedAttackGoal(Mob mob) {
-        super(mob, LivingEntity.class, 0, true, true, PacifiedAttackGoal::isHostile);
+        super(mob, Mob.class, 5, false, false, PacifiedAttackGoal::isHostile);
     }
 
     private static boolean isHostile(LivingEntity livingEntity) {
@@ -19,11 +19,11 @@ public class PacifiedAttackGoal extends NearestAttackableTargetGoal<LivingEntity
 
     @Override
     public boolean canUse() {
-        return mob.hasEffect(NMLEffects.PACIFIED);
+        return mob.hasEffect(NMLEffects.PACIFIED) && super.canUse();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return mob.hasEffect(NMLEffects.PACIFIED);
+        return mob.hasEffect(NMLEffects.PACIFIED) && super.canContinueToUse();
     }
 }
