@@ -331,6 +331,10 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundDistantChunkPacket.TYPE, ClientboundDistantChunkPacket.STREAM_CODEC, ClientboundDistantChunkPacket::handleData);
 
         registrar.playToClient(ClientboundBandageSoundPacket.TYPE, ClientboundBandageSoundPacket.STREAM_CODEC, ClientboundBandageSoundPacket::handleData);
+
+        // ritual pickaxe packets
+        registrar.playToServer(ServerboundRitualPickRequestPacket.TYPE, ServerboundRitualPickRequestPacket.STREAM_CODEC, ServerboundRitualPickRequestPacket::handleData);
+        registrar.playToClient(ClientboundRitualPickResponsePacket.TYPE, ClientboundRitualPickResponsePacket.STREAM_CODEC, ClientboundRitualPickResponsePacket::handleData);
     }
 
     @SubscribeEvent

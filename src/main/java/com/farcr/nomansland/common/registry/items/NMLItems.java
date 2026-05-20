@@ -5,6 +5,7 @@ import com.farcr.nomansland.NMLEnumParams;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.item.*;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.Unbreakable;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -133,6 +135,20 @@ public class NMLItems {
                     .component(DataComponents.UNBREAKABLE, new Unbreakable(false)
                     ).component(NMLDataComponents.PUNCH_COOLDOWN, 0)
                     .component(NMLDataComponents.PUNCH_COUNT, 0))
+    );
+
+    public static final Tier TIER_RITUAL = new ToolTier(
+            NMLTags.INCORRECT_FOR_RITUAL_TOOL,
+            Integer.MAX_VALUE,
+            Tiers.STONE.getSpeed(),
+            0, 0,
+            () -> Ingredient.EMPTY);
+    public static final ItemDefinition<Item> RITUAL_PICK = register("ritual_pick",
+            () -> new RitualPickItem(TIER_RITUAL, new Properties()
+                    .attributes(PickaxeItem.createAttributes(TIER_RITUAL, 0, 0))
+                    .rarity(Rarity.RARE)
+                    .component(DataComponents.UNBREAKABLE, new Unbreakable(false))
+            )
     );
 
     public static final ItemDefinition<Item> MUSIC_DISC_GUIDANCE = register("music_disc_guidance",

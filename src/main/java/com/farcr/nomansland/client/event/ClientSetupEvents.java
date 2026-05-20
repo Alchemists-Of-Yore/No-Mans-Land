@@ -226,6 +226,11 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.DEEP_SLEEP.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new DeepSleepParticle(clientLevel, d, e, f, g, h, i, sprites));
+
+        event.registerSpriteSet(NMLParticleTypes.FUNNY_PLACEHOLDER_DEBUG_RITUAL_PICK.get(), sprites
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new FunnyPlaceholderDebugRitualPickParticle(clientLevel, d, e, f, g, h, i, sprites));
+
         event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
     }
 

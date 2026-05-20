@@ -68,6 +68,9 @@ public class NMLParticleTypes {
             PotShatterParticleOption::codec, PotShatterParticleOption::streamCodec
     );
 
+    public static final Supplier<SimpleParticleType> FUNNY_PLACEHOLDER_DEBUG_RITUAL_PICK = register("funny_placeholder_debug_ritual_pick");
+
+
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
         return PARTICLE_TYPES.register(name, () -> new ParticleType<T>(overrideLimitter) {
             public MapCodec<T> codec() {
