@@ -45,7 +45,6 @@ public class MoonlightGlowRenderType {
             .setCullState(RenderStateShard.NO_CULL)
             .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
             .setTransparencyState(RenderStateShard.GLINT_TRANSPARENCY)
-            .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
             .createCompositeState(false)
     );
 

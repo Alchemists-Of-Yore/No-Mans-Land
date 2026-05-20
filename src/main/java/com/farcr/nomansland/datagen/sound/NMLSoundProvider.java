@@ -174,7 +174,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 sound("minecraft:music/game/endless").stream().volume(0.4f)
         ));
 
-        add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.with(sound("records/guidance").stream()));
+        add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.subtitle(null).with(sound("records/guidance").stream()));
 
         //Misc
         add(NMLSounds.DROPLET_FALLS, s -> s.with(allSounds("minecraft:block/beehive/drip", se -> se.attenuationDistance(8).volume(0.3f))));

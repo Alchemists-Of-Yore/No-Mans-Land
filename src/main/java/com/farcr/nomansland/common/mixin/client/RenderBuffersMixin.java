@@ -14,6 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RenderBuffers.class)
 public class RenderBuffersMixin {
 
+    @Inject(method = "lambda$new$0", at = @At("TAIL"))
+    private static void addGlintTypes(
+        Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> mapBuildersIn,
+        RenderType type, CallbackInfo ci
+    ) {
+        MoonlightGlowRenderType.addGlints(mapBuildersIn);
+    }
+
 //    @Inject(method = "put", at = @At("HEAD"))
 //    private static void addCustomGlints(
 //        Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> mapBuildersIn,
