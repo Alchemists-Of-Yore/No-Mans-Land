@@ -435,9 +435,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         int delay = serverLevel.getRandom().nextInt(20, 40) * 20;
         RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant), pot.getModifiers()), delay);
         serverLevel.sendParticles(
-                new PotShatterParticleOption(pot.variant.model(), delay, PotShatterParticleOption.extractBoxes(pot.variant.shape()), pos.getX(), pos.getY(), pos.getZ()),
+                new PotShatterParticleOption(pot.variant.model(), delay),
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                size == PotSize.LARGE ? 270 : 135, 0.3, 0.3, 0.3, 0.1);
+                size == PotSize.LARGE ? 135 : 67, 0.3, 0.3, 0.3, 0.1);
     }
 
     public static void spawnPotionCloud(ServerLevel level, BlockPos pos, PotionContents contents) {
