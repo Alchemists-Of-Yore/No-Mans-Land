@@ -19,11 +19,12 @@ public class PacifiedAttackGoal extends NearestAttackableTargetGoal<Mob> {
 
     @Override
     public boolean canUse() {
-        return mob.hasEffect(NMLEffects.PACIFIED) && super.canUse();
+        super.canUse();
+        return mob.hasEffect(NMLEffects.PACIFIED);
     }
 
     @Override
     public boolean canContinueToUse() {
-        return mob.hasEffect(NMLEffects.PACIFIED) && super.canContinueToUse();
+        return mob.hasEffect(NMLEffects.PACIFIED) && super.canContinueToUse() && isHostile(mob.getTarget());
     }
 }
