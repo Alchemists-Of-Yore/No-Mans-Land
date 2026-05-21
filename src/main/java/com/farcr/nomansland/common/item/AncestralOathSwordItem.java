@@ -26,6 +26,10 @@ public class AncestralOathSwordItem extends SwordItem {
         return 72000;
     }
 
+    @Override public boolean shouldCauseReequipAnimation(ItemStack oldStack, @NotNull ItemStack newStack, boolean slotChanged) {
+        return (!oldStack.is(newStack.getItem()));
+    }
+
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         player.startUsingItem(hand);

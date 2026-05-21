@@ -1,5 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderType;
+import com.farcr.nomansland.client.renderer.rendertype.GlintConsumer;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -25,6 +27,7 @@ public class ItemRendererMixin {
         int combinedLight, int combinedOverlay,
         BakedModel p_model, CallbackInfo callbackInfo
     ) {
+        AncestralGlintRenderType.setContext(itemStack);
         MoonlightGlowRenderType.setContext(itemStack);
     }
 
@@ -33,7 +36,7 @@ public class ItemRendererMixin {
         MultiBufferSource bufferSource, RenderType renderType,
         boolean isItem, boolean glint, CallbackInfoReturnable<VertexConsumer> cir
     ) {
-        cir.setReturnValue(MoonlightGlowRenderType.getConsumer(bufferSource, cir.getReturnValue()));
+        cir.setReturnValue(GlintConsumer.consume(bufferSource, cir.getReturnValue()));
     }
 
     @Inject(method = "getFoilBufferDirect", at = @At("RETURN"), cancellable = true)
@@ -41,6 +44,6 @@ public class ItemRendererMixin {
         MultiBufferSource bufferSource, RenderType renderType,
         boolean isItem, boolean glint, CallbackInfoReturnable<VertexConsumer> cir
     ) {
-        cir.setReturnValue(MoonlightGlowRenderType.getConsumer(bufferSource, cir.getReturnValue()));
+        cir.setReturnValue(GlintConsumer.consume(bufferSource, cir.getReturnValue()));
     }
 }

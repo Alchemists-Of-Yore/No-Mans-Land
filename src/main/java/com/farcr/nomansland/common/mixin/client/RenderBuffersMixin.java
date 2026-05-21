@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderType;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
@@ -19,7 +20,8 @@ public class RenderBuffersMixin {
         Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> mapBuildersIn,
         RenderType type, CallbackInfo ci
     ) {
-        MoonlightGlowRenderType.addGlints(mapBuildersIn);
+        AncestralGlintRenderType.addGlint(mapBuildersIn);
+        MoonlightGlowRenderType.addGlint(mapBuildersIn);
     }
 
 //    @Inject(method = "put", at = @At("HEAD"))
