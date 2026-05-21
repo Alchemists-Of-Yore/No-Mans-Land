@@ -143,6 +143,13 @@ public class NMLItems {
             Tiers.STONE.getSpeed(),
             0, 0,
             () -> Ingredient.EMPTY);
+    public static final ItemDefinition<Item> ANCESTRAL_OATH_SWORD = register("ancestral_oath_sword",
+        () -> new AncestralOathSwordItem(TIER_RITUAL, new Properties()
+            .attributes(SwordItem.createAttributes(TIER_RITUAL, 0, 0))
+            .rarity(Rarity.RARE)
+            .component(DataComponents.UNBREAKABLE, new Unbreakable(false))
+        )
+    );
     public static final ItemDefinition<Item> RITUAL_PICK = register("ritual_pick",
             () -> new RitualPickItem(TIER_RITUAL, new Properties()
                     .attributes(PickaxeItem.createAttributes(TIER_RITUAL, 0, 0))
