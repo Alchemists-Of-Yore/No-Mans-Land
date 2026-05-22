@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
+import vectorwing.farmersdelight.common.registry.ModSounds;
 import vectorwing.farmersdelight.common.tag.ModTags;
 import vectorwing.farmersdelight.common.utility.ItemUtils;
 
@@ -50,7 +51,7 @@ public class FruitCakeBlock extends CakeBlock {
             ItemUtils.spawnItemEntity(level, new ItemStack(FDIntegration.FRUIT_CAKE_SLICE.get()),
                     pos.getX() + (bites * 0.1), pos.getY() + 0.2, pos.getZ() + 0.5,
                     -0.05, 0, 0);
-            level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
+            level.playSound(null, pos, ModSounds.BLOCK_FOOD_SLICE.get(), SoundSource.PLAYERS, 0.8F, 0.8F);
 
             return ItemInteractionResult.SUCCESS;
         }

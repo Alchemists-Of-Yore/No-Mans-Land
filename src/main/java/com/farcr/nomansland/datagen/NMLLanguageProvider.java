@@ -44,8 +44,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.block.monster_anchor.monster_spawns", "Monster spawns");
         add("nomansland.subtitle.block.monster_anchor.activate", "Monster anchor activates");
         add("nomansland.subtitle.block.monster_anchor.deactivate", "Monster anchor deactivates");
-        add("nomansland.subtitle.torch.extinguish", "Torch extinguishes");
-        add("nomansland.subtitle.torch.light", "Torch lights");
+        add("nomansland.subtitle.block.torch.extinguish", "Torch extinguishes");
+        add("nomansland.subtitle.block.torch.light", "Torch lights");
         add("nomansland.subtitle.block.witch_stew_cauldron.ambient", "Witch Stew Cauldron gurgles");
         add("nomansland.subtitle.block.witch_stew_cauldron.clean", "Witch Stew Cauldron is cleaned");
         add("nomansland.subtitle.block.witch_stew_cauldron.empty", "Witch Stew pours into bowl");
@@ -88,6 +88,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.buddy.bone_break", "Buddy's bones snap");
         add("nomansland.subtitle.entity.friend_moon.speak", "Friend Moon speaks");
         add("nomansland.subtitle.entity.friend_moon.speak_sad", "Friend Moon speaks sadly");
+        add("nomansland.subtitle.block.icicle.shatter", "Icicle shatters");
+        add("nomansland.subtitle.entity.living_pot.charge", "Living Pot charges");
 
         add("item.nomansland.billhook_bass_bucket", "Bucket of Billhook Bass");
         add("item.nomansland.billhook_bass", "Raw Billhook Bass");
