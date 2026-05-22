@@ -101,11 +101,11 @@ public class LargePotBlock extends PotBlock {
             BlockState lowerState = level.getBlockState(lowerPos);
             if (lowerState.is(this) && !isUpper(lowerState)) {
                 super.playerWillDestroy(level, lowerPos, lowerState, player);
-                level.removeBlock(lowerPos, false);
                 if (!player.isCreative()) {
                     BlockEntity pot = level.getBlockEntity(lowerPos);
-                    dropResources(state, level, pos, pot, player, player.getMainHandItem());
+                    dropResources(state, level, lowerPos, pot, player, player.getMainHandItem());
                 }
+                level.removeBlock(lowerPos, false);
             }
             return state;
         }
