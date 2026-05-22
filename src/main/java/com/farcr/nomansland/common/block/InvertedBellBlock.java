@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -225,6 +226,11 @@ public class InvertedBellBlock extends BaseEntityBlock {
     @Override
     protected boolean propagatesSkylightDown(final BlockState state, final BlockGetter level, final BlockPos pos) {
         return true;
+    }
+
+    @Override
+    protected boolean canBeReplaced(final BlockState state, final Fluid fluid) {
+        return false;
     }
 
     @Override
