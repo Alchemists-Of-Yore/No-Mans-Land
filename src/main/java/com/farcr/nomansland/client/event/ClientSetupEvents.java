@@ -14,6 +14,7 @@ import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
+import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderLayer;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
@@ -147,6 +148,7 @@ public class ClientSetupEvents {
     @SubscribeEvent
     public static void addLayers(final EntityRenderersEvent.AddLayers event) {
         NMLArmorModels.addLayers(event);
+        AncestralGlintRenderLayer.addLayers(event);
     }
 
     @SubscribeEvent

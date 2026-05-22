@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.renderer.rendertype;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.ArrayList;
 
@@ -39,6 +41,22 @@ public class AncestralGlintRenderType {
             .createCompositeState(false)
     );
 
+    public static final RenderType ENTITY_ANCESTRAL_GLINT = RenderType.create(
+        "ancestral_glint", DefaultVertexFormat.POSITION_TEX,
+        VertexFormat.Mode.QUADS, 1536, RenderType.CompositeState.builder()
+            .setShaderState(RenderStateShard.RENDERTYPE_GLINT_TRANSLUCENT_SHADER)
+            .setTextureState(
+                new RenderStateShard.TextureStateShard(
+                    NoMansLand.location("textures/misc/ancestral_glint.png"), true, false)
+            )
+            .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+            .setCullState(RenderStateShard.NO_CULL)
+            .setDepthTestState(RenderStateShard.EQUAL_DEPTH_TEST)
+            .setTransparencyState(RenderStateShard.GLINT_TRANSPARENCY)
+            .setTexturingState(RenderStateShard.ENTITY_GLINT_TEXTURING)
+            .createCompositeState(false)
+    );
+
     public static ItemStack itemContext;
     public static void setContext(ItemStack newContext) {
         itemContext = newContext;
@@ -46,7 +64,7 @@ public class AncestralGlintRenderType {
 
     public static boolean renderGlintCondition() {
         if (itemContext != null) {
-            boolean validItem = itemContext.is(NMLItems.ANCESTRAL_OATH_SWORD);
+            boolean validItem = false; // (IClientItemExtensions.of(itemContext) instanceof AncestralOathSwordClientExtensions);
             itemContext = null;
             return validItem;
         }

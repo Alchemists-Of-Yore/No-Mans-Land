@@ -26,8 +26,17 @@ public class AncestralOathSwordItem extends SwordItem {
         return 72000;
     }
 
+    public boolean canHurtUnderOath(LivingEntity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+        return canHurtUnderOath(target);
+    }
+
     @Override public boolean shouldCauseReequipAnimation(ItemStack oldStack, @NotNull ItemStack newStack, boolean slotChanged) {
-        return (!oldStack.is(newStack.getItem()));
+        return (!oldStack.getItem().equals(newStack.getItem()));
     }
 
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
