@@ -5,7 +5,7 @@
 	"texture_size": [128, 128],
 	"textures": {
 		"0": "nomansland:block/dungeon/inverted_bell",
-		"particle": "nomansland:block/dungeon/no_particle"
+		"particle": "nomansland:block/no_particle"
 	},
 	"elements": [
 		{
