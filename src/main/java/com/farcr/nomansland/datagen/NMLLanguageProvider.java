@@ -3,8 +3,10 @@ package com.farcr.nomansland.datagen;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
+import com.farcr.nomansland.common.definitions.PotionDefinition;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.farcr.nomansland.common.registry.items.NMLPotions;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -28,6 +30,21 @@ public class NMLLanguageProvider extends LanguageProvider {
         for (ItemDefinition<?> definition : NMLItems.ITEM_DEFINITIONS) {
             if (!definition.hasCustomLang() && !definition.isBlockItem()) {
                 add(definition.langKey(), definition.langName());
+            }
+        }
+
+        for (PotionDefinition definition : NMLPotions.POTION_DEFINITIONS) {
+            if (!definition.hasCustomLang()) {
+                add("item.nomansland.bandage.effect." + definition.trimmedLangKey(),
+                    definition.effectLanguageValue() + " Bandage");
+                add("item.minecraft.potion.effect." + definition.trimmedLangKey(),
+                    "Potion of " + definition.effectLanguageValue());
+                add("item.minecraft.lingering_potion.effect." + definition.trimmedLangKey(),
+                    "Lingering Potion of " + definition.effectLanguageValue());
+                add("item.minecraft.splash_potion.effect." + definition.trimmedLangKey(),
+                    "Splash Potion of " + definition.effectLanguageValue());
+                add("item.minecraft.tipped_arrow.effect." + definition.trimmedLangKey(),
+                    "Arrow of " + definition.effectLanguageValue());
             }
         }
 
@@ -145,6 +162,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("effect.nomansland.flammable", "Flammable");
         add("effect.nomansland.friendship", "Friendship");
         add("effect.nomansland.happiness", "Happiness");
+        add("effect.nomansland.stasis", "Stasis");
         add("item.nomansland.bandage.effect.empty", "Uncraftable Bandage");
         add("item.nomansland.bandage.effect.fire_resistance", "Fire Resistance Bandage");
         add("item.nomansland.bandage.effect.instant_damage", "Harming Bandage");

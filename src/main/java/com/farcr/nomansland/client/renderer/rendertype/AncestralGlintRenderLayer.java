@@ -1,5 +1,6 @@
 package com.farcr.nomansland.client.renderer.rendertype;
 
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
@@ -26,6 +27,10 @@ public class AncestralGlintRenderLayer<T extends LivingEntity, M extends EntityM
 
     @SuppressWarnings("unchecked")
     public static void addLayers(final EntityRenderersEvent.AddLayers event) {
+        event.getContext().getEntityRenderDispatcher().getSkinMap().forEach((model, playerRenderer) -> {
+            if (event.getSkin(model) != null && playerRenderer instanceof LivingEntityRenderer livingEntityRenderer)
+                livingEntityRenderer.addLayer(new AncestralGlintRenderLayer(event.getSkin(model)));
+        });
         event.getEntityTypes().forEach(entityType -> {
             if (event.getRenderer(entityType) instanceof LivingEntityRenderer r)
                 r.addLayer(new AncestralGlintRenderLayer(r));
@@ -38,6 +43,8 @@ public class AncestralGlintRenderLayer<T extends LivingEntity, M extends EntityM
         int packedLight, @NotNull T livingEntity, float limbSwing, float limbSwingAmount,
         float partialTicks, float ageInTicks, float headYaw, float headPitch
     ) {
+        if (!livingEntity.hasEffect(NMLEffects.STASIS)) return;
+
         EntityModel<T> entityModel = this.getParentModel();
         entityModel.prepareMobModel(livingEntity, limbSwing, limbSwingAmount, partialTicks);
         this.getParentModel().copyPropertiesTo(entityModel);

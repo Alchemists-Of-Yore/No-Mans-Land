@@ -45,6 +45,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.farcr.nomansland.common.registry.items.NMLPotions;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
@@ -200,6 +201,9 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
         event.getBuilder().addMix(Potions.WATER, NMLItems.AWKWARD_RESIDUE.get(), Potions.AWKWARD);
+
+        event.getBuilder().addStartMix(Items.NAUTILUS_SHELL, NMLPotions.STASIS);
+        event.getBuilder().addMix(NMLPotions.STASIS, Items.REDSTONE, NMLPotions.LONG_STASIS);
 
         event.getBuilder().addRecipe(new AwkwardResidueDowngradeRecipe());
         event.getBuilder().addRecipe(new BandageInfusionRecipe());
