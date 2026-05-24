@@ -26,6 +26,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin {
 
+    @Inject(method = "itemUsed", at = @At("HEAD"), cancellable = true)
+    private void nml$cancelItemUsed(InteractionHand hand, CallbackInfo ci) {
+        assert Minecraft.getInstance().player != null;
+        ItemStack itemStack = Minecraft.getInstance().player.getItemInHand(hand);
+        if (itemStack.is(NMLItems.ANCESTRAL_OATH_SWORD)) ci.cancel();
+    }
+
     @ModifyVariable(method = "renderArmWithItem", at = @At("HEAD"), argsOnly = true)
     private ItemStack nml$hideItemDuringDream(ItemStack stack) {
         LocalPlayer player = Minecraft.getInstance().player;
