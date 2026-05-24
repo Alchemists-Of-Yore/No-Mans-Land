@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity.living_pot;
 
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -115,7 +116,7 @@ public class LivingPotDashGoal extends Goal {
                 pot.startDashLoop();
 
                 pot.level().playSound(null, pot.getX(), pot.getY(), pot.getZ(),
-                        SoundEvents.IRON_GOLEM_ATTACK, SoundSource.HOSTILE,
+                        NMLSounds.LIVING_POT_CHARGE.get(), SoundSource.HOSTILE,
                         0.6F, 1.4F + pot.getRandom().nextFloat() * 0.2F);
             }
             return;

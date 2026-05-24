@@ -38,6 +38,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -84,6 +85,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -127,7 +129,7 @@ public class MiscellaneousEvents {
                     }
                 } else { //lighting block
                     if (pair.isExtinguishedVersion(state)) {
-                        level.playSound(player, pos, NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
+                        level.playSound(player, pos, stack.is(Items.FLINT_AND_STEEL) ? NMLSounds.TORCH_LIGHT_BY_FLINT_AND_STEEL.get() : NMLSounds.TORCH_LIGHT.get(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
                         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         level.setBlockAndUpdate(pos, pair.litBlock().withPropertiesOf(state));
                         event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
@@ -351,14 +353,25 @@ public class MiscellaneousEvents {
     * on respawn or otherwise if the player wasn't there to witness its application
     */
     @SubscribeEvent
-    private static void buddyTrackingPacket(PlayerEvent.StartTracking event) {
-        if (event.getTarget() instanceof Buddy buddy
-        && buddy.hasEffect(NMLEffects.HAPPINESS)
-        && event.getEntity() instanceof ServerPlayer player) {
+    private static void happinessTrackingPacket(PlayerEvent.StartTracking event) {
+        if (!(event.getEntity() instanceof ServerPlayer tracker)) return;
+        if (event.getTarget() instanceof Buddy buddy && buddy.hasEffect(NMLEffects.HAPPINESS)) {
             MobEffectInstance effectInstance = buddy.getEffect(NMLEffects.HAPPINESS);
-            ClientboundBuddyUpdateEffectsPacket updateEffectsPacket
-                = new ClientboundBuddyUpdateEffectsPacket(buddy.getId(), effectInstance);
-            PacketDistributor.sendToPlayer(player, updateEffectsPacket);
+            PacketDistributor.sendToPlayer(tracker,
+                new ClientboundBuddyUpdateEffectsPacket(buddy.getId(), effectInstance));
+        } else if (event.getTarget() instanceof ServerPlayer player && player.hasEffect(NMLEffects.HAPPINESS)) {
+            MobEffectInstance effectInstance = player.getEffect(NMLEffects.HAPPINESS);
+            tracker.connection.send(
+                new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance, false));
+        }
+    }
+
+    @SubscribeEvent
+    private static void playerHappinessAdded(MobEffectEvent.Added event) {
+        if (event.getEntity() instanceof ServerPlayer player
+            && event.getEffectInstance().getEffect().value() == NMLEffects.HAPPINESS.value()) {
+            ((ServerLevel) player.level()).getChunkSource().broadcast(player,
+                new ClientboundUpdateMobEffectPacket(player.getId(), event.getEffectInstance(), true));
         }
     }
 

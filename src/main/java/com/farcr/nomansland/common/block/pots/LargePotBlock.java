@@ -40,6 +40,10 @@ import javax.annotation.Nullable;
 public class LargePotBlock extends PotBlock {
 
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+    private static final VoxelShape LARGE_FALLBACK = Shapes.or(
+            Shapes.box(0, 2.0 / 16, 0, 1, 21.0 / 16, 1),
+            Shapes.box(3.0 / 16, 22.0 / 16, 3.0 / 16, 13.0 / 16, 25.0 / 16, 13.0 / 16)
+    );
 
     public LargePotBlock(Properties properties) {
         super(PotSize.LARGE, properties);
@@ -96,31 +100,28 @@ public class LargePotBlock extends PotBlock {
             BlockPos lowerPos = pos.below();
             BlockState lowerState = level.getBlockState(lowerPos);
             if (lowerState.is(this) && !isUpper(lowerState)) {
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
-                level.levelEvent(player, 2001, pos, Block.getId(state));
                 super.playerWillDestroy(level, lowerPos, lowerState, player);
                 if (!player.isCreative()) {
-                    BlockEntity be = level.getBlockEntity(lowerPos);
-                    Block.dropResources(lowerState, level, lowerPos, be, player, player.getMainHandItem());
+                    BlockEntity pot = level.getBlockEntity(lowerPos);
+                    dropResources(state, level, lowerPos, pot, player, player.getMainHandItem());
                 }
                 level.removeBlock(lowerPos, false);
-                return state;
             }
+            return state;
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (isUpper(state)) return;
         if (!state.is(newState.getBlock())) {
-            if (!isUpper(state)) {
-                BlockState above = level.getBlockState(pos.above());
-                if (above.is(this) && isUpper(above)) {
-                    level.removeBlock(pos.above(), false);
-                }
+            BlockState above = level.getBlockState(pos.above());
+            if (above.is(this) && isUpper(above)) {
+                level.removeBlock(pos.above(), false);
             }
+            super.onRemove(state, level, pos, newState, movedByPiston);
         }
-        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @Override
@@ -181,44 +182,27 @@ public class LargePotBlock extends PotBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape fullShape = null;
-        if (isUpper(state)) {
-            BlockPos lowerPos = pos.below();
-            if (level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot && pot.variant != null) {
-                fullShape = pot.variant.shape();
-            }
-        } else {
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
-                fullShape = pot.variant.shape();
-            }
+        if (level.getBlockEntity(getLowerPos(state, pos)) instanceof PotBlockEntity pot && pot.variant != null) {
+            VoxelShape variantShape = pot.variant.shape();
+            if (variantShape != null && !variantShape.isEmpty()) return isUpper(state) ? offsetShape(variantShape, -1) : variantShape;
         }
-        if (fullShape == null || fullShape.isEmpty()) return Shapes.block();
-        VoxelShape result = isUpper(state) ? clampToBlock(offsetShape(fullShape, -1.0)) : clampToBlock(fullShape);
-        return result.isEmpty() ? Shapes.block() : result;
+        return LARGE_FALLBACK;
     }
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         VoxelShape shape = getShape(state, level, pos, context);
-        BlockPos lowerPos = getLowerPos(state, pos);
-        if (!(level.getBlockEntity(lowerPos) instanceof PotBlockEntity pot) || !pot.isLiving()) return shape;
-        return shape.isEmpty() ? shape : Shapes.create(shape.bounds().deflate(0.05));
+        return shape.isEmpty() ? shape : Shapes.create(shape.bounds().deflate(0.02));
     }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (isUpper(state)) {
-            return super.useItemOn(stack, level.getBlockState(pos.below()), level, pos.below(), player, hand, hit);
-        }
-        return super.useItemOn(stack, state, level, pos, player, hand, hit);
+        return super.useItemOn(stack, state, level, getLowerPos(state, pos), player, hand, hit);
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (isUpper(state)) {
-            return super.useWithoutItem(level.getBlockState(pos.below()), level, pos.below(), player, hit);
-        }
-        return super.useWithoutItem(state, level, pos, player, hit);
+        return super.useWithoutItem(state, level, getLowerPos(state, pos), player, hit);
     }
 
     @Override
@@ -258,8 +242,8 @@ public class LargePotBlock extends PotBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (!isUpper(state)) return;
-        super.animateTick(state, level, getLowerPos(state, pos), random);
+        if (isUpper(state)) return;
+        super.animateTick(state, level, pos, random);
     }
 
     private static VoxelShape offsetShape(VoxelShape shape, double yOffset) {
@@ -268,17 +252,5 @@ public class LargePotBlock extends PotBlock {
             holder[0] = Shapes.or(holder[0], Shapes.box(minX, minY + yOffset, minZ, maxX, maxY + yOffset, maxZ));
         });
         return holder[0].isEmpty() ? Shapes.block() : holder[0];
-    }
-
-    private static VoxelShape clampToBlock(VoxelShape shape) {
-        final VoxelShape[] holder = { Shapes.empty() };
-        shape.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> {
-            double nMinX = Math.max(0.0, minX), nMinY = Math.max(0.0, minY), nMinZ = Math.max(0.0, minZ);
-            double nMaxX = Math.min(1.0, maxX), nMaxY = Math.min(1.0, maxY), nMaxZ = Math.min(1.0, maxZ);
-            if (nMinX < nMaxX && nMinY < nMaxY && nMinZ < nMaxZ) {
-                holder[0] = Shapes.or(holder[0], Shapes.box(nMinX, nMinY, nMinZ, nMaxX, nMaxY, nMaxZ));
-            }
-        });
-        return holder[0];
     }
 }

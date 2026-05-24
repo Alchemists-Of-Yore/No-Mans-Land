@@ -38,9 +38,19 @@ public class LivingUrn extends ThrowableBombEntity {
 
     private static final float VERTICAL_RESTITUTION = 0.3F;
     private static final float HORIZONTAL_RESTITUTION = 0.4F;
+    private static final float JUMP_STRENGTH_MULTIPLIER = 1.25F;
+    private static final double SEARCH_RANGE = 8.0;
+    private static final double TRACKING_RANGE = (SEARCH_RANGE * 1.5) * (SEARCH_RANGE * 1.5);
+
+    private static final TargetingConditions TARGET_CONDITIONS = TargetingConditions.DEFAULT
+            .range(SEARCH_RANGE)
+            .selector(entity -> entity instanceof Enemy
+                    && !(entity instanceof NeutralMob)
+                    && !entity.hasEffect(NMLEffects.PACIFIED));
 
     private int bounceCooldown = -1;
     private float shakeTimer = 0;
+    private Mob targetMob = null;
 
     public LivingUrn(EntityType<? extends ThrowableBombEntity> entityType, Level level) {
         super(entityType, level);
@@ -134,6 +144,9 @@ public class LivingUrn extends ThrowableBombEntity {
             if (motion.x != 0 && motion.z != 0) {
                 bounceCooldown = 60;
                 shakeTimer = 1;
+                if (!isTargetValid(targetMob)) {
+                    targetMob = findNearestTarget();
+                }
             }
             return;
         }
@@ -185,18 +198,28 @@ public class LivingUrn extends ThrowableBombEntity {
         super.updateRotation();
     }
 
+    private boolean isTargetValid(Mob mob) {
+        return mob != null && mob.isAlive()
+                && mob instanceof Enemy
+                && !(mob instanceof NeutralMob)
+                && !mob.hasEffect(NMLEffects.PACIFIED)
+                && mob.distanceToSqr(this) <= TRACKING_RANGE;
+    }
+
+    private Mob findNearestTarget() {
+        return level().getNearestEntity(
+                Mob.class,
+                TARGET_CONDITIONS,
+                null, getX(), getY(), getZ(),
+                new AABB(blockPosition()).inflate(SEARCH_RANGE)
+        );
+    }
+
     @Override
     public void tick() {
         super.tick();
 
         Level level = level();
-
-        Mob mob = level.getNearestEntity(
-                Mob.class,
-                TargetingConditions.DEFAULT.range(8),
-                null, getX(), getY(), getZ(),
-                new AABB(blockPosition()).inflate(8)
-        );
 
         if (level.isClientSide()) {
             if (!onGround()) {
@@ -204,10 +227,10 @@ public class LivingUrn extends ThrowableBombEntity {
             }
 
             if (shakeTimer > 0) {
-                if (mob instanceof Enemy && !(mob instanceof NeutralMob) && !mob.hasEffect(NMLEffects.PACIFIED)) {
+                if (isTargetValid(targetMob)) {
                     if (bounceCooldown > 0) {
                         if (bounceCooldown < 45) {
-                            Vec3 toTarget = mob.position().subtract(position());
+                            Vec3 toTarget = targetMob.position().subtract(position());
                             if (toTarget.lengthSqr() > 0.001) {
                                 double dx = toTarget.x;
                                 double dz = toTarget.z;
@@ -244,8 +267,12 @@ public class LivingUrn extends ThrowableBombEntity {
             bounceCooldown--;
 
             if (bounceCooldown == 0) {
-                if (mob instanceof Enemy && !(mob instanceof NeutralMob) && !mob.hasEffect(NMLEffects.PACIFIED)) {
-                    Vec3 toTarget = mob.position().subtract(position());
+                if (!isTargetValid(targetMob)) {
+                    targetMob = findNearestTarget();
+                }
+
+                if (isTargetValid(targetMob)) {
+                    Vec3 toTarget = targetMob.position().subtract(position());
                     double distance = toTarget.length();
 
                     if (distance > 0.01) {
@@ -264,7 +291,7 @@ public class LivingUrn extends ThrowableBombEntity {
                                 direction.x * speed,
                                 jumpStrength,
                                 direction.z * speed
-                        );
+                        ).scale(JUMP_STRENGTH_MULTIPLIER);
 
                         float targetYaw = (float) (Mth.atan2(-toTarget.x, -toTarget.z) * (180F / Math.PI)) + 90;
                         setYRot(targetYaw);

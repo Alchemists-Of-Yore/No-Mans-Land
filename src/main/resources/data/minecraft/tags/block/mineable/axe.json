@@ -28,6 +28,14 @@
     {
       "id": "nomansland:willow_cabinet",
       "required": false
+    },
+    {
+      "id": "nomansland:apple_crate",
+      "required": false
+    },
+    {
+      "id": "nomansland:pear_crate",
+      "required": false
     }
   ]
 }

@@ -1,11 +1,11 @@
 package com.farcr.nomansland.common.block;
 
 import com.farcr.nomansland.common.registry.NMLDamageTypes;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -105,7 +105,7 @@ public class IciclesBlock extends Block implements Fallable {
     @Override
     public void onBrokenAfterFall(Level level, BlockPos pos, FallingBlockEntity fallingBlock) {
         if (!fallingBlock.isSilent() && level instanceof ServerLevel serverLevel) {
-            serverLevel.playSound(fallingBlock, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
+            serverLevel.playSound(fallingBlock, pos, NMLSounds.ICICLE_SHATTER.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
         }
     }
 
