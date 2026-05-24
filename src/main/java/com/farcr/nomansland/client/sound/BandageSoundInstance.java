@@ -16,8 +16,7 @@ public class BandageSoundInstance extends AbstractTickableSoundInstance {
     private final Player player;
 
     public static void play(Player player) {
-        BandageSoundInstance previous = ACTIVE.remove(player.getId());
-        if (previous != null) previous.stop();
+        stopFor(player.getId());
         BandageSoundInstance instance = new BandageSoundInstance(player);
         ACTIVE.put(player.getId(), instance);
         Minecraft.getInstance().getSoundManager().play(instance);
@@ -25,7 +24,7 @@ public class BandageSoundInstance extends AbstractTickableSoundInstance {
 
     public static void stopFor(int playerId) {
         BandageSoundInstance existing = ACTIVE.remove(playerId);
-        if (existing != null) existing.stop();
+        if (existing != null) Minecraft.getInstance().getSoundManager().stop(existing);
     }
 
     public BandageSoundInstance(Player player) {
