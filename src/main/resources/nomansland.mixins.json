@@ -77,6 +77,7 @@
     "client.ClientChunkCacheMixin",
     "client.ClientChunkCacheStorageMixin",
     "client.ClientLevelMixin",
+    "client.EntityRenderDispatcherMixin",
     "client.EntityRendererMixin",
     "client.GameRendererInvoker",
     "client.GameRendererMixin",

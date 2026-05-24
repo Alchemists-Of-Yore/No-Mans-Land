@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -79,6 +80,16 @@ public abstract class EntityMixin implements EntityExtension {
             NML$previouslyInspected = true;
     }
 
+    @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
+    private Vec3 nml$setDeltaMovement(Vec3 deltaMovement) {
+        return deltaMovement.multiply(nml$getVisualTickMultiplier(), nml$getVisualTickMultiplier(), nml$getVisualTickMultiplier());
+    }
+
+    @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true)
+    private void nml$getGravity(CallbackInfoReturnable<Double> cir) {
+        if (nml$getVisualTickMultiplier() < 1f) cir.setReturnValue(cir.getReturnValue() * (double) nml$getVisualTickMultiplier());
+    }
+
     public boolean NML$isBeingInspected() {
         return NML$offering;
     }
@@ -95,6 +106,17 @@ public abstract class EntityMixin implements EntityExtension {
     private void NML$getGravity(CallbackInfoReturnable<Double> cir) {
         if (NML$isBeingInspected()) cir.setReturnValue(0.0d);
     }
+
+    @ModifyVariable(method = "turn", at = @At("HEAD"), argsOnly = true, ordinal = 0)
+    private double nml$rotX(double rotX) {
+        return rotX * nml$getVisualTickMultiplier();
+    }
+
+    @ModifyVariable(method = "turn", at = @At("HEAD"), argsOnly = true, ordinal = 1)
+    private double nml$rotY(double rotY) {
+        return rotY * nml$getVisualTickMultiplier();
+    }
+
 
     @Unique @Nullable
     private Vec3 startingToFallPosition;

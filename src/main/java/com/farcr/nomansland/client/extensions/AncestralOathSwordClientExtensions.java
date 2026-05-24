@@ -16,8 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class AncestralOathSwordClientExtensions implements IClientItemExtensions {
 
-    private float trackedEquipProgress = 1f;
-
     /*
     * Probably not good practice to reimplement this, but
     * I want to give the sword a cool shake animation so fuuuuuuuck
