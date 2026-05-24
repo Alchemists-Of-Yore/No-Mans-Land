@@ -95,6 +95,7 @@
     "client.MouseHandlerMixin",
     "client.MusicManagerMixin",
     "client.ReceivingLevelScreenMixin",
+    "client.RenderTargetMixin",
     "client.RenderBuffersMixin",
     "client.SkinManagerMixin",
     "client.SoundEngineAccessor",
