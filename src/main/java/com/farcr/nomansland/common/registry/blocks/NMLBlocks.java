@@ -249,17 +249,17 @@ public class NMLBlocks {
 
     //Underground
     public static final BlockDefinition<AmethystBlock> QUARTZITE = register("quartzite",
-            () -> new AmethystBlock(of().mapColor(MapColor.TERRACOTTA_WHITE).strength(1.3F).sound(SoundType.NETHER_GOLD_ORE).requiresCorrectToolForDrops()));
+            () -> new AmethystBlock(of().mapColor(MapColor.TERRACOTTA_WHITE).strength(1.3F).sound(NMLSounds.QUARTZITE).requiresCorrectToolForDrops()));
     public static final BlockDefinition<BuddingQuartziteBlock> BUDDING_QUARTZITE = register("budding_quartzite",
-            () -> new BuddingQuartziteBlock(of().mapColor(MapColor.TERRACOTTA_WHITE).randomTicks().strength(1.3F).sound(SoundType.NETHER_GOLD_ORE).pushReaction(PushReaction.DESTROY).noLootTable()));
+            () -> new BuddingQuartziteBlock(of().mapColor(MapColor.TERRACOTTA_WHITE).randomTicks().strength(1.3F).sound(NMLSounds.QUARTZITE).pushReaction(PushReaction.DESTROY).noLootTable()));
     public static final BlockDefinition<AmethystClusterBlock> QUARTZITE_CLUSTER = register("quartzite_cluster",
-            () -> new AmethystClusterBlock(7, 3, of().mapColor(MapColor.TERRACOTTA_WHITE).forceSolidOn().noOcclusion().randomTicks().sound(SoundType.NETHER_GOLD_ORE).strength(1.3F).lightLevel((p_152632_) -> 5).pushReaction(PushReaction.DESTROY)));
+            () -> new AmethystClusterBlock(7, 3, of().mapColor(MapColor.TERRACOTTA_WHITE).forceSolidOn().noOcclusion().randomTicks().sound(NMLSounds.QUARTZITE).strength(1.3F).lightLevel((p_152632_) -> 5).pushReaction(PushReaction.DESTROY)));
     public static final BlockDefinition<AmethystClusterBlock> SMALL_QUARTZITE_BUD = register("small_quartzite_bud",
-            () -> new AmethystClusterBlock(3, 4, ofFullCopy(NMLBlocks.QUARTZITE_CLUSTER.get()).sound(SoundType.NETHER_GOLD_ORE).forceSolidOn().lightLevel((p_187409_) -> 1).pushReaction(PushReaction.DESTROY)));
+            () -> new AmethystClusterBlock(3, 4, ofFullCopy(NMLBlocks.QUARTZITE_CLUSTER.get()).sound(NMLSounds.QUARTZITE).forceSolidOn().lightLevel((p_187409_) -> 1).pushReaction(PushReaction.DESTROY)));
     public static final BlockDefinition<AmethystClusterBlock> MEDIUM_QUARTZITE_BUD = register("medium_quartzite_bud",
-            () -> new AmethystClusterBlock(4, 3, ofFullCopy(NMLBlocks.QUARTZITE_CLUSTER.get()).sound(SoundType.NETHER_GOLD_ORE).forceSolidOn().lightLevel((p_152617_) -> 2).pushReaction(PushReaction.DESTROY)));
+            () -> new AmethystClusterBlock(4, 3, ofFullCopy(NMLBlocks.QUARTZITE_CLUSTER.get()).sound(NMLSounds.QUARTZITE).forceSolidOn().lightLevel((p_152617_) -> 2).pushReaction(PushReaction.DESTROY)));
     public static final BlockDefinition<AmethystClusterBlock> LARGE_QUARTZITE_BUD = register("large_quartzite_bud",
-            () -> new AmethystClusterBlock(5, 3, ofFullCopy(NMLBlocks.QUARTZITE_CLUSTER.get()).sound(SoundType.NETHER_GOLD_ORE).forceSolidOn().lightLevel((p_152629_) -> 4).pushReaction(PushReaction.DESTROY)));
+            () -> new AmethystClusterBlock(5, 3, ofFullCopy(NMLBlocks.QUARTZITE_CLUSTER.get()).sound(NMLSounds.QUARTZITE).forceSolidOn().lightLevel((p_152629_) -> 4).pushReaction(PushReaction.DESTROY)));
     public static final BlockDefinition<Block> SILT = register("silt",
             () -> new Block(of().mapColor(MapColor.TERRACOTTA_GRAY).sound(SoundType.ROOTED_DIRT).strength(0.6F)), BlockProperties.dirtLike());
     public static final BlockDefinition<PathBlock> SILT_PATH = register("silt_path",
