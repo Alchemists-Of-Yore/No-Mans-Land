@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:salmon_and_pesto_gnocchi",
+      "required": false
+    },
+    {
+      "id": "nomansland:seared_venison",
+      "required": false
+    },
+    {
+      "id": "nomansland:witch_stew",
+      "required": false
+    },
+    {
+      "id": "nomansland:pasta_with_pesto",
+      "required": false
+    },
+    {
+      "id": "nomansland:mashed_potatoes_with_mushrooms",
+      "required": false
+    }
+  ]
+}

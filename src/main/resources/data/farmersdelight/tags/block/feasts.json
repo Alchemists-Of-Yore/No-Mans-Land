@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:stallion_strips",
+      "required": false
+    },
+    {
+      "id": "nomansland:pot_of_witch_stew",
+      "required": false
+    }
+  ]
+}

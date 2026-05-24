@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:fruit_cake",
+      "required": false
+    },
+    {
+      "id": "nomansland:fruit_cake_slice",
+      "required": false
+    },
+    {
+      "id": "nomansland:pear_cobbler_slice",
+      "required": false
+    },
+    {
+      "id": "nomansland:sweet_tart",
+      "required": false
+    },
+    {
+      "id": "nomansland:maple_tart",
+      "required": false
+    }
+  ]
+}

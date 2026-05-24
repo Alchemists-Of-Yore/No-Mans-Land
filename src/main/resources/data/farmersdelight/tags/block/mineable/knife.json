@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:fruit_cake",
+      "required": false
+    },
+    {
+      "id": "nomansland:pear_cobbler",
+      "required": false
+    }
+  ]
+}

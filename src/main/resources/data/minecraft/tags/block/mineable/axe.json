@@ -36,6 +36,10 @@
     {
       "id": "nomansland:pear_crate",
       "required": false
+    },
+    {
+      "id": "nomansland:stallion_strips",
+      "required": false
     }
   ]
 }
