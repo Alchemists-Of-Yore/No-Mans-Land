@@ -14,7 +14,6 @@ import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
-import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
@@ -168,7 +167,8 @@ public class CommonSetupEvents {
     public static void createEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(NMLEntities.BILLHOOK_BASS.get(), BillhookBass.createAttributes().build());
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
-        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
+        // TODO: moose
+//        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
@@ -181,7 +181,8 @@ public class CommonSetupEvents {
     public static void registerSpawnPlacements(final RegisterSpawnPlacementsEvent event) {
         event.register(NMLEntities.BILLHOOK_BASS.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BillhookBass::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Deer::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-        event.register(NMLEntities.MOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Moose::checkMooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        // TODO: moose
+//        event.register(NMLEntities.MOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Moose::checkMooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(EntityType.CAMEL, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Camel::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(EntityType.HUSK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.TORTOISE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Tortoise::checkTortoiseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);

@@ -11,7 +11,6 @@ import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
-import com.farcr.nomansland.common.entity.cervidae.moose.Moose;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
@@ -90,13 +89,14 @@ public class NMLEntities {
 //    public static final Supplier<EntityType<BuriedEntity>> BURIED =
 //            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)
 //                    .sized(1.0f, 1.0f).clientTrackingRange(8).build("buried"));
-//
-    public static final Supplier<EntityType<Moose>> MOOSE =
-            ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
-                    .sized(1.5F, 1.75F)
-                    .eyeHeight(2.0F)
-                    .passengerAttachments(new Vec3(0.0F, 2.05F, -0.5F))
-                    .build("moose"));
+
+    // TODO: moose
+//    public static final Supplier<EntityType<Moose>> MOOSE =
+//            ENTITIES.register("moose", () -> EntityType.Builder.of(Moose::new, MobCategory.CREATURE)
+//                    .sized(1.5F, 1.75F)
+//                    .eyeHeight(2.0F)
+//                    .passengerAttachments(new Vec3(0.0F, 2.05F, -0.5F))
+//                    .build("moose"));
 
     public static final Supplier<EntityType<Tortoise>> TORTOISE =
             ENTITIES.register("tortoise", () -> EntityType.Builder.of(Tortoise::new, MobCategory.CREATURE)
