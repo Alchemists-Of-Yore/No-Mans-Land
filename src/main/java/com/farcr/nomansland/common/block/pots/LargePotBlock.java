@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -89,7 +90,9 @@ public class LargePotBlock extends PotBlock {
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (isUpper(state)) return;
         if (!movedByPiston) {
-            level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+            BlockPos abovePos = pos.above();
+            boolean upperWaterlogged = level.getFluidState(abovePos).getType() == Fluids.WATER;
+            level.setBlock(abovePos, state.setValue(HALF, DoubleBlockHalf.UPPER).setValue(BlockStateProperties.WATERLOGGED, upperWaterlogged), 3);
         }
         super.onPlace(state, level, pos, oldState, movedByPiston);
     }
@@ -169,7 +172,9 @@ public class LargePotBlock extends PotBlock {
     public void onLand(Level level, BlockPos pos, BlockState state, BlockState replaceableState, FallingBlockEntity fallingBlock) {
         super.onLand(level, pos, state, replaceableState, fallingBlock);
         if (level.getBlockState(pos).is(this)) {
-            level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+            BlockPos abovePos = pos.above();
+            boolean upperWaterlogged = level.getFluidState(abovePos).getType() == Fluids.WATER;
+            level.setBlock(abovePos, state.setValue(HALF, DoubleBlockHalf.UPPER).setValue(BlockStateProperties.WATERLOGGED, upperWaterlogged), 3);
         }
     }
 
