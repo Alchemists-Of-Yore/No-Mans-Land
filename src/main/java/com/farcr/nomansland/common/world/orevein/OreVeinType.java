@@ -215,6 +215,7 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
             if (mapping == null) return resolved;
 
             Block targetBlock = mapping.get(currentState.getBlock());
+            if (targetBlock == null) return resolved;
             return targetBlock.withPropertiesOf(currentState);
         }
 
