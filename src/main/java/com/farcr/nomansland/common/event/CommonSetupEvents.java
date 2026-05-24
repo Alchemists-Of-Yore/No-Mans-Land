@@ -28,7 +28,6 @@ import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.mixin.BlockBehaviourAccessModifier;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
-import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
@@ -324,7 +323,6 @@ public class CommonSetupEvents {
         registrar.playToServer(ServerboundDreamAcknowledgePacket.TYPE, ServerboundDreamAcknowledgePacket.STREAM_CODEC, ServerboundDreamAcknowledgePacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
-        registrar.playToClient(ClientboundBuddyUpdateEffectsPacket.TYPE, ClientboundBuddyUpdateEffectsPacket.STREAM_CODEC, ClientboundBuddyUpdateEffectsPacket::handleData);
 
         registrar.playToClient(ClientboundZoomEffectPacket.TYPE, ClientboundZoomEffectPacket.STREAM_CODEC, ClientboundZoomEffectPacket::handleData);
 

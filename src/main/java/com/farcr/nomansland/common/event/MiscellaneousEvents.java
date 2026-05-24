@@ -7,12 +7,10 @@ import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
-import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
-import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -33,6 +31,7 @@ import com.farcr.nomansland.common.worldevent.SunDog;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -53,6 +52,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -344,6 +344,10 @@ public class MiscellaneousEvents {
         }
     }
 
+    private static final List<Holder<MobEffect>> TRACKED_EFFECTS = List.of(
+        NMLEffects.HAPPINESS, NMLEffects.STASIS
+    );
+
     /*
     * To be clear, this exists because Minecraft doesn't actually sync mob effects
     * with the player. it just handles everything related to them on the server
@@ -353,25 +357,22 @@ public class MiscellaneousEvents {
     * on respawn or otherwise if the player wasn't there to witness its application
     */
     @SubscribeEvent
-    private static void happinessTrackingPacket(PlayerEvent.StartTracking event) {
+    private static void mobEffectTrackingPacket(PlayerEvent.StartTracking event) {
         if (!(event.getEntity() instanceof ServerPlayer tracker)) return;
-        if (event.getTarget() instanceof Buddy buddy && buddy.hasEffect(NMLEffects.HAPPINESS)) {
-            MobEffectInstance effectInstance = buddy.getEffect(NMLEffects.HAPPINESS);
-            PacketDistributor.sendToPlayer(tracker,
-                new ClientboundBuddyUpdateEffectsPacket(buddy.getId(), effectInstance));
-        } else if (event.getTarget() instanceof ServerPlayer player && player.hasEffect(NMLEffects.HAPPINESS)) {
-            MobEffectInstance effectInstance = player.getEffect(NMLEffects.HAPPINESS);
-            tracker.connection.send(
-                new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance, false));
+        for (Holder<MobEffect> effect : TRACKED_EFFECTS) {
+            if (event.getTarget() instanceof LivingEntity livingEntity && livingEntity.hasEffect(effect)) {
+                MobEffectInstance effectInstance = livingEntity.getEffect(effect);
+                tracker.connection.send(new ClientboundUpdateMobEffectPacket(livingEntity.getId(), effectInstance, false));
+            }
         }
     }
 
     @SubscribeEvent
-    private static void playerHappinessAdded(MobEffectEvent.Added event) {
-        if (event.getEntity() instanceof ServerPlayer player
-            && event.getEffectInstance().getEffect().value() == NMLEffects.HAPPINESS.value()) {
-            ((ServerLevel) player.level()).getChunkSource().broadcast(player,
-                new ClientboundUpdateMobEffectPacket(player.getId(), event.getEffectInstance(), true));
+    private static void mobTrackedEffectAdded(MobEffectEvent.Added event) {
+        if (event.getEntity() instanceof LivingEntity livingEntity
+            && TRACKED_EFFECTS.contains(event.getEffectInstance().getEffect())) {
+            ((ServerLevel) livingEntity.level()).getChunkSource().broadcast(livingEntity,
+                new ClientboundUpdateMobEffectPacket(livingEntity.getId(), event.getEffectInstance(), true));
         }
     }
 
