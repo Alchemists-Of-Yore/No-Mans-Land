@@ -4,18 +4,21 @@ import com.farcr.nomansland.common.networking.ClientboundBandageSoundPacket;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -128,11 +131,14 @@ public class BandageItem extends Item {
             return Component.translatable(this.getDescriptionId(stack));
         }
         PotionContents potionContents = stack.get(DataComponents.POTION_CONTENTS);
-        if (potionContents != null) {
-            for (var effect : potionContents.getAllEffects()) {
-                String effectKey = effect.getEffect().value().getDescriptionId();
-                String effectName = effectKey.substring(effectKey.lastIndexOf('.') + 1);
-                return Component.translatable("item.nomansland.bandage.effect." + effectName);
+        if (potionContents != null && potionContents.potion().isPresent()) {
+            String customKey = Potion.getName(potionContents.potion(), "item.nomansland.bandage.effect.");
+            if (Language.getInstance().has(customKey)) {
+                return Component.translatable(customKey);
+            }
+            for (MobEffectInstance effect : potionContents.getAllEffects()) {
+                Component effectName = Component.translatable(effect.getEffect().value().getDescriptionId());
+                return Component.translatable("item.nomansland.bandage.with_effect", effectName);
             }
         }
         return super.getName(stack);

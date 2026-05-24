@@ -690,11 +690,10 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
                 if (variantKey != null) {
                     int delay = random.nextInt(20, 40) * 20;
                     RegeneratingPotsData.getOrDefault(serverLevel).addPot(blockPosition(), new PotData(getBlockState(), variantKey, getModifiers()), delay);
-                    BlockPos bPos = blockPosition();
                     serverLevel.sendParticles(
-                            new PotShatterParticleOption(variant.model(), delay, PotShatterParticleOption.extractBoxes(variant.shape()), bPos.getX(), bPos.getY(), bPos.getZ()),
+                            new PotShatterParticleOption(variant.model(), delay),
                             getX(), getY() + (isLarge() ? 0.8 : 0.5), getZ(),
-                            isLarge() ? 270 : 135, isLarge() ? 0.4 : 0.25, 0.3, isLarge() ? 0.4 : 0.25, 0.1);
+                            isLarge() ? 135 : 67, isLarge() ? 0.4 : 0.25, 0.3, isLarge() ? 0.4 : 0.25, 0.1);
                 }
             }
         }

@@ -7,14 +7,9 @@ import com.farcr.nomansland.common.extension.PlayerExtension;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
 import com.farcr.nomansland.common.registry.worldgen.NMLBiomes;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.core.*;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -23,24 +18,19 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.ConstantInt;
-import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.BiomeSource;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.FixedBiomeSource;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.storage.DerivedLevelData;
-import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
 import net.minecraft.world.level.storage.WorldData;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -158,6 +148,7 @@ public class DreamLevelHandler implements AutoCloseable {
             if (dreamType.worldBorder > 0) newLevel.getWorldBorder().setSize(dreamType.worldBorder);
 
             levelList.put(dreamKey, newLevel);
+            getInstance().getDHLevel(newLevel);
 
             // not entirely trustworthy
             // but https://github.com/Commoble/infiniverse/blob/main/src/main/java/net/commoble/infiniverse/internal/InfiniverseMod.java
@@ -169,6 +160,11 @@ public class DreamLevelHandler implements AutoCloseable {
             dirtyClients.addAll(server.getPlayerList().getPlayers());
         }
         return (DreamServerLevel) levelList.get(dreamKey);
+    }
+
+    protected void getDHLevel(ServerLevel level) {
+        if (!ModList.get().isLoaded("distanthorizons")) return;
+        DHLevelWrapper.getDHLevel(level);
     }
 
     /*

@@ -1,0 +1,35 @@
+{
+  "display": {
+    "description": {
+      "translate": "nomansland.advancements.find_alchemist_ruins.description"
+    },
+    "icon": {
+      "id": "nomansland:ancestral_effigy"
+    },
+    "title": {
+      "translate": "nomansland.advancements.find_alchemist_ruins.title"
+    }
+  },
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "in_city": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": [
+                  "nomansland:alchemist_ruins",
+                  "nomansland:bell_sanctuary"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    }
+  }
+}

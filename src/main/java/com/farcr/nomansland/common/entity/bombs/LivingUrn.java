@@ -1,6 +1,9 @@
 package com.farcr.nomansland.common.entity.bombs;
 
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.block.pots.PotShatterParticleOption;
 import com.farcr.nomansland.common.entity.PacifiedCloud;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -9,19 +12,17 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -53,6 +54,8 @@ public class LivingUrn extends ThrowableBombEntity {
         super(NMLEntities.LIVING_URN.get(), x, y, z, level);
     }
 
+    private static final ResourceLocation URN_MODEL = NoMansLand.location("entity/living_urn");
+
     private void spawnParticles(ParticleOptions particle, int amount) {
         for (int i = 0; i < amount; i++) {
             double theta = random.nextFloat() * 2 * Math.PI;
@@ -62,6 +65,15 @@ public class LivingUrn extends ThrowableBombEntity {
             double yVelocity = cos * Math.cos(theta) * (random.nextFloat() * 0.3 + 0.7);
             double zVelocity = Math.sin(alpha) * (random.nextFloat() * 0.3 + 0.7);
             level().addParticle(particle, getX(), getY(), getZ(), xVelocity * 0.6, yVelocity * 0.6, zVelocity * 0.6);
+        }
+    }
+
+    private void spawnShatterParticles(int count, double spread) {
+        if (level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    new PotShatterParticleOption(URN_MODEL),
+                    getX(), getY() + getBbHeight() * 0.5, getZ(),
+                    count, spread, spread, spread, 0.15);
         }
     }
 
@@ -101,6 +113,13 @@ public class LivingUrn extends ThrowableBombEntity {
         pacifiedCloud.setPotionContents(new PotionContents(Optional.empty(), Optional.of(1), List.of(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0, false, false))));
         level().addFreshEntity(pacifiedCloud);
         level().playSound(null, blockPosition(), NMLSounds.LIVING_URN_SHATTERS.get(), SoundSource.PLAYERS, 1, 0.75F);
+        spawnShatterParticles(40, 0.25);
+        if (level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    NMLParticleTypes.LIVING_URN_SHARD_FACE.get(),
+                    getX(), getY() + getBbHeight() * 0.5, getZ(),
+                    1, 0.0, 0.0, 0.0, 0.0);
+        }
         discard();
     }
 
@@ -118,6 +137,8 @@ public class LivingUrn extends ThrowableBombEntity {
             }
             return;
         }
+
+        spawnShatterParticles(4, 0.1);
 
         Direction direction = result.getDirection();
         switch (direction.getAxis()) {
@@ -140,9 +161,11 @@ public class LivingUrn extends ThrowableBombEntity {
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
 
-        if (!level().isClientSide() && result.getEntity() instanceof Monster && !(result.getEntity() instanceof NeutralMob)) {
+        if (!level().isClientSide() && result.getEntity() instanceof Mob mob && result.getEntity() instanceof Enemy && !(result.getEntity() instanceof NeutralMob)) {
+            mob.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 1200, 0, false, false));
             explode();
         } else {
+            spawnShatterParticles(4, 0.1);
             Vec3 motion = getDeltaMovement();
 
             Vec3 normal = position().subtract(result.getEntity().position()).normalize(); // Collision normal
@@ -168,8 +191,8 @@ public class LivingUrn extends ThrowableBombEntity {
 
         Level level = level();
 
-        Monster monster = level.getNearestEntity(
-                Monster.class,
+        Mob mob = level.getNearestEntity(
+                Mob.class,
                 TargetingConditions.DEFAULT.range(8),
                 null, getX(), getY(), getZ(),
                 new AABB(blockPosition()).inflate(8)
@@ -181,10 +204,10 @@ public class LivingUrn extends ThrowableBombEntity {
             }
 
             if (shakeTimer > 0) {
-                if (monster != null && !(monster instanceof NeutralMob) && !monster.hasEffect(NMLEffects.PACIFIED)) {
+                if (mob instanceof Enemy && !(mob instanceof NeutralMob) && !mob.hasEffect(NMLEffects.PACIFIED)) {
                     if (bounceCooldown > 0) {
                         if (bounceCooldown < 45) {
-                            Vec3 toTarget = monster.position().subtract(position());
+                            Vec3 toTarget = mob.position().subtract(position());
                             if (toTarget.lengthSqr() > 0.001) {
                                 double dx = toTarget.x;
                                 double dz = toTarget.z;
@@ -221,8 +244,8 @@ public class LivingUrn extends ThrowableBombEntity {
             bounceCooldown--;
 
             if (bounceCooldown == 0) {
-                if (monster != null && !(monster instanceof NeutralMob) && !monster.hasEffect(NMLEffects.PACIFIED)) {
-                    Vec3 toTarget = monster.position().subtract(position());
+                if (mob instanceof Enemy && !(mob instanceof NeutralMob) && !mob.hasEffect(NMLEffects.PACIFIED)) {
+                    Vec3 toTarget = mob.position().subtract(position());
                     double distance = toTarget.length();
 
                     if (distance > 0.01) {

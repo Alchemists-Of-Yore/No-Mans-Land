@@ -2,14 +2,12 @@ package com.farcr.nomansland.common.world.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.entity.BrushableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.feature.VegetationPatchFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.VegetationPatchConfiguration;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -45,11 +43,9 @@ public class SuspiciousVegetationPatchFeature extends VegetationPatchFeature {
                 if (!replaceableblocks.test(existing)) {
                     return i != 0;
                 }
-                if (level.setBlock(mutablePos, toPlace, 2) && suspicious && lootKey != null) {
-                    BrushableBlockEntity brushable = new BrushableBlockEntity(mutablePos.immutable(), toPlace);
-                    brushable.setLootTable(lootKey, random.nextLong());
-                    ChunkAccess chunk = level.getChunk(SectionPos.blockToSectionCoord(mutablePos.getX()), SectionPos.blockToSectionCoord(mutablePos.getZ()));
-                    chunk.setBlockEntity(brushable);
+                if (level.setBlock(mutablePos, toPlace, 3) && suspicious && lootKey != null) {
+                    level.getBlockEntity(mutablePos, BlockEntityType.BRUSHABLE_BLOCK)
+                            .ifPresent(be -> be.setLootTable(lootKey, random.nextLong()));
                 }
                 mutablePos.move(config.surface.getDirection());
             }

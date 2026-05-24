@@ -51,7 +51,6 @@ import java.util.*;
 import java.util.function.IntFunction;
 
 public class FriendMoonRenderer implements AutoCloseable {
-
     public static FriendMoonRenderer INSTANCE = new FriendMoonRenderer();
     public static FriendMoonRenderer getInstance() {
         if (INSTANCE == null)
@@ -530,10 +529,11 @@ public class FriendMoonRenderer implements AutoCloseable {
 
                 RenderSystem.colorMask(false, false, false, false);
                 renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN_2, compositeOpacity, 0, false);
-                RenderSystem.colorMask(true, true, true, false);
+                RenderSystem.colorMask(true, true, true, true);
 
                 stencilHideState();
             }, true);
+            disableStencil();
 
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableCull();
@@ -669,20 +669,61 @@ public class FriendMoonRenderer implements AutoCloseable {
         poseStack.popPose();
     }
 
+    private static final int FRIEND_MOON_STENCIL_BIT = 0x80;
+    private static StencilState previousStencilState;
     /*
-    * encapsulated stencil calls to make sure that everything is clean
-    * no more calling these individually, should help make
-    * fixing issues related to stencil calls easier and fix aeronautics issues
+    * I should do this for rendering in general in like a library or something that'd be a fun idea
     */
+    private record StencilState(
+        boolean enabled, int func,
+        int ref, int valueMask,
+        int writeMask, int fail,
+        int passDepthFail,
+        int passDepthPass
+    ) {
+        private static StencilState capture() {
+            return new StencilState(
+                GL11.glIsEnabled(GL11.GL_STENCIL_TEST),
+                GL11.glGetInteger(GL11.GL_STENCIL_FUNC),
+                GL11.glGetInteger(GL11.GL_STENCIL_REF),
+                GL11.glGetInteger(GL11.GL_STENCIL_VALUE_MASK),
+                GL11.glGetInteger(GL11.GL_STENCIL_WRITEMASK),
+                GL11.glGetInteger(GL11.GL_STENCIL_FAIL),
+                GL11.glGetInteger(GL11.GL_STENCIL_PASS_DEPTH_FAIL),
+                GL11.glGetInteger(GL11.GL_STENCIL_PASS_DEPTH_PASS)
+            );
+        }
+
+        private void restore() {
+            if (enabled) GL11.glEnable(GL11.GL_STENCIL_TEST);
+            else GL11.glDisable(GL11.GL_STENCIL_TEST);
+
+            RenderSystem.stencilFunc(func, ref, valueMask);
+            RenderSystem.stencilMask(writeMask);
+            RenderSystem.stencilOp(fail, passDepthFail, passDepthPass);
+        }
+    }
+
+
+    /*
+     * encapsulated stencil calls to make sure that everything is clean
+     * no more calling these individually, should help make
+     * fixing issues related to stencil calls easier and fix aeronautics issues
+     */
     public static void enableStencil() {
+        if (previousStencilState == null)
+            previousStencilState = StencilState.capture();
+
         GL11.glEnable(GL11.GL_STENCIL_TEST);
-        RenderSystem.stencilMask(0xFF);
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0xFF, 0xFF);
+        RenderSystem.stencilMask(FRIEND_MOON_STENCIL_BIT);
+        RenderSystem.clearStencil(0);
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+        RenderSystem.stencilFunc(GL11.GL_ALWAYS, FRIEND_MOON_STENCIL_BIT, FRIEND_MOON_STENCIL_BIT);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
     }
 
     public static void stencilHideState() {
-        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 0xFF, 0xFF);
+        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, FRIEND_MOON_STENCIL_BIT, FRIEND_MOON_STENCIL_BIT);
         RenderSystem.stencilMask(0x00);
         RenderSystem.stencilOp(
             GL11.GL_KEEP,
@@ -692,25 +733,22 @@ public class FriendMoonRenderer implements AutoCloseable {
     }
 
     public static void disableStencil() {
-        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
-        if (target.isStencilEnabled())
-            target.bindWrite(false);
+        if (previousStencilState == null) return;
 
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
-        RenderSystem.stencilMask(0xFF);
+        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, FRIEND_MOON_STENCIL_BIT);
+        RenderSystem.stencilMask(FRIEND_MOON_STENCIL_BIT);
         RenderSystem.clearStencil(0);
         RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        RenderSystem.stencilMask(0x00);
-        GL11.glDisable(GL11.GL_STENCIL_TEST);
-
         RenderSystem.colorMask(true, true, true, true);
+
+        previousStencilState.restore();
+        previousStencilState = null;
     }
 
     public static void enableStencilTarget() {
         RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
-        if (!target.isStencilEnabled())
-            target.enableStencil();
+        if (!target.isStencilEnabled()) target.enableStencil();
     }
 
     /*
@@ -756,10 +794,9 @@ public class FriendMoonRenderer implements AutoCloseable {
         // Rendering moon
         RenderSystem.colorMask(false, false, false, false);
         renderFriendMoonInternal(tesselator, matrix4f1, getFriendMoonAnimation(), getFriendMoonOpacity(), (int) animationProgress, true);
-        RenderSystem.colorMask(true, true, true, false);
+        RenderSystem.colorMask(true, true, true, true);
 
         renderBuddyStars(tesselator, skyMatrix, getFriendMoonOpacity());
-
         stencilHideState();
 
         RenderSystem.enableCull();

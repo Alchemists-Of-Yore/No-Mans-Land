@@ -201,6 +201,9 @@ dependencies {
     localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
     localRuntime "me.djtheredstoner:DevAuth-neoforge:1.2.1"
     //localRuntime "maven.modrinth:cyanide:v4LiMGGH"
+
+//    implementation "maven.modrinth:DistantHorizonsApi:$distant_horizons_api_version"
+    compileOnly "maven.modrinth:DistantHorizons:$distant_horizons_version-$minecraft_version"
 }
 
 tasks.withType(ProcessResources).configureEach {

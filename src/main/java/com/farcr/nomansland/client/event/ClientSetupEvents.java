@@ -9,10 +9,10 @@ import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
-import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
 import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
+import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderLayer;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
@@ -234,6 +234,7 @@ public class ClientSetupEvents {
                 -> new FunnyPlaceholderDebugRitualPickParticle(clientLevel, d, e, f, g, h, i, sprites));
 
         event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
+        event.registerSpriteSet(NMLParticleTypes.LIVING_URN_SHARD_FACE.get(), LivingUrnShardFaceParticle.Provider::new);
     }
 
     @SubscribeEvent

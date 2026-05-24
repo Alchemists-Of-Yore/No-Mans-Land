@@ -37,7 +37,7 @@
                   "chance": 0.3
                 },
                 {
-                  "ability": "hoe_till",
+                  "ability": "till",
                   "condition": "neoforge:can_item_perform_ability"
                 }
               ]
@@ -105,7 +105,7 @@
                   "chance": 0.3
                 },
                 {
-                  "ability": "hoe_till",
+                  "ability": "till",
                   "condition": "neoforge:can_item_perform_ability"
                 }
               ]
