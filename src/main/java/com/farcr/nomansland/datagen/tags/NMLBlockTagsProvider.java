@@ -125,6 +125,14 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 BlockTags.WOODEN_DOORS
         );
 
+        addToTags(NMLBlocks.CRUDE_TRAPDOOR.block(),
+                BlockTags.WOODEN_TRAPDOORS
+        );
+
+        addToTags(NMLBlocks.QUARTZITE_CLUSTER.block(),
+                Tags.Blocks.CLUSTERS
+        );
+
         addToTags(NMLBlocks.CUT_VINE.get(), BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH, BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH);
         addToTags(NMLBlocks.SEASHELLS.get(), BlockTags.COMBINATION_STEP_SOUND_BLOCKS);
 

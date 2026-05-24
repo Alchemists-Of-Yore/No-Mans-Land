@@ -4,7 +4,7 @@
     {
       "weight": 1,
       "element": {
-        "location": "nomansland:lone_menhirs/menhir_1",
+        "location": "nomansland:lone_menhir/menhir_1",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
@@ -13,7 +13,7 @@
     {
       "weight": 1,
       "element": {
-        "location": "nomansland:lone_menhirs/menhir_2",
+        "location": "nomansland:lone_menhir/menhir_2",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
@@ -22,7 +22,7 @@
     {
       "weight": 1,
       "element": {
-        "location": "nomansland:lone_menhirs/menhir_3",
+        "location": "nomansland:lone_menhir/menhir_3",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
@@ -31,7 +31,7 @@
     {
       "weight": 1,
       "element": {
-        "location": "nomansland:lone_menhirs/menhir_4",
+        "location": "nomansland:lone_menhir/menhir_4",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
@@ -39,7 +39,7 @@
     },    {
       "weight": 1,
       "element": {
-        "location": "nomansland:lone_menhirs/menhir_5",
+        "location": "nomansland:lone_menhir/menhir_5",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"
@@ -47,7 +47,7 @@
     },    {
       "weight": 1,
       "element": {
-        "location": "nomansland:lone_menhirs/menhir_6",
+        "location": "nomansland:lone_menhir/menhir_6",
         "processors": "nomansland:menhirs",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"

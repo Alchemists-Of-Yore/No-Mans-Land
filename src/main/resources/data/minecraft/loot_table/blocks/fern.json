@@ -36,7 +36,7 @@
               ],
               "conditions": [
                 {
-                  "ability": "hoe_till",
+                  "ability": "till",
                   "condition": "neoforge:can_item_perform_ability"
                 },
                 {

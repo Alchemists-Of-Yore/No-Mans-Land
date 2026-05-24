@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "nomansland:wooden_platform",
+    "nomansland:wooden_platform_stairs",
+    "nomansland:tortoise_egg",
+    { "id": "nomansland:stallion_strips", "required": false }
+  ]
+}

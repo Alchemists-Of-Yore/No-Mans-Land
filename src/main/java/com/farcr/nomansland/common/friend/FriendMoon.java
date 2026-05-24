@@ -600,6 +600,7 @@ public class FriendMoon extends SavedData {
                 abortAscension();
         }
 
+        // I forget why this isn't just in the resetValues method but I'm going to look away because it's too late to change it right now
         if (!isNightTime(level) && !upsetWith.isEmpty()) {
             upsetWith.clear();
             setDirty();
@@ -615,7 +616,8 @@ public class FriendMoon extends SavedData {
                 // query players that had friendship
                 boolean someoneLeft = false, someoneDied = false;
                 ArrayList<ServerPlayer> withRemovedPlayers = new ArrayList<>(lastFriendshipPlayers.keySet());
-                boolean silentlyRemove = (getState() == FriendMoonState.OFFERING || isJukeboxInteractionActive()) && (lastTotalPlayers > 1);
+                boolean silentlyRemove = ((getState() == FriendMoonState.OFFERING || getState() == FriendMoonState.GREETING)
+                    || isJukeboxInteractionActive()) && (lastTotalPlayers > 1);
                 for (ServerPlayer player : withRemovedPlayers) {
                     lastFriendshipPlayers.put(player, lastFriendshipPlayers.get(player) + 1);
                     if (lastFriendshipPlayers.get(player) >= LEAVE_TIME_THRESHOLD || player.isDeadOrDying() || cannotObtainFriendship(player)) {
@@ -635,11 +637,9 @@ public class FriendMoon extends SavedData {
                             (registry) -> leavingFilter(registry, finalSomeoneDied)
                         ).dispatch(level, withRemovedPlayers)
                     );
-                    return;
-                }
 
-                if (!withRemovedPlayers.isEmpty() && lastFriendshipPlayers.isEmpty()) {
-                    resetValues();
+                    if (!withRemovedPlayers.isEmpty() && lastFriendshipPlayers.isEmpty())
+                        resetValues();
                     return;
                 }
             }
@@ -686,7 +686,7 @@ public class FriendMoon extends SavedData {
                 }
             } else if (getState() == FriendMoonState.OFFERING)
                 setState(FriendMoonState.PASSIVE);
-        }
+        } else lastFriendshipPlayers.clear();
     }
 
     int NEGATIVE_TIME = 40;

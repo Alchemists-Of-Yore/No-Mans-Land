@@ -235,21 +235,28 @@
     ],
     "subtitle": "subtitles.block.generic.footsteps"
   },
+  "block.icicle.shatter": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "nomansland:block.glass.break"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.block.icicle.shatter"
+  },
   "block.inverted_bell.blackout": {
     "sounds": [
       "nomansland:block/inverted_bell/blackout1",
       "nomansland:block/inverted_bell/blackout2",
       "nomansland:block/inverted_bell/blackout3"
-    ],
-    "subtitle": "nomansland.subtitle.block.inverted_bell.blackout"
+    ]
   },
   "block.inverted_bell.ring": {
     "sounds": [
       "nomansland:block/inverted_bell/ring1",
       "nomansland:block/inverted_bell/ring2",
       "nomansland:block/inverted_bell/ring3"
-    ],
-    "subtitle": "nomansland.subtitle.block.inverted_bell.ring"
+    ]
   },
   "block.monster_anchor.activate": {
     "sounds": [
@@ -338,7 +345,7 @@
         "volume": 0.75
       }
     ],
-    "subtitle": "nomansland.subtitle.block.moon_carving.activate"
+    "subtitle": "subtitles.ambient.cave"
   },
   "block.mushroom_cap.break": {
     "sounds": [
@@ -762,7 +769,7 @@
     "sounds": [
       {
         "type": "event",
-        "name": "nomansland:block.candle.extinguish",
+        "name": "block.candle.extinguish",
         "pitch": 0.85,
         "volume": 1.75
       }
@@ -992,6 +999,15 @@
       }
     ],
     "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.billhook_bass.ambient": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "nomansland:entity.salmon.ambient"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.billhook_bass.ambient"
   },
   "entity.billhook_bass.death": {
     "sounds": [
@@ -1357,6 +1373,15 @@
     ],
     "subtitle": "subtitles.block.generic.footsteps"
   },
+  "entity.living_pot.charge": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "nomansland:entity.iron_golem.attack"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.living_pot.charge"
+  },
   "entity.living_urn.shatter": {
     "sounds": [
       "block/decorated_pot/shatter1",
@@ -1460,8 +1485,7 @@
   "entity.moose.hit": {
     "sounds": [
       "nomansland:entity/moose/hit"
-    ],
-    "subtitle": "nomansland.subtitle.entity.moose.hit"
+    ]
   },
   "entity.moose.hurt": {
     "sounds": [
@@ -1638,8 +1662,7 @@
     "sounds": [
       "nomansland:entity/player/hurt_spike_trap1",
       "nomansland:entity/player/hurt_spike_trap2"
-    ],
-    "subtitle": "nomansland.subtitle.entity.player.hurt_spike_trap"
+    ]
   },
   "item.bandage.wrap": {
     "sounds": [
@@ -1663,7 +1686,7 @@
       "item/honeycomb/wax_on2",
       "item/honeycomb/wax_on3"
     ],
-    "subtitle": "nomansland.subtitles.item.generic.consumed"
+    "subtitle": "nomansland.subtitle.item.generic.consumed"
   },
   "item.resin.consumed": {
     "sounds": [
@@ -1673,7 +1696,7 @@
       "block/honeyblock/break4",
       "block/honeyblock/break5"
     ],
-    "subtitle": "nomansland.subtitles.item.generic.consumed"
+    "subtitle": "nomansland.subtitle.item.generic.consumed"
   },
   "music.overworld.cave_depths": {
     "sounds": [
@@ -1707,8 +1730,7 @@
         "stream": true,
         "volume": 0.4
       }
-    ],
-    "subtitle": "nomansland.subtitle.music.overworld.cave_depths"
+    ]
   },
   "music.overworld.caves": {
     "sounds": [
@@ -1787,8 +1809,7 @@
         "stream": true,
         "volume": 0.4
       }
-    ],
-    "subtitle": "nomansland.subtitle.music.overworld.caves"
+    ]
   },
   "music_disc.guidance": {
     "sounds": [
@@ -1796,8 +1817,7 @@
         "name": "nomansland:records/guidance",
         "stream": true
       }
-    ],
-    "subtitle": "nomansland.subtitle.music_disc.guidance"
+    ]
   },
   "particle.droplet.fall": {
     "sounds": [

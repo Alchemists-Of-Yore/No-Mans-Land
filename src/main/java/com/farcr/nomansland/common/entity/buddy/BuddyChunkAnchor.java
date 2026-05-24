@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.neoforged.neoforge.event.EventHooks;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -188,7 +189,7 @@ public class BuddyChunkAnchor extends SavedData {
                     fallbackTag.put(key, Objects.requireNonNull(replacementData.get(key)));
 
                 buddy.load(fallbackTag);
-            }
+            } else EventHooks.finalizeMobSpawn(buddy, level, level.getCurrentDifficultyAt(spawnBlock), MobSpawnType.EVENT, null);
 
             // Replace last anchor
             updateAnchors(spawnBlock, createData());

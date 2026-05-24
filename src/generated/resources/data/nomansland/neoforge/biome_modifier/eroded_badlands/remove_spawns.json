@@ -3,6 +3,6 @@
   "biomes": "minecraft:eroded_badlands",
   "entity_types": [
     "minecraft:zombie",
-    "minecraft:zombie"
+    "minecraft:wolf"
   ]
 }

@@ -12,7 +12,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -60,12 +59,15 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
+import java.util.Set;
 
 public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, Fallable {
     public static final MapCodec<PotBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -186,7 +188,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (stack.is(NMLItems.POTMASTER_DEBUG_STICK.get()) || stack.getItem() instanceof AncientPotItem) {
+        if (stack.is(NMLItems.POTMASTER_DEBUG_STICK.get())) {
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -207,7 +209,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
                     silverfish.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
-                    silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                    EventHooks.finalizeMobSpawn(silverfish, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     silverfish.skipDropExperience();
                     ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
@@ -225,7 +227,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
                     slime.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
-                    slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
+                    EventHooks.finalizeMobSpawn(slime, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
                     slime.setSize(1, true);
                     slime.skipDropExperience();
                     ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
@@ -235,7 +237,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             pot.removeModifier(PotModifier.OOZING);
         }
 
-        if (stack.isEmpty()) {
+        if (stack.isEmpty() || stack.getItem() instanceof AncientPotItem) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -322,17 +324,13 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     private static final VoxelShape SMALL_FALLBACK = Shapes.box(2.0 / 16, 0, 2.0 / 16, 14.0 / 16, 1, 14.0 / 16);
-    private static final VoxelShape LARGE_FALLBACK = Shapes.or(
-            Shapes.box(0, 2.0 / 16, 0, 1, 21.0 / 16, 1),
-            Shapes.box(3.0 / 16, 22.0 / 16, 3.0 / 16, 13.0 / 16, 25.0 / 16, 13.0 / 16)
-    );
 
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
             VoxelShape variantShape = pot.variant.shape();
             if (variantShape != null && !variantShape.isEmpty()) return variantShape;
         }
-        return size == PotSize.LARGE ? LARGE_FALLBACK : SMALL_FALLBACK;
+        return SMALL_FALLBACK;
     }
 
     @Override
@@ -382,13 +380,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 }
             } else {
                 if (!level.isClientSide) {
-                    if (!pot.getStoredPotion().equals(PotionContents.EMPTY)) {
-                        spawnPotionCloud((ServerLevel) level, pos, pot.getStoredPotion());
-                    }
-                    spawnModifierMobs((ServerLevel) level, pos, pot);
-                    if (pot.variant.traits().contains(PotTrait.REGENERATES)) {
-                        scheduleRegeneration((ServerLevel) level, pos, state, pot);
-                    }
+                    applyBreakEffects((ServerLevel) level, pos.getCenter(),
+                            state, pot.variant, pot.getModifiers(),
+                            pot.getStoredPotion(), size == PotSize.LARGE);
                 }
                 level.updateNeighbourForOutputSignal(pos, state.getBlock());
             }
@@ -396,47 +390,68 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    private void spawnModifierMobs(ServerLevel level, BlockPos pos, PotBlockEntity pot) {
-        if (pot.hasModifier(PotModifier.INFESTED)) {
-            int amount = level.getRandom().nextInt(1, 4);
-            for (int i = 0; i < amount; i++) {
+    public static void applyBreakEffects(
+            ServerLevel level, Vec3 pos,
+            BlockState state, PotVariant variant,
+            Set<PotModifier> modifiers, PotionContents storedPotion,
+            boolean isLarge
+    ) {
+        RandomSource random = level.getRandom();
+        BlockPos blockPos = BlockPos.containing(pos);
+        DifficultyInstance difficulty = level.getCurrentDifficultyAt(blockPos);
+        double x = pos.x + 0.5;
+        double y = pos.y;
+        double z = pos.z + 0.5;
+
+        if (modifiers.contains(PotModifier.INFESTED)) {
+            int count = random.nextInt(2, 4);
+            for (int i = 0; i < count; i++) {
                 Silverfish silverfish = EntityType.SILVERFISH.create(level);
                 if (silverfish != null) {
-                    silverfish.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                    silverfish.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
+                    silverfish.moveTo(x + (random.nextDouble() - 0.5) * 0.5, y, z + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
+                    EventHooks.finalizeMobSpawn(silverfish, level, difficulty, MobSpawnType.TRIGGERED, null);
                     silverfish.skipDropExperience();
                     ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(silverfish);
                     silverfish.spawnAnim();
                 }
             }
-            pot.removeModifier(PotModifier.INFESTED);
+            modifiers.remove(PotModifier.INFESTED);
         }
-        if (pot.hasModifier(PotModifier.OOZING)) {
-            int amount = level.getRandom().nextInt(1, 4);
-            for (int i = 0; i < amount; i++) {
+
+        if (modifiers.contains(PotModifier.OOZING)) {
+            int count = random.nextInt(2, 4);
+            for (int i = 0; i < count; i++) {
                 Slime slime = EntityType.SLIME.create(level);
                 if (slime != null) {
-                    slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-                    slime.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.TRIGGERED, null);
-                    slime.setSize(1, true);
+                    slime.moveTo(x + (random.nextDouble() - 0.5) * 0.5, y, z + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
+                    EventHooks.finalizeMobSpawn(slime, level, difficulty, MobSpawnType.TRIGGERED, null);
+                    slime.setSize(random.nextInt(1, 3), true);
                     slime.skipDropExperience();
                     ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
                     level.addFreshEntity(slime);
                 }
             }
-            pot.removeModifier(PotModifier.OOZING);
+            modifiers.remove(PotModifier.OOZING);
         }
-    }
 
-    private void scheduleRegeneration(ServerLevel serverLevel, BlockPos pos, BlockState state, PotBlockEntity pot) {
-        Registry<PotVariant> variants = serverLevel.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
-        int delay = serverLevel.getRandom().nextInt(20, 40) * 20;
-        RegeneratingPotsData.getOrDefault(serverLevel).addPot(pos, new PotData(state, variants.getKey(pot.variant), pot.getModifiers()), delay);
-        serverLevel.sendParticles(
-                new PotShatterParticleOption(pot.variant.model(), delay, PotShatterParticleOption.extractBoxes(pot.variant.shape()), pos.getX(), pos.getY(), pos.getZ()),
-                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                size == PotSize.LARGE ? 270 : 135, 0.3, 0.3, 0.3, 0.1);
+        modifiers.remove(PotModifier.TRAPPED);
+
+        if (!storedPotion.equals(PotionContents.EMPTY)) {
+            spawnPotionCloud(level, blockPos, storedPotion);
+        }
+
+        if (variant != null && variant.traits().contains(PotTrait.REGENERATES)) {
+            ResourceLocation variantKey = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
+            if (variantKey != null) {
+                int delay = random.nextInt(20, 40) * 20;
+                RegeneratingPotsData.getOrDefault(level).addPot(blockPos, new PotData(state, variantKey, modifiers), delay);
+                level.sendParticles(
+                        new PotShatterParticleOption(variant.model(), delay, blockPos),
+                        x, y + (isLarge ? 0.8 : 0.5), z,
+                        isLarge ? 135 : 67, isLarge ? 0.4 : 0.25, 0.3, isLarge ? 0.4 : 0.25, 0.1);
+            }
+        }
     }
 
     public static void spawnPotionCloud(ServerLevel level, BlockPos pos, PotionContents contents) {
@@ -461,13 +476,29 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
             pot.shouldDropItems = true;
-            if (pot.hasModifier(PotModifier.WAXED) || dropsItself(player.getMainHandItem(), level)) {
+            boolean willDropSelf = dropsItself(player.getMainHandItem(), level);
+            if (pot.hasModifier(PotModifier.WAXED) || willDropSelf) {
                 pot.skipBreakEffects = true;
                 pot.setChanged();
             }
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
+
+//    @Override
+//    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+//        List<ItemStack> drops = super.getDrops(state, params);
+//        BlockEntity be = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+//        if (be instanceof PotBlockEntity pot) {
+//            for (ItemStack drop : drops) {
+//                if (drop.is(this.asItem())) {
+//                    pot.droppedSelf = true;
+//                    break;
+//                }
+//            }
+//        }
+//        return drops;
+//    }
 
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
@@ -616,7 +647,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 ParticleOptions particle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(80, i));
 
                 double d0 = pos.getX() + 0.5 + random.nextInt(-40, 40) * 0.01;
-                double d1 = pos.getY() + random.nextInt(-10, 40) * 0.001 + 0.8;
+                double d1 = pos.getY() + random.nextInt(-10, 40) * 0.001 + (size == PotSize.LARGE ? 1.8 : 0.8);
                 double d2 = pos.getZ() + 0.5 + random.nextInt(-40, 40) * 0.01;
 
                 level.addAlwaysVisibleParticle(particle, d0, d1, d2, 0, 0, 0);

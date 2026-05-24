@@ -2,7 +2,7 @@
   "type": "neoforge:remove_spawns",
   "biomes": "minecraft:dark_forest",
   "entity_types": [
-    "minecraft:zombie",
-    "minecraft:zombie"
+    "minecraft:sheep",
+    "minecraft:cow"
   ]
 }

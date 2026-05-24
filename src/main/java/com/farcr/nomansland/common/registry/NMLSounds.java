@@ -53,6 +53,8 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUDE_TRAPDOOR_OPEN = registerSound("block.crude_trapdoor.open");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUDE_TRAPDOOR_CLOSE = registerSound("block.crude_trapdoor.close");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> ICICLE_SHATTER = registerSound("block.icicle.shatter");
+
     //Items
     public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_PRIMED = registerSound("item.bomb.primed");
@@ -109,6 +111,9 @@ public class NMLSounds {
 
     //Living Urn
     public static final DeferredHolder<SoundEvent, SoundEvent> LIVING_URN_SHATTERS = registerSound("entity.living_urn.shatter");
+
+    //Living Pot
+    public static final DeferredHolder<SoundEvent, SoundEvent> LIVING_POT_CHARGE = registerSound("entity.living_pot.charge");
 
     //Friend Moon
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK = registerSound("entity.friend_moon.speak");

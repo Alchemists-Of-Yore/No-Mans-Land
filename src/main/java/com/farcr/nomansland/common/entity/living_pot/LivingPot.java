@@ -2,11 +2,9 @@ package com.farcr.nomansland.common.entity.living_pot;
 
 import com.farcr.nomansland.common.block.pots.*;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
-import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
-import com.farcr.nomansland.common.world.saved_data.RegeneratingPotsData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -28,7 +26,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -39,10 +36,10 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
-import net.minecraft.world.entity.monster.Silverfish;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -99,6 +96,8 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
     private static final int WAKE_UP_COOLDOWN = 6000;
     private int wakeUpTicks = 0;
     private final EnumSet<PotModifier> modifiers = EnumSet.noneOf(PotModifier.class);
+    public boolean droppedSelf;
+    private transient boolean inLootTableDrop = false;
 
     public final AnimationState dashStartAnimState = new AnimationState();
     public final AnimationState dashLoopAnimState = new AnimationState();
@@ -640,68 +639,35 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
             level().playSound(null, getX(), getY(), getZ(),
                     SoundEvents.DECORATED_POT_SHATTER, SoundSource.HOSTILE,
                     1.2F, pitch);
-
-            ServerLevel serverLevel = (ServerLevel) level();
-
-            if (hasModifier(PotModifier.INFESTED)) {
-                int count = random.nextInt(2, 4);
-                DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(blockPosition());
-                for (int i = 0; i < count; i++) {
-                    Silverfish silverfish = EntityType.SILVERFISH.create(serverLevel);
-                    if (silverfish != null) {
-                        silverfish.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
-                        silverfish.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
-                        silverfish.skipDropExperience();
-                        ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
-                        serverLevel.addFreshEntity(silverfish);
-                        silverfish.spawnAnim();
-                    }
-                }
-                removeModifier(PotModifier.INFESTED);
-            }
-
-            if (hasModifier(PotModifier.OOZING)) {
-                int count = random.nextInt(2, 4);
-                DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(blockPosition());
-                for (int i = 0; i < count; i++) {
-                    Slime slime = EntityType.SLIME.create(serverLevel);
-                    if (slime != null) {
-                        slime.moveTo(getX() + (random.nextDouble() - 0.5) * 0.5, getY(), getZ() + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
-                        slime.finalizeSpawn(serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
-                        slime.setSize(random.nextInt(1, 3), true);
-                        slime.skipDropExperience();
-                        ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
-                        serverLevel.addFreshEntity(slime);
-                    }
-                }
-                removeModifier(PotModifier.OOZING);
-            }
-
-            removeModifier(PotModifier.TRAPPED);
-
-            if (!getStoredPotion().equals(PotionContents.EMPTY)) {
-                PotBlock.spawnPotionCloud(serverLevel, blockPosition(), getStoredPotion());
-            }
-
-            PotVariant variant = getVariant();
-            if (variant != null && variant.traits().contains(PotTrait.REGENERATES)) {
-                ResourceLocation variantKey = level().registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
-                if (variantKey != null) {
-                    int delay = random.nextInt(20, 40) * 20;
-                    RegeneratingPotsData.getOrDefault(serverLevel).addPot(blockPosition(), new PotData(getBlockState(), variantKey, getModifiers()), delay);
-                    BlockPos bPos = blockPosition();
-                    serverLevel.sendParticles(
-                            new PotShatterParticleOption(variant.model(), delay, PotShatterParticleOption.extractBoxes(variant.shape()), bPos.getX(), bPos.getY(), bPos.getZ()),
-                            getX(), getY() + (isLarge() ? 0.8 : 0.5), getZ(),
-                            isLarge() ? 270 : 135, isLarge() ? 0.4 : 0.25, 0.3, isLarge() ? 0.4 : 0.25, 0.1);
-                }
-            }
         }
 
         super.die(damageSource);
+
         if (!level().isClientSide) {
+            PotBlock.applyBreakEffects((ServerLevel) level(), position(),
+                    getBlockState(), getVariant(), getModifiers(),
+                    getStoredPotion(), isLarge());
             discard();
         }
+    }
+
+    @Override
+    protected void dropFromLootTable(DamageSource damageSource, boolean hitByPlayer) {
+        inLootTableDrop = true;
+        try {
+            super.dropFromLootTable(damageSource, hitByPlayer);
+        } finally {
+            inLootTableDrop = false;
+        }
+    }
+
+    @Override
+    @Nullable
+    public ItemEntity spawnAtLocation(ItemStack stack, float yOffset) {
+        if (inLootTableDrop && !stack.isEmpty() && stack.getItem() instanceof BlockItem bi && bi.getBlock() instanceof PotBlock) {
+            droppedSelf = true;
+        }
+        return super.spawnAtLocation(stack, yOffset);
     }
 
     @Override

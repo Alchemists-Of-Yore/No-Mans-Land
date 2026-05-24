@@ -11,7 +11,7 @@
     },
     "frame": "task"
   },
-  "parent": "minecraft:adventure/root",
+  "parent": "nomansland:main/find_alchemist_ruins",
   "criteria": {
     "dream_friend_moon_trigger": {
       "trigger": "nomansland:dream_friend_moon_trigger"

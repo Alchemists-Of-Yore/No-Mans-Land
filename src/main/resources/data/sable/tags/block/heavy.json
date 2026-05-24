@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#nomansland:fish_barrels",
+    "nomansland:spike_trap",
+    "nomansland:apple_crate",
+    "nomansland:pear_crate",
+    { "id": "nomansland:pot_of_witch_stew", "required": false }
+  ]
+}

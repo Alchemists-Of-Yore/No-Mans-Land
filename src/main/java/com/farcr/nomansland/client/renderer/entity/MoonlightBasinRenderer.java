@@ -38,11 +38,12 @@ public class MoonlightBasinRenderer implements BlockEntityRenderer<MoonlightBasi
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) return;
         if (PENDING_BEAMS.isEmpty()) return;
 
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
         PoseStack poseStack = event.getPoseStack();
+        poseStack.mulPose(event.getModelViewMatrix());
         Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);

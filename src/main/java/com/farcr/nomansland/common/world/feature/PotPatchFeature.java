@@ -4,7 +4,7 @@ import com.farcr.nomansland.common.block.pots.PotBlock;
 import com.farcr.nomansland.common.block.pots.PotModifier;
 import com.farcr.nomansland.common.block.pots.PotSize;
 import com.farcr.nomansland.common.block.pots.PotVariant;
-import com.farcr.nomansland.common.blockentity.PotBlockEntity;
+import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.mojang.serialization.Codec;
@@ -76,33 +76,30 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
             Direction facing = Direction.Plane.HORIZONTAL.getRandomDirection(random);
             potState = potState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
 
-            level.setBlock(pos, potState, 2);
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot) {
-                pot.variant = variant;
-                for (Map.Entry<PotModifier, Float> entry : variant.modifierChances().entrySet()) {
+            if (!level.setBlock(pos, potState, 3)) continue;
+
+            if (variant.size() == PotSize.LARGE) {
+                BlockState upperState = potState.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
+                if (!level.setBlock(pos.above(), upperState, 3)) {
+                    continue;
+                }
+            }
+
+            PotVariant finalVariant = variant;
+            level.getBlockEntity(pos, NMLBlockEntities.POT.get()).ifPresent(pot -> {
+                pot.variant = finalVariant;
+                for (Map.Entry<PotModifier, Float> entry : finalVariant.modifierChances().entrySet()) {
                     if (random.nextFloat() < entry.getValue()) {
                         pot.addModifier(entry.getKey());
                     }
                 }
-
                 config.lootTable().ifPresent(id ->
                         pot.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id), random.nextLong())
                 );
-
                 if (potionTableId != null && random.nextFloat() < config.potionChance()) {
                     pot.setPotionTable(potionTableId, random.nextLong());
                 }
-
-                pot.setChanged();
-            }
-
-            if (variant.size() == PotSize.LARGE) {
-                if (!level.getBlockState(pos).is(NMLBlocks.LARGE_ANCIENT_POT.get())) continue;
-                BlockState upperState = potState.setValue(
-                        BlockStateProperties.DOUBLE_BLOCK_HALF,
-                        DoubleBlockHalf.UPPER);
-                level.setBlock(pos.above(), upperState, 2);
-            }
+            });
 
             placed++;
         }

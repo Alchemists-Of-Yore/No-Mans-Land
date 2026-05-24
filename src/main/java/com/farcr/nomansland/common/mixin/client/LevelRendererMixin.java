@@ -5,19 +5,16 @@ import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.pots.LargePotBlock;
-import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,6 +45,11 @@ public abstract class LevelRendererMixin {
     @Unique private static boolean DREAM_RENDER_CONTEXT = false;
 
     @Unique private LevelRenderer nml$Self = (LevelRenderer) (Object) this;
+
+    @Inject(method = "graphicsChanged", at = @At("HEAD"))
+    private void nml$enableStencilTarget(CallbackInfo ci) {
+        FriendMoonRenderer.enableStencilTarget();
+    }
 
     /*
     * TODO replace this !!!

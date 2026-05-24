@@ -3,6 +3,6 @@
   "group": "nomansland:buddy",
   "arguments": {
     "texture": "nomansland:buddy/field",
-    "mushroom": "minecraft:red_mushroom"
+    "mushroom": "nomansland:field_mushroom"
   }
 }

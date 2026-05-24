@@ -68,6 +68,8 @@ public class NMLParticleTypes {
             PotShatterParticleOption::codec, PotShatterParticleOption::streamCodec
     );
 
+    public static final Supplier<SimpleParticleType> LIVING_URN_SHARD_FACE = register("living_urn_shard_face");
+
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
         return PARTICLE_TYPES.register(name, () -> new ParticleType<T>(overrideLimitter) {
             public MapCodec<T> codec() {
