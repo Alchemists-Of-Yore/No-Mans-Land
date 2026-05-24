@@ -27,6 +27,12 @@
     "nomansland:willow_leaves": {
       "chance": 0.3
     },
+    "nomansland:field_mushroom_block": {
+      "chance": 0.85
+    },
+    "nomansland:shelf_mushroom_block": {
+      "chance": 0.85
+    },
     "nomansland:yellow_birch_sapling": {
       "chance": 0.3
     },
@@ -53,6 +59,12 @@
     },
     "nomansland:grass_sprouts": {
       "chance": 0.1
+    },
+    "nomansland:dried_grass": {
+      "chance": 0.3
+    },
+    "nomansland:frosted_grass": {
+      "chance": 0.3
     },
     "nomansland:oat_grass": {
       "chance": 0.3
@@ -108,7 +120,13 @@
     "nomansland:thistle": {
       "chance": 0.65
     },
+    "nomansland:starflower": {
+      "chance": 0.65
+    },
     "nomansland:wild_mint": {
+      "chance": 0.65
+    },
+    "nomansland:lavender_bush": {
       "chance": 0.65
     },
     "nomansland:rafflesia": {
@@ -121,6 +139,9 @@
       "chance": 0.5
     },
     "nomansland:clover_patch": {
+      "chance": 0.65
+    },
+    "nomansland:ground_ivy": {
       "chance": 0.65
     },
     "nomansland:violet_flowerbed": {
@@ -138,6 +159,9 @@
     "nomansland:blue_flowerbed": {
       "chance": 0.65
     },
+    "nomansland:rose_vines": {
+      "chance": 0.3
+    },
     "nomansland:pickleweed": {
       "chance": 0.5
     },
@@ -145,6 +169,9 @@
       "chance": 0.4
     },
     "nomansland:field_mushroom": {
+      "chance": 0.2
+    },
+    "nomansland:field_mushroom_colony": {
       "chance": 0.2
     },
     "nomansland:pear": {
@@ -158,6 +185,33 @@
     },
     "nomansland:walnuts": {
       "chance": 0.2
+    },
+    "nomansland:pine_nuts": {
+      "chance": 0.2
+    },
+    "nomansland:trail_mix": {
+      "chance": 0.7
+    },
+    "nomansland:pear_cobbler": {
+      "chance": 1.0
+    },
+    "nomansland:pear_cobbler_slice": {
+      "chance": 0.85
+    },
+    "nomansland:fruit_cake": {
+      "chance": 1.0
+    },
+    "nomansland:fruit_cake_slice": {
+      "chance": 0.85
+    },
+    "nomansland:sweet_tart": {
+      "chance": 0.85
+    },
+    "nomansland:maple_tart": {
+      "chance": 0.85
+    },
+    "nomansland:pancake": {
+      "chance": 0.85
     }
   }
 }
