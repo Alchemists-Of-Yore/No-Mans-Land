@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:pear_juice",
+      "required": false
+    },
+    {
+      "id": "nomansland:pesto_bottle",
+      "required": false
+    },
+    {
+      "id": "nomansland:maple_syrup_bottle",
+      "required": false
+    }
+  ]
+}

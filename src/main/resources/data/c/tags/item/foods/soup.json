@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:witch_stew",
+      "required": false
+    }
+  ]
+}

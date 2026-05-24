@@ -94,6 +94,7 @@ public class NMLItemTagsProvider extends ItemTagsProvider {
                                                 (NMLItems.TORTOISE_SHELL.get()));
         tag(ItemTags.CHEST_ARMOR).add(NMLItems.TORTOISE_SHELL.get());
         tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(NMLItems.TORTOISE_SHELL.get());
+        tag(ItemTags.FISHES).add(NMLItems.COOKED_BILLHOOK_BASS.get());
 
         addToTags(NMLTags.BOOKSHELVES.itemTag(), Tags.Items.BOOKSHELVES, BlueprintIntegration.woodenBookshelves().itemTag());
         tag(ItemTags.PLANKS).addTag(NMLTags.TRIMMED_PLANKS.itemTag());
