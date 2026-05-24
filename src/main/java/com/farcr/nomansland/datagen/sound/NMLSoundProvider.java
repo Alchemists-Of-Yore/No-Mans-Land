@@ -56,7 +56,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         );
 
         add(NMLSounds.TORCH_EXTINGUISH, s -> s.with(sound("minecraft:block.candle.extinguish", EVENT).pitch(0.85f).volume(1.75f)));
-        add(NMLSounds.TORCH_LIGHT_BY_FLINT_AND_STEEL, s -> s.with(allSounds("block/torch/light_by_flint_and_steel", se -> se.pitch(1.1f).volume(0.6f))));
+        add(NMLSounds.TORCH_LIGHT_BY_FLINT_AND_STEEL, s -> s.subtitle("nomansland.subtitle.block.torch.light").with(allSounds("block/torch/light_by_flint_and_steel", se -> se.pitch(1.1f).volume(0.6f))));
         add(NMLSounds.TORCH_LIGHT, s -> s.with(allSounds("block/torch/light", se -> se.pitch(1.1f).volume(0.6f))));
 
         add(NMLSounds.WITCH_STEW_CAULDRON_AMBIENT, s -> s.with(allSounds("block/witch_stew_cauldron/ambient", se -> se.pitch(0.8f))));
@@ -86,7 +86,6 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.HONEYCOMB_CONSUMED, s -> s.subtitle("nomansland.subtitle.item.generic.consumed").with(allSounds("minecraft:item/honeycomb/wax_on")));
         add(NMLSounds.RESIN_CONSUMED, s -> s.subtitle("nomansland.subtitle.item.generic.consumed").with(allSounds("minecraft:block/honeyblock/break")));
 
-        add(NMLSounds.BASS_AMBIENT, s -> s.with(sound("entity.salmon.ambient", EVENT)));
         add(NMLSounds.BASS_DEATH, s -> s.with(
                 allSounds("minecraft:entity/fish/hurt", se -> se.pitch(0.8f))
         ));

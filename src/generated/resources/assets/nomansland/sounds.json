@@ -859,7 +859,7 @@
         "volume": 0.6
       }
     ],
-    "subtitle": "nomansland.subtitle.block.torch.light_by_flint_and_steel"
+    "subtitle": "nomansland.subtitle.block.torch.light"
   },
   "block.witch_stew_cauldron.ambient": {
     "sounds": [
@@ -1044,15 +1044,6 @@
       }
     ],
     "subtitle": "subtitles.block.generic.footsteps"
-  },
-  "entity.billhook_bass.ambient": {
-    "sounds": [
-      {
-        "type": "event",
-        "name": "nomansland:entity.salmon.ambient"
-      }
-    ],
-    "subtitle": "nomansland.subtitle.entity.billhook_bass.ambient"
   },
   "entity.billhook_bass.death": {
     "sounds": [

@@ -66,7 +66,6 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> STICKY_CAULDRON_SLIDE = registerSound("entity.generic.sticky_cauldron_slide");
 
     //Bass
-    public static final DeferredHolder<SoundEvent, SoundEvent> BASS_AMBIENT = registerSound("entity.billhook_bass.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_DEATH = registerSound("entity.billhook_bass.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_FLOP = registerSound("entity.billhook_bass.flop");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_HURT = registerSound("entity.billhook_bass.hurt");
