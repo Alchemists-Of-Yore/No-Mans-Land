@@ -1,11 +1,9 @@
 package com.farcr.nomansland.client.renderer.rendertype;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.common.friend.condition.MoonlightOfferingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.mojang.blaze3d.shaders.AbstractUniform;
 import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
