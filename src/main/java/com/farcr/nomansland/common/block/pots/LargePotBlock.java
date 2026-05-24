@@ -135,7 +135,7 @@ public class LargePotBlock extends PotBlock {
             if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()) {
                 BlockState above = level.getBlockState(pos.above());
                 if (above.is(this) && isUpper(above)) {
-                    level.removeBlock(pos.above(), false);
+                    level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
                 }
                 pot.wakeUpSilent();
                 return;
@@ -151,7 +151,7 @@ public class LargePotBlock extends PotBlock {
             }
             BlockState above = level.getBlockState(pos.above());
             if (above.is(this) && isUpper(above)) {
-                level.removeBlock(pos.above(), false);
+                level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
             }
             FallingPotEntity falling = FallingPotEntity.fall(level, pos, state.setValue(HALF, DoubleBlockHalf.LOWER));
             if (beData != null) {
