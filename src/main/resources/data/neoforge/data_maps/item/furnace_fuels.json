@@ -5,6 +5,30 @@
     },
     "nomansland:resin": {
       "burn_time": 1000
+    },
+    "nomansland:maple_fence_gate": {
+      "burn_time": 300
+    },
+    "nomansland:pine_fence_gate": {
+      "burn_time": 300
+    },
+    "nomansland:walnut_fence_gate": {
+      "burn_time": 300
+    },
+    "nomansland:willow_fence_gate": {
+      "burn_time": 300
+    },
+    "nomansland:crude_door": {
+      "burn_time": 200
+    },
+    "nomansland:crude_trapdoor": {
+      "burn_time": 200
+    },
+    "nomansland:wooden_platform_stairs": {
+      "burn_time": 100
+    },
+    "nomansland:wooden_platform": {
+      "burn_time": 100
     }
   }
 }
