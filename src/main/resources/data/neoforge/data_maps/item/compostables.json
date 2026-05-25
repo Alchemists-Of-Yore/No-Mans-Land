@@ -105,6 +105,9 @@
     "nomansland:aconite": {
       "chance": 0.65
     },
+    "nomansland:yellow_lupine": {
+      "chance": 0.65
+    },
     "nomansland:pink_lupine": {
       "chance": 0.65
     },
@@ -172,7 +175,7 @@
       "chance": 0.2
     },
     "nomansland:field_mushroom_colony": {
-      "chance": 0.2
+      "chance": 1.0
     },
     "nomansland:pear": {
       "chance": 0.4
