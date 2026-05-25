@@ -22,6 +22,7 @@
     "FlowerBlockMixin",
     "FrogMixin",
     "ItemEntityMixin",
+    "IWitchAccessor",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LevelChunkMixin",
@@ -56,6 +57,7 @@
     "VineBlockMixin",
     "WaterAvoidingRandomStrollGoalMixin",
     "WaterlilyBlockMixin",
+    "WitchMixin",
     "bell_sanctuary.JigsawPlacementMixin",
     "caves.DimensionBiomePlacementMixin",
     "caves.MultiNoiseBiomeSourceMixin",
@@ -100,7 +102,8 @@
     "client.SkinManagerMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
-    "client.SoundInstanceMixin"
+    "client.SoundInstanceMixin",
+    "client.WitchModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
