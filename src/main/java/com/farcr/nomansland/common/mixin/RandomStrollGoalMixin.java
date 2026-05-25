@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.world.saved_data.WardedSpacesData;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
@@ -7,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +24,8 @@ public class RandomStrollGoalMixin {
 
     @Inject(method = "getPosition", at = @At("HEAD"), cancellable = true)
     private void getPosition(final CallbackInfoReturnable<Vec3> cir) {
-        if (this.mob instanceof Monster && this.mob.level() instanceof final ServerLevel serverLevel) {
+        if (this.mob instanceof Enemy && !this.mob.getType().is(NMLTags.WARD_REPELLED_BLACKLIST)
+                && this.mob.level() instanceof final ServerLevel serverLevel) {
             final WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
             if (wardedSpacesData.isWarded(this.mob.level(), this.mob.blockPosition())) {

@@ -60,7 +60,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
@@ -399,7 +398,7 @@ public class MiscellaneousEvents {
     public static void onFinalizeMobSpawn(FinalizeSpawnEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel
                 && event.getSpawnType() == MobSpawnType.NATURAL
-                && event.getEntity() instanceof Monster) {
+                && event.getEntity() instanceof Enemy && !event.getEntity().getType().is(NMLTags.WARD_REPELLED_BLACKLIST)) {
             WardedSpacesData wardedSpacesData = WardedSpacesData.get(serverLevel);
 
             event.setSpawnCancelled(wardedSpacesData.isWarded(serverLevel, event.getEntity().blockPosition()));
