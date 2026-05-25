@@ -13,7 +13,10 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -87,6 +90,10 @@ public class WitchStewCauldron extends FourLayeredCauldronBlock {
         super.entityInside(state, level, pos, entity);
 
         if (isEntityInsideContent(state, pos, entity)) {
+            if (entity instanceof LivingEntity living && state.getValue(LEVEL) > 3) {
+                living.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100));
+            }
+
             if (!level.isClientSide && entity.isOnFire()) {
                 entity.clearFire();
                 level.playSound(entity, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1, 1);
