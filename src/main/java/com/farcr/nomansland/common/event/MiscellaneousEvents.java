@@ -6,6 +6,7 @@ import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
+import com.farcr.nomansland.common.entity.ai.WitchBowlStewGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.friend.FriendMoon;
@@ -60,6 +61,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
@@ -418,6 +420,12 @@ public class MiscellaneousEvents {
                 frienderman.setYRot(event.getEntity().getYRot());
                 serverLevel.addFreshEntity(frienderman);
             }
+        }
+
+        if (event.getLevel() instanceof ServerLevel
+            && event.getEntity() instanceof Witch witch
+            && NMLConfig.WITCHES_EAT_STEW.get()) {
+            witch.goalSelector.addGoal(2, new WitchBowlStewGoal(witch, 1.0));
         }
     }
 

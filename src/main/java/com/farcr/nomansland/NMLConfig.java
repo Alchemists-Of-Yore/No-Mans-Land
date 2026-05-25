@@ -62,6 +62,7 @@ public class NMLConfig {
     public static final String CATEGORY_MISC = "miscellaneous";
     public static ModConfigSpec.DoubleValue BURIED_SPAWNING_CHANCE;
     public static ModConfigSpec.BooleanValue WALK_THROUGH_LEAVES;
+    public static ModConfigSpec.BooleanValue WITCHES_EAT_STEW;
 
     public static ModConfigSpec CLIENT_CONFIG;
     public static final String CATEGORY_FOG_MODIFIERS = "fog_modifiers";
@@ -252,6 +253,9 @@ public class NMLConfig {
 //        WALK_THROUGH_LEAVES = COMMON_BUILDER
 //                .comment("If leaves can be walked through slowly")
 //                .define("walkThroughLeaves", true);
+        WITCHES_EAT_STEW = COMMON_BUILDER
+                .comment("Witches use bowls to drain cauldrons of witch stew.")
+                .define("witchesEatStew", true);
         COMMON_BUILDER.pop();
 
         COMMON_CONFIG = COMMON_BUILDER.build();
