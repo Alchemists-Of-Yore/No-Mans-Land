@@ -1,14 +1,11 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
-import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.dreams.DreamManager;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.core.Holder;
@@ -18,7 +15,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +22,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -44,6 +39,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Shadow public abstract void setJumping(boolean jumping);
 
     @Shadow public boolean jumping;
+
     @Unique
     private boolean nomansland$skipDroppingDeathLoot = false;
     @Unique
@@ -98,6 +94,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         return this.nml$bellParalysisTimer;
     }
 
+    @Unique
     private float nml$getBellParalysisFrac() {
         float outIn = (float) Math.abs((InvertedBellServerHandler.TELEPORT_ENTITY_TIME - this.nml$bellParalysisTimer))
                 / InvertedBellServerHandler.TELEPORT_ENTITY_TIME;
@@ -123,6 +120,12 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         }
     }
 
+    @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;serverAiStep()V"))
+    private void nml$skipAiStepIfOffering(LivingEntity instance, Operation<Void> original) {
+        if (this.NML$isBeingInspected()) return;
+        original.call(instance);
+    }
+
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V", ordinal = 0))
     private void nml$makeParalyzedJump(CallbackInfo ci) {
         if (this.nml$bellParalysisTimer > 0) {
@@ -133,7 +136,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Inject(method = "isImmobile", at = @At("RETURN"), cancellable = true)
     private void nml$makeParalyzedImmobile(CallbackInfoReturnable<Boolean> cir) {
         // immobilized players bypass the arm swing which loops odd :p
-        if (this.nml$bellParalysisTimer > 0 && !((Object)this instanceof Player)) {
+        if (this.nml$bellParalysisTimer > 0 && !((Object) this instanceof Player)) {
             cir.setReturnValue(true);
         }
     }
