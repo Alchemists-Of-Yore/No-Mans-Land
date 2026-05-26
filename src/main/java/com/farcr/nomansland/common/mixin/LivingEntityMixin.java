@@ -1,14 +1,10 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.common.dreams.DreamType;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
-import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.core.Holder;
@@ -20,15 +16,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -36,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends EntityMixin implements LivingEntityExtension {
+public abstract class LivingEntityMixin extends EntityMixin implements LivingEntityExtension, IAttachmentHolder {
 
     @Shadow public abstract boolean hasEffect(Holder<MobEffect> effect);
 
@@ -117,22 +112,26 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         return Mth.clamp(outIn* 2 - 1, 0, 1);
     }
 
-    @Unique float nml$visualTickMultiplier = 1f;
     @Override public float nml$getVisualTickMultiplier() {
-        return nml$visualTickMultiplier;
+        return this.getData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER);
+    }
+
+    @Unique private void nml$setVisualTickMultiplier(float visualTickMultiplier) {
+        this.setData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER, visualTickMultiplier);
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void nml$skipTick(CallbackInfo ci) {
         if (this.getEffect(NMLEffects.STASIS) != null) {
             this.tickEffects();
-            nml$visualTickMultiplier = Math.max(nml$visualTickMultiplier - (1 / 20f), 0f);
+            nml$setVisualTickMultiplier(Math.max(nml$getVisualTickMultiplier() - (1 / 20f), 0f));
             if (!nml$Self.level().isClientSide && !nml$Self.hasEffect(NMLEffects.STASIS)) {
                 ((ServerLevel) nml$Self.level()).getChunkSource().broadcast(nml$Self,
                     new ClientboundRemoveMobEffectPacket(nml$Self.getId(), NMLEffects.STASIS));
             }
-            if (nml$visualTickMultiplier <= 0f) ci.cancel();
-        } else nml$visualTickMultiplier = 1f;
+            if (nml$getVisualTickMultiplier() <= 0f) ci.cancel();
+        } else if (this.hasData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER))
+            nml$setVisualTickMultiplier(1f);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
@@ -164,7 +163,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Inject(method = "isImmobile", at = @At("RETURN"), cancellable = true)
     private void nml$makeParalyzedImmobile(CallbackInfoReturnable<Boolean> cir) {
         // immobilized players bypass the arm swing which loops odd :p
-        if (this.nml$bellParalysisTimer > 0 && !((Object)this instanceof Player)) {
+        if (this.nml$bellParalysisTimer > 0 && !((Object) this instanceof Player)) {
             cir.setReturnValue(true);
         }
     }

@@ -34,6 +34,7 @@ public class NoMansLand {
         NMLBlocks.BLOCKS.register(bus);
         NMLExtinguishables.EXTINGUISHABLES.register(bus);
         NMLEntityDataSerializers.ENTITY_DATA_SERIALIZERS.register(bus);
+        NMLEntityDataAttachments.DATA_ATTACHMENTS.register(bus);
         NMLEntities.ENTITIES.register(bus);
         NMLSensors.SENSORS.register(bus);
         NMLMemoryModules.MEMORY_MODULES.register(bus);
