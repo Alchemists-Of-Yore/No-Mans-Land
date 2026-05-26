@@ -145,8 +145,7 @@ dependencies {
 //    }
 
     implementation "com.terraformersmc:biolith-neoforge:$bt_version"
-//    jarJar(implementation("maven.modrinth:mixed-litter:$ml_version"))
-    jarJar(implementation("dev.tazer:mixed_litter:1.1.0"))
+    jarJar(implementation("maven.modrinth:mixed-litter:$ml_version"))
     jarJar(implementation("com.moulberry:mixinconstraints:1.0.7") {
                 exclude group: "org.slf4j",
                         module: "slf4j-api"
