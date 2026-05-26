@@ -23,7 +23,7 @@ public class GlintConsumer {
 
     public static VertexConsumer consume(MultiBufferSource bufferSource, VertexConsumer originalConsumer) {
         VertexConsumer finalConsumer = originalConsumer;
-        for (var consumer : multiConsumer) finalConsumer = consumer.apply(bufferSource, originalConsumer);
+        for (var consumer : multiConsumer) finalConsumer = consumer.apply(bufferSource, finalConsumer);
         return finalConsumer;
     }
 }
