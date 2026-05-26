@@ -1,0 +1,39 @@
+name: build
+on:
+  push:
+    paths:
+      - 'src/main/java/**'
+      - '**/gradle.properties'
+      - '**/settings.gradle.kts'
+      - '**/build.gradle.kts'
+      - '**/settings.gradle.kts'
+      - '.github/workflows/gametests.yml'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./gradlew
+
+      - name: Execute Gradle build
+        run: ./gradlew build
+
+      - name: Run game tests
+        run: ./gradlew neoforge:runGameTest
