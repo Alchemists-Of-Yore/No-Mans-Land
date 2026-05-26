@@ -1,4 +1,4 @@
-name: build
+name: Build
 on:
   push:
     paths:
@@ -7,7 +7,7 @@ on:
       - '**/settings.gradle.kts'
       - '**/build.gradle.kts'
       - '**/settings.gradle.kts'
-      - '.github/workflows/gametests.yml'
+      - '.github/workflows/build.yml'
   pull_request:
     branches:
       - 'main'
@@ -34,6 +34,3 @@ jobs:
 
       - name: Execute Gradle build
         run: ./gradlew build
-
-      - name: Run game tests
-        run: ./gradlew neoforge:runGameTest

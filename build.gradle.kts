@@ -2,6 +2,7 @@ plugins {
     // https://projects.neoforged.net/neoforged/ModDevGradle
     id("net.neoforged.moddev") version "2.0.141"
     idea
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
 
 version = mod["version"]
@@ -191,5 +192,37 @@ idea {
     module {
         isDownloadSources = true
         isDownloadJavadoc = true
+    }
+}
+
+publishMods {
+    type = STABLE
+    file = tasks.jar.map { it.archiveFile.get() }
+    changelog = provider { rootProject.file("changelog.md").readText() }
+
+    version = "$${mod["version"]}"
+    displayName = "${mod["name"]} ${mod["version"]}"
+    modLoaders.add("neoforge")
+
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+        projectId = "538493"
+        projectSlug = "no-mans-land"
+        minecraftVersions.add(mc["version"])
+
+        clientRequired = true
+        serverRequired = true
+
+        requires("biolith")
+        embeds("mixed-litter")
+    }
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "kjZCvAn6"
+        minecraftVersions.add(mc["version"])
+
+        requires("biolith")
+        embeds("mixed-litter")
     }
 }
