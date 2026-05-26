@@ -141,13 +141,13 @@ public class NMLItems {
             NMLTags.INCORRECT_FOR_RITUAL_TOOL,
             Integer.MAX_VALUE,
             Tiers.STONE.getSpeed(),
-            0, 0,
+            0, 25,
             () -> Ingredient.EMPTY
     );
 
     public static final ItemDefinition<Item> ANCESTRAL_OATH_SWORD = register("ancestral_oath_sword",
         () -> new AncestralOathSwordItem(TIER_RITUAL, new Properties()
-            .attributes(SwordItem.createAttributes(TIER_RITUAL, 0, 0))
+            .attributes(SwordItem.createAttributes(TIER_RITUAL, 5.0F, -2.4F))
             .rarity(Rarity.RARE)
             .component(DataComponents.UNBREAKABLE, new Unbreakable(false))
         )
@@ -155,7 +155,7 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> RITUAL_PICK = register("ritual_pick",
             () -> new RitualPickItem(TIER_RITUAL, new Properties()
-                    .attributes(PickaxeItem.createAttributes(TIER_RITUAL, 0, 0))
+                    .attributes(PickaxeItem.createAttributes(TIER_RITUAL, 4.0F, -2.8F))
                     .rarity(Rarity.RARE)
                     .component(DataComponents.UNBREAKABLE, new Unbreakable(false))
             )

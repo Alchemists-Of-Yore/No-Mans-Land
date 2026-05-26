@@ -25,5 +25,5 @@ public class NMLEffects {
         () -> new HappinessEffect(MobEffectCategory.BENEFICIAL, 16746142));
 
     public static final DeferredHolder<MobEffect, MobEffect> STASIS = MOB_EFFECTS.register("stasis",
-        () -> new StasisEffect(MobEffectCategory.HARMFUL, 0xFFE2A348));
+        () -> new StasisEffect(MobEffectCategory.HARMFUL, 16766041));
 }
