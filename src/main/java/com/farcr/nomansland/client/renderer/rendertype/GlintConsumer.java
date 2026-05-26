@@ -17,8 +17,7 @@ import java.util.function.BiFunction;
 public class GlintConsumer {
 
     final static List<BiFunction<MultiBufferSource, VertexConsumer, VertexConsumer>> multiConsumer = List.of(
-        MoonlightGlowRenderType::getConsumer,
-        AncestralGlintRenderType::getConsumer
+        MoonlightGlowRenderType::getConsumer, AncestralGlintRenderType::getConsumer
     );
 
     public static VertexConsumer consume(MultiBufferSource bufferSource, VertexConsumer originalConsumer) {

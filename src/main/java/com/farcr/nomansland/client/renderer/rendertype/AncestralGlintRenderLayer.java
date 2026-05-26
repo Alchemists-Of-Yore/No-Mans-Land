@@ -1,10 +1,18 @@
 package com.farcr.nomansland.client.renderer.rendertype;
 
+import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -13,6 +21,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL30;
 
 /*
 * Heavily based on:
@@ -48,10 +57,11 @@ public class AncestralGlintRenderLayer<T extends LivingEntity, M extends EntityM
         EntityModel<T> entityModel = this.getParentModel();
         entityModel.prepareMobModel(livingEntity, limbSwing, limbSwingAmount, partialTicks);
         this.getParentModel().copyPropertiesTo(entityModel);
-        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(AncestralGlintRenderType.ENTITY_ANCESTRAL_GLINT);
+
+        float intensity = 1f - ((EntityExtension) livingEntity).nml$getVisualTickMultiplier();
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(AncestralGlintRenderType.ancestralGlint(true, intensity));
         entityModel.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch);
-        entityModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
-            OverlayTexture.NO_OVERLAY, FastColor.ARGB32.colorFromFloat(1F, 1F, 1F, 1F)
-        );
+        entityModel.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY,
+            FastColor.ARGB32.colorFromFloat(intensity, intensity, intensity, intensity));
     }
 }
