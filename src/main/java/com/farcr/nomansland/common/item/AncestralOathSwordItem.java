@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.item;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +27,7 @@ public class AncestralOathSwordItem extends SwordItem {
         return 72000;
     }
 
-    public boolean canHurtUnderOath(LivingEntity entity) {
+    public static boolean canHurtUnderOath(Entity entity) {
         return false;
     }
 

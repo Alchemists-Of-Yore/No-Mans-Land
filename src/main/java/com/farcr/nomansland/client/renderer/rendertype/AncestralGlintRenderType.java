@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 
 public class AncestralGlintRenderType {
 
-    private static float[] COLOR_CONTEXT = new float[]{};
+    private static float ITEM_GLINT_VISIBILITY_CONTEXT = 0f;
     public static RenderType ancestralGlint(boolean entity, float opacity) {
         return RenderType.create(
             "ancestral_glint", DefaultVertexFormat.POSITION_TEX,
@@ -46,6 +47,8 @@ public class AncestralGlintRenderType {
                         * like setting a color context would, for example, and so I dont need to track anything fancy I can just
                         * reset it to the setting value that already tracks what it should actually be which is decently convenient */
                         RenderSystem.setShaderGlintAlpha(opacity * Minecraft.getInstance().options.glintStrength().get());
+                        // because i cant dynamically make a rendertype for an item glint
+                        if (!entity) RenderSystem.setShaderGlintAlpha(ITEM_GLINT_VISIBILITY_CONTEXT * Minecraft.getInstance().options.glintStrength().get());
                         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
                     }, () -> {
                         RenderSystem.disableBlend();
@@ -64,15 +67,6 @@ public class AncestralGlintRenderType {
         itemContext = newContext;
     }
 
-    public static boolean renderGlintCondition() {
-        if (itemContext != null) {
-            boolean validItem = false; // (IClientItemExtensions.of(itemContext) instanceof AncestralOathSwordClientExtensions);
-            itemContext = null;
-            return validItem;
-        }
-        return false;
-    }
-
     public static void addGlint(Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> map) {
         if (!map.containsKey(DEFAULT_ANCESTRAL_GLINT))
             map.put(DEFAULT_ANCESTRAL_GLINT, new ByteBufferBuilder(DEFAULT_ANCESTRAL_GLINT.bufferSize()));
@@ -81,11 +75,18 @@ public class AncestralGlintRenderType {
     public static VertexConsumer getConsumer(
         MultiBufferSource bufferSource, VertexConsumer originalConsumer
     ) {
-        if (renderGlintCondition()) {
-            return VertexMultiConsumer.create(
-                bufferSource.getBuffer(DEFAULT_ANCESTRAL_GLINT),
-                originalConsumer
-            );
+        if (itemContext != null) {
+            if (IClientItemExtensions.of(itemContext) instanceof AncestralOathSwordClientExtensions extensions
+            && (extensions.glintAnimateTime > 0) && Minecraft.getInstance().player != null
+            && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).equals(itemContext)) {
+                ITEM_GLINT_VISIBILITY_CONTEXT = (extensions.glintAnimateTime / AncestralOathSwordClientExtensions.MAX_GLINT_ANIMATE);
+                return VertexMultiConsumer.create(
+                    bufferSource.getBuffer(
+                        DEFAULT_ANCESTRAL_GLINT
+                    ), originalConsumer
+                );
+            }
+            itemContext = null;
         }
         return originalConsumer;
     }

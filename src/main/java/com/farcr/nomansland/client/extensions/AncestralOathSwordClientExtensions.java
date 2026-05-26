@@ -1,13 +1,17 @@
 package com.farcr.nomansland.client.extensions;
 
+import com.farcr.nomansland.common.item.AncestralOathSwordItem;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
@@ -26,6 +30,11 @@ public class AncestralOathSwordClientExtensions implements IClientItemExtensions
         @NotNull HumanoidArm arm, @NotNull ItemStack itemInHand,
         float partialTick, float equippedProgress, float swingProgress
     ) {
+        if (equippedProgress >= 1f) {
+            animateTime = 0f;
+            glintAnimateTime = 0f;
+        }
+
         ItemInHandRenderer itemInHandRenderer = Minecraft.getInstance().gameRenderer.itemInHandRenderer;
         InteractionHand hand = player.getMainArm() == arm ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         int invert = (arm == HumanoidArm.RIGHT) ? 1 : -1;
@@ -42,6 +51,35 @@ public class AncestralOathSwordClientExtensions implements IClientItemExtensions
             itemInHandRenderer.applyItemArmTransform(poseStack, arm, equippedProgress);
             itemInHandRenderer.applyItemArmAttackTransform(poseStack, arm, swingProgress);
         }
+        animateTime = Math.max(animateTime - partialTick, 0f);
+        glintAnimateTime = Math.max(glintAnimateTime - partialTick, 0f);
+        poseStack.translate(getShakePosition(animateTime) / 50f, 0f, 0f);
+
         return true;
+    }
+
+    // its more artistic if I do it like this (lazy
+    private static final float[] SHAKE_ARRAY = new float[]{2, -2, -1, 1, 0};
+    private float getShakePosition(float animateTime) {
+        return SHAKE_ARRAY[(int) ((SHAKE_ARRAY.length - 1) * ((MAX_ANIMATE_TIME - animateTime) / MAX_ANIMATE_TIME))];
+    }
+
+    public static final float MAX_ANIMATE_TIME = 12f;
+    public float animateTime = 0f;
+
+    public static final float MAX_GLINT_ANIMATE = 90f;
+    public float glintAnimateTime = 0f;
+
+    public boolean clientCancelAttack(AncestralOathSwordItem ancestralOathSword, Entity entity) {
+        if (!AncestralOathSwordItem.canHurtUnderOath(entity)) {
+            Minecraft.getInstance().getConnection().setActionBarText(
+                new ClientboundSetActionBarTextPacket(Component.translatable("item.nomansland.ancestral_oath_sword.refuse"))
+            );
+            // do cool shake and glint glow here lol
+            glintAnimateTime = MAX_GLINT_ANIMATE;
+            animateTime = MAX_ANIMATE_TIME;
+            return true;
+        }
+        return false;
     }
 }

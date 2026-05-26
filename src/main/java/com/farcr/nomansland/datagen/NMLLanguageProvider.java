@@ -214,6 +214,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("design.nomansland.ancient_bronze_mask.alchemist", "Alchemist");
         add("design.nomansland.warp_worn.warp_worn", "Warp-worn");
 
+        add("item.nomansland.ancestral_oath_sword.refuse", "The sword refuses to violate its oath of pacifism...");
+
         add("commands.nomansland.dream.start.pass", "Successfully started dream %s for %s.");
         add("commands.nomansland.dream.start.pass_count", "Successfully started dream %s for %s players.");
         add("commands.nomansland.dream.clear.fail", "Information about dream not found, nothing to clear.");
