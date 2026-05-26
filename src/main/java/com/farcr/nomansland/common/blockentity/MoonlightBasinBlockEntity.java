@@ -25,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -382,7 +383,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             // Determine offering context
             if (blockEntity.inspectionContext == null) {
                 OfferingContext context = getOfferingAbove(pos, level);
-                if (context != null && context.isValid() && context.getEntity().onGround())
+                if (context != null && context.isValid()
+                && (context.getEntity().onGround() || context.getEntity() instanceof FlyingMob))
                     blockEntity.setInspectionContext(context, friendMoon);
             }
 
