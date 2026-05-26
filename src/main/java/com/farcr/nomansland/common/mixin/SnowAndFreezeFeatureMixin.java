@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModAbsent;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.WorldGenLevel;

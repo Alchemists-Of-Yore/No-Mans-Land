@@ -1,10 +1,10 @@
 package com.farcr.nomansland.common.mixin.integration;
 
 import com.farcr.nomansland.common.block.FrostedGrassBlock;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModAbsent;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.moulberry.mixinconstraints.annotations.IfModAbsent;
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ChunkMap;
@@ -21,7 +21,7 @@ import sereneseasons.init.ModTags;
 import sereneseasons.season.RandomUpdateHandler;
 import sereneseasons.season.SeasonHooks;
 
-@IfModLoaded("sereneseasons")
+@IfModPresent("sereneseasons")
 @IfModAbsent("snowrealmagic")
 @Mixin(RandomUpdateHandler.class)
 public class RandomUpdateHandlerMixin {

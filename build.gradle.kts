@@ -115,9 +115,6 @@ repositories {
 dependencies {
     jarJar(implementation("maven.modrinth:mixed-litter:${deps["mixed_litter"]}") {})
     jarJar(implementation("com.terraformersmc:biolith-neoforge:${deps["biolith"]}") {})
-    jarJar(implementation("com.moulberry:mixinconstraints:1.0.7") {
-        exclude(group = "org.slf4j", module = "slf4j-api")
-    })
     jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${mc["version"]}:${deps["sable_companion"]}") {
         version {
             prefer(deps["sable_companion"])
@@ -131,8 +128,8 @@ dependencies {
     implementation("maven.modrinth:blueprint:8.0.8")
     implementation("maven.modrinth:boatload:6.0.2")
     implementation("maven.modrinth:the-block-box:0.1.1")
-    implementation("curse.maven:nirvana-1278909:6970116")
-    implementation("com.tterrag.registrate:Registrate:MC1.21-1.3.0+62")
+    implementation("maven.modrinth:nirvana-mod:DeFmDBVC")
+    implementation("com.tterrag.registrate:Registrate:MC1.21-1.3.0+67")
     implementation("maven.modrinth:moonlight:1.21-2.29.18-neoforge")
 //    implementation "maven.modrinth:spawn-mod:4.0.4"
     implementation("maven.modrinth:gallery:2.0.0")
