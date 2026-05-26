@@ -497,6 +497,51 @@
     ],
     "subtitle": "subtitles.block.generic.footsteps"
   },
+  "block.quartzite_cluster.break": {
+    "sounds": [
+      "nomansland:block/quartzite/cluster/break1",
+      "nomansland:block/quartzite/cluster/break2",
+      "nomansland:block/quartzite/cluster/break3",
+      "nomansland:block/quartzite/cluster/break4"
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.quartzite_cluster.fall": {
+    "sounds": [
+      "nomansland:block/quartzite/step1",
+      "nomansland:block/quartzite/step2",
+      "nomansland:block/quartzite/step3",
+      "nomansland:block/quartzite/step4"
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.quartzite_cluster.hit": {
+    "sounds": [
+      "nomansland:block/quartzite/step1",
+      "nomansland:block/quartzite/step2",
+      "nomansland:block/quartzite/step3",
+      "nomansland:block/quartzite/step4"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.quartzite_cluster.place": {
+    "sounds": [
+      "nomansland:block/quartzite/cluster/break1",
+      "nomansland:block/quartzite/cluster/break2",
+      "nomansland:block/quartzite/cluster/break3",
+      "nomansland:block/quartzite/cluster/break4"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.quartzite_cluster.step": {
+    "sounds": [
+      "nomansland:block/quartzite/step1",
+      "nomansland:block/quartzite/step2",
+      "nomansland:block/quartzite/step3",
+      "nomansland:block/quartzite/step4"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
   "block.sconce_torch.break": {
     "sounds": [
       {

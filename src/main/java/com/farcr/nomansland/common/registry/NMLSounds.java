@@ -22,6 +22,7 @@ public class NMLSounds {
     public static final DeferredSoundType DROSS_TILES = registerSoundType("dross_tiles", 1, 1f);
     public static final DeferredSoundType SILTSTONE = registerSoundType("siltstone", 1, 1f);
     public static final DeferredSoundType QUARTZITE = registerSoundType("quartzite", 1, 1f);
+    public static final DeferredSoundType QUARTZITE_CLUSTER = registerSoundType("quartzite_cluster", 1, 1f);
     public static final DeferredSoundType THATCH = registerSoundType("thatch", 1, 1f);
 
     //Block-Related
