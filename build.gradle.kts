@@ -203,7 +203,7 @@ publishMods {
     file = tasks.jar.map { it.archiveFile.get() }
     changelog = provider { rootProject.file("changelog.md").readText() }
 
-    version = "$${mod["version"]}"
+    version = mod["version"]
     displayName = "${mod["name"]} ${mod["version"]}"
     modLoaders.add("neoforge")
 
