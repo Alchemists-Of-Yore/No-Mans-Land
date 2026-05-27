@@ -112,6 +112,12 @@
       "randomize": false
     },
     "probability": 1.0,
-    "incoherence": 0.0
+    "incoherence": 0.0,
+    "replacements": {
+      "nomansland:siltstone": {
+        "minecraft:stone_stairs": "nomansland:siltstone_stairs",
+        "minecraft:stone_slab": "nomansland:siltstone_slab"
+      }
+    }
   }
 }

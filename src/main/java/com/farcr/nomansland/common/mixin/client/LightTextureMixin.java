@@ -2,9 +2,9 @@ package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModAbsent;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.client.renderer.LightTexture;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;

@@ -11,7 +11,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -65,30 +66,28 @@ public class AnchorListener implements GameEventListener {
 
     @Override
     public boolean handleGameEvent(ServerLevel level, Holder<GameEvent> gameEvent, GameEvent.Context context, Vec3 pos) {
-        if (context.sourceEntity() instanceof Monster monster && GameEvent.ENTITY_DIE.is(gameEvent)) {
+        if (context.sourceEntity() instanceof LivingEntity livingEntity && context.sourceEntity() instanceof Enemy && !(livingEntity.getType().getTags().toList().contains(NMLTags.ANCHOR_BLACKLIST)) && GameEvent.ENTITY_DIE.is(gameEvent)) {
             Vec3 sourcePos = positionSource.getPosition(level).orElseThrow();
             MonsterAnchorBlockEntity monsterAnchorBlockEntity = (MonsterAnchorBlockEntity) Optional.ofNullable(level.getBlockEntity(BlockPos.containing(sourcePos))).orElseThrow();
 
             if (SableCompanion.INSTANCE.distanceSquaredWithSubLevels(level, pos, sourcePos) > Mth.square(monsterAnchorBlockEntity.range)) return false;
 
-            if (!(monster.getType().getTags().toList().contains(NMLTags.ANCHOR_BLACKLIST))) {
-                if (!monster.wasExperienceConsumed()) {
+            if (!livingEntity.wasExperienceConsumed()) {
 
-                    // Add the entity to the dead entity list
-                    CompoundTag tag = new CompoundTag();
-                    if (monster.save(tag)) monsterAnchorBlockEntity.entityQueue.add(tag);
+                // Add the entity to the dead entity list
+                CompoundTag tag = new CompoundTag();
+                if (livingEntity.save(tag)) monsterAnchorBlockEntity.entityQueue.add(tag);
 
-                    // Stop the mob from dropping experience and loot
-                    monster.skipDropExperience();
-                    monster.nml$skipDroppingDeathLoot();
+                // Stop the mob from dropping experience and loot
+                livingEntity.skipDropExperience();
+                livingEntity.nml$skipDroppingDeathLoot();
 
-                    // Surround the bounding box of the monster with embers
-                    AABB boundingBox = monster.getBoundingBox();
-                    surroundBoundingBox(boundingBox, 0.2).forEach(point ->
-                            level.sendParticles(NMLParticleTypes.MALEVOLENT_EMBERS.get(), point.x, point.y, point.z, 1, 0, 0, 0, 0));
+                // Surround the bounding box of the monster with embers
+                AABB boundingBox = livingEntity.getBoundingBox();
+                surroundBoundingBox(boundingBox, 0.2).forEach(point ->
+                        level.sendParticles(NMLParticleTypes.MALEVOLENT_EMBERS.get(), point.x, point.y, point.z, 1, 0, 0, 0, 0));
 
-                    tryAwardAdvancement(level, monster);
-                }
+                tryAwardAdvancement(level, livingEntity);
             }
             return true;
         }
@@ -100,11 +99,11 @@ public class AnchorListener implements GameEventListener {
         return DeliveryMode.BY_DISTANCE;
     }
 
-    private static void tryAwardAdvancement(Level level, Monster monster) {
-        if (monster.getLastHurtByMob() instanceof ServerPlayer serverplayer) {
-            DamageSource damagesource = monster.getLastDamageSource() == null
-                    ? level.damageSources().playerAttack(serverplayer) : monster.getLastDamageSource();
-            NMLCriteriaTriggers.KILL_MOB_NEAR_MONSTER_ANCHOR.get().trigger(serverplayer, monster, damagesource);
+    private static void tryAwardAdvancement(Level level, LivingEntity livingEntity) {
+        if (livingEntity.getLastHurtByMob() instanceof ServerPlayer serverplayer) {
+            DamageSource damagesource = livingEntity.getLastDamageSource() == null
+                    ? level.damageSources().playerAttack(serverplayer) : livingEntity.getLastDamageSource();
+            NMLCriteriaTriggers.KILL_MOB_NEAR_MONSTER_ANCHOR.get().trigger(serverplayer, livingEntity, damagesource);
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin.integration;
 
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import com.simibubi.create.content.kinetics.saw.TreeCutter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@IfModLoaded("create")
+@IfModPresent("create")
 @Mixin(TreeCutter.class)
 public class TreeCutterMixin {
 

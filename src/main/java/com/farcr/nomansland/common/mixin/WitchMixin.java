@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.integration.FDIntegration;
+import com.farcr.nomansland.common.integration.Mods;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -34,7 +35,7 @@ public abstract class WitchMixin extends Raider {
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/Witch;isDrinkingPotion()Z", shift = At.Shift.BEFORE))
     private void eatStew(CallbackInfo ci){
-        if (this.getMainHandItem().is(FDIntegration.WITCH_STEW_ITEM)) {
+        if (Mods.FARMERSDELIGHT.isLoaded() && this.getMainHandItem().is(FDIntegration.WITCH_STEW_ITEM)) {
             if (this.usingTime < 32 && !this.isSilent() && this.usingTime % 7 == 0) {
                 this.playSound(SoundEvents.GENERIC_EAT, 0.6F, 0.8F + this.random.nextFloat() * 0.4F);
                 if (this.level() instanceof ServerLevel serverLevel) {

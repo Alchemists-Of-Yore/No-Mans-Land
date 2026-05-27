@@ -7,18 +7,22 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 
+import java.util.Map;
 import java.util.Optional;
 
 /*
@@ -191,18 +195,33 @@ public record OreVeinType(boolean sampleBiomeAtSurface,
         return separation <= 0 ? DataResult.error(() -> "Separation must be positive!") : DataResult.success(separation);
     }
 
-    public record OreBlockState(BlockStateProvider stateProvider, float incoherence, float probability) {
-        public static final OreBlockState EMPTY = new OreBlockState(BlockStateProvider.simple(Blocks.AIR), 0, 0);
+    public record OreBlockState(BlockStateProvider stateProvider, float incoherence, float probability, Map<Block, Map<Block, Block>> replacements) {
+        public static final OreBlockState EMPTY = new OreBlockState(BlockStateProvider.simple(Blocks.AIR), 0, 0, Map.of());
         public static final Codec<OreBlockState> CODEC = RecordCodecBuilder.create(
                 codec -> codec.group(
                         BlockStateProvider.CODEC.fieldOf("state_provider").forGetter(OreBlockState::stateProvider),
                         Codec.floatRange(0.0F, 100000000.0F).optionalFieldOf("incoherence", 0.0F).forGetter(OreBlockState::incoherence),
-                        Codec.floatRange(0.0F, 1.0F).optionalFieldOf("probability", 1.0F).forGetter(OreBlockState::probability)
+                        Codec.floatRange(0.0F, 1.0F).optionalFieldOf("probability", 1.0F).forGetter(OreBlockState::probability),
+                        Codec.unboundedMap(
+                                BuiltInRegistries.BLOCK.byNameCodec(),
+                                Codec.unboundedMap(BuiltInRegistries.BLOCK.byNameCodec(), BuiltInRegistries.BLOCK.byNameCodec())
+                        ).optionalFieldOf("replacements", Map.of()).forGetter(OreBlockState::replacements)
                 ).apply(codec, OreBlockState::new)
         );
 
-        public BlockState resolve(RandomSource random, BlockPos pos) {
-            return stateProvider.getState(random, pos);
+        public BlockState resolve(RandomSource random, BlockPos pos, BlockState currentState) {
+            BlockState resolved = stateProvider.getState(random, pos);
+            Map<Block, Block> mapping = replacements.get(resolved.getBlock());
+            if (mapping == null) return resolved;
+
+            Block targetBlock = mapping.get(currentState.getBlock());
+            if (targetBlock == null) return resolved;
+            return targetBlock.withPropertiesOf(currentState);
+        }
+
+        private static <T extends Comparable<T>> BlockState copyProperty(BlockState target, BlockState source, Property<T> property) {
+            if (!target.hasProperty(property)) return target;
+            return target.setValue(property, source.getValue(property));
         }
     }
 }

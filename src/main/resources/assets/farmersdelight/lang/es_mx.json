@@ -1,8 +1,8 @@
 {
-  "item.farmersdelight.chicken_cuts": "Poultry Cuts",
-  "item.farmersdelight.cooked_chicken_cuts": "Cooked Poultry Cuts",
-  "item.farmersdelight.roast_chicken": "Roast Poultry",
-  "block.farmersdelight.roast_chicken_block": "Roast Poultry",
-  "item.farmersdelight.chicken_sandwich": "Poultry Sandwich",
-  "item.farmersdelight.chicken_soup": "Poultry Soup"
+  "item.farmersdelight.chicken_cuts": "Cortes de ave",
+  "item.farmersdelight.cooked_chicken_cuts": "Cortes de ave asados",
+  "item.farmersdelight.roast_chicken": "Ave horneada",
+  "block.farmersdelight.roast_chicken_block": "Ave horneada",
+  "item.farmersdelight.chicken_sandwich": "Sándwich de aves",
+  "item.farmersdelight.chicken_soup": "Sopa de aves"
 }

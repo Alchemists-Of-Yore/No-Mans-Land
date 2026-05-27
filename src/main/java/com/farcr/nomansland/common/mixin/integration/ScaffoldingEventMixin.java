@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.mixin.integration;
 
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import com.natamus.scaffoldingdropsnearby_common_neoforge.events.ScaffoldingEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@IfModLoaded("scaffoldingdropsnearby")
+@IfModPresent("scaffoldingdropsnearby")
 @Mixin(ScaffoldingEvent.class)
 public class ScaffoldingEventMixin {
 

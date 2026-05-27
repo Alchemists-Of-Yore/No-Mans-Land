@@ -105,10 +105,6 @@ public class BillhookBass extends AbstractFish implements NeutralMob {
         return super.killedEntity(level, entity);
     }
 
-    public SoundEvent getAmbientSound() {
-        return NMLSounds.BASS_AMBIENT.get();
-    }
-
     @Override
     public @NotNull SoundEvent getFlopSound() {
         return NMLSounds.BASS_FLOP.get();
