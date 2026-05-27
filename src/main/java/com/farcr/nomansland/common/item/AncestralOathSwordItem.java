@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.item;
 
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +29,8 @@ public class AncestralOathSwordItem extends SwordItem {
     }
 
     public static boolean canHurtUnderOath(Entity entity) {
-        return false;
+        return (entity instanceof LivingEntity livingEntity
+            && livingEntity.hasEffect(NMLEffects.STASIS));
     }
 
     @Override
