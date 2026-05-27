@@ -23,9 +23,15 @@ neoForge {
     }
 
     runs {
+        configureEach {
+            systemProperty("forge.logging.markers", "REGISTRIES")
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+
         create("client") {
             client()
             devLogin = true
+            jvmArgument("-XX:+IgnoreUnrecognizedVMOptions")
             jvmArgument("-XX:+AllowEnhancedClassRedefinition")
         }
 
