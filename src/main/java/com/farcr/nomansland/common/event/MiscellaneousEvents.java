@@ -421,7 +421,8 @@ public class MiscellaneousEvents {
             }
         }
 
-        if (event.getLevel() instanceof ServerLevel
+        if (Mods.FARMERSDELIGHT.isLoaded()
+            && event.getLevel() instanceof ServerLevel
             && event.getEntity() instanceof Witch witch
             && NMLConfig.WITCHES_EAT_STEW.get()) {
             witch.goalSelector.addGoal(2, new WitchBowlStewGoal(witch, 1.0));
