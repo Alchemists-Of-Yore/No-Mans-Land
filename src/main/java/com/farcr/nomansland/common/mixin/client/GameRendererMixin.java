@@ -1,10 +1,15 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,5 +25,10 @@ public class GameRendererMixin {
     private void applyInvertedBellPost(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         InvertedBellClientHandler.instance.render(this.minecraft, deltaTracker.getRealtimeDeltaTicks());
         AccumulateZoomRenderer.getInstance().render(this.minecraft, deltaTracker.getRealtimeDeltaTicks());
+        if (this.minecraft.player != null) {
+            ItemStack itemStack = this.minecraft.player.getItemInHand(InteractionHand.MAIN_HAND);
+            if (itemStack.is(NMLItems.ANCESTRAL_OATH_SWORD) && IClientItemExtensions.of(itemStack) instanceof AncestralOathSwordClientExtensions extensions)
+                extensions.render(deltaTracker.getRealtimeDeltaTicks());
+        }
     }
 }

@@ -136,6 +136,11 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
             nml$setVisualTickMultiplier(1f);
     }
 
+    @Inject(method = "hurt", at = @At("HEAD"))
+    private void nml$removeStasis(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (nml$Self.hasEffect(NMLEffects.STASIS)) nml$Self.removeEffect(NMLEffects.STASIS);
+    }
+
     @Inject(method = "tick", at = @At("TAIL"))
     private void nml$countDownParalysis(CallbackInfo ci) {
         if (this.nml$bellParalysisTimer > 0) {

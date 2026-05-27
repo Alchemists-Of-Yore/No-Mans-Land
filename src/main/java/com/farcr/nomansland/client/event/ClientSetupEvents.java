@@ -5,6 +5,7 @@ import com.farcr.nomansland.client.DialogueLangLoader;
 import com.farcr.nomansland.client.NMLArmorModels;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
+import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.client.extensions.NMLClientExtensions;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
@@ -301,7 +302,14 @@ public class ClientSetupEvents {
         }
         // Accumulate Zoom Shader
         try {
-            AccumulateZoomRenderer.getInstance().setupPostChain();
+            AccumulateZoomRenderer.getInstance().setupPostChain(
+                Minecraft.getInstance().getMainRenderTarget(),
+                "nomansland:accumulate_zoom"
+            );
+            AncestralOathSwordClientExtensions.TRAIL_INSTANCE.setupPostChain(
+                AncestralOathSwordClientExtensions.getRenderTarget(),
+                "nomansland:accumulate_zoom_alpha"
+            );
         } catch (final IOException e) {
             NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
         } catch (final JsonSyntaxException e) {
