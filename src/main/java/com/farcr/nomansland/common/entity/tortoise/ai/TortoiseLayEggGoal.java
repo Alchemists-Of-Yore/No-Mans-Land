@@ -2,8 +2,8 @@ package com.farcr.nomansland.common.entity.tortoise.ai;
 
 import com.farcr.nomansland.common.block.TortoiseEggBlock;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
@@ -34,7 +34,7 @@ public class TortoiseLayEggGoal extends Goal {
             this.tortoise.stopInPlace();
             if (this.tortoise.getLayEggCounter() > this.adjustedTickDelay(100)) {
                 Level level = this.tortoise.level();
-                level.playSound(null, this.tortoise.blockPosition(), SoundEvents.TURTLE_LAY_EGG, SoundSource.BLOCKS, 0.3F, 0.9F + level.random.nextFloat() * 0.2F);
+                level.playSound(null, this.tortoise.blockPosition(), NMLSounds.TORTOISE_LAY_EGG.get(), SoundSource.BLOCKS, 0.3F, 0.9F + level.random.nextFloat() * 0.2F);
                 BlockState blockstate = NMLBlocks.TORTOISE_EGGS.get()
                         .defaultBlockState()
                         .setValue(TortoiseEggBlock.EGGS, Integer.valueOf(this.tortoise.getRandom().nextInt(3) + 1));

@@ -1,5 +1,5 @@
 - Fixed flying mobs not being accepted as moonlight offerings
-- Changed warding effigies to repel all enemies of type `Enemy` and added `#nomansland:ward_repelled_blacklist`
+- Changed warding effigies to repel all entities of type `Enemy` and added `#nomansland:ward_repelled_blacklist`
 - Witch stew cauldrons will now extinguish and grant Nausea to entities inside
 - Witches can now eat out of witch stew cauldrons
 - Cake/Cobbler slices now drop when mined with a knife
@@ -10,3 +10,5 @@
 - Applied appropriate tags to many of our food and Farmer's Delight items for consistency and parity with other mods
 - Fixed mixin crash with serene seasons
 - Added the small quartzite bud to `#minecraft:inside_step_sound_blocks`
+- Many new translations
+- Added unique sound events for tortoises, bomb throwing/fusing, and armor (tortoise shell and ancient bronze mask)

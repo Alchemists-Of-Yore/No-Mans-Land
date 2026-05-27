@@ -2,9 +2,9 @@ package com.farcr.nomansland.common.item;
 
 
 import com.farcr.nomansland.common.entity.bombs.ThrowableBombEntity;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -55,7 +55,7 @@ public abstract class ThrowableBombItem extends Item implements ProjectileItem {
             level.addFreshEntity(bomb);
         }
 
-        level.playSound(entity instanceof Player player ? player : null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F));
+        level.playSound(entity instanceof Player player ? player : null, entity.getX(), entity.getY(), entity.getZ(), NMLSounds.BOMB_THROW.get(), SoundSource.PLAYERS, 1.0F, 1.0F / (level.random.nextFloat() * 0.4F + 1.2F));
         if (!(entity instanceof Player player) || !player.isCreative()) {
             stack.shrink(1);
         }

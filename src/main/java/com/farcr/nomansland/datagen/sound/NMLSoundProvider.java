@@ -128,6 +128,25 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.GOOSE_HURT, s -> s.with(allSounds("entity/goose/hurt", se -> se.volume(0.8f))));
         add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))).subtitle("subtitles.block.generic.footsteps"));
 
+        //Tortoise
+        add(NMLSounds.TORTOISE_AMBIENT, s -> s.with(sound("minecraft:entity.turtle.ambient_land", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_HURT, s -> s.with(sound("minecraft:entity.turtle.hurt", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_HURT_BABY, s -> s.with(sound("minecraft:entity.turtle.hurt_baby", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_DEATH, s -> s.with(sound("minecraft:entity.turtle.death", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_DEATH_BABY, s -> s.with(sound("minecraft:entity.turtle.death_baby", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_SWIM, s -> s.with(sound("minecraft:entity.turtle.swim", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_SHELL_DEFLECT, s -> s.with(sound("minecraft:item.shield.block", EVENT).pitch(0.2f)));
+        add(NMLSounds.TORTOISE_LAY_EGG, s -> s.with(sound("minecraft:entity.turtle.lay_egg", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_EAT, s -> s.with(sound("minecraft:entity.player.burp", EVENT).pitch(0.8f)));
+
+        //Explosives
+        add(NMLSounds.BOMB_THROW, s -> s.with(sound("minecraft:entity.splash_potion.throw", EVENT)));
+        add(NMLSounds.BOMB_FUSED, s -> s.with(sound("minecraft:entity.tnt.primed", EVENT)));
+
+        //Armor Equip (placeholder: vanilla equip sounds until unique audio lands)
+        add(NMLSounds.TORTOISE_ARMOR_EQUIP, s -> s.with(sound("minecraft:item.armor.equip_turtle", EVENT)));
+        add(NMLSounds.ANCIENT_BRONZE_MASK_EQUIP, s -> s.with(sound("minecraft:item.armor.equip_gold", EVENT)));
+
         //Player
         add(NMLSounds.PLAYER_DRINK_MILK, s -> s.with(allSounds("minecraft:mob/wandering_trader/drink_milk")));
         add(NMLSounds.PLAYER_HURT_SPIKE_TRAP, s -> s.subtitle(null).with(allSounds("entity/player/hurt_spike_trap")));

@@ -2,11 +2,11 @@ package com.farcr.nomansland.common.registry.items;
 
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -24,7 +24,7 @@ public class NMLArmorMaterials {
             ArmorItem.Type.CHESTPLATE,
             () -> NMLConfig.ARMOR_VALUE.get(),
             9,
-            SoundEvents.ARMOR_EQUIP_TURTLE,
+            NMLSounds.TORTOISE_ARMOR_EQUIP,
             () -> Ingredient.of(NMLItems.STURDY_SCUTE),
             "tortoise",
             () -> NMLConfig.ARMOR_TOUGHNESS_VALUE.get().floatValue(),
@@ -36,7 +36,7 @@ public class NMLArmorMaterials {
             ArmorItem.Type.HELMET,
             () -> 2,
             20,
-            SoundEvents.ARMOR_EQUIP_GOLD,
+            NMLSounds.ANCIENT_BRONZE_MASK_EQUIP,
             () -> Ingredient.EMPTY,
             "ancient_bronze_mask",
             () -> 0F,

@@ -1157,6 +1157,24 @@
     ],
     "subtitle": "nomansland.subtitle.entity.billhook_bass.hurt"
   },
+  "entity.bomb.fused": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.tnt.primed"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.bomb.fused"
+  },
+  "entity.bomb.throw": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.splash_potion.throw"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.bomb.throw"
+  },
   "entity.buddy.ambient": {
     "sounds": [
       {
@@ -1744,6 +1762,114 @@
       "nomansland:entity/player/hurt_spike_trap1",
       "nomansland:entity/player/hurt_spike_trap2"
     ]
+  },
+  "entity.tortoise.ambient": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.ambient_land",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.ambient"
+  },
+  "entity.tortoise.death": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.death",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.death"
+  },
+  "entity.tortoise.death_baby": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.death_baby",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.death_baby"
+  },
+  "entity.tortoise.eat": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.player.burp",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.eat"
+  },
+  "entity.tortoise.hurt": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.hurt",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.hurt"
+  },
+  "entity.tortoise.hurt_baby": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.hurt_baby",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.hurt_baby"
+  },
+  "entity.tortoise.lay_egg": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.lay_egg",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.lay_egg"
+  },
+  "entity.tortoise.shell_deflect": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.shield.block",
+        "pitch": 0.2
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.shell_deflect"
+  },
+  "entity.tortoise.swim": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.turtle.swim",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.tortoise.swim"
+  },
+  "item.armor.equip_ancient_bronze_mask": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.armor.equip_gold"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.item.armor.equip_ancient_bronze_mask"
+  },
+  "item.armor.equip_tortoise": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.armor.equip_turtle"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.item.armor.equip_tortoise"
   },
   "item.bandage.wrap": {
     "sounds": [
