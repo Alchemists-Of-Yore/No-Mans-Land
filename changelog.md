@@ -1,1 +1,2 @@
 - Fixed ore veins crashing with tectonic
+- Fixed constant log spam with pot generation

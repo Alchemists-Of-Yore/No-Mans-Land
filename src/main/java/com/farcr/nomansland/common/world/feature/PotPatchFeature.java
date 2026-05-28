@@ -83,6 +83,9 @@ public class PotPatchFeature extends Feature<PotPatchConfiguration> {
                 if (!level.setBlock(pos.above(), upperState, 3)) {
                     continue;
                 }
+                // The upper half has no block entity,
+                // but APPARENTLY WorldGenRegion#setBlock still writes a dummy placeholder for any hasBlockEntity() block
+                level.getChunk(pos.above()).removeBlockEntity(pos.above());
             }
 
             PotVariant finalVariant = variant;
