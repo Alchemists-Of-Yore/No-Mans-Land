@@ -1,2 +1,1 @@
-- Changed monster anchors to protect all entities of type `Enemy`
-- Fix crash when Farmer's Delight is not installed
+- Fixed ore veins crashing with tectonic

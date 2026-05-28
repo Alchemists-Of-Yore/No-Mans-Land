@@ -186,6 +186,7 @@ public class OreVeinSystem {
         }
         maxY = Math.min(maxY, maxHeight);
         minY = Math.max(minY, chunkMinY + 1);
+        if (minY > maxY) return;
 
         NormalNoise oreVeinA = randomState.getOrCreateNoise(Noises.ORE_VEIN_A),
                 oreVeinB = randomState.getOrCreateNoise(Noises.ORE_VEIN_B),
