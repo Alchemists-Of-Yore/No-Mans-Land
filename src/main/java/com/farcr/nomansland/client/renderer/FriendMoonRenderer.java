@@ -67,6 +67,25 @@ public class FriendMoonRenderer implements AutoCloseable {
     @Override
     public void close() {}
 
+    private int ticksSinceMoonUpdate = 0;
+    private static final int COOLDOWN_TICKS = 5;
+
+    public void tickClientState() {
+        if (Minecraft.getInstance().isPaused()) return;
+        if (++ticksSinceMoonUpdate <= COOLDOWN_TICKS) return;
+
+        float fadeSpeed = 1f / 25f;
+        friendMoonOpacity = Math.max(friendMoonOpacity - fadeSpeed, 0f);
+        friendMoonDarkneningOpacity = Mth.lerp(fadeSpeed, friendMoonDarkneningOpacity, 0f);
+        friendShadowOpacity = Mth.lerp(fadeSpeed, friendShadowOpacity, 0f);
+        friendShadowFaceOpacity = Mth.lerp(fadeSpeed, friendShadowFaceOpacity, 0f);
+        fogOpacity = Mth.lerp(fadeSpeed, fogOpacity, 0f);
+        if (friendMoonOpacity <= 0f) {
+            animationProgress = 0f;
+            badOmenWaitTime = 0f;
+        }
+    }
+
     public enum FriendMoonAnimation {
         TALKING(0, "talking", 1, 2),
         SURPRISED(1, "surprised", 1, 1),
@@ -317,6 +336,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         Minecraft mc = Minecraft.getInstance();
         if (mc.isPaused())
             return;
+        ticksSinceMoonUpdate = 0;
 
         LocalPlayer player = mc.player;
         boolean fadeOut = true;
