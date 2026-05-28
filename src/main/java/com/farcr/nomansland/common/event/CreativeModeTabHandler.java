@@ -509,7 +509,8 @@ public class CreativeModeTabHandler {
 
         if (tab == CreativeModeTabs.SPAWN_EGGS) {
             insertAfter(SPAWNER, MONSTER_ANCHOR);
-            insertAfter(CREEPER_SPAWN_EGG, MOOSE_SPAWN_EGG);
+            // TODO: moose
+//            insertAfter(CREEPER_SPAWN_EGG, MOOSE_SPAWN_EGG);
             insertAfter(CREEPER_SPAWN_EGG, DEER_SPAWN_EGG);
             insertAfter(BEE_SPAWN_EGG, BILLHOOK_BASS_SPAWN_EGG);
             insertAfter(CHICKEN_SPAWN_EGG, GOOSE_SPAWN_EGG);

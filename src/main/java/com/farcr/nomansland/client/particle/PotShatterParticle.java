@@ -27,6 +27,7 @@ public class PotShatterParticle extends TextureSheetParticle {
     private final float uo;
     private final float vo;
     private final boolean persistent;
+    private final boolean jumpy;
     private final BlockPos origin;
 
     PotShatterParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite, int persistTicks, BlockPos origin) {
@@ -43,12 +44,13 @@ public class PotShatterParticle extends TextureSheetParticle {
         this.uo = random.nextFloat() * 3.0F;
         this.vo = random.nextFloat() * 3.0F;
         this.persistent = persistTicks > 0;
+        this.jumpy = this.persistent && random.nextFloat() < 0.1F;
         this.origin = origin;
     }
 
     @Override
     public void move(double x, double y, double z) {
-        if (persistent) {
+        if (jumpy) {
             double d1 = y;
             if (this.hasPhysics && (x != 0 || y != 0 || z != 0)) {
                 Vec3 vec3 = Entity.collideBoundingBox(null, new Vec3(x, y, z), this.getBoundingBox(), this.level, List.of());
@@ -69,7 +71,7 @@ public class PotShatterParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        if (persistent && onGround && random.nextFloat() < 0.01F) {
+        if (jumpy && onGround && random.nextFloat() < 0.01F) {
             this.yd = 0.12 + random.nextDouble() * 0.08;
             this.xd += (random.nextDouble() - 0.5) * 0.03;
             this.zd += (random.nextDouble() - 0.5) * 0.03;

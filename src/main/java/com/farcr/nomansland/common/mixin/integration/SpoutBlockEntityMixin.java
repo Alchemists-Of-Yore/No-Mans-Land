@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.mixin.integration;
 
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import com.simibubi.create.content.fluids.spout.SpoutBlockEntity;
 import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@IfModLoaded("create")
+@IfModPresent("create")
 @Mixin(SpoutBlockEntity.class)
 public abstract class SpoutBlockEntityMixin {
 

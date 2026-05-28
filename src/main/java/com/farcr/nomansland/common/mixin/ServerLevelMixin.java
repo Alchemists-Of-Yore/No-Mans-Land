@@ -1,9 +1,9 @@
 package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.entity.buddy.BuddyChunkAnchor;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModAbsent;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.worldevent.SunDog;
-import com.moulberry.mixinconstraints.annotations.IfModAbsent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;

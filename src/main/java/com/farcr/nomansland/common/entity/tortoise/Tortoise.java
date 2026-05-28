@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.tortoise;
 
 import com.farcr.nomansland.common.entity.tortoise.ai.*;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -18,7 +19,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -205,7 +205,7 @@ public class Tortoise extends Animal {
                 }
                 this.usePlayerItem(player, hand, itemstack);
                 this.playSound(
-                        SoundEvents.PLAYER_BURP,
+                        NMLSounds.TORTOISE_EAT.get(),
                         0.5F + 0.5F * (float) this.random.nextInt(2),
                         (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F
                 );
@@ -238,24 +238,24 @@ public class Tortoise extends Animal {
     @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.TURTLE_AMBIENT_LAND;
+        return NMLSounds.TORTOISE_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getSwimSound() {
-        return SoundEvents.TURTLE_SWIM;
+        return NMLSounds.TORTOISE_SWIM.get();
     }
 
     @Override
     @Nullable
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return this.isBaby() ? SoundEvents.TURTLE_HURT_BABY : SoundEvents.TURTLE_HURT;
+        return this.isBaby() ? NMLSounds.TORTOISE_HURT_BABY.get() : NMLSounds.TORTOISE_HURT.get();
     }
 
     @Override
     @Nullable
     protected SoundEvent getDeathSound() {
-        return this.isBaby() ? SoundEvents.TURTLE_DEATH_BABY : SoundEvents.TURTLE_DEATH;
+        return this.isBaby() ? NMLSounds.TORTOISE_DEATH_BABY.get() : NMLSounds.TORTOISE_DEATH.get();
     }
 
     @Override
@@ -306,7 +306,7 @@ public class Tortoise extends Animal {
                     amount -= this.getMaxHealth();
                     this.playSound(this.getHurtSound(source));
                 } else {
-                    this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.2F);
+                    this.playSound(NMLSounds.TORTOISE_SHELL_DEFLECT.get(), 1.0F, 1.0F);
                     return false;
                 }
             }

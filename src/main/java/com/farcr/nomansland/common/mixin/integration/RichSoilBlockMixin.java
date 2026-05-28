@@ -1,8 +1,8 @@
 package com.farcr.nomansland.common.mixin.integration;
 
 import com.farcr.nomansland.common.integration.FDIntegration;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import vectorwing.farmersdelight.common.block.RichSoilBlock;
 
-@IfModLoaded("farmersdelight")
+@IfModPresent("farmersdelight")
 @Mixin(RichSoilBlock.class)
 public class RichSoilBlockMixin {
 

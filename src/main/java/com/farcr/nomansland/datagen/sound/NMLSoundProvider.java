@@ -36,6 +36,8 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.EARTHEN_TILES, "block/tiles/earthen");
         add(NMLSounds.DROSS_TILES, "block/tiles/dross", b -> b.modifySounds(se -> se.pitch(0.8f)));
         add(NMLSounds.SILTSTONE, "block/siltstone");
+        add(NMLSounds.QUARTZITE, "block/quartzite");
+        add(NMLSounds.QUARTZITE_CLUSTER, "block/quartzite/cluster", b -> b.setStepHitFallSoundPaths("block/quartzite"));
         add(NMLSounds.THATCH, "block/thatch", b -> b.setStepHitFallSoundPaths("minecraft:block/moss"));
 
         //Block Related
@@ -55,7 +57,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         );
 
         add(NMLSounds.TORCH_EXTINGUISH, s -> s.with(sound("minecraft:block.candle.extinguish", EVENT).pitch(0.85f).volume(1.75f)));
-        add(NMLSounds.TORCH_LIGHT_BY_FLINT_AND_STEEL, s -> s.with(allSounds("block/torch/light_by_flint_and_steel", se -> se.pitch(1.1f).volume(0.6f))));
+        add(NMLSounds.TORCH_LIGHT_BY_FLINT_AND_STEEL, s -> s.subtitle("nomansland.subtitle.block.torch.light").with(allSounds("block/torch/light_by_flint_and_steel", se -> se.pitch(1.1f).volume(0.6f))));
         add(NMLSounds.TORCH_LIGHT, s -> s.with(allSounds("block/torch/light", se -> se.pitch(1.1f).volume(0.6f))));
 
         add(NMLSounds.WITCH_STEW_CAULDRON_AMBIENT, s -> s.with(allSounds("block/witch_stew_cauldron/ambient", se -> se.pitch(0.8f))));
@@ -85,7 +87,6 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.HONEYCOMB_CONSUMED, s -> s.subtitle("nomansland.subtitle.item.generic.consumed").with(allSounds("minecraft:item/honeycomb/wax_on")));
         add(NMLSounds.RESIN_CONSUMED, s -> s.subtitle("nomansland.subtitle.item.generic.consumed").with(allSounds("minecraft:block/honeyblock/break")));
 
-        add(NMLSounds.BASS_AMBIENT, s -> s.with(sound("entity.salmon.ambient", EVENT)));
         add(NMLSounds.BASS_DEATH, s -> s.with(
                 allSounds("minecraft:entity/fish/hurt", se -> se.pitch(0.8f))
         ));
@@ -126,6 +127,25 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.GOOSE_DEATH, s -> s.with(allSounds("entity/goose/death")));
         add(NMLSounds.GOOSE_HURT, s -> s.with(allSounds("entity/goose/hurt", se -> se.volume(0.8f))));
         add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))).subtitle("subtitles.block.generic.footsteps"));
+
+        //Tortoise
+        add(NMLSounds.TORTOISE_AMBIENT, s -> s.with(sound("minecraft:entity.turtle.ambient_land", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_HURT, s -> s.with(sound("minecraft:entity.turtle.hurt", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_HURT_BABY, s -> s.with(sound("minecraft:entity.turtle.hurt_baby", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_DEATH, s -> s.with(sound("minecraft:entity.turtle.death", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_DEATH_BABY, s -> s.with(sound("minecraft:entity.turtle.death_baby", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_SWIM, s -> s.with(sound("minecraft:entity.turtle.swim", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_SHELL_DEFLECT, s -> s.with(sound("minecraft:item.shield.block", EVENT).pitch(0.2f)));
+        add(NMLSounds.TORTOISE_LAY_EGG, s -> s.with(sound("minecraft:entity.turtle.lay_egg", EVENT).pitch(0.8f)));
+        add(NMLSounds.TORTOISE_EAT, s -> s.with(sound("minecraft:entity.player.burp", EVENT).pitch(0.8f)));
+
+        //Explosives
+        add(NMLSounds.BOMB_THROW, s -> s.with(sound("minecraft:entity.splash_potion.throw", EVENT)));
+        add(NMLSounds.BOMB_FUSED, s -> s.with(sound("minecraft:entity.tnt.primed", EVENT)));
+
+        //Armor Equip (placeholder: vanilla equip sounds until unique audio lands)
+        add(NMLSounds.TORTOISE_ARMOR_EQUIP, s -> s.with(sound("minecraft:item.armor.equip_turtle", EVENT)));
+        add(NMLSounds.ANCIENT_BRONZE_MASK_EQUIP, s -> s.with(sound("minecraft:item.armor.equip_gold", EVENT)));
 
         //Player
         add(NMLSounds.PLAYER_DRINK_MILK, s -> s.with(allSounds("minecraft:mob/wandering_trader/drink_milk")));

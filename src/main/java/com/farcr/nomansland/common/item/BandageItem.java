@@ -44,7 +44,7 @@ public class BandageItem extends Item {
 
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player player, LivingEntity target, @NotNull InteractionHand hand) {
-        if (!target.isDeadOrDying() && target != player) {
+        if (!target.isDeadOrDying() && target != player && !player.getCooldowns().isOnCooldown(stack.getItem())) {
             TARGET_ENTITY.set(target);
             player.startUsingItem(hand);
             if (player instanceof ServerPlayer sp) PacketDistributor.sendToPlayersTrackingEntityAndSelf(sp, new ClientboundBandageSoundPacket(sp.getId()));

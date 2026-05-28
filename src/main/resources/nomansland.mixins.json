@@ -3,7 +3,7 @@
   "package": "com.farcr.nomansland.common.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "nomansland.refmap.json",
-  "plugin": "com.moulberry.mixinconstraints.ConstraintsMixinPlugin",
+  "plugin": "com.farcr.nomansland.common.mixin.plugin.NMLMixinPlugin",
   "mixins": [
     "AlterGroundDecoratorMixin",
     "BaseRailBlockMixin",
@@ -99,6 +99,7 @@
     "client.MusicManagerMixin",
     "client.ReceivingLevelScreenMixin",
     "client.RenderBuffersMixin",
+    "client.RenderTargetMixin",
     "client.SkinManagerMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",

@@ -34,18 +34,18 @@ config="${mod_id}.mixins.json"
     side="BOTH"
 
 [[dependencies."${mod_id}"]]
-    modId="biolith"
+    modId="mixed_litter"
     type="required"
-    reason="Required for world generation"
-    versionRange="${bt_version_range}"
+    reason="Required for mob variants"
+    versionRange="${mixed_litter_range}"
     ordering="AFTER"
     side="BOTH"
 
 [[dependencies."${mod_id}"]]
-    modId="mixed_litter"
+    modId="biolith"
     type="required"
-    reason="Required for mob variants"
-    versionRange="${ml_version_range}"
+    reason="Required for world generation"
+    versionRange="${biolith_range}"
     ordering="AFTER"
     side="BOTH"
 
@@ -71,6 +71,18 @@ config="${mod_id}.mixins.json"
 
 [[dependencies."${mod_id}"]]
     modId="blockbox"
+    type="optional"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId="nirvana"
+    type="optional"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId="boatload"
     type="optional"
     ordering="AFTER"
     side="BOTH"

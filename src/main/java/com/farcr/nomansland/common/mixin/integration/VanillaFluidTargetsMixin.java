@@ -1,9 +1,9 @@
 package com.farcr.nomansland.common.mixin.integration;
 
 import com.farcr.nomansland.common.integration.Mods;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.farcr.nomansland.common.registry.NMLFluids;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
 import com.simibubi.create.content.fluids.pipes.VanillaFluidTargets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.farcr.nomansland.common.block.cauldrons.FourLayeredCauldronBlock.LEVEL;
 
-@IfModLoaded("create")
+@IfModPresent("create")
 @Mixin(VanillaFluidTargets.class)
 public class VanillaFluidTargetsMixin {
 

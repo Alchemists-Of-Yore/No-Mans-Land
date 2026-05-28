@@ -183,8 +183,9 @@ public class NMLItems {
     public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
 
-    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
-            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 5323048, 2694937, new Properties()));
+    // TODO: moose
+//    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",
+//            () -> new DeferredSpawnEggItem(NMLEntities.MOOSE, 5323048, 2694937, new Properties()));
 
     public static final ItemDefinition<Item> BUDDY_SPAWN_EGG = register("buddy_spawn_egg",
         () -> new DeferredSpawnEggItem(NMLEntities.BUDDY, 9252139, 4798761, new Properties()));
