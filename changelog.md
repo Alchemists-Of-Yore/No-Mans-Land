@@ -2,3 +2,4 @@
 - Fixed constant log spam with pot generation
 - Fixed darkness sometimes persisting after communion
 - Reduced the width of large living pots so they can fit through 1 block gaps
+- Changed the way dreams validate with clients

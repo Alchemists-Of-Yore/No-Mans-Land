@@ -71,8 +71,7 @@ public record ClientboundDimensionSyncPacket(
                         this is an important note to leave in case anyone is having compatibility issues / respawn crashes
                     */
                 }
-                PacketDistributor.sendToServer(
-                    new ServerboundDreamAcknowledgePacket());
+                PacketDistributor.sendToServer(new ServerboundDreamAcknowledgePacket());
             });
         }
     }

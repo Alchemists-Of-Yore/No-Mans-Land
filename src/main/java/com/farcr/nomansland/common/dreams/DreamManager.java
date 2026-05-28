@@ -108,7 +108,7 @@ public class DreamManager extends SavedData {
 
     public boolean transferSleep(ServerPlayer player, DreamType dreamType) {
         DreamServerLevel dreamLevel = DreamLevelHandler.getDreamLevel(player.server, dreamType, player);
-        if (DreamLevelHandler.playerIsUpdated(player)) {
+        if (DreamLevelHandler.getInstance().playerIsUpdated(player)) {
             dreamLevel.regenerateDreamInstance();
 
             // summon fake player
