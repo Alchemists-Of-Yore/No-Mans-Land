@@ -76,10 +76,18 @@ public class AncestralGlintRenderType {
         MultiBufferSource bufferSource, VertexConsumer originalConsumer
     ) {
         if (itemContext != null) {
+            // TODO: this only works with the player sword
+            /*
+            * Quick aside, it's because glints have to be registered
+            * and currently theres only one active item glint with 1 alpha
+            * I will probably also have to sync the animations with packets to
+            * other clients but I will worry about that when the functionality is done
+            * just PLEASE dont forget to do that
+            */
             if (IClientItemExtensions.of(itemContext) instanceof AncestralOathSwordClientExtensions extensions
-            && (extensions.glintAnimateTime > 0) && Minecraft.getInstance().player != null
+            && Minecraft.getInstance().player != null && (extensions.getGlintOpacity(itemContext, Minecraft.getInstance().player) > 0.0f)
             && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).equals(itemContext)) {
-                ITEM_GLINT_VISIBILITY_CONTEXT = (extensions.glintAnimateTime / AncestralOathSwordClientExtensions.MAX_GLINT_ANIMATE);
+                ITEM_GLINT_VISIBILITY_CONTEXT = extensions.getGlintOpacity(itemContext, Minecraft.getInstance().player);
                 return VertexMultiConsumer.create(
                     bufferSource.getBuffer(
                         DEFAULT_ANCESTRAL_GLINT

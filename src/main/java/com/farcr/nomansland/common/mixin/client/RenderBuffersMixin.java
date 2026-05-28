@@ -23,12 +23,4 @@ public class RenderBuffersMixin {
         AncestralGlintRenderType.addGlint(mapBuildersIn);
         MoonlightGlowRenderType.addGlint(mapBuildersIn);
     }
-
-//    @Inject(method = "put", at = @At("HEAD"))
-//    private static void addCustomGlints(
-//        Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> mapBuildersIn,
-//        RenderType renderTypeIn, CallbackInfo callbackInfo
-//    ) {
-//        MoonlightGlowRenderType.addGlints(mapBuildersIn);
-//    }
 }

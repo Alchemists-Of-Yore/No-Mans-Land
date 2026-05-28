@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.item;
 
-import com.farcr.nomansland.common.networking.ServerboundRitualPickRequestPacket;
+import com.farcr.nomansland.common.networking.alchemist_tools.ServerboundRitualPickRequestPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
