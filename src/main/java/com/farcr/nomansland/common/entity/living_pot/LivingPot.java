@@ -186,9 +186,9 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
             AABB bounds = variant.shape().bounds();
             float width = (float) Math.max(bounds.getXsize(), bounds.getZsize());
             float height = (float) bounds.getYsize() + LEG_HEIGHT;
-            return EntityDimensions.fixed(width, height);
+            return EntityDimensions.fixed(width - 0.05F, height);
         }
-        if (isLarge()) return EntityDimensions.fixed(1.0F, 1.5625F + LEG_HEIGHT);
+        if (isLarge()) return EntityDimensions.fixed(0.95F, 1.5625F + LEG_HEIGHT);
         return EntityDimensions.fixed(0.75F, 1.0F + LEG_HEIGHT);
     }
 
