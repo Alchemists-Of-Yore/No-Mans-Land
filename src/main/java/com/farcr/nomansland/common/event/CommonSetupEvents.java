@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.commands.DreamCommand;
+import com.farcr.nomansland.common.commands.MeetingPointCommand;
 import com.farcr.nomansland.common.commands.SunDogCommand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
@@ -339,6 +340,7 @@ public class CommonSetupEvents {
     public static void registerListeners(RegisterCommandsEvent event) {
         DreamCommand.register(event.getDispatcher(), event.getBuildContext());
         SunDogCommand.register(event.getDispatcher());
+        MeetingPointCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
