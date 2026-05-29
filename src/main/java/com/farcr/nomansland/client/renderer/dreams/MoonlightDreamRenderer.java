@@ -47,6 +47,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         Matrix4f frustumMatrix,
         Matrix4f projectionMatrix
     ) {
+        if (GRADIENT_SHADER == null || DREAM_SKY_SHADER == null) return false;
         RenderSystem.depthMask(false);
         poseStack.mulPose(frustumMatrix);
         poseStack.pushPose();
@@ -168,6 +169,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     public void renderDream(
         PoseStack poseStack, Matrix4f projectionMatrix, float partialTicks
     ) {
+        if (DREAM_SKY_SHADER == null) return;
         poseStack.pushPose();
         poseStack.scale(100f, 100f, 100f);
 

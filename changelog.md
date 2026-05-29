@@ -4,3 +4,4 @@
 - Fixed Cosmic Body not occluding stars
 - Updated to Mixed Litter 1.2.0
 - In addition to Silk Touch, breaking a living pot with a brush will now also not wake them up
+- Custom shaders are now disabled with unsupported graphics. Shaders can still be forced on with the `-Dnomansland.customShaders=true` jvm flag, at your own risk.

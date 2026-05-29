@@ -655,7 +655,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         float t = (float) (1f - Math.exp(deltaTime * -.2f));
         fogOpacity = Mth.lerp(t, fogOpacity, (enabledFog ? (0.5f + (getFriendMoonOpacity() / 2f)) : 0));
 
-        if (fogOpacity > 0.01f) {
+        if (fogOpacity > 0.01f && MoonlightDreamRenderer.GRADIENT_SHADER != null) {
             poseStack.pushPose();
             // Render Sky Fog prior to skybox as well
             float divider = 1 / 24f;

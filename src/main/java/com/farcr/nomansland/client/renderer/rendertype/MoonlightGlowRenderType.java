@@ -69,6 +69,10 @@ public class MoonlightGlowRenderType {
     }
 
     public static boolean shouldRenderGlow() {
+        if (MOONLIGHT_GLOW_SHADER == null) {
+            itemContext = null;
+            return false;
+        }
         if (itemContext != null) {
             boolean validItem = (FriendMoonRenderer.getInstance().getFriendMoonOpacity() > 0)
                 && itemCanBeOffered(itemContext.getItem());

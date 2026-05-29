@@ -40,6 +40,7 @@ public class SunDogRenderer implements AutoCloseable {
     public SunDogRenderer() {}
 
     public void render(PoseStack poseStack, Matrix4f projectionMatrix, float partialTick) {
+        if (SUN_DOG_SHADER == null) return;
         if (Minecraft.getInstance().level == null) return;
         float time = Minecraft.getInstance().level.getTimeOfDay(partialTick);
         float brightness = 0.4F;
