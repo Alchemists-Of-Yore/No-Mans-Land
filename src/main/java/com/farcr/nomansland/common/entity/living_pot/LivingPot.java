@@ -7,7 +7,6 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -23,7 +22,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.damagesource.DamageSource;
@@ -330,24 +328,14 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
             spawnShatterParticles(isLarge() ? 12 : 3, isLarge() ? 0.3 : 0.15);
             Entity attacker = source.getEntity();
             if (attacker instanceof Player player && player.canBeSeenAsEnemy()) {
-                startPersistentAngerTimer();
-                setPersistentAngerTarget(player.getUUID());
-                if (!player.isInvisible()) {
-                    setTarget(player);
-                } else {
-                    setLastKnownTargetPos(player.position());
-                }
+                angerAt(player);
                 for (LivingPot other : level().getEntitiesOfClass(LivingPot.class, getBoundingBox().inflate(20),
                         p -> p != this && p.isAlive())) {
                     if (!other.isAngryAt(player)) {
                         other.startPersistentAngerTimer();
                         other.setPersistentAngerTarget(player.getUUID());
                     }
-                    if (!player.isInvisible()) {
-                        other.setTarget(player);
-                    } else {
-                        other.setLastKnownTargetPos(player.position());
-                    }
+                    other.aimAt(player);
                 }
                 if (isSmall() && hasWokenLargePot) {
                     hasWokenLargePot = false;
@@ -470,11 +458,9 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
 
     private void unpackPotionTable() {
         if (potionTableId != null && level() != null && !level().isClientSide) {
-            Registry<PotionTable> registry = level().registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
-            PotionTable table = registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, potionTableId)).orElse(null);
-            if (table != null) {
-                RandomSource random = potionTableSeed != 0L ? RandomSource.create(potionTableSeed) : level().getRandom();
-                storedPotion = table.select(random);
+            PotionContents resolved = PotionTable.resolve(level(), potionTableId, potionTableSeed);
+            if (resolved != null) {
+                storedPotion = resolved;
             }
             potionTableId = null;
         }
@@ -902,4 +888,18 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
 
     @Override
     public void startPersistentAngerTimer() { setRemainingPersistentAngerTime(PERSISTENT_ANGER_TIME.sample(random)); }
+
+    public void angerAt(Player player) {
+        startPersistentAngerTimer();
+        setPersistentAngerTarget(player.getUUID());
+        aimAt(player);
+    }
+
+    private void aimAt(Player player) {
+        if (!player.isInvisible()) {
+            setTarget(player);
+        } else {
+            setLastKnownTargetPos(player.position());
+        }
+    }
 }

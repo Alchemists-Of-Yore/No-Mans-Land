@@ -1,9 +1,15 @@
 package com.farcr.nomansland.common.block.pots;
 
+import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -29,5 +35,15 @@ public record PotionTable(List<WeightedPotion> potions) {
             if (roll < 0) return entry.potion();
         }
         return potions.getLast().potion();
+    }
+
+    @Nullable
+    public static PotionContents resolve(Level level, @Nullable ResourceLocation tableId, long seed) {
+        if (tableId == null) return null;
+        Registry<PotionTable> registry = level.registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
+        PotionTable table = registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, tableId)).orElse(null);
+        if (table == null) return null;
+        RandomSource random = seed != 0L ? RandomSource.create(seed) : level.getRandom();
+        return table.select(random);
     }
 }
