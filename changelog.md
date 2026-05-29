@@ -1,2 +1,3 @@
 - Fixed occasional crash with non-player block placement
 - Fixed occasional client crash with inverted bells
+- Made it possible to re-trigger the dream

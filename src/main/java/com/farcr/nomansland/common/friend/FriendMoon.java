@@ -534,6 +534,15 @@ public class FriendMoon extends SavedData {
 
     private boolean updatedShadow = false;
     private final HashMap<UUID, CosmicBodyState> cosmicBodyStateMap = new HashMap<>();
+    public boolean cosmicBodyExpiredForPlayer(Player player) {
+        return cosmicBodyStateMap.getOrDefault(player.getUUID(), new CosmicBodyState(player.getUUID(), 0)).exceedsDays();
+    }
+
+    public void resetCosmicBodyForPlayer(Player player) {
+        cosmicBodyStateMap.remove(player.getUUID());
+        setDirty();
+    }
+
     public void updateMeetingPointInformation(ServerLevel level) {
         if (isNightTime(level)) {
             if (!updatedShadow) {

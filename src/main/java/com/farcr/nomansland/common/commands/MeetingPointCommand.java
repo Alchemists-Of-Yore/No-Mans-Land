@@ -63,7 +63,7 @@ public class MeetingPointCommand {
     }
 
     private static void refreshClients(ServerLevel level) {
-        FriendMoon friendMoon = FriendMoon.getOrDefault(level);
+        FriendMoon friendMoon = FriendMoon.getOrDefault(level.getServer().overworld());
         level.players().forEach(friendMoon::playerSendShadowPacket);
     }
 }

@@ -5,6 +5,7 @@ import com.farcr.nomansland.common.block.MoonCarvingBlock;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.DreamStorage;
 import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.networking.ClientboundZoomEffectPacket;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import com.farcr.nomansland.common.registry.NMLDreamTypes;
@@ -49,9 +50,11 @@ public class MoonCarvingBlockEntity extends BlockEntity {
 
     private final Map<Player, Integer> playerStareMap = new HashMap<>();
     private boolean playerMeetsCondition(ServerPlayer player) {
+        FriendMoon friendMoon = FriendMoon.getOrDefault(player.getServer().overworld());
         DreamStorage storage = DreamManager.getOrDefault(player.getServer()).getPlayerStorage(player);
         return (storage.getTimeRemainingForDream(MOONLIGHT_DREAM_TYPE) <= 0)
-            && (!storage.getHasExperiencedDream(MOONLIGHT_DREAM_TYPE));
+            && (!storage.getHasExperiencedDream(MOONLIGHT_DREAM_TYPE))
+            || friendMoon.cosmicBodyExpiredForPlayer(player);
     }
 
     private boolean hitIsPartOfFormation(BlockPos hit, BlockPos center, BlockState state) {
@@ -105,12 +108,15 @@ public class MoonCarvingBlockEntity extends BlockEntity {
                     && blockEntity.blockStateMeetsConditions(cast, pos, state)) {
                         map.put(player, map.getOrDefault(player, 0) + 1);
                         if (map.get(player) > STARE_AT_TICKS) {
-                            DreamManager.getOrDefault(player.getServer())
-                                .getPlayerStorage((ServerPlayer) player)
-                                .setTimeRemainingForDream(
-                                    MOONLIGHT_DREAM_TYPE,
-                                    DREAM_TIME
-                                );
+                            DreamStorage dreamStorage = DreamManager.getOrDefault(player.getServer())
+                                .getPlayerStorage((ServerPlayer) player);
+                            FriendMoon.getOrDefault(level.getServer().overworld())
+                                .resetCosmicBodyForPlayer(player);
+                            dreamStorage.removeInformationAboutDream(MOONLIGHT_DREAM_TYPE);
+                            dreamStorage.setTimeRemainingForDream(
+                                MOONLIGHT_DREAM_TYPE,
+                                DREAM_TIME
+                            );
                             level.playSound(
                                 null, pos,
                                 NMLSounds.MOON_CARVING_ACTIVATE.get(),
