@@ -29,6 +29,7 @@ public class NMLTags {
     public static final TagKey<Block> INCORRECT_FOR_RITUAL_TOOL = createBlockTag("incorrect_for_ritual_tool");
     public static final TagKey<Block> RESONATES_WITH_RITUAL_PICKAXE = createBlockTag("resonates_with_ritual_pickaxe");
     public static final TagKey<Block> OCCLUDES_RITUAL_PICKAXE_RESONANCE = createBlockTag("occludes_ritual_pickaxe_resonance");
+    public static final TagKey<EntityType<?>> MALEVOLENT_ENTITIES = createEntityTag("malevolent");
 
     public static final TagKey<Block> ORE_VEIN_REPLACEABLE = createBlockTag("ore_vein_replaceable");
     public static final TagKey<Block> MUSHROOM_BLOCKS = createBlockTag("mushroom_blocks");

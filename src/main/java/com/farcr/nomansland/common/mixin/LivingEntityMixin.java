@@ -5,6 +5,7 @@ import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -17,6 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -134,11 +136,6 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
             if (nml$getVisualTickMultiplier() <= 0f) ci.cancel();
         } else if (this.hasData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER))
             nml$setVisualTickMultiplier(1f);
-    }
-
-    @Inject(method = "hurt", at = @At("HEAD"))
-    private void nml$removeStasis(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (nml$Self.hasEffect(NMLEffects.STASIS)) nml$Self.removeEffect(NMLEffects.STASIS);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))

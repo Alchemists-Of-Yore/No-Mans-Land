@@ -6,6 +6,7 @@ import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
+import com.farcr.nomansland.common.effect.StasisEffect;
 import com.farcr.nomansland.common.entity.ai.WitchBowlStewGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
@@ -39,6 +40,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -56,6 +58,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -78,6 +81,7 @@ import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
@@ -99,6 +103,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
@@ -370,9 +375,22 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     private static void mobTrackedEffectAdded(MobEffectEvent.Added event) {
         if (event.getEntity() instanceof LivingEntity livingEntity
-            && TRACKED_EFFECTS.contains(event.getEffectInstance().getEffect())) {
-            ((ServerLevel) livingEntity.level()).getChunkSource().broadcast(livingEntity,
+            && livingEntity.level() instanceof ServerLevel serverLevel
+            && TRACKED_EFFECTS.contains(event.getEffectInstance().getEffect())
+        ) {
+            serverLevel.getChunkSource().broadcast(livingEntity,
                 new ClientboundUpdateMobEffectPacket(livingEntity.getId(), event.getEffectInstance(), true));
+        }
+    }
+
+    @SubscribeEvent
+    private static void mobTrackedEffectRemoved(MobEffectEvent.Remove event) {
+        if (event.getEntity() instanceof LivingEntity livingEntity
+            && livingEntity.level() instanceof ServerLevel serverLevel
+            && TRACKED_EFFECTS.contains(event.getEffectInstance().getEffect())
+        ) {
+            serverLevel.getChunkSource().broadcast(livingEntity,
+                new ClientboundRemoveMobEffectPacket(livingEntity.getId(), event.getEffect()));
         }
     }
 
@@ -708,5 +726,45 @@ public class MiscellaneousEvents {
     public static void onAttack(AttackEntityEvent event) {
         if (event.getEntity().getItemInHand(InteractionHand.MAIN_HAND).is(NMLItems.ANCESTRAL_OATH_SWORD))
             event.setCanceled(!AncestralOathSwordItem.canHurtUnderOath(event.getTarget()));
+    }
+
+    @SubscribeEvent
+    public static void onLivingBlockEvent(LivingShieldBlockEvent event) {
+        LivingEntity livingEntity = event.getEntity();
+        if (!livingEntity.getUseItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) return;
+        event.setBlocked(false);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncomingDamageStasis(LivingIncomingDamageEvent event) {
+        LivingEntity livingEntity = event.getEntity();
+        if (livingEntity.getUseItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
+            ((AncestralOathSwordItem) livingEntity.getUseItem().getItem())
+                .handleBlockingEvent(event, livingEntity.getUseItem());
+        }
+        if (livingEntity.hasEffect(NMLEffects.STASIS)) {
+            if (Objects.requireNonNull(livingEntity.getEffect(NMLEffects.STASIS)).getAmplifier() >= 1) {
+                event.setCanceled(true);
+                return;
+            }
+            if (NMLEffects.STASIS.get() instanceof StasisEffect effect
+            && effect.immuneToDamage(event.getSource(), event.getEntity().level())) {
+                event.setCanceled(true);
+                return;
+            }
+            livingEntity.removeEffect(NMLEffects.STASIS);
+            if (event.getSource().getWeaponItem() != null && event.getSource().getWeaponItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
+                livingEntity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 300));
+                event.setInvulnerabilityTicks(0);
+                event.setAmount(0.0f);
+                return;
+            }
+            livingEntity.addEffect(
+                new MobEffectInstance(
+                    MobEffects.MOVEMENT_SLOWDOWN, 60, 2,
+                    true, false, false
+                )
+            );
+        }
     }
 }
