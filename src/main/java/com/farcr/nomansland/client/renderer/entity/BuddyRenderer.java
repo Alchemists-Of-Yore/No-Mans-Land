@@ -42,7 +42,7 @@ public class BuddyRenderer extends HumanoidMobRenderer<Buddy, BuddyModel<Buddy>>
 
     @Override
     protected RenderType getRenderType(Buddy buddy, boolean bodyVisible, boolean translucent, boolean glowing) {
-        if (buddy.isAscending()) return RenderType.itemEntityTranslucentCull(VariantUtil.resolveTexture(buddy, getTextureLocation(buddy)));
+        if (buddy.isAscending()) return RenderType.itemEntityTranslucentCull(VariantUtil.resolveTexture(buddy, getTextureLocation(buddy), false));
         return super.getRenderType(buddy, bodyVisible, translucent, glowing);
     }
 

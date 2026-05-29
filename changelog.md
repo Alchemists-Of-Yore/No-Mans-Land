@@ -2,3 +2,4 @@
 - Inverted Bells can now be manually paired across dimensions
 - Fixed maps gifted from the Frienderman being empty
 - Fixed Cosmic Body not occluding stars
+- Updated to Mixed Litter 1.2.0
