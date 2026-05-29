@@ -15,8 +15,7 @@ public class BlockItemMixin {
     // word of the day: Impede
     @Inject(method = "place", at = @At("HEAD"), cancellable = true)
     private void nml$impedePlacement(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
-        assert context.getPlayer() != null;
-        if (context.getPlayer().isLocalPlayer() && ClientDreamRenderer.getInstance().dreamShouldRender())
+        if ((context.getPlayer() != null && context.getPlayer().isLocalPlayer()) && ClientDreamRenderer.getInstance().dreamShouldRender())
             cir.setReturnValue(InteractionResult.FAIL);
     }
 }
