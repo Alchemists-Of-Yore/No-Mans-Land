@@ -30,16 +30,6 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
     float speed = 1 / 40f;
 
-    private DreamAmbientSoundInstance ambientSound;
-
-    @Override
-    public void tick() {
-        if (ambientSound == null) {
-            ambientSound = new DreamAmbientSoundInstance();
-            Minecraft.getInstance().getSoundManager().play(ambientSound);
-        }
-    }
-
     public boolean render(
         LevelRenderer levelRenderer,
         PoseStack poseStack,
@@ -47,6 +37,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
         Matrix4f frustumMatrix,
         Matrix4f projectionMatrix
     ) {
+        if (GRADIENT_SHADER == null || DREAM_SKY_SHADER == null) return false;
         RenderSystem.depthMask(false);
         poseStack.mulPose(frustumMatrix);
         poseStack.pushPose();
@@ -168,6 +159,7 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
     public void renderDream(
         PoseStack poseStack, Matrix4f projectionMatrix, float partialTicks
     ) {
+        if (DREAM_SKY_SHADER == null) return;
         poseStack.pushPose();
         poseStack.scale(100f, 100f, 100f);
 

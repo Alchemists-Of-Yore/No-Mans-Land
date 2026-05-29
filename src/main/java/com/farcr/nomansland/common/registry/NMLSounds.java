@@ -21,6 +21,8 @@ public class NMLSounds {
     public static final DeferredSoundType EARTHEN_TILES = registerSoundType("earthen_tiles", 1, 1.25f);
     public static final DeferredSoundType DROSS_TILES = registerSoundType("dross_tiles", 1, 1f);
     public static final DeferredSoundType SILTSTONE = registerSoundType("siltstone", 1, 1f);
+    public static final DeferredSoundType QUARTZITE = registerSoundType("quartzite", 1, 1f);
+    public static final DeferredSoundType QUARTZITE_CLUSTER = registerSoundType("quartzite_cluster", 1, 1f);
     public static final DeferredSoundType THATCH = registerSoundType("thatch", 1, 1f);
 
     //Block-Related
@@ -65,7 +67,6 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> STICKY_CAULDRON_SLIDE = registerSound("entity.generic.sticky_cauldron_slide");
 
     //Bass
-    public static final DeferredHolder<SoundEvent, SoundEvent> BASS_AMBIENT = registerSound("entity.billhook_bass.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_DEATH = registerSound("entity.billhook_bass.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_FLOP = registerSound("entity.billhook_bass.flop");
     public static final DeferredHolder<SoundEvent, SoundEvent> BASS_HURT = registerSound("entity.billhook_bass.hurt");
@@ -99,6 +100,25 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_HURT = registerSound("entity.goose.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_STEP = registerSound("entity.goose.step");
 
+    //Tortoise
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_AMBIENT = registerSound("entity.tortoise.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_HURT = registerSound("entity.tortoise.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_HURT_BABY = registerSound("entity.tortoise.hurt_baby");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_DEATH = registerSound("entity.tortoise.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_DEATH_BABY = registerSound("entity.tortoise.death_baby");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_SWIM = registerSound("entity.tortoise.swim");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_SHELL_DEFLECT = registerSound("entity.tortoise.shell_deflect");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_LAY_EGG = registerSound("entity.tortoise.lay_egg");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_EAT = registerSound("entity.tortoise.eat");
+
+    //Explosives
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_THROW = registerSound("entity.bomb.throw");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_FUSED = registerSound("entity.bomb.fused");
+
+    //Armor Equip
+    public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_ARMOR_EQUIP = registerSound("item.armor.equip_tortoise");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANCIENT_BRONZE_MASK_EQUIP = registerSound("item.armor.equip_ancient_bronze_mask");
+
     //Player
     public static final DeferredHolder<SoundEvent, SoundEvent> PLAYER_DRINK_MILK = registerSound("entity.player.drink_milk");
     public static final DeferredHolder<SoundEvent, SoundEvent> PLAYER_HURT_SPIKE_TRAP = registerSound("entity.player.hurt_spike_trap");
@@ -125,6 +145,7 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_MUSIC = registerSound("music.overworld.caves");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_DEPTH_MUSIC = registerSound("music.overworld.cave_depths");
     public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHROOMANIAC_TARNISHED = registerSound("music.shroomaniac_tarnished");
 
     //Misc
     public static final DeferredHolder<SoundEvent, SoundEvent> DROPLET_FALLS = registerSound("particle.droplet.fall");

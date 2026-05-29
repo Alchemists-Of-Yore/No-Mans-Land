@@ -1,0 +1,105 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:stallion_strips",
+      "required": false
+    },
+    {
+      "id": "nomansland:stallion_strip",
+      "required": false
+    },
+    {
+      "id": "nomansland:pot_of_witch_stew",
+      "required": false
+    },
+    {
+      "id": "nomansland:fruit_cake",
+      "required": false
+    },
+    {
+      "id": "nomansland:fruit_cake_slice",
+      "required": false
+    },
+    {
+      "id": "nomansland:pear_cobbler",
+      "required": false
+    },
+    {
+      "id": "nomansland:pear_cobbler_slice",
+      "required": false
+    },
+    {
+      "id": "nomansland:sweet_tart",
+      "required": false
+    },
+    {
+      "id": "nomansland:maple_tart",
+      "required": false
+    },
+    {
+      "id": "nomansland:hardtack",
+      "required": false
+    },
+    {
+      "id": "nomansland:pesto_bottle",
+      "required": false
+    },
+    {
+      "id": "nomansland:maple_syrup_bottle",
+      "required": false
+    },
+    {
+      "id": "nomansland:cooked_billhook_bass",
+      "required": false
+    },
+    {
+      "id": "nomansland:salmon_and_pesto_gnocchi",
+      "required": false
+    },
+    {
+      "id": "nomansland:seared_venison",
+      "required": false
+    },
+    {
+      "id": "nomansland:witch_stew",
+      "required": false
+    },
+    {
+      "id": "nomansland:pasta_with_pesto",
+      "required": false
+    },
+    {
+      "id": "nomansland:mashed_potatoes_with_mushrooms",
+      "required": false
+    },
+    {
+      "id": "nomansland:pancake",
+      "required": false
+    },
+    {
+      "id": "nomansland:honeyed_apple",
+      "required": false
+    },
+    {
+      "id": "nomansland:syruped_pear",
+      "required": false
+    },
+    {
+      "id": "nomansland:pine_nuts",
+      "required": false
+    },
+    {
+      "id": "nomansland:walnuts",
+      "required": false
+    },
+    {
+      "id": "nomansland:trail_mix",
+      "required": false
+    },
+    {
+      "id": "nomansland:pear",
+      "required": false
+    }
+  ]
+}

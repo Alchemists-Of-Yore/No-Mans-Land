@@ -31,7 +31,7 @@ public record ServerboundDreamAcknowledgePacket() implements CustomPacketPayload
     public void handleData(IPayloadContext context) {
         if (context.flow().isServerbound()) {
             context.enqueueWork(() -> {
-                DreamLevelHandler.dirtyClients.remove((ServerPlayer) context.player());
+                DreamLevelHandler.getInstance().playerHasReceivedPacket(context.player());
             });
         }
     }

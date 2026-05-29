@@ -71,7 +71,7 @@ void main() {
         yIntensity *= abs(adjustedPosition.y);
     }
 
-    float i;
+    float i = 0.0;
     float stepSize = 0.1;
     vec3 position = vec3(0., adjustedPosition.y, 0.);
 

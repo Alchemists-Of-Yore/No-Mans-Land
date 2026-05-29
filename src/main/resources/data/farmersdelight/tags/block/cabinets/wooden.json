@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "nomansland:maple_cabinet",
+      "required": false
+    },
+    {
+      "id": "nomansland:pine_cabinet",
+      "required": false
+    },
+    {
+      "id": "nomansland:walnut_cabinet",
+      "required": false
+    },
+    {
+      "id": "nomansland:willow_cabinet",
+      "required": false
+    }
+  ]
+}

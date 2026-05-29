@@ -7,8 +7,10 @@ import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -144,10 +146,11 @@ public class InvertedBellBlock extends BaseEntityBlock {
     @Override
     public void setPlacedBy(final Level level, final BlockPos pos, final BlockState state, @Nullable final LivingEntity placer, final ItemStack stack) {
         placeBell(pos, state.getValue(HORIZONTAL_FACING), level);
-        if (!level.isClientSide) {
-            BlockPos target = stack.get(NMLDataComponents.INVERTED_BELL_TARGET.get());
+        if (!level.isClientSide && level.getServer() != null) {
+            GlobalPos target = stack.get(NMLDataComponents.INVERTED_BELL_TARGET.get());
             if (target != null && level.getBlockEntity(pos.above()) instanceof InvertedBellControllerBlockEntity ibbe) {
-                if (level.getBlockEntity(target) instanceof InvertedBellControllerBlockEntity ibbe2) {
+                ServerLevel targetLevel = level.getServer().getLevel(target.dimension());
+                if (targetLevel != null && targetLevel.getBlockEntity(target.pos()) instanceof InvertedBellControllerBlockEntity ibbe2) {
                     ibbe.link(ibbe2);
                     if (placer != null) {
                         placer.sendSystemMessage(Component.literal("Successfully linked bell"));
@@ -179,7 +182,7 @@ public class InvertedBellBlock extends BaseEntityBlock {
         if (NMLBlocks.INVERTED_BELL.asItem() == stack.getItem()) {
             InvertedBellControllerBlockEntity controller = getControllerBE(level, pos, state);
             if (controller != null) {
-                stack.set(NMLDataComponents.INVERTED_BELL_TARGET.get(), controller.getBlockPos());
+                stack.set(NMLDataComponents.INVERTED_BELL_TARGET.get(), GlobalPos.of(level.dimension(), controller.getBlockPos()));
                 return ItemInteractionResult.SUCCESS;
             }
         }

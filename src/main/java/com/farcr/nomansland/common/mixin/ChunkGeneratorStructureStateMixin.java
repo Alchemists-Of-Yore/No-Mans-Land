@@ -52,6 +52,9 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
     private CompletableFuture<ChunkPos> meetingPointPosition = null;
 
     @Unique
+    private ChunkPos nomansland$meetingPointOverride = null;
+
+    @Unique
     private ChunkGenerator nomansland$chunkGenerator = null;
 
     @Override
@@ -137,7 +140,15 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
 
     @Override
     public ChunkPos meetingPointPosition() {
+        if (nomansland$meetingPointOverride != null) {
+            return nomansland$meetingPointOverride;
+        }
         ensureStructuresGenerated();
         return meetingPointPosition == null ? null : meetingPointPosition.join();
+    }
+
+    @Override
+    public void nomansland$setMeetingPointPosition(ChunkPos pos) {
+        this.nomansland$meetingPointOverride = pos;
     }
 }

@@ -135,8 +135,9 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
 
         addToTags(NMLBlocks.CUT_VINE.get(), BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH, BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH);
         addToTags(NMLBlocks.SEASHELLS.get(), BlockTags.COMBINATION_STEP_SOUND_BLOCKS);
+        addToTags(NMLBlocks.SMALL_QUARTZITE_BUD.get(), BlockTags.INSIDE_STEP_SOUND_BLOCKS);
 
-        tag(NMLTags.ORE_VEIN_REPLACEABLE).add(Blocks.STONE, Blocks.DEEPSLATE);
+        tag(NMLTags.ORE_VEIN_REPLACEABLE).add(Blocks.STONE, Blocks.DEEPSLATE, Blocks.STONE_STAIRS, Blocks.STONE_SLAB);
         tag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.COAL_BLOCK, Blocks.RAW_GOLD_BLOCK, NMLBlocks.SILTSTONE.get(), NMLBlocks.QUARTZITE.get(), Blocks.TUFF, Blocks.COAL_ORE, Blocks.SMOOTH_BASALT, Blocks.BASALT);
     }
 

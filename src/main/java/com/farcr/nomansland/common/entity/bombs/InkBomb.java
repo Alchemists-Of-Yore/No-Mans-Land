@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.bombs;
 
 import com.farcr.nomansland.common.entity.InkCloud;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import net.minecraft.core.Direction;
@@ -154,6 +155,6 @@ public class InkBomb extends ThrowableBombEntity {
     @Override
     public void startFuse(int maxFuse) {
         super.startFuse(maxFuse);
-        level().playSound(null, getX(), getY(), getZ(), SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.0F);
+        level().playSound(null, getX(), getY(), getZ(), NMLSounds.BOMB_FUSED.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }

@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.DialogueLangLoader;
+import com.farcr.nomansland.client.GraphicsCompat;
 import com.farcr.nomansland.client.NMLArmorModels;
 import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
@@ -25,7 +26,6 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -111,7 +111,8 @@ public class ClientSetupEvents {
 
         event.registerEntityRenderer(NMLEntities.DEER.get(), DeerRenderer::new);
         event.registerEntityRenderer(NMLEntities.GOOSE.get(), GooseRenderer::new);
-        event.registerEntityRenderer(NMLEntities.MOOSE.get(), MooseRenderer::new);
+        // TODO: moose
+//        event.registerEntityRenderer(NMLEntities.MOOSE.get(), MooseRenderer::new);
         event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
         event.registerEntityRenderer(NMLEntities.BUDDY.get(), BuddyRenderer::new);
         event.registerEntityRenderer(NMLEntities.FRIENDERMAN.get(), FriendermanRenderer::new);
@@ -232,54 +233,20 @@ public class ClientSetupEvents {
 
     @SubscribeEvent
     public static void registerShaders(final RegisterShadersEvent event) throws IOException {
-        event.registerShader(
-                new ShaderInstance(
-                        event.getResourceProvider(),
-                        NoMansLand.location("rendertype_moonlight"),
-                        DefaultVertexFormat.NEW_ENTITY
-                ),
-                shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
-        );
-        event.registerShader(
-                new ShaderInstance(
-                        event.getResourceProvider(),
-                        NoMansLand.location("rendertype_moonlight_glow"),
-                        DefaultVertexFormat.POSITION_TEX
-                ),
-                shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
-        );
-        event.registerShader(
-                new ShaderInstance(
-                        event.getResourceProvider(),
-                        NoMansLand.location("sun_dog"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                shader -> SunDogRenderer.SUN_DOG_SHADER = shader
-        );
-        event.registerShader(
-                new ShaderInstance(
-                        event.getResourceProvider(),
-                        NoMansLand.location("upper_atmosphere"),
-                        DefaultVertexFormat.POSITION_COLOR
-                ),
-                shader -> UpperAtmosphericRenderer.UPPER_ATMOSPHERE_SHADER = shader
-        );
-        event.registerShader(
-                new ShaderInstance(
-                        event.getResourceProvider(),
-                        NoMansLand.location("friend_moon_dream"),
-                        DefaultVertexFormat.POSITION_COLOR
-                ),
-                shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader
-        );
-        event.registerShader(
-            new ShaderInstance(
-                event.getResourceProvider(),
-                NoMansLand.location("dream_horizon_gradient"),
-                DefaultVertexFormat.POSITION_COLOR
-            ),
-            shader -> MoonlightDreamRenderer.GRADIENT_SHADER = shader
-        );
+        if (GraphicsCompat.customShadersSupported()) {
+            GraphicsCompat.tryRegister(event, "rendertype_moonlight", DefaultVertexFormat.NEW_ENTITY,
+                    shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader);
+            GraphicsCompat.tryRegister(event, "rendertype_moonlight_glow", DefaultVertexFormat.POSITION_TEX,
+                    shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader);
+            GraphicsCompat.tryRegister(event, "sun_dog", DefaultVertexFormat.POSITION_TEX_COLOR,
+                    shader -> SunDogRenderer.SUN_DOG_SHADER = shader);
+            GraphicsCompat.tryRegister(event, "upper_atmosphere", DefaultVertexFormat.POSITION_COLOR,
+                    shader -> UpperAtmosphericRenderer.UPPER_ATMOSPHERE_SHADER = shader);
+            GraphicsCompat.tryRegister(event, "friend_moon_dream", DefaultVertexFormat.POSITION_COLOR,
+                    shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader);
+            GraphicsCompat.tryRegister(event, "dream_horizon_gradient", DefaultVertexFormat.POSITION_COLOR,
+                    shader -> MoonlightDreamRenderer.GRADIENT_SHADER = shader);
+        }
         try {
             InvertedBellClientHandler.instance.postChain = new PostChain(
                     Minecraft.getInstance().getTextureManager(),

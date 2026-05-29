@@ -3,7 +3,7 @@
   "package": "com.farcr.nomansland.common.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "nomansland.refmap.json",
-  "plugin": "com.moulberry.mixinconstraints.ConstraintsMixinPlugin",
+  "plugin": "com.farcr.nomansland.common.mixin.plugin.NMLMixinPlugin",
   "mixins": [
     "AlterGroundDecoratorMixin",
     "BaseRailBlockMixin",
@@ -22,6 +22,7 @@
     "FlowerBlockMixin",
     "FrogMixin",
     "ItemEntityMixin",
+    "IWitchAccessor",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LevelChunkMixin",
@@ -56,6 +57,7 @@
     "VineBlockMixin",
     "WaterAvoidingRandomStrollGoalMixin",
     "WaterlilyBlockMixin",
+    "WitchMixin",
     "bell_sanctuary.JigsawPlacementMixin",
     "caves.DimensionBiomePlacementMixin",
     "caves.MultiNoiseBiomeSourceMixin",
@@ -96,10 +98,12 @@
     "client.MusicManagerMixin",
     "client.ReceivingLevelScreenMixin",
     "client.RenderBuffersMixin",
+    "client.RenderTargetMixin",
     "client.SkinManagerMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
-    "client.SoundInstanceMixin"
+    "client.SoundInstanceMixin",
+    "client.WitchModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

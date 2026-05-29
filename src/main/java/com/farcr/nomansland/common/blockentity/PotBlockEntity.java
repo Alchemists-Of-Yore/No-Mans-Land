@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -324,11 +323,9 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
 
     private void unpackPotionTable() {
         if (potionTableId != null && level != null && !level.isClientSide) {
-            Registry<PotionTable> registry = level.registryAccess().registryOrThrow(NMLRegistries.POTION_TABLE_KEY);
-            PotionTable table = registry.getOptional(ResourceKey.create(NMLRegistries.POTION_TABLE_KEY, potionTableId)).orElse(null);
-            if (table != null) {
-                RandomSource random = potionTableSeed != 0L ? RandomSource.create(potionTableSeed) : level.getRandom();
-                storedPotion = table.select(random);
+            PotionContents resolved = PotionTable.resolve(level, potionTableId, potionTableSeed);
+            if (resolved != null) {
+                storedPotion = resolved;
             }
             potionTableId = null;
             setChanged();
@@ -336,22 +333,15 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     }
 
     public void wakeUp(@Nullable LivingEntity disturber) {
-        if (level == null || level.isClientSide) return;
-        BlockPos pos = getBlockPos();
+        LivingPot pot = spawnLivingPot();
+        if (pot == null) return;
 
-        LivingPot pot = LivingPot.fromPot(this);
         if (disturber instanceof Player player && player.canBeSeenAsEnemy()) {
-            pot.startPersistentAngerTimer();
-            pot.setPersistentAngerTarget(player.getUUID());
-            if (!player.isInvisible()) {
-                pot.setTarget(player);
-            }
+            pot.angerAt(player);
         }
-        level.addFreshEntity(pot);
         pot.startWakeUp();
-        this.skipBreakEffects = true;
-        level.removeBlock(pos, false);
 
+        BlockPos pos = getBlockPos();
         level.playSound(null, pos, SoundEvents.DECORATED_POT_STEP, SoundSource.HOSTILE, 1.0F, 0.8F);
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(
@@ -362,13 +352,21 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     }
 
     public void wakeUpSilent() {
-        if (level == null || level.isClientSide) return;
-        BlockPos pos = getBlockPos();
+        spawnLivingPot();
+    }
 
+    /**
+     * Spawns the {@link LivingPot} entity for this pot, flags break effects to be skipped, and removes the block.
+     * Returns the spawned entity, or {@code null} on the client / when there is no level.
+     */
+    @Nullable
+    private LivingPot spawnLivingPot() {
+        if (level == null || level.isClientSide) return null;
         LivingPot pot = LivingPot.fromPot(this);
         level.addFreshEntity(pot);
         this.skipBreakEffects = true;
-        level.removeBlock(pos, false);
+        level.removeBlock(getBlockPos(), false);
+        return pot;
     }
 
     public float getFullness() {

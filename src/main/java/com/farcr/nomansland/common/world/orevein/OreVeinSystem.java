@@ -186,6 +186,7 @@ public class OreVeinSystem {
         }
         maxY = Math.min(maxY, maxHeight);
         minY = Math.max(minY, chunkMinY + 1);
+        if (minY > maxY) return;
 
         NormalNoise oreVeinA = randomState.getOrCreateNoise(Noises.ORE_VEIN_A),
                 oreVeinB = randomState.getOrCreateNoise(Noises.ORE_VEIN_B),
@@ -246,7 +247,7 @@ public class OreVeinSystem {
             pos.setY(y);
 
             BlockState currentState = chunkSection.getBlockState(localX, sectionY, localZ);
-            if (!currentState.canOcclude()) continue;
+            if (currentState.isAir()) continue;
 
             double veinANoise = oreVeinAField.retrieve(localX, localY, localZ),
                    veinBNoise = oreVeinBField.retrieve(localX, localY, localZ),
@@ -270,9 +271,9 @@ public class OreVeinSystem {
                 if (veinGapNoise > -0.3F &&
                         fillRandom.nextFloat() <= veinType.core().probability() &&
                         -veinRidgeNoise >= fillRandom.triangle(veinRadius * 0.5, veinType.core().incoherence() * 0.5F)) {
-                    chunkSection.setBlockState(localX, sectionY, localZ, veinType.core().resolve(fillRandom, pos), false);
+                    chunkSection.setBlockState(localX, sectionY, localZ, veinType.core().resolve(fillRandom, pos, currentState), false);
                 } else {
-                    chunkSection.setBlockState(localX, sectionY, localZ, veinType.filler().resolve(fillRandom, pos), false);
+                    chunkSection.setBlockState(localX, sectionY, localZ, veinType.filler().resolve(fillRandom, pos, currentState), false);
                 }
             }
         }

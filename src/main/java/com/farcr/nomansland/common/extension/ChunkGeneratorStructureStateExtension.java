@@ -12,6 +12,9 @@ public interface ChunkGeneratorStructureStateExtension {
         throw new NotImplementedException();
     }
 
+    default void nomansland$setMeetingPointPosition(@Nullable ChunkPos pos) {
+    }
+
     default @Nullable ChunkGenerator nomansland$chunkGenerator() {
         return null;
     }

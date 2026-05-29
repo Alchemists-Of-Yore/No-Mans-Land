@@ -110,9 +110,13 @@ public class DreamLevelHandler implements AutoCloseable {
         ));
     }
 
-    public static final List<ServerPlayer> dirtyClients = new ArrayList<>();
-    public static boolean playerIsUpdated(ServerPlayer player) {
-        return !dirtyClients.contains(player);
+    public final List<UUID> dirtyClients = new ArrayList<>();
+    public boolean playerIsUpdated(ServerPlayer player) {
+        return !dirtyClients.contains(player.getUUID());
+    }
+
+    public void playerHasReceivedPacket(Player player) {
+        dirtyClients.remove(player.getUUID());
     }
 
     public static DreamServerLevel getDreamLevel(MinecraftServer server, DreamType dreamType, ServerPlayer serverPlayer) {
@@ -157,7 +161,7 @@ public class DreamLevelHandler implements AutoCloseable {
             // REMEMBER to tell players what the new dimension set is
             PacketDistributor.sendToAllPlayers(
                 new ClientboundDimensionSyncPacket(server.levelKeys()));
-            dirtyClients.addAll(server.getPlayerList().getPlayers());
+            getInstance().dirtyClients.addAll(server.getPlayerList().getPlayers().stream().map(Player::getUUID).toList());
         }
         return (DreamServerLevel) levelList.get(dreamKey);
     }

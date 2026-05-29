@@ -280,6 +280,7 @@ public class Frienderman extends EnderMan {
 
         LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(GIFT_LOOT_TABLE);
         LootParams params = new LootParams.Builder(serverLevel)
+                .withParameter(LootContextParams.ORIGIN, position())
                 .withParameter(LootContextParams.THIS_ENTITY, this)
                 .create(LootContextParamSets.PIGLIN_BARTER);
 

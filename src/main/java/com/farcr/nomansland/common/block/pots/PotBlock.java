@@ -192,6 +192,10 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
+        if (stack.is(Items.BRUSH)) {
+            return tryInsert(stack, serverLevel, pos, player, pot, ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION);
+        }
+
         if (pot.hasModifier(PotModifier.TRAPPED)) {
             startSignal(level, pos);
         }
@@ -206,15 +210,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             double spawnY = pos.getY() + (size == PotSize.LARGE ? 2 : 1);
             DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(pos);
             for (int i = 0; i < amount; i++) {
-                Silverfish silverfish = EntityType.SILVERFISH.create(level);
-                if (silverfish != null) {
-                    silverfish.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
-                    EventHooks.finalizeMobSpawn(silverfish, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
-                    silverfish.skipDropExperience();
-                    ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
-                    level.addFreshEntity(silverfish);
-                    silverfish.spawnAnim();
-                }
+                spawnPotSilverfish(serverLevel, pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, difficulty);
             }
             pot.removeModifier(PotModifier.INFESTED);
         }
@@ -224,15 +220,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             double spawnY = pos.getY() + (size == PotSize.LARGE ? 2 : 1);
             DifficultyInstance difficulty = serverLevel.getCurrentDifficultyAt(pos);
             for (int i = 0; i < amount; i++) {
-                Slime slime = EntityType.SLIME.create(level);
-                if (slime != null) {
-                    slime.moveTo(pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 0);
-                    EventHooks.finalizeMobSpawn(slime, serverLevel, difficulty, MobSpawnType.TRIGGERED, null);
-                    slime.setSize(1, true);
-                    slime.skipDropExperience();
-                    ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
-                    level.addFreshEntity(slime);
-                }
+                spawnPotSlime(serverLevel, pos.getX() + 0.5, spawnY, pos.getZ() + 0.5, 0, 1, difficulty);
             }
             pot.removeModifier(PotModifier.OOZING);
         }
@@ -272,23 +260,20 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             return ItemInteractionResult.SUCCESS;
         }
 
-        boolean inserted = pot.insert(stack.copyWithCount(1));
-        if (!inserted) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return tryInsert(stack, serverLevel, pos, player, pot, ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+    }
+
+    private ItemInteractionResult tryInsert(ItemStack stack, ServerLevel level, BlockPos pos, Player player, PotBlockEntity pot, ItemInteractionResult onFailure) {
+        if (!pot.insert(stack.copyWithCount(1))) {
+            return onFailure;
         }
-
         pot.wobble(DecoratedPotBlockEntity.WobbleStyle.POSITIVE);
-
         player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
         stack.shrink(1);
-
         level.playSound(null, pos, SoundEvents.DECORATED_POT_INSERT, SoundSource.BLOCKS, 1, 0.7F + 0.5F * pot.getFullness());
-
-        serverLevel.sendParticles(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 7, 0, 0, 0, 0);
-
+        level.sendParticles(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 7, 0, 0, 0, 0);
         pot.setChanged();
         level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-
         return ItemInteractionResult.SUCCESS;
     }
 
@@ -406,15 +391,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         if (modifiers.contains(PotModifier.INFESTED)) {
             int count = random.nextInt(2, 4);
             for (int i = 0; i < count; i++) {
-                Silverfish silverfish = EntityType.SILVERFISH.create(level);
-                if (silverfish != null) {
-                    silverfish.moveTo(x + (random.nextDouble() - 0.5) * 0.5, y, z + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
-                    EventHooks.finalizeMobSpawn(silverfish, level, difficulty, MobSpawnType.TRIGGERED, null);
-                    silverfish.skipDropExperience();
-                    ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
-                    level.addFreshEntity(silverfish);
-                    silverfish.spawnAnim();
-                }
+                spawnPotSilverfish(level, x + (random.nextDouble() - 0.5) * 0.5, y, z + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, difficulty);
             }
             modifiers.remove(PotModifier.INFESTED);
         }
@@ -422,15 +399,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         if (modifiers.contains(PotModifier.OOZING)) {
             int count = random.nextInt(2, 4);
             for (int i = 0; i < count; i++) {
-                Slime slime = EntityType.SLIME.create(level);
-                if (slime != null) {
-                    slime.moveTo(x + (random.nextDouble() - 0.5) * 0.5, y, z + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, 0);
-                    EventHooks.finalizeMobSpawn(slime, level, difficulty, MobSpawnType.TRIGGERED, null);
-                    slime.setSize(random.nextInt(1, 3), true);
-                    slime.skipDropExperience();
-                    ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
-                    level.addFreshEntity(slime);
-                }
+                spawnPotSlime(level, x + (random.nextDouble() - 0.5) * 0.5, y, z + (random.nextDouble() - 0.5) * 0.5, random.nextFloat() * 360, random.nextInt(1, 3), difficulty);
             }
             modifiers.remove(PotModifier.OOZING);
         }
@@ -451,6 +420,30 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                         x, y + (isLarge ? 0.8 : 0.5), z,
                         isLarge ? 135 : 67, isLarge ? 0.4 : 0.25, 0.3, isLarge ? 0.4 : 0.25, 0.1);
             }
+        }
+    }
+
+    private static void spawnPotSilverfish(ServerLevel level, double x, double y, double z, float yRot, DifficultyInstance difficulty) {
+        Silverfish silverfish = EntityType.SILVERFISH.create(level);
+        if (silverfish != null) {
+            silverfish.moveTo(x, y, z, yRot, 0);
+            EventHooks.finalizeMobSpawn(silverfish, level, difficulty, MobSpawnType.TRIGGERED, null);
+            silverfish.skipDropExperience();
+            ((LivingEntityExtension) silverfish).nml$skipDroppingDeathLoot();
+            level.addFreshEntity(silverfish);
+            silverfish.spawnAnim();
+        }
+    }
+
+    private static void spawnPotSlime(ServerLevel level, double x, double y, double z, float yRot, int slimeSize, DifficultyInstance difficulty) {
+        Slime slime = EntityType.SLIME.create(level);
+        if (slime != null) {
+            slime.moveTo(x, y, z, yRot, 0);
+            EventHooks.finalizeMobSpawn(slime, level, difficulty, MobSpawnType.TRIGGERED, null);
+            slime.setSize(slimeSize, true);
+            slime.skipDropExperience();
+            ((LivingEntityExtension) slime).nml$skipDroppingDeathLoot();
+            level.addFreshEntity(slime);
         }
     }
 
@@ -517,7 +510,8 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 debug.handleLeftClick(level, pos, player);
                 return;
             }
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving() && !hasSilkTouch(player, level)) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()
+                    && !hasSilkTouch(held, level) && !held.is(Items.BRUSH)) {
                 pot.wakeUp(player);
             }
         }

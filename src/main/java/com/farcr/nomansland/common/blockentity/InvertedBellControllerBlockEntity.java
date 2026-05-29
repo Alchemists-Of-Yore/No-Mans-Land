@@ -13,7 +13,10 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.util.RandomSource;
@@ -44,6 +47,8 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
     public @Nullable BlockPos targetBell;
     public @Nullable Direction targetDir;
+    // dimension of the paired bell; null is treated as this bell's own dimension (legacy/same-dimension pairs)
+    public @Nullable ResourceKey<Level> targetDimension;
 
     public int ringCooldown = 0;
 
@@ -76,7 +81,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (this.getLevel() instanceof final ServerLevel serverLevel) {
             InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
                     this.getBlockPos(), this.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
-                    this.targetBell, this.targetDir
+                    this.targetBell, this.targetDir, this.targetDimension
             );
             this.ringCooldown = COOLDOWN;
         } else {
@@ -87,11 +92,16 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     public void link(final InvertedBellControllerBlockEntity other) {
         this.targetBell = other.getBlockPos();
         this.targetDir = other.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        this.targetDimension = other.getLevel().dimension();
         this.state = PositionState.BLOCK_POS;
 
         other.targetBell = this.getBlockPos();
         other.targetDir = this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        other.targetDimension = this.getLevel().dimension();
         other.state = PositionState.BLOCK_POS;
+
+        this.setChanged();
+        other.setChanged();
     }
 
     @Override
@@ -206,6 +216,9 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                 tag.putInt("targetY", this.targetBell.getY());
                 tag.putInt("targetZ", this.targetBell.getZ());
                 tag.putInt("targetOrientation", this.targetDir.get2DDataValue());
+                if (this.targetDimension != null) {
+                    tag.putString("targetDimension", this.targetDimension.location().toString());
+                }
             }
         }
     }
@@ -231,6 +244,9 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                         tag.getInt("targetZ")
                 );
                 this.targetDir = Direction.from2DDataValue(tag.getInt("targetOrientation"));
+                this.targetDimension = tag.contains("targetDimension")
+                        ? ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("targetDimension")))
+                        : null;
             }
         }
     }

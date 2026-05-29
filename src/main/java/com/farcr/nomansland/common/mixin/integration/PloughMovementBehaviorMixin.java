@@ -1,6 +1,6 @@
 package com.farcr.nomansland.common.mixin.integration;
 
-import com.moulberry.mixinconstraints.annotations.IfModLoaded;
+import com.farcr.nomansland.common.mixin.plugin.annotation.IfModPresent;
 import com.simibubi.create.content.contraptions.actors.plough.PloughMovementBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@IfModLoaded("create")
+@IfModPresent("create")
 @Mixin(PloughMovementBehaviour.class)
 public class PloughMovementBehaviorMixin {
 

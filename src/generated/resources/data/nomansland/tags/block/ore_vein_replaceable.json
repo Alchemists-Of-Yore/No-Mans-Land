@@ -1,6 +1,8 @@
 {
   "values": [
     "minecraft:stone",
-    "minecraft:deepslate"
+    "minecraft:deepslate",
+    "minecraft:stone_stairs",
+    "minecraft:stone_slab"
   ]
 }

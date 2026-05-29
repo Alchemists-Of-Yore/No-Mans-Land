@@ -33,8 +33,10 @@ public class MoonlightRayParticle extends SingleQuadParticle
             Minecraft minecraft = Minecraft.getInstance();
             shaderTime += minecraft.getTimer().getGameTimeDeltaTicks() / 1000.0f;
 
-            RenderSystem.setShader(() -> MOONLIGHT_RENDER_SHADER);
-            MOONLIGHT_RENDER_SHADER.safeGetUniform("ElapsedTime").set(shaderTime);
+            if (MOONLIGHT_RENDER_SHADER != null) {
+                RenderSystem.setShader(() -> MOONLIGHT_RENDER_SHADER);
+                MOONLIGHT_RENDER_SHADER.safeGetUniform("ElapsedTime").set(shaderTime);
+            }
             RenderSystem.depthMask(false);
 //			RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.enableBlend();
@@ -66,6 +68,13 @@ public class MoonlightRayParticle extends SingleQuadParticle
     @Override
     public void tick()
     {
+        // Shader is null when custom shaders are disabled for this GPU (see GraphicsCompat);
+        // these particles can't render without it, so drop them.
+        if (MOONLIGHT_RENDER_SHADER == null)
+        {
+            this.remove();
+            return;
+        }
         if (this.age++ >= this.lifetime)
         {
             this.remove();
@@ -76,6 +85,7 @@ public class MoonlightRayParticle extends SingleQuadParticle
     @Override
     public void render(VertexConsumer buffer, Camera camera, float partialTicks)
     {
+        if (MOONLIGHT_RENDER_SHADER == null) return;
         Minecraft minecraft = Minecraft.getInstance();
         Vector3f camPos = camera.getPosition().toVector3f();
         Vector3f rayToCam = new Vector3f();
