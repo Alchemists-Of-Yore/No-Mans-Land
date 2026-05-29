@@ -2,3 +2,4 @@
 - Fixed occasional client crash with inverted bells
 - Made it possible to re-trigger the dream
 - Updated to Mixed Litter 1.2.1
+- Added the sun painting to the list of survival-obtainable paintings
