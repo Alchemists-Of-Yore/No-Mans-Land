@@ -171,22 +171,23 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
 
         //Music
         add(NMLSounds.CAVE_MUSIC, s -> s.subtitle(null).with(
-                sound("minecraft:music/game/deeper").stream().volume(0.4f),
-                sound("minecraft:music/game/oxygene").stream(),
-                sound("minecraft:music/game/key").stream(),
-                sound("minecraft:music/game/an_ordinary_day").stream().volume(0.4f),
-                sound("minecraft:music/game/minecraft").stream(),
-                sound("minecraft:music/game/mice_on_venus").stream(),
-                sound("minecraft:music/game/dry_hands").stream(),
-                sound("minecraft:music/game/one_more_day").stream().volume(0.4f),
-                sound("minecraft:music/game/swamp/firebugs").stream().volume(0.4f),
-                sound("minecraft:music/game/floating_dream").stream().volume(0.4f),
-                sound("minecraft:music/game/watcher").stream().volume(0.4f),
-                sound("minecraft:music/game/puzzlebox").stream().volume(0.4f),
-                sound("minecraft:music/game/pokopoko").stream().volume(0.4f),
-                sound("minecraft:music/game/yakusoku").stream().volume(0.4f),
-                sound("minecraft:music/game/eld_unknown").stream().volume(0.4f),
-                sound("minecraft:music/game/endless").stream().volume(0.4f)
+                sound("minecraft:music/game/deeper").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/oxygene").stream().weight(10),
+                sound("minecraft:music/game/key").stream().weight(10),
+                sound("minecraft:music/game/an_ordinary_day").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/minecraft").stream().weight(10),
+                sound("minecraft:music/game/mice_on_venus").stream().weight(10),
+                sound("minecraft:music/game/dry_hands").stream().weight(10),
+                sound("minecraft:music/game/one_more_day").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/swamp/firebugs").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/floating_dream").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/watcher").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/puzzlebox").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/pokopoko").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/yakusoku").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/eld_unknown").stream().volume(0.4f).weight(10),
+                sound("minecraft:music/game/endless").stream().volume(0.4f).weight(10),
+                sound("music/shroomaniac_tarnished").stream().weight(1)
         ));
 
         add(NMLSounds.CAVE_DEPTH_MUSIC, s -> s.subtitle(null).with(
@@ -199,7 +200,20 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 sound("minecraft:music/game/endless").stream().volume(0.4f)
         ));
 
+        add(NMLSounds.ALCHEMIST_RUINS_MUSIC, s -> s.subtitle(null).with(
+                sound("minecraft:music/game/oxygene").stream(),
+                sound("minecraft:music/game/key").stream(),
+                sound("minecraft:music/game/minecraft").stream(),
+                sound("minecraft:music/game/mice_on_venus").stream(),
+                sound("minecraft:music/game/dry_hands").stream(),
+                sound("minecraft:music/game/yakusoku").stream().volume(0.4f),
+                sound("minecraft:music/game/endless").stream().volume(0.4f),
+                sound("music/shroomaniac_tarnished").stream().weight(2)
+        ));
+
         add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.subtitle(null).with(sound("records/guidance").stream()));
+
+        add(NMLSounds.SHROOMANIAC_TARNISHED, s -> s.subtitle(null).with(sound("music/shroomaniac_tarnished").stream()));
 
         //Misc
         add(NMLSounds.DROPLET_FALLS, s -> s.with(allSounds("minecraft:block/beehive/drip", se -> se.attenuationDistance(8).volume(0.3f))));

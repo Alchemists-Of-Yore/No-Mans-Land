@@ -30,16 +30,6 @@ public class MoonlightDreamRenderer implements IDreamRenderer {
 
     float speed = 1 / 40f;
 
-    private DreamAmbientSoundInstance ambientSound;
-
-    @Override
-    public void tick() {
-        if (ambientSound == null) {
-            ambientSound = new DreamAmbientSoundInstance();
-            Minecraft.getInstance().getSoundManager().play(ambientSound);
-        }
-    }
-
     public boolean render(
         LevelRenderer levelRenderer,
         PoseStack poseStack,

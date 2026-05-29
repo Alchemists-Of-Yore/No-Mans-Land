@@ -1905,6 +1905,44 @@
     ],
     "subtitle": "nomansland.subtitle.item.generic.consumed"
   },
+  "music.overworld.alchemist_ruins": {
+    "sounds": [
+      {
+        "name": "music/game/oxygene",
+        "stream": true
+      },
+      {
+        "name": "music/game/key",
+        "stream": true
+      },
+      {
+        "name": "music/game/minecraft",
+        "stream": true
+      },
+      {
+        "name": "music/game/mice_on_venus",
+        "stream": true
+      },
+      {
+        "name": "music/game/dry_hands",
+        "stream": true
+      },
+      {
+        "name": "music/game/yakusoku",
+        "stream": true,
+        "volume": 0.4
+      },
+      {
+        "name": "music/game/endless",
+        "stream": true,
+        "volume": 0.4
+      },
+      {
+        "name": "nomansland:music/shroomaniac_tarnished",
+        "stream": true
+      }
+    ]
+  },
   "music.overworld.cave_depths": {
     "sounds": [
       {
@@ -1944,77 +1982,105 @@
       {
         "name": "music/game/deeper",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/oxygene",
-        "stream": true
+        "stream": true,
+        "weight": 10
       },
       {
         "name": "music/game/key",
-        "stream": true
+        "stream": true,
+        "weight": 10
       },
       {
         "name": "music/game/an_ordinary_day",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/minecraft",
-        "stream": true
+        "stream": true,
+        "weight": 10
       },
       {
         "name": "music/game/mice_on_venus",
-        "stream": true
+        "stream": true,
+        "weight": 10
       },
       {
         "name": "music/game/dry_hands",
-        "stream": true
+        "stream": true,
+        "weight": 10
       },
       {
         "name": "music/game/one_more_day",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/swamp/firebugs",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/floating_dream",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/watcher",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/puzzlebox",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/pokopoko",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/yakusoku",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/eld_unknown",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
       },
       {
         "name": "music/game/endless",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 10
+      },
+      {
+        "name": "nomansland:music/shroomaniac_tarnished",
+        "stream": true
+      }
+    ]
+  },
+  "music.shroomaniac_tarnished": {
+    "sounds": [
+      {
+        "name": "nomansland:music/shroomaniac_tarnished",
+        "stream": true
       }
     ]
   },
