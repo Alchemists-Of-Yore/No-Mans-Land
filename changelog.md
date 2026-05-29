@@ -1,2 +1,3 @@
 - Added a meeting point override command (`/meetingpoint`)
 - Inverted Bells can now be manually paired across dimensions
+- Fixed maps gifted from the Frienderman being empty
