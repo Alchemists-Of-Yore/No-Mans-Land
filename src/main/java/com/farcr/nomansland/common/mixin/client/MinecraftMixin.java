@@ -2,6 +2,8 @@ package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.common.extension.SoundInstanceExtension;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.DeltaTracker;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.dreams.DreamManager;
@@ -49,5 +51,21 @@ public abstract class MinecraftMixin {
         if (renderer.clientIsDreaming() && renderer.dreamShouldRender()
         && ClientDreamRenderer.isBlacklistedScreen(guiScreen))
             ci.cancel();
+    }
+
+    @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
+    private void nml$skipBellDimensionScreen(Screen guiScreen, CallbackInfo ci) {
+        if (InvertedBellClientHandler.instance.isActive()
+                && (guiScreen instanceof ReceivingLevelScreen || guiScreen instanceof ProgressScreen)) {
+            ci.cancel();
+        }
+    }
+
+    @WrapOperation(method = "updateScreenAndTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;stop()V"))
+    private void nml$keepBellSoundThroughTransition(SoundManager soundManager, Operation<Void> original) {
+        if (InvertedBellClientHandler.instance.isActive()) {
+            return;
+        }
+        original.call(soundManager);
     }
 }
