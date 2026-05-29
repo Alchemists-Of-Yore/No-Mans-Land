@@ -544,15 +544,12 @@ public class FriendMoonRenderer implements AutoCloseable {
 
                 applyMultiplyBlendFunction();
 
-                enableStencil();
-
                 RenderSystem.colorMask(false, false, false, false);
                 renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN_2, compositeOpacity, 0, false);
                 RenderSystem.colorMask(true, true, true, true);
 
                 stencilHideState();
             }, true);
-            disableStencil();
 
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableCull();
