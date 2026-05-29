@@ -147,8 +147,10 @@ public class InvertedBellClientHandler {
         if (this.postChain != null && intensity > 0) {
             if (NMLConfig.INVERTED_BELL_BLUR.get()) {
                 PostChain blurChain = ((GameRendererInvoker) minecraft.gameRenderer).getBlurEffect();
-                blurChain.setUniform("Radius", blur);
-                blurChain.process(pt);
+                if (blurChain != null) {
+                    blurChain.setUniform("Radius", blur);
+                    blurChain.process(pt);
+                }
             }
             this.postChain.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
             this.postChain.setUniform("Fade", intensity);
