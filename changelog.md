@@ -5,4 +5,4 @@
 - Updated to Mixed Litter 1.2.0
 - In addition to Silk Touch, breaking a living pot with a brush will now also not wake them up
 - Custom shaders are now disabled with unsupported graphics. Shaders can still be forced on with the `-Dnomansland.customShaders=true` jvm flag, at your own risk.
-- Added new music for the moonlight dream and alchemist ruins
+- Added new music for the moonlight dream
