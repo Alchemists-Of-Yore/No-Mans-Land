@@ -3,3 +3,4 @@
 - Fixed maps gifted from the Frienderman being empty
 - Fixed Cosmic Body not occluding stars
 - Updated to Mixed Litter 1.2.0
+- In addition to Silk Touch, breaking a living pot with a brush will now also not wake them up

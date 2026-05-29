@@ -517,7 +517,8 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 debug.handleLeftClick(level, pos, player);
                 return;
             }
-            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving() && !hasSilkTouch(player, level)) {
+            if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.isLiving()
+                    && !hasSilkTouch(held, level) && !held.is(Items.BRUSH)) {
                 pot.wakeUp(player);
             }
         }
