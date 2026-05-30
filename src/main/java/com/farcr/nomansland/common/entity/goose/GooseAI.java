@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.entity.goose;
 
-import com.farcr.nomansland.common.entity.ai.LeapAtTargetBehavior;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -75,7 +74,9 @@ public class GooseAI {
                 ImmutableList.of(
                         new LookAtTargetSink(45, 90),
                         new MoveToTargetSink(),
-                        new GooseCoreBehavior()
+                        new GooseCoreBehavior(),
+                        new GooseCarryBehavior(),
+                        new GoosePeaceOfferingBehavior()
                 )
         );
     }
@@ -85,9 +86,13 @@ public class GooseAI {
                 Activity.IDLE,
                 ImmutableList.of(
                         Pair.of(0, new AnimalMakeLove(NMLEntities.GOOSE.get(), 1, 1)),
-                        Pair.of(1, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
-                        Pair.of(2, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
-                        Pair.of(3, new RunOne<>(
+                        Pair.of(1, BabyFollowAdult.create(UniformInt.of(5, 16), 1.25F)),
+                        Pair.of(2, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
+                        Pair.of(3, new GooseStealBehavior()),
+                        Pair.of(4, new GooseHonkAtBehavior()),
+                        Pair.of(5, new GooseSocializeBehavior()),
+                        Pair.of(6, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
+                        Pair.of(7, new RunOne<>(
                                 ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                 ImmutableList.of(
                                         Pair.of(RandomStroll.stroll(1.0F), 1),
@@ -103,10 +108,7 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.FIGHT,
                 ImmutableList.of(
-                        Pair.of(0, new LeapAtTargetBehavior(MemoryModuleType.ATTACK_TARGET)),
-                        Pair.of(1, MeleeAttack.create(15)),
-                        Pair.of(2, SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1.3F)),
-                        Pair.of(3, StopAttackingIfTargetInvalid.create())
+                        Pair.of(0, new GooseAttackBehavior())
                 ),
                 ImmutableSet.of(
                         Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT)
@@ -118,16 +120,17 @@ public class GooseAI {
         brain.addActivityWithConditions(
                 Activity.AVOID,
                 ImmutableList.of(
-                        Pair.of(0, SetWalkTargetAwayFrom.entity(MemoryModuleType.AVOID_TARGET, 1.3F, 8, true))
+                        Pair.of(0, new GooseThreatenBehavior())
                 ),
                 ImmutableSet.of(
-                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT),
-                        Pair.of(MemoryModuleType.AVOID_TARGET, MemoryStatus.VALUE_PRESENT)
+                        Pair.of(MemoryModuleType.AVOID_TARGET, MemoryStatus.VALUE_PRESENT),
+                        Pair.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT)
                 )
         );
     }
 
+    // Anything that wanders within a few blocks — a passing player or a lurking monster — earns a wary standoff.
     public static boolean isThreat(LivingEntity entity) {
-        return entity.canBeSeenAsEnemy() && (entity instanceof Monster || entity instanceof Player);
+        return (entity instanceof Monster || entity instanceof Player) && entity.canBeSeenAsEnemy();
     }
 }

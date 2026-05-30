@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.renderer.entity;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.NMLModelLayers;
+import com.farcr.nomansland.client.model.goose.GooseCarryLayer;
 import com.farcr.nomansland.client.model.goose.GooseModel;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 public class GooseRenderer extends MobRenderer<Goose, GooseModel<Goose>> {
     public GooseRenderer(EntityRendererProvider.Context context) {
         super(context, new GooseModel<>(context.bakeLayer(NMLModelLayers.GOOSE_LAYER)), 0.5F);
+        addLayer(new GooseCarryLayer(this, context.getItemInHandRenderer()));
     }
 
     @Override

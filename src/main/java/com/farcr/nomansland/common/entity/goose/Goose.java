@@ -11,6 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -43,18 +44,99 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.IntFunction;
 
 public class Goose extends Animal {
 
     private static final EntityDataAccessor<State> DATA_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
+    private static final EntityDataAccessor<ItemStack> DATA_CARRIED_ITEM = SynchedEntityData.defineId(Goose.class, EntityDataSerializers.ITEM_STACK);
     private int hurtAnimationTick = 0;
     public final AnimationState hurtingAnimationState = new AnimationState();
     public final AnimationState fallingAnimationState = new AnimationState();
     public final AnimationState intimidatingAnimationState = new AnimationState();
 
+    private static final double FLOCK_RADIUS = 12.0;
+    private static final int FLAP_DISPLAY_TICKS = 12;
+    private static final long ATTACK_TARGET_EXPIRY = 240L;
+
+    private final GooseGrudges grudges = new GooseGrudges();
+    @Nullable
+    private BlockPos aggressionAnchor;
+    private long attackReadyAt;
+    private int flapTicks;
+
     public Goose(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
+    }
+
+    public GooseGrudges getGrudges() {
+        return grudges;
+    }
+
+    @Nullable
+    public BlockPos getAggressionAnchor() {
+        return aggressionAnchor;
+    }
+
+    public void setAnchor(BlockPos pos) {
+        aggressionAnchor = pos;
+    }
+
+    public ItemStack getCarriedItem() {
+        return entityData.get(DATA_CARRIED_ITEM);
+    }
+
+    public void setCarriedItem(ItemStack stack) {
+        entityData.set(DATA_CARRIED_ITEM, stack);
+    }
+
+    public boolean isCarrying() {
+        return !getCarriedItem().isEmpty();
+    }
+
+    public void dropCarriedItem() {
+        ItemStack carried = getCarriedItem();
+        if (!carried.isEmpty()) {
+            if (!level().isClientSide) spawnAtLocation(carried);
+            setCarriedItem(ItemStack.EMPTY);
+        }
+    }
+
+    public boolean isAttackReady() {
+        return level().getGameTime() >= attackReadyAt;
+    }
+
+    public void setAttackCooldown(int ticks) {
+        attackReadyAt = level().getGameTime() + ticks;
+    }
+
+    public void flapBriefly() {
+        flapTicks = FLAP_DISPLAY_TICKS;
+    }
+
+    public List<Goose> nearbyGeese(double radius) {
+        return level().getEntitiesOfClass(Goose.class, getBoundingBox().inflate(radius), other -> other != this && other.isAlive());
+    }
+
+    public int flockConfidence() {
+        return nearbyGeese(FLOCK_RADIUS).size();
+    }
+
+    public void beginAttack(LivingEntity target) {
+        aggressionAnchor = blockPosition();
+        Brain<Goose> brain = getBrain();
+        brain.eraseMemory(MemoryModuleType.AVOID_TARGET);
+        brain.setMemoryWithExpiry(MemoryModuleType.ATTACK_TARGET, target, ATTACK_TARGET_EXPIRY);
+        setTarget(target);
+    }
+
+    public void rallyFlock(LivingEntity target) {
+        for (Goose ally : nearbyGeese(FLOCK_RADIUS)) {
+            if (ally.canFight() && ally.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
+                ally.beginAttack(target);
+            }
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -76,18 +158,33 @@ public class Goose extends Animal {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_STATE, State.IDLING);
         super.defineSynchedData(builder);
+        builder.define(DATA_STATE, State.IDLING);
+        builder.define(DATA_CARRIED_ITEM, ItemStack.EMPTY);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+        grudges.save(compound);
+        if (isCarrying()) {
+            compound.put("CarriedItem", getCarriedItem().save(registryAccess()));
+        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        grudges.load(compound);
+        setCarriedItem(compound.contains("CarriedItem")
+                ? ItemStack.parseOptional(registryAccess(), compound.getCompound("CarriedItem"))
+                : ItemStack.EMPTY);
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
+        dropCarriedItem();
     }
 
     @Override
@@ -101,7 +198,7 @@ public class Goose extends Animal {
 
         if (player != null) {
             getBrain().getMemory(MemoryModuleType.ANGRY_AT).ifPresent(angryAt -> {
-                if (angryAt == player.getUUID()) {
+                if (angryAt.equals(player.getUUID())) {
                     getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
                 }
             });
@@ -182,6 +279,7 @@ public class Goose extends Animal {
         return NMLSounds.GOOSE_DEATH.get();
     }
 
+    @Override
     protected void playStepSound(BlockPos pos, BlockState block) {
         playSound(NMLSounds.GOOSE_STEP.get(), 0.15F, 1);
     }
@@ -198,11 +296,24 @@ public class Goose extends Animal {
         getBrain().tick(level, this);
         level.getProfiler().pop();
 
-        level.getProfiler().push("gooseActivityUpdate");
         GooseAI.updateActivity(this);
-        level.getProfiler().pop();
+        updateState();
 
         super.customServerAiStep();
+    }
+
+    // Animation state is derived in one place so the behaviours never fight over it.
+    private void updateState() {
+        Brain<Goose> brain = getBrain();
+        if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+            setState(State.RUNNING);
+        } else if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) {
+            setState(canFight() ? State.INTIMIDATING : State.RUNNING);
+        } else if (flapTicks > 0) {
+            setState(State.INTIMIDATING);
+        } else {
+            setState(State.IDLING);
+        }
     }
 
     @Override
@@ -241,6 +352,8 @@ public class Goose extends Animal {
         if (hurtAnimationTick > 0) hurtAnimationTick--;
         else hurtingAnimationState.ifStarted(AnimationState::stop);
 
+        if (!level().isClientSide && flapTicks > 0) flapTicks--;
+
         floatGoose();
     }
 
@@ -271,11 +384,6 @@ public class Goose extends Animal {
         return new GoosePathNavigation(this, level);
     }
 
-    @Override
-    public PathNavigation getNavigation() {
-        return super.getNavigation();
-    }
-    
     public static class GoosePathNavigation extends GroundPathNavigation {
         GoosePathNavigation(Goose goose, Level level) {
             super(goose, level);

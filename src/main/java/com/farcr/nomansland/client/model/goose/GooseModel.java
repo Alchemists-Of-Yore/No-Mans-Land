@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.model.goose;
 
 import com.farcr.nomansland.common.entity.goose.Goose;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.AgeableHierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -133,5 +134,10 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
     @Override
     public ModelPart root() {
         return root;
+    }
+
+    public void translateToBill(PoseStack pose) {
+        body.translateAndRotate(pose);
+        head.translateAndRotate(pose);
     }
 }
