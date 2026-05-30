@@ -48,6 +48,12 @@ public class NMLConfig {
     public static final String CATEGORY_BANDAGE = "bandage";
     public static ModConfigSpec.IntValue BANDAGE_COOLDOWN;
     public static ModConfigSpec.DoubleValue BANDAGE_HEAL_AMOUNT;
+    public static final String CATEGORY_ANCIENT_BRONZE_MASK = "ancient_bronze_mask";
+    public static ModConfigSpec.IntValue ANCIENT_BRONZE_MASK_HEAL_INTERVAL;
+    public static ModConfigSpec.DoubleValue ANCIENT_BRONZE_MASK_HEAL_AMOUNT;
+    public static final String CATEGORY_WARDING_EFFIGY = "warding_effigy";
+    public static ModConfigSpec.IntValue WARDING_EFFIGY_BASE_RANGE;
+    public static ModConfigSpec.IntValue WARDING_EFFIGY_RANGE_PER_EFFIGY;
     public static final String CATEGORY_BULK_PLACEMENT = "bulk_placement";
     public static ModConfigSpec.IntValue MAX_LADDER_PLACEMENT_LENGTH;
     public static ModConfigSpec.IntValue MAX_RAIL_PLACMENT_LENGTH;
@@ -220,6 +226,25 @@ public class NMLConfig {
         BANDAGE_HEAL_AMOUNT = COMMON_BUILDER
                 .comment("The amount of health a bandage restores when applied. Healing is in hit points. 2 hit points make 1 heart.")
                 .defineInRange("bandageHealAmount", 4.0, 0, Integer.MAX_VALUE);
+        COMMON_BUILDER.pop();
+
+        COMMON_BUILDER.push(CATEGORY_ANCIENT_BRONZE_MASK);
+        COMMON_BUILDER.comment("Time is calculated in ticks. 20 ticks make 1 second. Healing is in hit points. 2 hit points make 1 heart.");
+        ANCIENT_BRONZE_MASK_HEAL_INTERVAL = COMMON_BUILDER
+                .comment("How often the Ancient Bronze Mask heals its wearer while worn on the head.")
+                .defineInRange("ancientBronzeMaskHealInterval", 200, 1, Integer.MAX_VALUE);
+        ANCIENT_BRONZE_MASK_HEAL_AMOUNT = COMMON_BUILDER
+                .comment("The amount of health the Ancient Bronze Mask restores each interval.")
+                .defineInRange("ancientBronzeMaskHealAmount", 1.0, 0, Integer.MAX_VALUE);
+        COMMON_BUILDER.pop();
+
+        COMMON_BUILDER.push(CATEGORY_WARDING_EFFIGY);
+        WARDING_EFFIGY_BASE_RANGE = COMMON_BUILDER
+                .comment("The warding range, in blocks, of a single Warding Effigy. Stacking additional effigies in the same block increases the range beyond this base value.")
+                .defineInRange("wardingEffigyBaseRange", 24, 0, Integer.MAX_VALUE);
+        WARDING_EFFIGY_RANGE_PER_EFFIGY = COMMON_BUILDER
+                .comment("How many extra blocks of warding range each additional Warding Effigy stacked in the same block adds. Diminishing returns still apply as more are stacked.")
+                .defineInRange("wardingEffigyRangePerEffigy", 20, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_BULK_PLACEMENT);

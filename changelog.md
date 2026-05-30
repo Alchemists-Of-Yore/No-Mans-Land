@@ -1,1 +1,3 @@
 - Added config options for bandages
+- Added config options for warding effigy range
+- Added config options for ancient bronze mask healing
