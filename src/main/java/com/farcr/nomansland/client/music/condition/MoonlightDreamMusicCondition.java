@@ -8,7 +8,7 @@ import net.minecraft.sounds.Music;
 import java.util.function.Supplier;
 
 public class MoonlightDreamMusicCondition extends MusicCondition {
-    private final static Music MOONLIGHT_DREAM_SONG = new Music(NMLSounds.SHROOMANIAC_TARNISHED, 0, 0, true);
+    private final static Music MOONLIGHT_DREAM_SONG = new Music(NMLSounds.MUSIC_TARNISHED, 0, 0, true);
 
     @Override
     public Music getMusic() {
