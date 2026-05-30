@@ -158,7 +158,8 @@ public class FogModifierHandler {
         float green = event.getGreen();
         float blue = event.getBlue();
         float undergroundFactor = 1 - AmbienceHandler.SURFACE_AMBIENCE_HANDLER.getAboveGroundFactor(partialTicks);
-        if (undergroundFactor > 0.001 && event.getCamera().getFluidInCamera() == FogType.NONE) {
+        if (undergroundFactor > 0.001 && event.getCamera().getFluidInCamera() == FogType.NONE
+                && !(Minecraft.getInstance().cameraEntity instanceof LivingEntity le && (le.hasEffect(MobEffects.BLINDNESS) || le.hasEffect(MobEffects.DARKNESS)))) {
             ClientLevel level = Minecraft.getInstance().level;
             BiomeManager biomemanager = level.getBiomeManager();
             Vec3 biomePos = event.getCamera().getPosition().subtract(2.0, 2.0, 2.0).scale(0.25);
