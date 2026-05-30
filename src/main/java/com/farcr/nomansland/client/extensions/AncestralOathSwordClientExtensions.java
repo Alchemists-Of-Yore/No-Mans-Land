@@ -33,7 +33,7 @@ public class AncestralOathSwordClientExtensions implements IClientItemExtensions
 
     Minecraft minecraft = Minecraft.getInstance();
     public static AccumulateZoomRenderer TRAIL_INSTANCE = new AccumulateZoomRenderer();
-    static TextureTarget renderTarget = new TextureTarget(100, 100, false, false);
+    static TextureTarget renderTarget = new TextureTarget(100, 100, true, false);
     public static RenderTarget getRenderTarget() { return renderTarget; }
 
     private void resetValues() {

@@ -72,6 +72,7 @@
   ],
   "client": [
     "client.AbstractSoundInstanceMixin",
+    "client.AnimationUtilsMixin",
     "client.BlockItemMixin",
     "client.BrewingStandScreenMixin",
     "client.CameraTypeMixin",
