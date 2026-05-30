@@ -2,3 +2,5 @@
 - Added config options for warding effigy range
 - Added config options for ancient bronze mask healing
 - Fixed inverted bells in sanctuaries not teleporting the player properly
+- Fixed new music pools not playing properly
+- Fixed darkness and blindness effect not working as intended underground
