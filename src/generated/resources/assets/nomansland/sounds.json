@@ -1905,37 +1905,82 @@
     ],
     "subtitle": "nomansland.subtitle.item.generic.consumed"
   },
+  "music.overworld.alchemist_ruins": {
+    "sounds": [
+      {
+        "name": "music/game/oxygene",
+        "stream": true,
+        "weight": 5
+      },
+      {
+        "name": "music/game/key",
+        "stream": true,
+        "weight": 5
+      },
+      {
+        "name": "music/game/minecraft",
+        "stream": true,
+        "weight": 3
+      },
+      {
+        "name": "music/game/mice_on_venus",
+        "stream": true,
+        "weight": 3
+      },
+      {
+        "name": "music/game/dry_hands",
+        "stream": true,
+        "weight": 3
+      },
+      {
+        "name": "nomansland:music/tarnished",
+        "stream": true,
+        "weight": 20
+      }
+    ]
+  },
   "music.overworld.cave_depths": {
     "sounds": [
       {
         "name": "music/game/oxygene",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/key",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/minecraft",
-        "stream": true
+        "stream": true,
+        "weight": 3
       },
       {
         "name": "music/game/mice_on_venus",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/dry_hands",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/yakusoku",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 3
       },
       {
         "name": "music/game/endless",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 3
+      },
+      {
+        "name": "nomansland:music/tarnished",
+        "stream": true
       }
     ]
   },
@@ -2018,10 +2063,10 @@
       }
     ]
   },
-  "music.shroomaniac_tarnished": {
+  "music.tarnished": {
     "sounds": [
       {
-        "name": "nomansland:music/shroomaniac_tarnished",
+        "name": "nomansland:music/tarnished",
         "stream": true,
         "volume": 0.1
       }
