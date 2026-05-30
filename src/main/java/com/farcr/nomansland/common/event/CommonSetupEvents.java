@@ -246,7 +246,6 @@ public class CommonSetupEvents {
     private static class AwkwardResidueDowngradeRecipe implements IBrewingRecipe {
         @Override
         public boolean isInput(@NotNull ItemStack stack) {
-            if (stack.is(NMLItems.BANDAGE)) return false;
             if (!stack.is(Items.POTION) && !stack.is(Items.SPLASH_POTION) && !stack.is(Items.LINGERING_POTION)) return false;
             PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
             return isUpgradedPotion(contents);
@@ -259,7 +258,7 @@ public class CommonSetupEvents {
 
         @Override
         public @NotNull ItemStack getOutput(@NotNull ItemStack input, @NotNull ItemStack ingredient) {
-            if (input.is(NMLItems.BANDAGE)) return ItemStack.EMPTY;
+            if (!isInput(input) || !isIngredient(ingredient)) return ItemStack.EMPTY;
             PotionContents potionContents = input.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
             Optional<Holder<Potion>> basePotion = getBasePotionFromUpgraded(potionContents);
             if (basePotion.isEmpty()) return ItemStack.EMPTY;

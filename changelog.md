@@ -4,3 +4,4 @@
 - Fixed inverted bells in sanctuaries not teleporting the player properly
 - Fixed new music pools not playing properly
 - Fixed darkness and blindness effect not working as intended underground
+- Fixed all potion ingredients downgrading potions, not just the awkward residue
