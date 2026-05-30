@@ -19,6 +19,9 @@ public class GooseCoreBehavior extends Behavior<Goose> {
     private static final long ACTIVE_ANGER_TICKS = 20L * 30;
     private static final double WITNESS_RADIUS = 12.0;
 
+    @Nullable
+    private UUID lastAlertedAttacker;
+
     public GooseCoreBehavior() {
         super(Map.of(), Integer.MAX_VALUE);
     }
@@ -40,6 +43,7 @@ public class GooseCoreBehavior extends Behavior<Goose> {
 
         if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) return;
         if (goose.isCarrying()) return;
+        if (goose.isStealing()) return;
         if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) return;
 
         NearestVisibleLivingEntities visible = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES)
@@ -60,14 +64,18 @@ public class GooseCoreBehavior extends Behavior<Goose> {
         }
     }
 
-    private static void handleProvocation(Goose goose, Brain<Goose> brain) {
+    private void handleProvocation(Goose goose, Brain<Goose> brain) {
         brain.getMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(attacker -> {
             if (goose.isCarrying()) goose.dropCarriedItem();
 
             UUID attackerId = attacker.getUUID();
             holdGrudgeAndAnger(goose, attackerId);
-            for (Goose witness : goose.nearbyGeese(WITNESS_RADIUS)) {
-                holdGrudgeAndAnger(witness, attackerId);
+
+            if (!attackerId.equals(lastAlertedAttacker)) {
+                lastAlertedAttacker = attackerId;
+                for (Goose witness : goose.nearbyGeese(WITNESS_RADIUS)) {
+                    holdGrudgeAndAnger(witness, attackerId);
+                }
             }
 
             if (goose.canFight() && goose.isAttackReady() && brain.getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {

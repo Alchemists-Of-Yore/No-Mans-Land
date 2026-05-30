@@ -63,7 +63,7 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
             threatenTicks++;
             boolean provoked = goose.getLastHurtByMob() == threat;
             int patience = Math.max(MIN_PATIENCE, BASE_PATIENCE - CONFIDENCE_BONUS * goose.flockConfidence());
-            if (provoked || threatenTicks >= patience) {
+            if (provoked || (threatenTicks >= patience && goose.isAttackReady())) {
                 goose.beginAttack(threat);
                 goose.rallyFlock(threat);
             }

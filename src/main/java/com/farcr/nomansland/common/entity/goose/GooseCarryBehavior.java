@@ -57,6 +57,7 @@ public class GooseCarryBehavior extends Behavior<Goose> {
 
     @Override
     protected void start(ServerLevel level, Goose goose, long gameTime) {
+        if (goose.getAggressionAnchor() == null) goose.setAnchor(goose.blockPosition()); // e.g. loot received via sharing
         fleeing = true;
         fleeTicks = 50 + goose.getRandom().nextInt(50);
         interactTicks = MAX_INTERACT_TICKS;
@@ -130,7 +131,7 @@ public class GooseCarryBehavior extends Behavior<Goose> {
         }
         goose.getLookControl().setLookAt(shareTarget);
         if (goose.distanceToSqr(shareTarget) <= REACHED_SQR) {
-            shareTarget.setCarriedItem(goose.getCarriedItem());
+            shareTarget.setCarriedItem(goose.getCarriedItem().copy());
             goose.setCarriedItem(ItemStack.EMPTY);
         } else {
             BehaviorUtils.setWalkAndLookTargetMemories(goose, shareTarget.blockPosition(), APPROACH_SPEED, 1);

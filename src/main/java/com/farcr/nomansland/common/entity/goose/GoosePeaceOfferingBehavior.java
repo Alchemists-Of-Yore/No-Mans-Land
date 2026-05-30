@@ -25,7 +25,7 @@ public class GoosePeaceOfferingBehavior extends Behavior<Goose> {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, Goose goose) {
-        if (goose.getGrudges().targets().isEmpty() || isBusy(goose)) return false;
+        if (goose.isBaby() || goose.getGrudges().targets().isEmpty() || isBusy(goose)) return false;
         offering = findOffering(goose);
         return offering != null;
     }
@@ -40,6 +40,7 @@ public class GoosePeaceOfferingBehavior extends Behavior<Goose> {
 
     private static boolean isBusy(Goose goose) {
         return goose.isCarrying()
+                || goose.isStealing()
                 || goose.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
                 || goose.getBrain().hasMemoryValue(MemoryModuleType.AVOID_TARGET);
     }

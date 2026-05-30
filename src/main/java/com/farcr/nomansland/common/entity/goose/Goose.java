@@ -65,6 +65,7 @@ public class Goose extends Animal {
     private BlockPos aggressionAnchor;
     private long attackReadyAt;
     private int flapTicks;
+    private boolean stealing;
 
     public Goose(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -93,6 +94,14 @@ public class Goose extends Animal {
 
     public boolean isCarrying() {
         return !getCarriedItem().isEmpty();
+    }
+
+    public boolean isStealing() {
+        return stealing;
+    }
+
+    public void setStealing(boolean stealing) {
+        this.stealing = stealing;
     }
 
     public void dropCarriedItem() {
@@ -133,7 +142,8 @@ public class Goose extends Animal {
 
     public void rallyFlock(LivingEntity target) {
         for (Goose ally : nearbyGeese(FLOCK_RADIUS)) {
-            if (ally.canFight() && ally.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
+            if (ally.canFight() && !ally.isCarrying() && !ally.isStealing()
+                    && ally.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
                 ally.beginAttack(target);
             }
         }
@@ -185,6 +195,12 @@ public class Goose extends Animal {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
         dropCarriedItem();
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        if (reason.shouldDestroy()) dropCarriedItem();
+        super.remove(reason);
     }
 
     @Override
@@ -309,6 +325,8 @@ public class Goose extends Animal {
             setState(State.RUNNING);
         } else if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) {
             setState(canFight() ? State.INTIMIDATING : State.RUNNING);
+        } else if (isCarrying()) {
+            setState(State.IDLING);
         } else if (flapTicks > 0) {
             setState(State.INTIMIDATING);
         } else {

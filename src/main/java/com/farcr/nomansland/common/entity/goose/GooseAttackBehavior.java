@@ -16,6 +16,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
     private static final int ATTACK_COOLDOWN = 20;
     private static final int DISENGAGE_COOLDOWN = 80;
     private static final int MAX_RETURN_TICKS = 100;
+    private static final int MAX_CHASE_TICKS = 100;
     private static final float CHASE_SPEED = 1.45F;
     private static final float RETURN_SPEED = 1.2F;
     private static final double ANCHOR_REACHED_SQR = 6.25;
@@ -25,6 +26,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
     private boolean returning;
     private int attackCooldown;
     private int returnTicks;
+    private int chaseTicks;
     private int hurtStampAtStart;
 
     public GooseAttackBehavior() {
@@ -43,6 +45,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
         returning = false;
         attackCooldown = 0;
         returnTicks = 0;
+        chaseTicks = 0;
         hurtStampAtStart = goose.getLastHurtByMobTimestamp();
     }
 
@@ -69,6 +72,10 @@ public class GooseAttackBehavior extends Behavior<Goose> {
     }
 
     private void chaseAndPeck(Goose goose, LivingEntity target) {
+        if (++chaseTicks > MAX_CHASE_TICKS) {
+            returning = true;
+            return;
+        }
         BehaviorUtils.setWalkAndLookTargetMemories(goose, target, CHASE_SPEED, 0);
         if (attackCooldown == 0 && goose.isWithinMeleeAttackRange(target)) {
             goose.swing(InteractionHand.MAIN_HAND);

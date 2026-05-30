@@ -7,6 +7,8 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -65,6 +67,8 @@ public class GooseHonkAtBehavior extends Behavior<Goose> {
         List<LivingEntity> candidates = new ArrayList<>();
         visible.findAll(entity -> entity != goose
                 && !(entity instanceof Goose)
+                && !(entity instanceof Player)
+                && !(entity instanceof Monster)
                 && goose.distanceToSqr(entity) < NOTICE_RADIUS * NOTICE_RADIUS
         ).forEach(candidates::add);
         return candidates.isEmpty() ? null : candidates.get(goose.getRandom().nextInt(candidates.size()));

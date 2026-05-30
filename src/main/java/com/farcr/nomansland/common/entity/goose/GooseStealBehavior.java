@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity.goose;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -44,11 +45,12 @@ public class GooseStealBehavior extends Behavior<Goose> {
     @Override
     protected void start(ServerLevel level, Goose goose, long gameTime) {
         goose.setAnchor(goose.blockPosition());
+        goose.setStealing(true);
     }
 
     @Override
     protected boolean canStillUse(ServerLevel level, Goose goose, long gameTime) {
-        if (goose.isCarrying() || goose.isBaby()) return false;
+        if (goose.isCarrying() || goose.isBaby() || goose.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) return false;
         if (targetItem != null) {
             return targetItem.isAlive() && goose.distanceToSqr(targetItem) < GIVE_UP_SQR;
         }
@@ -68,6 +70,7 @@ public class GooseStealBehavior extends Behavior<Goose> {
 
     @Override
     protected void stop(ServerLevel level, Goose goose, long gameTime) {
+        goose.setStealing(false);
         targetItem = null;
         targetPlayer = null;
     }
@@ -85,17 +88,20 @@ public class GooseStealBehavior extends Behavior<Goose> {
 
     private void stealFromHand(Goose goose) {
         goose.getLookControl().setLookAt(targetPlayer.getEyePosition());
-        if (isObservedBy(goose, targetPlayer)) {
-            goose.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-            return;
-        }
-        if (goose.distanceToSqr(targetPlayer) <= TAKE_DISTANCE_SQR) {
+        boolean watched = isObservedBy(goose, targetPlayer);
+        if (!watched && goose.distanceToSqr(targetPlayer) <= TAKE_DISTANCE_SQR) {
             ItemStack hand = targetPlayer.getMainHandItem();
             take(goose, hand);
             hand.shrink(1);
-        } else {
-            BehaviorUtils.setWalkAndLookTargetMemories(goose, targetPlayer.blockPosition(), APPROACH_SPEED, 0);
+            return;
         }
+        Vec3 approach = watched ? blindSpot(targetPlayer) : targetPlayer.position();
+        BehaviorUtils.setWalkAndLookTargetMemories(goose, BlockPos.containing(approach), APPROACH_SPEED, 0);
+    }
+
+    private static Vec3 blindSpot(Player player) {
+        Vec3 facing = player.getViewVector(1.0F).multiply(1.0, 0.0, 1.0).normalize();
+        return player.position().subtract(facing.scale(2.0));
     }
 
     private static void take(Goose goose, ItemStack source) {
