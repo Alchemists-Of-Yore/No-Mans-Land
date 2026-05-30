@@ -50,6 +50,8 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     // dimension of the paired bell; null is treated as this bell's own dimension (legacy/same-dimension pairs)
     public @Nullable ResourceKey<Level> targetDimension;
 
+    private boolean recheckAttempted = false;
+
     public int ringCooldown = 0;
 
     private boolean beingDestroyed = false;
@@ -90,6 +92,10 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     }
 
     public void link(final InvertedBellControllerBlockEntity other) {
+        this.link(other, false);
+    }
+
+    public void link(final InvertedBellControllerBlockEntity other, final boolean persist) {
         this.targetBell = other.getBlockPos();
         this.targetDir = other.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         this.targetDimension = other.getLevel().dimension();
@@ -100,8 +106,36 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         other.targetDimension = this.getLevel().dimension();
         other.state = PositionState.BLOCK_POS;
 
+        if (persist) {
+            this.setChanged();
+            other.setChanged();
+        }
+    }
+    
+    public void attemptRecheck(final ServerLevel serverLevel) {
+        if (this.targetBell != null || this.recheckAttempted) {
+            return;
+        }
+        this.recheckAttempted = true;
         this.setChanged();
-        other.setChanged();
+
+        final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
+        final ChunkPos partnerArea = getLikelyOtherSanctuary(grid, this.getBlockPos());
+        if (partnerArea == null) {
+            return;
+        }
+
+        final InvertedBellControllerBlockEntity partner = handleTheSearch(serverLevel, partnerArea);
+        if (partner == null || partner == this) {
+            return;
+        }
+
+        // don't be a homewrecker
+        if (partner.targetBell != null && !partner.targetBell.equals(this.getBlockPos())) {
+            return;
+        }
+
+        this.link(partner, true);
     }
 
     @Override
@@ -205,6 +239,9 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     protected void saveAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("State", this.state.ordinal());
+        if (this.recheckAttempted) {
+            tag.putBoolean("RecheckAttempted", true);
+        }
 
         switch (this.state) {
             case CHUNK -> {
@@ -230,6 +267,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (state >= 0 && state < PositionState.values().length) {
             this.state = PositionState.values()[state];
         }
+        this.recheckAttempted = tag.getBoolean("RecheckAttempted");
         switch (this.state) {
             case CHUNK -> {
                 this.targetArea = new ChunkPos(
