@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.item;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.networking.ClientboundBandageSoundPacket;
 import com.farcr.nomansland.common.networking.ClientboundStopBandageSoundPacket;
 import com.farcr.nomansland.common.registry.items.NMLItems;
@@ -72,12 +73,12 @@ public class BandageItem extends Item {
             }
         });
 
-        target.heal(4);
+        target.heal(NMLConfig.BANDAGE_HEAL_AMOUNT.get().floatValue());
 
         if (player != null) {
             player.awardStat(Stats.ITEM_USED.get(this));
             stack.consume(1, player);
-            int cooldownTicks = 140;
+            int cooldownTicks = NMLConfig.BANDAGE_COOLDOWN.getAsInt();
             player.getCooldowns().addCooldown(NMLItems.BANDAGE.get(), cooldownTicks);
             player.getCooldowns().addCooldown(NMLItems.ANTIDOTE_BANDAGE.get(), cooldownTicks);
             player.getCooldowns().addCooldown(NMLItems.MEDICINAL_BANDAGE.get(), cooldownTicks);

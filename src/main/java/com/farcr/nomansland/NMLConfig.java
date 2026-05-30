@@ -45,6 +45,9 @@ public class NMLConfig {
     public static final String CATEGORY_BOMBS = "bombs";
     public static ModConfigSpec.DoubleValue EXPLOSIVE_STRENGTH;
     public static ModConfigSpec.DoubleValue FIREBOMB_STRENGTH;
+    public static final String CATEGORY_BANDAGE = "bandage";
+    public static ModConfigSpec.IntValue BANDAGE_COOLDOWN;
+    public static ModConfigSpec.DoubleValue BANDAGE_HEAL_AMOUNT;
     public static final String CATEGORY_BULK_PLACEMENT = "bulk_placement";
     public static ModConfigSpec.IntValue MAX_LADDER_PLACEMENT_LENGTH;
     public static ModConfigSpec.IntValue MAX_RAIL_PLACMENT_LENGTH;
@@ -208,6 +211,15 @@ public class NMLConfig {
         FIREBOMB_STRENGTH = COMMON_BUILDER
                 .comment("The radius of firebombs' explosion.")
                 .defineInRange("firebombExplosionRadius", 2.0, 0, Integer.MAX_VALUE);
+        COMMON_BUILDER.pop();
+
+        COMMON_BUILDER.push(CATEGORY_BANDAGE);
+        BANDAGE_COOLDOWN = COMMON_BUILDER
+                .comment("The cooldown applied to all bandages after one is used. Time is calculated in ticks. 20 ticks make 1 second.")
+                .defineInRange("bandageCooldown", 140, 0, Integer.MAX_VALUE);
+        BANDAGE_HEAL_AMOUNT = COMMON_BUILDER
+                .comment("The amount of health a bandage restores when applied. Healing is in hit points. 2 hit points make 1 heart.")
+                .defineInRange("bandageHealAmount", 4.0, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_BULK_PLACEMENT);
