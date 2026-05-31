@@ -3,7 +3,6 @@ package com.farcr.nomansland.common.mixin.client;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
