@@ -1931,11 +1931,6 @@
         "name": "music/game/dry_hands",
         "stream": true,
         "weight": 3
-      },
-      {
-        "name": "nomansland:music/tarnished",
-        "stream": true,
-        "weight": 20
       }
     ]
   },
@@ -1977,10 +1972,6 @@
         "stream": true,
         "volume": 0.4,
         "weight": 3
-      },
-      {
-        "name": "nomansland:music/tarnished",
-        "stream": true
       }
     ]
   },
@@ -2060,15 +2051,6 @@
         "name": "music/game/endless",
         "stream": true,
         "volume": 0.4
-      }
-    ]
-  },
-  "music.tarnished": {
-    "sounds": [
-      {
-        "name": "nomansland:music/tarnished",
-        "stream": true,
-        "volume": 0.1
       }
     ]
   },

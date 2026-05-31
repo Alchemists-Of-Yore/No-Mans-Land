@@ -196,8 +196,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 sound("minecraft:music/game/mice_on_venus").weight(5).stream(),
                 sound("minecraft:music/game/dry_hands").weight(5).stream(),
                 sound("minecraft:music/game/yakusoku").weight(3).stream().volume(0.4f),
-                sound("minecraft:music/game/endless").weight(3).stream().volume(0.4f),
-                sound("nomansland:music/tarnished").weight(1).stream()
+                sound("minecraft:music/game/endless").weight(3).stream().volume(0.4f)
         ));
 
         add(NMLSounds.ALCHEMIST_RUINS_MUSIC, s -> s.subtitle(null).with(
@@ -205,13 +204,10 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 sound("minecraft:music/game/key").weight(5).stream(),
                 sound("minecraft:music/game/minecraft").weight(3).stream(),
                 sound("minecraft:music/game/mice_on_venus").weight(3).stream(),
-                sound("minecraft:music/game/dry_hands").weight(3).stream(),
-                sound("nomansland:music/tarnished").weight(20).stream()
+                sound("minecraft:music/game/dry_hands").weight(3).stream()
         ));
 
         add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.subtitle(null).with(sound("records/guidance").stream()));
-
-        add(NMLSounds.MUSIC_TARNISHED, s -> s.subtitle(null).with(sound("music/tarnished").volume(0.1f).stream()));
 
         //Misc
         add(NMLSounds.DROPLET_FALLS, s -> s.with(allSounds("minecraft:block/beehive/drip", se -> se.attenuationDistance(8).volume(0.3f))));

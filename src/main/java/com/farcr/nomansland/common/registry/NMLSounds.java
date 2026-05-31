@@ -147,7 +147,6 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ALCHEMIST_RUINS_MUSIC = registerSound("music.overworld.alchemist_ruins");
 
     public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
-    public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_TARNISHED = registerSound("music.tarnished");
 
     //Misc
     public static final DeferredHolder<SoundEvent, SoundEvent> DROPLET_FALLS = registerSound("particle.droplet.fall");
