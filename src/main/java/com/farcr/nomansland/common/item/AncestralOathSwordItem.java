@@ -3,8 +3,10 @@ package com.farcr.nomansland.common.item;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.common.networking.alchemist_tools.ClientboundOathSwordParried;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -65,6 +67,10 @@ public class AncestralOathSwordItem extends SwordItem {
 
         if (withinParryTiming(itemStack, damagedEntity)) {
 //            NoMansLand.LOGGER.info("perfect parry timing");
+            damagedEntity.level().playSound(
+                null, damagedEntity.blockPosition(),
+                NMLSounds.OATH_PARRY.get(), SoundSource.PLAYERS
+            );
             PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 damagedEntity, new ClientboundOathSwordParried(damagedEntity.getId())
             );
@@ -73,6 +79,10 @@ public class AncestralOathSwordItem extends SwordItem {
         // if damage is from an entity
         if (directEntity instanceof LivingEntity livingEntity) {
             // "parry miss" effect
+            damagedEntity.level().playSound(
+                null, damagedEntity.blockPosition(),
+                NMLSounds.OATH_BLOCK.get(), SoundSource.PLAYERS
+            );
             event.setAmount(event.getAmount() * .25f);
             livingEntity.knockback(0.25, damagedEntity.getX() - livingEntity.getX(), damagedEntity.getZ() - livingEntity.getZ());
             livingEntity.addEffect(new MobEffectInstance(

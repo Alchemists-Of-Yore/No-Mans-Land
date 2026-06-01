@@ -2,12 +2,8 @@ package com.farcr.nomansland.common.networking.alchemist_tools;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
-import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -31,7 +27,7 @@ public record ClientboundOathSwordParried(
             // CURRENTLY only first person / for player in client for testing purposes
             if (context.player().getId() == playerId) {
                 ((AncestralOathSwordClientExtensions) IClientItemExtensions.of(NMLItems.ANCESTRAL_OATH_SWORD.item()))
-                    .parrySuccessful();
+                    .onParrySuccessful();
             }
         });
     }
