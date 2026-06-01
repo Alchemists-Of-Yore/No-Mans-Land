@@ -72,6 +72,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.generic.sticky_cauldron_slide", "Sliding in a sticky cauldron");
         add("nomansland.subtitle.item.generic.consumed", "Item consumed");
         add("nomansland.subtitle.item.bomb.primed", "Bomb primed");
+        add("nomansland.subtitle.item.ancestral_oath_sword.block", "Sword blocks");
+        add("nomansland.subtitle.item.ancestral_oath_sword.parry", "Sword parries");
         add("nomansland.subtitle.entity.billhook_bass.death", "Billhook Bass dies");
         add("nomansland.subtitle.entity.billhook_bass.flop", "Billhook Bass flops");
         add("nomansland.subtitle.entity.billhook_bass.hurt", "Billhook Bass hurts");

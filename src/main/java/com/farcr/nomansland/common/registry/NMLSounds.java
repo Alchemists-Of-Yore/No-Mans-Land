@@ -60,6 +60,8 @@ public class NMLSounds {
     //Items
     public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_PRIMED = registerSound("item.bomb.primed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> OATH_BLOCK = registerSound("item.ancestral_oath_sword.block");
+    public static final DeferredHolder<SoundEvent, SoundEvent> OATH_PARRY = registerSound("item.ancestral_oath_sword.parry");
 
     //Cauldron Interactions
     public static final DeferredHolder<SoundEvent, SoundEvent> HONEYCOMB_CONSUMED = registerSound("item.honeycomb.consumed");
