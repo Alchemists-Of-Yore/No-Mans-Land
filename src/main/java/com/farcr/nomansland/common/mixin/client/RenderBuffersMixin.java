@@ -16,11 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class RenderBuffersMixin {
 
     @Inject(method = "lambda$new$0", at = @At("TAIL"))
-    private static void addGlintTypes(
+    private static void nml$addGlintTypes(
         Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> mapBuildersIn,
         RenderType type, CallbackInfo ci
     ) {
-        AncestralGlintRenderType.addGlint(mapBuildersIn);
         MoonlightGlowRenderType.addGlint(mapBuildersIn);
+        AncestralGlintRenderType.addGlint(mapBuildersIn);
     }
 }

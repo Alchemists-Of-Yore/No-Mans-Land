@@ -16,6 +16,7 @@ import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderLayer;
+import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderType;
 import com.farcr.nomansland.client.renderer.rendertype.MoonlightGlowRenderType;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.integration.nirvana.NirvanaIntegration;
@@ -241,14 +242,14 @@ public class ClientSetupEvents {
 
     @SubscribeEvent
     public static void registerShaders(final RegisterShadersEvent event) throws IOException {
-        event.registerShader(
-                new ShaderInstance(
-                        event.getResourceProvider(),
-                        NoMansLand.location("rendertype_moonlight"),
-                        DefaultVertexFormat.NEW_ENTITY
-                ),
-                shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
-        );
+//        event.registerShader(
+//                new ShaderInstance(
+//                        event.getResourceProvider(),
+//                        NoMansLand.location("rendertype_moonlight"),
+//                        DefaultVertexFormat.NEW_ENTITY
+//                ),
+//                shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader
+//        );
         event.registerShader(
                 new ShaderInstance(
                         event.getResourceProvider(),
@@ -256,6 +257,14 @@ public class ClientSetupEvents {
                         DefaultVertexFormat.POSITION_TEX
                 ),
                 shader -> MoonlightGlowRenderType.MOONLIGHT_GLOW_SHADER = shader
+        );
+        event.registerShader(
+            new ShaderInstance(
+                event.getResourceProvider(),
+                NoMansLand.location("rendertype_ancestral_glint"),
+                DefaultVertexFormat.POSITION_TEX_COLOR
+            ),
+            shader -> AncestralGlintRenderType.ANCESTRAL_GLINT_SHADER = shader
         );
         event.registerShader(
                 new ShaderInstance(

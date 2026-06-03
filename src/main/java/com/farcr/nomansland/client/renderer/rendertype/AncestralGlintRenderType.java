@@ -21,17 +21,17 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 public class AncestralGlintRenderType {
-
-    private static float ITEM_GLINT_VISIBILITY_CONTEXT = 0f;
+    public static ShaderInstance ANCESTRAL_GLINT_SHADER;
     public static RenderType ancestralGlint(boolean entity, float opacity) {
         return RenderType.create(
-            "ancestral_glint", DefaultVertexFormat.POSITION_TEX,
+            "ancestral_glint", DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormat.Mode.QUADS, 1536, RenderType.CompositeState.builder()
-                .setShaderState(RenderStateShard.RENDERTYPE_GLINT_TRANSLUCENT_SHADER)
+                .setShaderState(new RenderStateShard.ShaderStateShard(() -> ANCESTRAL_GLINT_SHADER))
                 .setTextureState(
                     new RenderStateShard.TextureStateShard(
                         NoMansLand.location("textures/misc/ancestral_glint.png"), true, false)
@@ -48,7 +48,6 @@ public class AncestralGlintRenderType {
                         * reset it to the setting value that already tracks what it should actually be which is decently convenient */
                         RenderSystem.setShaderGlintAlpha(opacity * Minecraft.getInstance().options.glintStrength().get());
                         // because i cant dynamically make a rendertype for an item glint
-                        if (!entity) RenderSystem.setShaderGlintAlpha(ITEM_GLINT_VISIBILITY_CONTEXT * Minecraft.getInstance().options.glintStrength().get());
                         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
                     }, () -> {
                         RenderSystem.disableBlend();
@@ -62,40 +61,18 @@ public class AncestralGlintRenderType {
     }
     public static final RenderType DEFAULT_ANCESTRAL_GLINT = ancestralGlint(false, 1f);
 
-    public static ItemStack itemContext;
-    public static void setContext(ItemStack newContext) {
-        itemContext = newContext;
-    }
-
     public static void addGlint(Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder> map) {
         if (!map.containsKey(DEFAULT_ANCESTRAL_GLINT))
             map.put(DEFAULT_ANCESTRAL_GLINT, new ByteBufferBuilder(DEFAULT_ANCESTRAL_GLINT.bufferSize()));
     }
 
-    public static VertexConsumer getConsumer(
-        MultiBufferSource bufferSource, VertexConsumer originalConsumer
+    public static @Nullable VertexConsumer getConsumer(
+        MultiBufferSource bufferSource, ItemStack itemContext
     ) {
         if (itemContext != null) {
-            // TODO: this only works with the player sword
-            /*
-            * Quick aside, it's because glints have to be registered
-            * and currently theres only one active item glint with 1 alpha
-            * I will probably also have to sync the animations with packets to
-            * other clients but I will worry about that when the functionality is done
-            * just PLEASE dont forget to do that
-            */
-            if (IClientItemExtensions.of(itemContext) instanceof AncestralOathSwordClientExtensions extensions
-            && Minecraft.getInstance().player != null && (extensions.getGlintOpacity(itemContext, Minecraft.getInstance().player) > 0.0f)
-            && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).equals(itemContext)) {
-                ITEM_GLINT_VISIBILITY_CONTEXT = extensions.getGlintOpacity(itemContext, Minecraft.getInstance().player);
-                return VertexMultiConsumer.create(
-                    bufferSource.getBuffer(
-                        DEFAULT_ANCESTRAL_GLINT
-                    ), originalConsumer
-                );
-            }
-            itemContext = null;
+            if (IClientItemExtensions.of(itemContext) instanceof AncestralOathSwordClientExtensions extensions)
+                return bufferSource.getBuffer(DEFAULT_ANCESTRAL_GLINT);
         }
-        return originalConsumer;
+        return null;
     }
 }
