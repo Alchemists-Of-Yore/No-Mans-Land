@@ -25,10 +25,10 @@ public class GameRendererMixin {
     private void applyInvertedBellPost(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         InvertedBellClientHandler.instance.render(this.minecraft, deltaTracker.getRealtimeDeltaTicks());
         AccumulateZoomRenderer.getInstance().render(this.minecraft, deltaTracker.getRealtimeDeltaTicks());
-        if (this.minecraft.player != null) {
-            ItemStack itemStack = this.minecraft.player.getItemInHand(InteractionHand.MAIN_HAND);
-            if (itemStack.is(NMLItems.ANCESTRAL_OATH_SWORD) && IClientItemExtensions.of(itemStack) instanceof AncestralOathSwordClientExtensions extensions)
-                extensions.render(deltaTracker.getRealtimeDeltaTicks());
-        }
+//        if (this.minecraft.player != null) {
+//            ItemStack itemStack = this.minecraft.player.getItemInHand(InteractionHand.MAIN_HAND);
+//            if (itemStack.is(NMLItems.ANCESTRAL_OATH_SWORD) && IClientItemExtensions.of(itemStack) instanceof AncestralOathSwordClientExtensions extensions)
+//                extensions.render(deltaTracker.getRealtimeDeltaTicks());
+//        }
     }
 }
