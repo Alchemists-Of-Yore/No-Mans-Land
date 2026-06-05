@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.mixin.client;
 
-import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

@@ -1,8 +1,11 @@
 package com.farcr.nomansland.common.mixin.client;
 
+import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
+import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HeadedModel;
@@ -79,8 +82,8 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
         }
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "TAIL"), cancellable = true)
-    private void setupAnims(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "TAIL"))
+    private void nml$setupAnims(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         if (entity.getItemBySlot(EquipmentSlot.CHEST).is(NMLItems.TORTOISE_SHELL.get()) && this.attackTime <= 0) {
             boolean flag = entity.getFallFlyingTicks() > 4;
             float f = 1.0F;
@@ -120,6 +123,16 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
                 leftLeg, rightLeg,
                 (ageInTicks / Buddy.DIVIDE_TIME_CONSTANT)
             );
+        }
+
+        // it really irks me how hardcoded arms are in minecraft
+        LivingEntityExtension entityExtension = (LivingEntityExtension) entity;
+        if (entity.getMainArm() == HumanoidArm.RIGHT) {
+            this.rightArm.yRot += AncestralOathSwordClientExtensions.getShakePosition(
+                entityExtension.nml$getShakeAnimationTime()) / 160f;
+        } else if (entity.getMainArm() == HumanoidArm.LEFT) {
+            this.leftArm.yRot -= AncestralOathSwordClientExtensions.getShakePosition(
+                entityExtension.nml$getShakeAnimationTime()) / 160f;
         }
     }
 }

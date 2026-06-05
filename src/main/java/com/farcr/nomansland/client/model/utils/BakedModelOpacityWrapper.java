@@ -17,10 +17,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BakedModelOpacityWrapper extends BakedModelWrapper<BakedModel> {
-    private final float bakedAlpha;
-    public BakedModelOpacityWrapper(BakedModel originalModel, float bakedAlpha) {
-        super(originalModel);
+    private float bakedAlpha;
+    public void setAlphaValue(float bakedAlpha) {
         this.bakedAlpha = bakedAlpha;
+    }
+
+    public BakedModelOpacityWrapper(BakedModel originalModel) {
+        super(originalModel);
     }
 
     BakedQuad modifyQuads(BakedQuad bakedQuad) {
@@ -46,6 +49,7 @@ public class BakedModelOpacityWrapper extends BakedModelWrapper<BakedModel> {
     * the internal pipeline uses this. i think. or sodium, one of the two
     */
     @Override public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, RandomSource source) {
-        return super.getQuads(state, direction, source).stream().map(this::modifyQuads).toList();
+        return super.getQuads(state, direction, source)
+            .stream().map(this::modifyQuads).toList();
     }
 }

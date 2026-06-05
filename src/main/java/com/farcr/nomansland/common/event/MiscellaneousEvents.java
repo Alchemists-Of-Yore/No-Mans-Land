@@ -41,6 +41,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -523,6 +524,8 @@ public class MiscellaneousEvents {
 
                 if (entity instanceof Enemy) entity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 200, 0, false, true, true));
             }
+            
+            AncestralOathSwordItem.updateUseTime(entity);
         }
     }
 
@@ -724,8 +727,16 @@ public class MiscellaneousEvents {
 
     @SubscribeEvent
     public static void onAttack(AttackEntityEvent event) {
-        if (event.getEntity().getItemInHand(InteractionHand.MAIN_HAND).is(NMLItems.ANCESTRAL_OATH_SWORD))
-            event.setCanceled(!AncestralOathSwordItem.canHurtUnderOath(event.getTarget()));
+        if (event.getEntity().getItemInHand(InteractionHand.MAIN_HAND).is(NMLItems.ANCESTRAL_OATH_SWORD)
+        && !AncestralOathSwordItem.canHurtUnderOath(event.getTarget())) {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                AncestralOathSwordItem.setUseTime(serverPlayer, AncestralOathSwordItem.MAX_GLINT_ANIMATE, true);
+                serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(
+                    Component.translatable("item.nomansland.ancestral_oath_sword.refuse"))
+                );
+            }
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent

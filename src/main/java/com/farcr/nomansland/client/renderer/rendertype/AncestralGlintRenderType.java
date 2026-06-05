@@ -34,7 +34,9 @@ public class AncestralGlintRenderType {
                 .setShaderState(new RenderStateShard.ShaderStateShard(() -> ANCESTRAL_GLINT_SHADER))
                 .setTextureState(
                     new RenderStateShard.TextureStateShard(
-                        NoMansLand.location("textures/misc/ancestral_glint.png"), true, false)
+                        NoMansLand.location("textures/misc/ancestral_glint.png"),
+                        true, false
+                    )
                 )
                 .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .setCullState(RenderStateShard.NO_CULL)
