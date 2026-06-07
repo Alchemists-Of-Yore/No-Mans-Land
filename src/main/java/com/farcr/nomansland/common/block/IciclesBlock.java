@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
@@ -68,11 +69,12 @@ public class IciclesBlock extends Block implements Fallable {
     }
 
     @NotNull
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        if (pState.getValue(TIP_DIRECTION) == Direction.UP)
-            return Block.box(3.0D, 0.0D, 3.0D, 13.0D, 7.0D, 14.0D);
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext pContext) {
+        Vec3 offset = state.getOffset(level, pos);
+        if (state.getValue(TIP_DIRECTION) == Direction.UP)
+            return Block.box(3.0D, 0.0D, 3.0D, 13.0D, 7.0D, 14.0D).move(offset.x, offset.y, offset.z);
 
-        return Block.box(3.0D, 9.0D, 3.0D, 13.0D, 16.0D, 14.0D);
+        return Block.box(3.0D, 9.0D, 3.0D, 13.0D, 16.0D, 14.0D).move(offset.x, offset.y, offset.z);
     }
 
     @Override
