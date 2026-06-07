@@ -9,6 +9,8 @@
     "minecraft:tuff",
     "minecraft:coal_ore",
     "minecraft:smooth_basalt",
-    "minecraft:basalt"
+    "minecraft:basalt",
+    "minecraft:cobblestone",
+    "minecraft:mossy_cobblestone"
   ]
 }

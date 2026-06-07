@@ -22,15 +22,6 @@
     {
       "weight": 5,
       "element": {
-        "location": "nomansland:small_dungeon/doorway/dead_end_corner",
-        "processors": "nomansland:small_dungeon",
-        "projection": "rigid",
-        "element_type": "minecraft:single_pool_element"
-      }
-    },
-    {
-      "weight": 5,
-      "element": {
         "location": "nomansland:small_dungeon/doorway/hidden_corner",
         "processors": "nomansland:small_dungeon",
         "projection": "rigid",
