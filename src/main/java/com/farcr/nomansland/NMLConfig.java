@@ -45,6 +45,7 @@ public class NMLConfig {
     public static final String CATEGORY_BOMBS = "bombs";
     public static ModConfigSpec.DoubleValue EXPLOSIVE_STRENGTH;
     public static ModConfigSpec.DoubleValue FIREBOMB_STRENGTH;
+    public static ModConfigSpec.BooleanValue INCENDIARY_ARROW_PLACES_FIRE;
     public static final String CATEGORY_BANDAGE = "bandage";
     public static ModConfigSpec.IntValue BANDAGE_COOLDOWN;
     public static ModConfigSpec.DoubleValue BANDAGE_HEAL_AMOUNT;
@@ -217,6 +218,9 @@ public class NMLConfig {
         FIREBOMB_STRENGTH = COMMON_BUILDER
                 .comment("The radius of firebombs' explosion.")
                 .defineInRange("firebombExplosionRadius", 2.0, 0, Integer.MAX_VALUE);
+        INCENDIARY_ARROW_PLACES_FIRE = COMMON_BUILDER
+                .comment("If incendiary arrows place fire blocks where they land.")
+                .define("incendiaryArrowPlacesFire", true);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(CATEGORY_BANDAGE);

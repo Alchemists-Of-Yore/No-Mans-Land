@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.entity;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.core.BlockPos;
@@ -79,7 +80,7 @@ public class IncendiaryArrow extends AbstractArrow {
         if (level instanceof ServerLevel serverLevel) {
             boolean ignitedFire = false;
 
-            if (isOnFire()) {
+            if (isOnFire() && NMLConfig.INCENDIARY_ARROW_PLACES_FIRE.get()) {
                 if (level.getBlockState(neighbourPos).is(Blocks.FIRE)) {
                     BlockPos.withinManhattan(neighbourPos, 1, 0, 1).forEach(firePos -> {
                         if ((BaseFireBlock.canBePlacedAt(level, firePos, direction)
