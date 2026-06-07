@@ -1,0 +1,20 @@
+{
+  "type": "nomansland:cave",
+  "start_pool": "nomansland:underground_shelter/entrance",
+  "size": 14,
+  "max_distance_from_center": 80,
+  "biomes": "#minecraft:is_overworld",
+  "step": "underground_structures",
+  "terrain_adaptation": "none",
+  "start_height": {
+    "type": "uniform",
+    "max_inclusive": {
+      "absolute": 45
+    },
+    "min_inclusive": {
+      "absolute": 15
+    }
+  },
+  "spawn_overrides": {},
+  "exposure": "encase"
+}
