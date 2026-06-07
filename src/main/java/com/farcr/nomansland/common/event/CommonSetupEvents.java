@@ -74,6 +74,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
@@ -340,6 +341,11 @@ public class CommonSetupEvents {
         DreamCommand.register(event.getDispatcher(), event.getBuildContext());
         SunDogCommand.register(event.getDispatcher());
         MeetingPointCommand.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public static void onServerStarting(ServerStartingEvent event) {
+        MeetingPointCommand.applyPersistedOverride(event.getServer());
     }
 
     @SubscribeEvent

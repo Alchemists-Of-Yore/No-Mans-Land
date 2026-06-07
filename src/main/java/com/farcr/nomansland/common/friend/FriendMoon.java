@@ -340,6 +340,10 @@ public class FriendMoon extends SavedData {
             }
         }
 
+        if (tag.contains("MeetingPointOverrideX"))
+            meetingPointOverride = new ChunkPos(tag.getInt("MeetingPointOverrideX"), tag.getInt("MeetingPointOverrideZ"));
+        else meetingPointOverride = null;
+
         return this;
     }
 
@@ -374,6 +378,11 @@ public class FriendMoon extends SavedData {
         cosmicBodyStateMap.forEach((uuid, bodyState) ->
             CosmicBodyState.CODEC.encodeStart(NbtOps.INSTANCE, bodyState).result().ifPresent(positionTag::add));
         tag.put("StoredPlayerPositions", positionTag);
+
+        if (meetingPointOverride != null) {
+            tag.putInt("MeetingPointOverrideX", meetingPointOverride.x);
+            tag.putInt("MeetingPointOverrideZ", meetingPointOverride.z);
+        }
         return tag;
     }
 
@@ -556,6 +565,18 @@ public class FriendMoon extends SavedData {
         ChunkPos meetingPointChunk = level.getChunkSource().getGeneratorState().meetingPointPosition();
         if (meetingPointChunk == null) return null;
         return meetingPointChunk.getMiddleBlockPosition(0);
+    }
+
+    @Nullable private ChunkPos meetingPointOverride = null;
+
+    @Nullable
+    public ChunkPos getMeetingPointOverride() {
+        return meetingPointOverride;
+    }
+
+    public void setMeetingPointOverride(@Nullable ChunkPos pos) {
+        this.meetingPointOverride = pos;
+        setDirty();
     }
 
     public void updatePlayerFriendShadow(ServerPlayer player) {
