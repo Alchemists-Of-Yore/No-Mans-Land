@@ -23,6 +23,7 @@
     "FrogMixin",
     "ItemEntityMixin",
     "IWitchAccessor",
+    "JigsawPlacerInvoker",
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LevelChunkMixin",

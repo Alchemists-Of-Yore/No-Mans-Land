@@ -15,12 +15,11 @@ public class NMLStructureTypes {
     public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES =
             DeferredRegister.create(Registries.STRUCTURE_TYPE, NoMansLand.MODID);
 
-//    public static final Supplier<StructureType<CaveStructure>> CAVE = register("cave", CaveStructure.CODEC);
+    public static final Supplier<StructureType<CaveStructure>> CAVE = register("cave", CaveStructure.CODEC);
     public static final Supplier<StructureType<AlchemistRuinsStructure>> ALCHEMIST_RUINS = register("alchemist_ruins", AlchemistRuinsStructure.CODEC);
     public static final Supplier<StructureType<DreamMeetingPoint>> DREAM_MEETING_POINT = register("dream_meeting_point", DreamMeetingPoint.CODEC);
     public static final Supplier<StructureType<MeetingPointStructure>> MEETING_POINT = register("meeting_point", MeetingPointStructure.CODEC);
     public static final Supplier<StructureType<MenhirStructure>> MENHIR = register("menhir", MenhirStructure.CODEC);
-    public static final Supplier<StructureType<SurfaceJigsawStructure>> SURFACE_JIGSAW = register("surface_jigsaw", SurfaceJigsawStructure.CODEC);
 
     private static <P extends Structure> DeferredHolder<StructureType<?>, StructureType<P>> register (String name, MapCodec<P> codec) {
         return STRUCTURE_TYPES.register(name, () -> () -> codec);
