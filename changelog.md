@@ -7,4 +7,5 @@
 - Improved inverted bell performance
 - Added missing structure tags to NML biomes
 - Made stone shore pools only spawn near the water level
+- Fixed not being able to offer items in the moonlight basin with ItemPhysic
 - Fixed a few random rare crashes, mostly mod incompatibilities

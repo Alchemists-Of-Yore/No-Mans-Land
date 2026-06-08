@@ -384,7 +384,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             if (blockEntity.inspectionContext == null) {
                 OfferingContext context = getOfferingAbove(pos, level);
                 if (context != null && context.isValid()
-                && (context.getEntity().onGround() || context.getEntity() instanceof FlyingMob))
+                && (context.getEntity().onGround() || context.getEntity() instanceof FlyingMob
+                || context.getEntity().getDeltaMovement().lengthSqr() < 1.0E-3))
                     blockEntity.setInspectionContext(context, friendMoon);
             }
 

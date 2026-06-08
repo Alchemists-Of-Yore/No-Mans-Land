@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -69,6 +70,8 @@ public abstract class EntityMixin implements EntityExtension {
 
     @Shadow public abstract float getYRot();
 
+    @Shadow public abstract float getXRot();
+
     @Unique private boolean NML$offering = false;
     @Unique private boolean NML$previouslyInspected = false;
     @Unique private float NML$inspectionFade = 0f;
@@ -94,6 +97,20 @@ public abstract class EntityMixin implements EntityExtension {
     @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true)
     private void NML$getGravity(CallbackInfoReturnable<Double> cir) {
         if (NML$isBeingInspected()) cir.setReturnValue(0.0d);
+    }
+
+    @Inject(method = "isNoGravity", at = @At("RETURN"), cancellable = true)
+    private void NML$isNoGravity(CallbackInfoReturnable<Boolean> cir) {
+        if (NML$isBeingInspected()) cir.setReturnValue(true);
+    }
+
+    @ModifyVariable(method = "setXRot", at = @At("HEAD"), argsOnly = true)
+    private float NML$slowInspectionSpin(float xRot) {
+        if (NML$isBeingInspected()) {
+            float current = getXRot();
+            return current + (xRot - current) * 0.3f;
+        }
+        return xRot;
     }
 
     @Unique @Nullable
