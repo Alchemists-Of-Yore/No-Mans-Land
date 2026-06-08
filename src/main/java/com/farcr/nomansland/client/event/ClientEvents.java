@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.event;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.client.handler.CarvingClientHandler;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.renderer.DialogueRenderer;
 import com.farcr.nomansland.client.renderer.FriendMoonRenderer;
@@ -100,6 +101,7 @@ public class ClientEvents {
     public static void onClientTick(ClientTickEvent.Pre event) {
         if (Minecraft.getInstance().player == null) return;
         InvertedBellClientHandler.instance.tick();
+        CarvingClientHandler.instance.tick();
     }
 
     @SubscribeEvent
@@ -118,4 +120,12 @@ public class ClientEvents {
         && moonlightDreamType.moonPresenceTime > 0)
             event.setCinematicCameraEnabled(true);
     }
+
+    @SubscribeEvent
+    public static void renderLevelStage(RenderLevelStageEvent event) {
+        if(event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES && CarvingClientHandler.instance.isChiseling()) {
+            CarvingClientHandler.instance.render(event.getPoseStack(), event.getLevelRenderer(), event.getCamera(), event.getPartialTick());
+        }
+    }
+
 }

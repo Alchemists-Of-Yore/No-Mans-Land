@@ -146,6 +146,7 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.DREAM_TYPE);
         event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
         event.register(NMLRegistries.DIALOGUE_CONDITIONAL_TYPE);
+        event.register(NMLRegistries.CARVING_TYPE);
     }
 
     @SubscribeEvent
@@ -347,6 +348,7 @@ public class CommonSetupEvents {
         // ritual pickaxe packets
         registrar.playToServer(ServerboundRitualPickRequestPacket.TYPE, ServerboundRitualPickRequestPacket.STREAM_CODEC, ServerboundRitualPickRequestPacket::handleData);
         registrar.playToClient(ClientboundRitualPickResponsePacket.TYPE, ClientboundRitualPickResponsePacket.STREAM_CODEC, ClientboundRitualPickResponsePacket::handleData);
+        registrar.playToServer(ServerBoundChiselPacket.TYPE, ServerBoundChiselPacket.STREAM_CODEC, ServerBoundChiselPacket::handleData);
     }
 
     @SubscribeEvent

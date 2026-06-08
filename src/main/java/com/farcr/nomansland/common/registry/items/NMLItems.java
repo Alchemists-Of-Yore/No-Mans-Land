@@ -161,6 +161,12 @@ public class NMLItems {
             )
     );
 
+    public static final ItemDefinition<ChiselItem> ANCIENT_BRONZE_CHISEL = register("ancient_bronze_chisel",
+            () -> new ChiselItem(new Properties()
+                    .stacksTo(1)
+                    .rarity(Rarity.RARE)
+    ));
+
     public static final ItemDefinition<Item> MUSIC_DISC_GUIDANCE = register("music_disc_guidance",
             () -> new Item(new Properties().stacksTo(1).rarity(Rarity.RARE).jukeboxPlayable(NMLDiscs.GUIDANCE)), true);
 

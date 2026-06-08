@@ -55,6 +55,7 @@ public class NoMansLand {
         NMLContextualMusic.CONTEXTUAL_MUSIC_REGISTRY.register(bus);
         NMLDreamTypes.DREAM_TYPES_REGISTRY.register(bus);
         NMLFogModifiers.FOG_MODIFIERS.register(bus);
+        NMLCarvingTypes.CARVING_TYPES.register(bus);
         NMLMobVariants.FROG_VARIANTS.register(bus);
         NMLEffects.MOB_EFFECTS.register(bus);
         NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(bus);
@@ -76,6 +77,7 @@ public class NoMansLand {
         NMLBlockStateProviderTypes.BLOCKSTATE_PROVIDER_TYPES.register(bus);
         NMLStructureElementTypes.STRUCTURE_ELEMENTS.register(bus);
         NMLMapDecorationTypes.MAP_DECORATION_TYPES.register(bus);
+        NMLAttachmentTypes.ATTACHMENT_TYPES.register(bus);
 
         if (Mods.FARMERSDELIGHT.isLoaded()) {
             FDIntegration.register();

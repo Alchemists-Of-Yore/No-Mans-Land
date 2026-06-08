@@ -71,6 +71,7 @@
     "integration.VanillaFluidTargetsMixin"
   ],
   "client": [
+    "ItemInHandRendererMixin",
     "client.AbstractSoundInstanceMixin",
     "client.AnimationUtilsMixin",
     "client.BlockItemMixin",

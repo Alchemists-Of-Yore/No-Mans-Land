@@ -7,6 +7,7 @@ import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.ambience.AmbienceHandler;
 import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.client.extensions.NMLClientExtensions;
+import com.farcr.nomansland.client.handler.CarvingClientHandler;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.music.ContextualMusicHandler;
 import com.farcr.nomansland.client.particle.*;
@@ -33,6 +34,8 @@ import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -58,6 +61,19 @@ public class ClientSetupEvents {
                             return 1.0F;
                         }
                         return 0.0F;
+                    });
+
+            ItemProperties.register(NMLItems.ANCIENT_BRONZE_CHISEL.get(), NoMansLand.location("using_chisel"),
+                    (stack, level, entity, seed) -> {
+                        if(entity != null && CarvingClientHandler.instance.isChiseling()){
+                            InteractionHand hand = CarvingClientHandler.instance.getHand();
+                            ItemStack itemInHand = entity.getItemInHand(hand);
+                            if(itemInHand == stack) {
+                                return 1.0f;
+                            }
+                        }
+
+                        return 0.0f;
                     });
         });
     }

@@ -228,6 +228,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("design.nomansland.tortoise.gray", "Gray");
         add("design.nomansland.ancient_bronze_mask.alchemist", "Alchemist");
         add("design.nomansland.warp_worn.warp_worn", "Warp-worn");
+        add("screen.nomansland.carving", "Scroll to select carving");
 
         add("item.nomansland.ancestral_oath_sword.refuse", "The sword refuses to violate its oath of pacifism...");
 
