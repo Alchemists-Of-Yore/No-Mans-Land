@@ -1,11 +1,12 @@
 package com.farcr.nomansland.client.handler;
 
+import com.farcr.nomansland.client.renderer.rendertype.ChiselRenderTypes;
 import com.farcr.nomansland.common.carving.CarvingType;
 import com.farcr.nomansland.common.item.ChiselItem;
 import com.farcr.nomansland.common.networking.ServerBoundChiselPacket;
 import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.ryanhcode.sable.companion.ClientSubLevelAccess;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
@@ -13,8 +14,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
@@ -27,7 +30,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
@@ -75,7 +77,7 @@ public class CarvingClientHandler {
             }
         }
 
-        if(!ChiselItem.holdingChisel(player)) {
+        if(!(player.getItemInHand(this.hand).getItem() instanceof ChiselItem)) {
             this.clear();
             return;
         }
@@ -108,11 +110,25 @@ public class CarvingClientHandler {
         if(this.endPos == null) return;
         LocalPlayer player = Minecraft.getInstance().player;
         CarvingType type = NMLRegistries.CARVING_TYPE.get(this.id);
+        MultiBufferSource.BufferSource bufferSource = levelRenderer.renderBuffers.bufferSource();
 
         poseStack.pushPose();
         Vec3 cameraPosition = camera.getPosition();
         poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-        renderBox(poseStack, type.getPreviewBox(player, this.startPos, this.endPos, this.direction));
+        AABB previewBox = type.getPreviewBox(player, this.startPos, this.endPos, this.direction);
+
+        Vec3 min = previewBox.getCenter().subtract(previewBox.getXsize() / 2, previewBox.getYsize() / 2, previewBox.getZsize() / 2);
+        ClientSubLevelAccess subLevel = SableCompanion.INSTANCE.getContainingClient(min);
+        if(subLevel != null) {
+            Vector3d globalMin = subLevel.renderPose().transformPosition(GLOBAL_MIN.set(previewBox.minX, previewBox.minY, previewBox.minZ));
+            previewBox = previewBox.move(-min.x, -min.y, -min.z);
+            poseStack.translate(globalMin.x(), globalMin.y(), globalMin.z());
+            poseStack.mulPose(subLevel.renderPose().orientation().get(ORIENTATION));
+        }
+
+        LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(ChiselRenderTypes.LINES), previewBox.inflate(0.001f), 0.65f, 0.68f, 0.38f, 1.0f);
+        int light = LevelRenderer.getLightColor(player.level(), this.startPos.relative(this.direction));
+        renderBox(poseStack, previewBox, bufferSource, light);
 
         poseStack.popPose();
     }
@@ -151,24 +167,9 @@ public class CarvingClientHandler {
         return hand;
     }
 
-    private void renderBox(PoseStack poseStack, AABB box) {
+    private void renderBox(PoseStack poseStack, AABB box, MultiBufferSource bufferSource, int light) {
         poseStack.pushPose();
-
-        Vec3 min = box.getCenter().subtract(box.getXsize() / 2, box.getYsize() / 2, box.getZsize() / 2);
-        ClientSubLevelAccess subLevel = SableCompanion.INSTANCE.getContainingClient(min);
-        if(subLevel != null) {
-            Vector3d globalMin = subLevel.renderPose().transformPosition(GLOBAL_MIN.set(box.minX, box.minY, box.minZ));
-            box = box.move(-min.x, -min.y, -min.z);
-            poseStack.translate(globalMin.x(), globalMin.y(), globalMin.z());
-            poseStack.mulPose(subLevel.renderPose().orientation().get(ORIENTATION));
-        }
-
-        int color = 0xff6ddca9;
-        int color2 = 0xff60e483;
-        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableDepthTest();
+        VertexConsumer builder = bufferSource.getBuffer(ChiselRenderTypes.OVERLAY);
 
         float minX = (float) box.minX;
         float minY = (float) box.minY;
@@ -176,47 +177,48 @@ public class CarvingClientHandler {
         float maxX = (float) box.maxX;
         float maxY = (float) box.maxY;
         float maxZ = (float) box.maxZ;
-
-        Matrix4f pose = poseStack.last().pose();
+        int color = 0xffffffff;
+        float w = (float) box.getXsize();
+        float h = (float) box.getYsize();
+        float l = (float) box.getZsize();
+        PoseStack.Pose pose = poseStack.last();
 
         // South
-        builder.addVertex(pose, minX, minY, maxZ).setColor(color2);
-        builder.addVertex(pose, maxX, minY, maxZ).setColor(color2);
-        builder.addVertex(pose, maxX, maxY, maxZ).setColor(color);
-        builder.addVertex(pose, minX, maxY, maxZ).setColor(color);
+        builder.addVertex(pose, minX, minY, maxZ).setColor(color).setUv(0, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, 1);
+        builder.addVertex(pose, maxX, minY, maxZ).setColor(color).setUv(w, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, 1);
+        builder.addVertex(pose, maxX, maxY, maxZ).setColor(color).setUv(w, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, 1);
+        builder.addVertex(pose, minX, maxY, maxZ).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, 1);
 
         // North
-        builder.addVertex(pose, maxX, minY, minZ).setColor(color2);
-        builder.addVertex(pose, minX, minY, minZ).setColor(color2);
-        builder.addVertex(pose, minX, maxY, minZ).setColor(color);
-        builder.addVertex(pose, maxX, maxY, minZ).setColor(color);
-
-        // West
-        builder.addVertex(pose, maxX, minY, maxZ).setColor(color2);
-        builder.addVertex(pose, maxX, minY, minZ).setColor(color2);
-        builder.addVertex(pose, maxX, maxY, minZ).setColor(color);
-        builder.addVertex(pose, maxX, maxY, maxZ).setColor(color);
+        builder.addVertex(pose, maxX, minY, minZ).setColor(color).setUv(0, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, -1);
+        builder.addVertex(pose, minX, minY, minZ).setColor(color).setUv(w, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, -1);
+        builder.addVertex(pose, minX, maxY, minZ).setColor(color).setUv(w, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, -1);
+        builder.addVertex(pose, maxX, maxY, minZ).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, -1);
 
         // East
-        builder.addVertex(pose, minX, minY, minZ).setColor(color2);
-        builder.addVertex(pose, minX, minY, maxZ).setColor(color2);
-        builder.addVertex(pose, minX, maxY, maxZ).setColor(color);
-        builder.addVertex(pose, minX, maxY, minZ).setColor(color);
+        builder.addVertex(pose, maxX, minY, maxZ).setColor(color).setUv(0, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 1, 0, 0);
+        builder.addVertex(pose, maxX, minY, minZ).setColor(color).setUv(l, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 1, 0, 0);
+        builder.addVertex(pose, maxX, maxY, minZ).setColor(color).setUv(l, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 1, 0, 0);
+        builder.addVertex(pose, maxX, maxY, maxZ).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 1, 0, 0);
+
+        // West
+        builder.addVertex(pose, minX, minY, minZ).setColor(color).setUv(0, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, -1, 0, 0);
+        builder.addVertex(pose, minX, minY, maxZ).setColor(color).setUv(l, h).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, -1, 0, 0);
+        builder.addVertex(pose, minX, maxY, maxZ).setColor(color).setUv(l, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, -1, 0, 0);
+        builder.addVertex(pose, minX, maxY, minZ).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, -1, 0, 0);
 
         // Up
-        builder.addVertex(pose, maxX, maxY, minZ).setColor(color);
-        builder.addVertex(pose, minX, maxY, minZ).setColor(color);
-        builder.addVertex(pose, minX, maxY, maxZ).setColor(color);
-        builder.addVertex(pose, maxX, maxY, maxZ).setColor(color);
+        builder.addVertex(pose, maxX, maxY, minZ).setColor(color).setUv(0, l).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 1, 0);
+        builder.addVertex(pose, minX, maxY, minZ).setColor(color).setUv(w, l).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 1, 0);
+        builder.addVertex(pose, minX, maxY, maxZ).setColor(color).setUv(w, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 1, 0);
+        builder.addVertex(pose, maxX, maxY, maxZ).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 1, 0);
 
         // Down
-        builder.addVertex(pose, maxX, minY, maxZ).setColor(color2);
-        builder.addVertex(pose, minX, minY, maxZ).setColor(color2);
-        builder.addVertex(pose, minX, minY, minZ).setColor(color2);
-        builder.addVertex(pose, maxX, minY, minZ).setColor(color2);
+        builder.addVertex(pose, maxX, minY, maxZ).setColor(color).setUv(0, l).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, -1, 0);
+        builder.addVertex(pose, minX, minY, maxZ).setColor(color).setUv(w, l).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, -1, 0);
+        builder.addVertex(pose, minX, minY, minZ).setColor(color).setUv(w, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, -1, 0);
+        builder.addVertex(pose, maxX, minY, minZ).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, -1, 0);
 
-        BufferUploader.drawWithShader(builder.buildOrThrow());
-        RenderSystem.enableDepthTest();
 
         poseStack.popPose();
     }
