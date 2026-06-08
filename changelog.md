@@ -1,7 +1,10 @@
-- Added config options for bandages
-- Added config options for warding effigy range
-- Added config options for ancient bronze mask healing
-- Fixed inverted bells in sanctuaries not teleporting the player properly
-- Fixed new music pools not playing properly
-- Fixed darkness and blindness effect not working as intended underground
-- Fixed all potion ingredients downgrading potions, not just the awkward residue
+- Added an incendiary arrow config option for lighting blocks on fire 
+- Made tortoise burrows rarer
+- Fixed `/meetingpoint` override not persisting after reloads
+- Fixed alchemist ruins sometimes spawning high above the ocean floor
+- Fixed mangrove and willow trees spawning with log overhangs and without dirt under them
+- Fixed crag rocks replacing unsuitable blocks such as logs
+- Improved inverted bell performance
+- Added missing structure tags to NML biomes
+- Made stone shore pools only spawn near the water level
+- Fixed a few random rare crashes, mostly mod incompatibilities
