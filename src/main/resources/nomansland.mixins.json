@@ -59,6 +59,7 @@
     "WaterlilyBlockMixin",
     "WitchMixin",
     "bell_sanctuary.JigsawPlacementMixin",
+    "caves.ClimateRTreeNodeAccessor",
     "caves.DimensionBiomePlacementMixin",
     "caves.MultiNoiseBiomeSourceMixin",
     "integration.PloughMovementBehaviorMixin",
