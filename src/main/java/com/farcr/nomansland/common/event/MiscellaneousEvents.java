@@ -747,6 +747,12 @@ public class MiscellaneousEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        if (event.getTarget() instanceof LivingEntity livingEntity
+        && livingEntity.hasEffect(NMLEffects.STASIS)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onIncomingDamageStasis(LivingIncomingDamageEvent event) {
         LivingEntity livingEntity = event.getEntity();
         if (livingEntity.getUseItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
