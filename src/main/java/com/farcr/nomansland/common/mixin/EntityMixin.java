@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.common.extension.EntityExtension;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -158,5 +159,13 @@ public abstract class EntityMixin implements EntityExtension {
         if (fallDistance > 0.0F && startingToFallPosition == null) {
             startingToFallPosition = position();
         }
+    }
+
+    @Unique private Entity nml$Self = (Entity) (Object) this;
+
+    @Inject(method = "push(DDD)V", at = @At("HEAD"), cancellable = true)
+    private void nml$stasisAvoidPush(double x, double y, double z, CallbackInfo ci) {
+        if (nml$Self instanceof LivingEntity livingEntity
+        && livingEntity.hasEffect(NMLEffects.STASIS)) ci.cancel();
     }
 }

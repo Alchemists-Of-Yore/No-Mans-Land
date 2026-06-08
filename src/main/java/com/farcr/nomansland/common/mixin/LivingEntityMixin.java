@@ -18,9 +18,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,6 +55,14 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Shadow
     protected abstract void tickEffects();
 
+    @Shadow
+    protected abstract void pushEntities();
+
+    @Shadow
+    public abstract boolean isUsingItem();
+
+    @Shadow
+    protected ItemStack useItem;
     @Unique
     private boolean nomansland$skipDroppingDeathLoot = false;
     @Unique
@@ -104,6 +112,13 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
         this.setJumping(false);
     }
 
+    @Inject(method = "isBlocking", at = @At("HEAD"), cancellable = true)
+    private void nml$wrapBlockingForOathSword(CallbackInfoReturnable<Boolean> cir) {
+        if (this.isUsingItem() && !this.useItem.isEmpty()
+        && this.useItem.is(NMLItems.ANCESTRAL_OATH_SWORD))
+            cir.setReturnValue(true);
+    }
+
     @Override
     public int nml$getBellParalysis() {
         return this.nml$bellParalysisTimer;
@@ -128,6 +143,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     private void nml$skipTick(CallbackInfo ci) {
         if (this.getEffect(NMLEffects.STASIS) != null) {
             this.tickEffects();
+            this.pushEntities();
             nml$setVisualTickMultiplier(Math.max(nml$getVisualTickMultiplier() - (1 / 20f), 0f));
             if (!nml$Self.level().isClientSide && !nml$Self.hasEffect(NMLEffects.STASIS)) {
                 ((ServerLevel) nml$Self.level()).getChunkSource().broadcast(nml$Self,
