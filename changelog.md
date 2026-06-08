@@ -8,4 +8,5 @@
 - Added missing structure tags to NML biomes
 - Made stone shore pools only spawn near the water level
 - Fixed not being able to offer items in the moonlight basin with ItemPhysic
+- Fixed the nether and other environments being darker than usual
 - Fixed a few random rare crashes, mostly mod incompatibilities
