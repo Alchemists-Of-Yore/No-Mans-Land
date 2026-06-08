@@ -11,3 +11,4 @@
 - Fixed the nether and other environments being darker than usual
 - Fixed a few random rare crashes, mostly mod incompatibilities
 - Fixed alchemist maps not generating in trail ruins
+- Fixed ancient pots dropping when hit by a projectile

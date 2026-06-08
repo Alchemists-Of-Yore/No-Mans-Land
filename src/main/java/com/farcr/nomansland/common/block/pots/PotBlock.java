@@ -384,9 +384,9 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
         RandomSource random = level.getRandom();
         BlockPos blockPos = BlockPos.containing(pos);
         DifficultyInstance difficulty = level.getCurrentDifficultyAt(blockPos);
-        double x = pos.x + 0.5;
+        double x = pos.x;
         double y = pos.y;
-        double z = pos.z + 0.5;
+        double z = pos.z;
 
         if (modifiers.contains(PotModifier.INFESTED)) {
             int count = random.nextInt(2, 4);
@@ -554,7 +554,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (level.getBlockEntity(blockpos) instanceof PotBlockEntity pot) {
                     pot.shouldDropItems = true;
                 }
-                level.destroyBlock(blockpos, true, projectile);
+                level.destroyBlock(blockpos, false, projectile);
             }
         }
     }
