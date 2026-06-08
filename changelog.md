@@ -10,3 +10,4 @@
 - Fixed not being able to offer items in the moonlight basin with ItemPhysic
 - Fixed the nether and other environments being darker than usual
 - Fixed a few random rare crashes, mostly mod incompatibilities
+- Fixed alchemist maps not generating in trail ruins
