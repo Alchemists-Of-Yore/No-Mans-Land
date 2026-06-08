@@ -13,6 +13,11 @@
       "heightmap": "OCEAN_FLOOR_WG"
     },
     {
+      "type": "nomansland:height_filter",
+      "height_min": 60,
+      "height_max": 72
+    },
+    {
       "type": "minecraft:biome"
     }
   ]
