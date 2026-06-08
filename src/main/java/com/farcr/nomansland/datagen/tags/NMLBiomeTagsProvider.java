@@ -92,6 +92,23 @@ public class NMLBiomeTagsProvider extends BiomeTagsProvider {
 
         //Misc Tag Tweaks
         addToTags(Biomes.FROZEN_RIVER, Tags.Biomes.IS_SNOWY);
+
+        List<ResourceKey<Biome>> surfaceBiomes = List.of(
+                NMLBiomes.AUTUMNAL_FOREST, NMLBiomes.BAYOU, NMLBiomes.BOG, NMLBiomes.DARK_SWAMP,
+                NMLBiomes.DARK_TAIGA, NMLBiomes.BOREAL_FOREST, NMLBiomes.MAPLE_FOREST, NMLBiomes.MAPLE_GROVE,
+                NMLBiomes.FROZEN_WOODS, NMLBiomes.PRAIRIE, NMLBiomes.LAVENDER_FIELD,
+                NMLBiomes.LUSH_RIVER, NMLBiomes.BLACKWATER_RIVER, NMLBiomes.DESERT_RIVER,
+                NMLBiomes.MUD_BEACH, NMLBiomes.FROZEN_SHORE, NMLBiomes.TROPICAL_BEACH
+        );
+        surfaceBiomes.forEach(biome -> addToTags(biome, BiomeTags.HAS_TRIAL_CHAMBERS));
+        addToTags(NMLTags.OLD_GROWTH_FOREST, BiomeTags.HAS_TRIAL_CHAMBERS);
+
+        List.of(NMLBiomes.BOG, NMLBiomes.PRAIRIE, NMLBiomes.FROZEN_SHORE, NMLBiomes.MUD_BEACH)
+                .forEach(biome -> addToTags(biome, BiomeTags.HAS_MINESHAFT));
+        List.of(NMLBiomes.PRAIRIE, NMLBiomes.FROZEN_SHORE)
+                .forEach(biome -> addToTags(biome, BiomeTags.HAS_RUINED_PORTAL_STANDARD));
+        List.of(NMLBiomes.BOG, NMLBiomes.MUD_BEACH)
+                .forEach(biome -> addToTags(biome, BiomeTags.HAS_RUINED_PORTAL_SWAMP));
     }
 
     @SafeVarargs
