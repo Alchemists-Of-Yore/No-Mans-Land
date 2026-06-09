@@ -27,6 +27,7 @@
     "LadderBlockMixin",
     "LeaveVineDecoratorMixin",
     "LevelChunkMixin",
+    "LevelMixin",
     "LivingEntityMixin",
     "LocateCommandMixin",
     "MinecraftServerMixin",

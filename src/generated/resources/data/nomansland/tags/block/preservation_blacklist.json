@@ -1,0 +1,16 @@
+{
+  "values": [
+    "minecraft:chest",
+    "minecraft:trapped_chest",
+    "minecraft:barrel",
+    "minecraft:brewing_stand",
+    "minecraft:beacon",
+    "minecraft:shulker_box",
+    "minecraft:decorated_pot",
+    "minecraft:suspicious_gravel",
+    "minecraft:suspicious_sand",
+    "nomansland:ancient_pot",
+    "nomansland:large_ancient_pot",
+    "nomansland:preservation"
+  ]
+}

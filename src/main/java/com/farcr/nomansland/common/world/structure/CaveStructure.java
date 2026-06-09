@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class CaveStructure extends Structure {
+public class CaveStructure extends PreservableStructure {
     public enum ExposureTreatment implements StringRepresentable {
         NONE("none"),
         ERODE("erode"),
@@ -89,7 +89,8 @@ public class CaveStructure extends Structure {
                     Codec.intRange(1, 128).optionalFieldOf("max_distance_from_center", 80).forGetter(structure -> structure.maxDistanceFromCenter),
                     HeightProvider.CODEC.optionalFieldOf("start_height", DEFAULT_START_HEIGHT).forGetter(structure -> structure.startHeight),
                     Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
-                    ExposureTreatment.CODEC.optionalFieldOf("exposure", ExposureTreatment.NONE).forGetter(structure -> structure.exposureTreatment)
+                    ExposureTreatment.CODEC.optionalFieldOf("exposure", ExposureTreatment.NONE).forGetter(structure -> structure.exposureTreatment),
+                    Codec.BOOL.optionalFieldOf("preserve", false).forGetter(structure -> structure.preserve)
             ).apply(instance, CaveStructure::new)
     );
 
@@ -157,8 +158,9 @@ public class CaveStructure extends Structure {
     private final HeightProvider startHeight;
     private final Optional<Heightmap.Types> projectStartToHeightmap;
     private final ExposureTreatment exposureTreatment;
+    private final boolean preserve;
 
-    public CaveStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool, int maxDepth, int maxDistanceFromCenter, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap, ExposureTreatment exposureTreatment) {
+    public CaveStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool, int maxDepth, int maxDistanceFromCenter, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap, ExposureTreatment exposureTreatment, boolean preserve) {
         super(settings);
         this.startPool = startPool;
         this.maxDepth = maxDepth;
@@ -166,6 +168,12 @@ public class CaveStructure extends Structure {
         this.startHeight = startHeight;
         this.projectStartToHeightmap = projectStartToHeightmap;
         this.exposureTreatment = exposureTreatment;
+        this.preserve = preserve;
+    }
+
+    @Override
+    protected boolean shouldPreserve() {
+        return this.preserve;
     }
 
     @Override
@@ -286,8 +294,7 @@ public class CaveStructure extends Structure {
     }
 
     @Override
-    public void afterPlace(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random, BoundingBox chunkBounds, ChunkPos chunkPos, PiecesContainer pieces) {
-        super.afterPlace(level, structureManager, generator, random, chunkBounds, chunkPos, pieces);
+    protected void afterPlaceStructure(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random, BoundingBox chunkBounds, ChunkPos chunkPos, PiecesContainer pieces) {
         if (pieces.pieces().isEmpty()) return;
         if (!(pieces.pieces().get(0) instanceof PoolElementStructurePiece startPiece)) return;
 

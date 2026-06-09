@@ -50,6 +50,8 @@ public class NMLTags {
 
     public static final TagKey<Block> SUPPORTS_ICICLE = createBlockTag("supports_icicle");
 
+    public static final TagKey<Block> PRESERVATION_BLACKLIST = createBlockTag("preservation_blacklist");
+
     public static final TagKey<Biome> CLASSIC_SOIL = createBiomeTag("classic_soil");
     public static final TagKey<Biome> IS_SHORELINE = createBiomeTag("is_shoreline");
     public static final TagKey<Biome> IS_CRAGLAND = createBiomeTag("is_cragland");
