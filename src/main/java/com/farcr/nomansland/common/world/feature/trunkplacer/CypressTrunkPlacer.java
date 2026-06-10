@@ -96,6 +96,7 @@ public class CypressTrunkPlacer extends TrunkPlacer {
     }
 
     private void fillRootToGround(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter, RandomSource random, BlockPos base, TreeConfiguration config) {
+        if (config.rootPlacer.isPresent()) return;
         BlockPos.MutableBlockPos mut = base.mutable().move(Direction.DOWN);
         int drop = 0;
         while (drop < 2 && TreeFeature.isAirOrLeaves(level, mut)) {

@@ -1,1 +1,2 @@
 - Extended the incendiary arrow config option to disable ember spawning
+- Fixed mangrove trees placing dirt above their roots
