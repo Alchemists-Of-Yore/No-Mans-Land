@@ -7,6 +7,14 @@ public interface LivingEntityExtension {
         throw new NotImplementedException();
     }
 
+    default void nml$setBeingResurrected() throws NotImplementedException {
+        throw new NotImplementedException();
+    }
+
+    default boolean nml$isBeingResurrected() {
+        return false;
+    }
+
     default void nml$beginBellParalysis() {};
     default int nml$getBellParalysis() {
         return 0;
