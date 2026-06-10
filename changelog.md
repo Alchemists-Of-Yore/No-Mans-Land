@@ -1,14 +1,1 @@
-- Added an incendiary arrow config option for lighting blocks on fire 
-- Made tortoise burrows rarer
-- Fixed `/meetingpoint` override not persisting after reloads
-- Fixed alchemist ruins sometimes spawning high above the ocean floor
-- Fixed mangrove and willow trees spawning with log overhangs and without dirt under them
-- Fixed crag rocks replacing unsuitable blocks such as logs
-- Improved inverted bell performance
-- Added missing structure tags to NML biomes
-- Made stone shore pools only spawn near the water level
-- Fixed not being able to offer items in the moonlight basin with ItemPhysic
-- Fixed the nether and other environments being darker than usual
-- Fixed a few random rare crashes, mostly mod incompatibilities
-- Fixed alchemist maps not generating in trail ruins
-- Fixed ancient pots dropping when hit by a projectile
+- Extended the incendiary arrow config option to disable ember spawning
