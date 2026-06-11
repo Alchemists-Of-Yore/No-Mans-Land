@@ -41,6 +41,7 @@ public class GoosePeaceOfferingBehavior extends Behavior<Goose> {
     private static boolean isBusy(Goose goose) {
         return goose.isCarrying()
                 || goose.isStealing()
+                || goose.isFlying()
                 || goose.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
                 || goose.getBrain().hasMemoryValue(MemoryModuleType.AVOID_TARGET);
     }

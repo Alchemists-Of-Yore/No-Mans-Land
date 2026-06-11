@@ -6,6 +6,7 @@ import com.farcr.nomansland.common.registry.entities.NMLEntityDataSerializers;
 import com.mojang.serialization.Dynamic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,15 +22,18 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -52,13 +56,21 @@ public class Goose extends Animal {
     private static final EntityDataAccessor<State> DATA_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
     private static final EntityDataAccessor<ItemStack> DATA_CARRIED_ITEM = SynchedEntityData.defineId(Goose.class, EntityDataSerializers.ITEM_STACK);
     private int hurtAnimationTick = 0;
+    private int peckAnimationTick = 0;
     public final AnimationState hurtingAnimationState = new AnimationState();
     public final AnimationState fallingAnimationState = new AnimationState();
     public final AnimationState intimidatingAnimationState = new AnimationState();
+    public final AnimationState peckingAnimationState = new AnimationState();
+    public final AnimationState flyingAnimationState = new AnimationState();
+    public final AnimationState drinkingAnimationState = new AnimationState();
 
     private static final double FLOCK_RADIUS = 12.0;
     private static final int FLAP_DISPLAY_TICKS = 12;
     private static final long ATTACK_TARGET_EXPIRY = 240L;
+    private static final byte EVENT_PECK = 61;
+    private static final int PECK_ANIMATION_TICKS = 10;
+    private static final int HONK_COOLDOWN_TICKS = 15;
+    private static final int FLIGHT_POSE_DWELL_TICKS = 4;
 
     private final GooseGrudges grudges = new GooseGrudges();
     @Nullable
@@ -66,6 +78,23 @@ public class Goose extends Animal {
     private long attackReadyAt;
     private int flapTicks;
     private boolean stealing;
+    private boolean flying;
+    private boolean drinking;
+    private long lastFlightControlTime;
+    private int honkCooldown;
+    private FlightPose flightPose = FlightPose.FORWARD;
+    private FlightPose pendingFlightPose = FlightPose.FORWARD;
+    private int pendingFlightPoseTicks;
+    private boolean migrating;
+    private boolean arriving;
+    private int formationIndex;
+    @Nullable
+    private Goose flockLeader;
+    @Nullable
+    private Vec3 migrationHeading;
+    private double migrationCeiling;
+    @Nullable
+    private BlockPos landingSpot;
 
     public Goose(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -104,6 +133,143 @@ public class Goose extends Animal {
         this.stealing = stealing;
     }
 
+    public boolean isFlying() {
+        return level().isClientSide ? getState() == State.FLYING : flying;
+    }
+
+    public void setFlying(boolean flying) {
+        this.flying = flying;
+        if (flying) markFlightControl();
+    }
+
+    public void markFlightControl() {
+        if (!level().isClientSide) lastFlightControlTime = level().getGameTime();
+    }
+
+    public boolean isDrinking() {
+        return level().isClientSide ? getState() == State.DRINKING : drinking;
+    }
+
+    public void setDrinking(boolean drinking) {
+        this.drinking = drinking;
+    }
+
+    public FlightPose getFlightPose() {
+        return flightPose;
+    }
+
+    public boolean isMigrating() {
+        return migrating;
+    }
+
+    public boolean isArriving() {
+        return arriving;
+    }
+
+    public int getFormationIndex() {
+        return formationIndex;
+    }
+
+    @Nullable
+    public Goose getFlockLeader() {
+        return flockLeader;
+    }
+
+    @Nullable
+    public Vec3 getMigrationHeading() {
+        return migrationHeading;
+    }
+
+    public double getMigrationCeiling() {
+        return migrationCeiling;
+    }
+
+    @Nullable
+    public BlockPos getLandingSpot() {
+        return landingSpot;
+    }
+
+    public void startMigration(@Nullable Goose leader, int index, Vec3 heading, double ceiling) {
+        migrating = true;
+        arriving = false;
+        flockLeader = leader;
+        formationIndex = index;
+        migrationHeading = heading;
+        migrationCeiling = ceiling;
+        landingSpot = null;
+        setFlying(true);
+        getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+        getNavigation().stop();
+        honk();
+    }
+
+    public void startArrival(@Nullable Goose leader, int index, Vec3 heading, BlockPos landing) {
+        migrating = true;
+        arriving = true;
+        flockLeader = leader;
+        formationIndex = index;
+        migrationHeading = heading;
+        migrationCeiling = 0;
+        landingSpot = landing;
+        setFlying(true);
+    }
+
+    public void finishMigrationFlight() {
+        migrating = false;
+        arriving = false;
+        flockLeader = null;
+        migrationHeading = null;
+        landingSpot = null;
+        setFlying(false);
+    }
+
+    public static float weaponBonus(ItemStack stack) {
+        float[] bonus = {0};
+        stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).modifiers().forEach(entry -> {
+            if (entry.slot().test(EquipmentSlot.MAINHAND)
+                    && entry.attribute().is(Attributes.ATTACK_DAMAGE.unwrapKey().orElseThrow())
+                    && entry.modifier().operation() == AttributeModifier.Operation.ADD_VALUE) {
+                bonus[0] += (float) entry.modifier().amount();
+            }
+        });
+        return Math.max(0, bonus[0]);
+    }
+
+    public boolean isArmed() {
+        return isCarrying() && weaponBonus(getCarriedItem()) > 0;
+    }
+
+    @Nullable
+    public ItemEntity findNearbyWeapon(double radius) {
+        ItemEntity closest = null;
+        double best = Double.MAX_VALUE;
+        for (ItemEntity item : level().getEntitiesOfClass(ItemEntity.class, getBoundingBox().inflate(radius))) {
+            if (weaponBonus(item.getItem()) <= 0) continue;
+            double distance = distanceToSqr(item);
+            if (distance < best) {
+                best = distance;
+                closest = item;
+            }
+        }
+        return closest;
+    }
+
+    public void grabItem(ItemEntity item) {
+        setCarriedItem(item.getItem().copyWithCount(1));
+        item.getItem().shrink(1);
+        if (item.getItem().isEmpty()) item.discard();
+    }
+
+    public void peck() {
+        if (!level().isClientSide) level().broadcastEntityEvent(this, EVENT_PECK);
+    }
+
+    public void honk() {
+        if (honkCooldown > 0) return;
+        honkCooldown = HONK_COOLDOWN_TICKS;
+        makeSound(NMLSounds.GOOSE_AMBIENT.get());
+    }
+
     public void dropCarriedItem() {
         ItemStack carried = getCarriedItem();
         if (!carried.isEmpty()) {
@@ -133,16 +299,18 @@ public class Goose extends Animal {
     }
 
     public void beginAttack(LivingEntity target) {
+        if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         aggressionAnchor = blockPosition();
         Brain<Goose> brain = getBrain();
         brain.eraseMemory(MemoryModuleType.AVOID_TARGET);
         brain.setMemoryWithExpiry(MemoryModuleType.ATTACK_TARGET, target, ATTACK_TARGET_EXPIRY);
         setTarget(target);
+        honk();
     }
 
     public void rallyFlock(LivingEntity target) {
         for (Goose ally : nearbyGeese(FLOCK_RADIUS)) {
-            if (ally.canFight() && !ally.isCarrying() && !ally.isStealing()
+            if (ally.canFight() && (!ally.isCarrying() || ally.isArmed()) && !ally.isStealing() && !ally.isFlying() && !ally.isMigrating()
                     && ally.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
                 ally.beginAttack(target);
             }
@@ -250,7 +418,9 @@ public class Goose extends Animal {
     }
 
     public boolean showWings() {
-        return getState() != State.IDLING || hurtingAnimationState.isStarted() || fallingAnimationState.isStarted();
+        State state = getState();
+        return state == State.INTIMIDATING || state == State.RUNNING || state == State.FLYING
+                || hurtingAnimationState.isStarted() || fallingAnimationState.isStarted();
     }
 
     public void setState(State state) {
@@ -312,21 +482,32 @@ public class Goose extends Animal {
         getBrain().tick(level, this);
         level.getProfiler().pop();
 
+        if (flying && level.getGameTime() - lastFlightControlTime > 4) {
+            flying = false;
+        }
+
         GooseAI.updateActivity(this);
         updateState();
 
         super.customServerAiStep();
     }
 
-    // Animation state is derived in one place so the behaviours never fight over it.
     private void updateState() {
         Brain<Goose> brain = getBrain();
-        if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
-            setState(State.RUNNING);
+        if (flying) {
+            setState(State.FLYING);
+        } else if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+            setState(brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) ? State.RUNNING : State.IDLING);
         } else if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) {
-            setState(canFight() ? State.INTIMIDATING : State.RUNNING);
+            if (canFight()) {
+                setState(State.INTIMIDATING);
+            } else {
+                setState(brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) ? State.RUNNING : State.IDLING);
+            }
         } else if (isCarrying()) {
-            setState(State.IDLING);
+            setState(brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) ? State.RUNNING : State.IDLING);
+        } else if (drinking) {
+            setState(State.DRINKING);
         } else if (flapTicks > 0) {
             setState(State.INTIMIDATING);
         } else {
@@ -338,10 +519,19 @@ public class Goose extends Animal {
     public void aiStep() {
         super.aiStep();
 
+        if (!level().isClientSide && tickCount % 200 == 0 && getHealth() < getMaxHealth()) {
+            heal(1.0F);
+        }
+
         Vec3 vec3 = this.getDeltaMovement();
-        if (!this.onGround() && vec3.y < 0) {
+        if (!this.onGround() && vec3.y < 0 && !isFlying()) {
             this.setDeltaMovement(vec3.multiply(1, 0.6, 1));
         }
+    }
+
+    @Override
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
+        return false;
     }
 
     @Override
@@ -349,6 +539,11 @@ public class Goose extends Animal {
         if (id == 4) {
             hurtingAnimationState.start(tickCount);
             hurtAnimationTick = 22;
+        }
+
+        if (id == EVENT_PECK) {
+            peckingAnimationState.start(tickCount);
+            peckAnimationTick = PECK_ANIMATION_TICKS;
         }
 
         super.handleEntityEvent(id);
@@ -364,15 +559,55 @@ public class Goose extends Animal {
     public void tick() {
         super.tick();
 
-        if (onGround() || getDeltaMovement().y > 0) fallingAnimationState.ifStarted(AnimationState::stop);
+        boolean inFlight = getState() == State.FLYING;
+        if (inFlight || onGround() || getDeltaMovement().y > 0) fallingAnimationState.ifStarted(AnimationState::stop);
         else fallingAnimationState.startIfStopped(tickCount);
-        
+
         if (hurtAnimationTick > 0) hurtAnimationTick--;
         else hurtingAnimationState.ifStarted(AnimationState::stop);
 
-        if (!level().isClientSide && flapTicks > 0) flapTicks--;
+        if (peckAnimationTick > 0) peckAnimationTick--;
+        else peckingAnimationState.ifStarted(AnimationState::stop);
+
+        if (level().isClientSide) {
+            if (inFlight) {
+                flyingAnimationState.startIfStopped(tickCount);
+                updateFlightPose();
+            } else {
+                flyingAnimationState.stop();
+                flightPose = FlightPose.FORWARD;
+            }
+
+            if (getState() == State.DRINKING) drinkingAnimationState.startIfStopped(tickCount);
+            else drinkingAnimationState.stop();
+        }
+
+        if (!level().isClientSide) {
+            if (flapTicks > 0) flapTicks--;
+            if (honkCooldown > 0) honkCooldown--;
+        }
 
         floatGoose();
+    }
+
+    private void updateFlightPose() {
+        double dy = getY() - yo;
+        FlightPose observed = flightPose;
+        if (dy > 0.1) observed = FlightPose.ASCENDING;
+        else if (dy < -0.06) observed = FlightPose.GLIDING;
+        else if (dy > -0.02 && dy < 0.07) observed = FlightPose.FORWARD;
+
+        if (observed == flightPose) {
+            pendingFlightPoseTicks = 0;
+        } else if (observed == pendingFlightPose) {
+            if (++pendingFlightPoseTicks >= FLIGHT_POSE_DWELL_TICKS) {
+                flightPose = observed;
+                pendingFlightPoseTicks = 0;
+            }
+        } else {
+            pendingFlightPose = observed;
+            pendingFlightPoseTicks = 1;
+        }
     }
 
     @Override
@@ -386,7 +621,7 @@ public class Goose extends Animal {
     }
 
     private void floatGoose() {
-        if (isInWater()) {
+        if (isInWater() && !isFlying()) {
             CollisionContext collisioncontext = CollisionContext.of(this);
             if (collisioncontext.isAbove(LiquidBlock.STABLE_SHAPE, blockPosition(), true) && !level().getFluidState(blockPosition().above()).is(FluidTags.WATER)) {
                 if (random.nextFloat() < 0.2F) setDeltaMovement(getDeltaMovement().scale(0.5).add(0.0, 0.05, 0.0));
@@ -422,10 +657,18 @@ public class Goose extends Animal {
         }
     }
 
+    public enum FlightPose {
+        ASCENDING,
+        FORWARD,
+        GLIDING
+    }
+
     public enum State {
         IDLING(0),
         INTIMIDATING(1),
-        RUNNING(2);
+        RUNNING(2),
+        FLYING(3),
+        DRINKING(4);
 
         public static final IntFunction<State> BY_ID = ByIdMap.continuous(State::id, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final StreamCodec<ByteBuf, State> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, State::id);

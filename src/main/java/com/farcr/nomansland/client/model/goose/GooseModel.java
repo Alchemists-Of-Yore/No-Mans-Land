@@ -2,6 +2,7 @@ package com.farcr.nomansland.client.model.goose;
 
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.AgeableHierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -82,24 +83,36 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
     @Override
     public void setupAnim(T goose, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root.getAllParts().forEach(ModelPart::resetPose);
-        head.xRot = headPitch * 0.017453292F / 3;
-        head.yRot = netHeadYaw * 0.017453292F / 3;
+        Goose.State state = goose.getState();
+        boolean flying = state == Goose.State.FLYING;
+
+        if (!flying) {
+            head.xRot = headPitch * 0.017453292F / 3;
+            head.yRot = netHeadYaw * 0.017453292F / 3;
+        }
 
         if (!goose.hurtingAnimationState.isStarted()) {
-            if (goose.getState() == Goose.State.RUNNING) {
+            if (flying) {
+                animate(goose.flyingAnimationState, flightAnimation(goose), ageInTicks);
+            } else if (state == Goose.State.RUNNING) {
                 animateWalk(GooseAnimation.GOOSE_RUN, limbSwing, limbSwingAmount, 2, 3);
             } else {
                 if (goose.isInWater()) {
                     animateWalk(GooseAnimation.GOOSE_SWIM, limbSwing, limbSwingAmount, 4, 5);
+                    animate(goose.drinkingAnimationState, GooseAnimation.GOOSE_DRINK_SWIM, ageInTicks);
                 } else {
                     animateWalk(GooseAnimation.GOOSE_WALK, limbSwing, limbSwingAmount, 4, 5);
                     animate(goose.intimidatingAnimationState, GooseAnimation.GOOSE_INTIMIDATE, ageInTicks);
                     animate(goose.fallingAnimationState, GooseAnimation.GOOSE_FALL, ageInTicks);
+                    animate(goose.drinkingAnimationState, GooseAnimation.GOOSE_DRINK_STAND, ageInTicks);
                 }
             }
         }
 
         animate(goose.hurtingAnimationState, GooseAnimation.GOOSE_HURT, ageInTicks);
+        if (state != Goose.State.RUNNING && !flying) {
+            animate(goose.peckingAnimationState, GooseAnimation.GOOSE_PECK, ageInTicks);
+        }
 
         boolean baby = goose.isBaby();
         if (baby) {
@@ -129,6 +142,14 @@ public class GooseModel<T extends Goose> extends AgeableHierarchicalModel<T> {
         headBaby.yRot = head.yRot / 2;
         rightLegBaby.xRot = rightLeg.xRot / 2;
         leftLegBaby.xRot = leftLeg.xRot / 2;
+    }
+
+    private static AnimationDefinition flightAnimation(Goose goose) {
+        return switch (goose.getFlightPose()) {
+            case ASCENDING -> GooseAnimation.GOOSE_FLY_UP;
+            case GLIDING -> GooseAnimation.GOOSE_GLIDE;
+            case FORWARD -> GooseAnimation.GOOSE_FLY_FORWARD;
+        };
     }
 
     @Override

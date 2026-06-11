@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.function.Predicate;
 
 public class GooseCoreBehavior extends Behavior<Goose> {
     private static final double THREAT_RANGE = 3.0;
-    private static final int GRUDGE_AMBUSH_CHANCE = 160;
+    private static final int GRUDGE_AMBUSH_CHANCE = 300;
     private static final long ACTIVE_ANGER_TICKS = 20L * 30;
     private static final double WITNESS_RADIUS = 12.0;
 
@@ -39,10 +40,17 @@ public class GooseCoreBehavior extends Behavior<Goose> {
     @Override
     protected void tick(ServerLevel level, Goose goose, long gameTime) {
         Brain<Goose> brain = goose.getBrain();
+        brain.getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> {
+            if (!target.isAlive() || target.isRemoved()) {
+                brain.eraseMemory(MemoryModuleType.ATTACK_TARGET);
+                goose.setTarget(null);
+            }
+        });
         handleProvocation(goose, brain);
 
+        if (goose.isFlying()) return;
         if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) return;
-        if (goose.isCarrying()) return;
+        if (goose.isCarrying() && !goose.isArmed()) return;
         if (goose.isStealing()) return;
         if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) return;
 
@@ -66,7 +74,8 @@ public class GooseCoreBehavior extends Behavior<Goose> {
 
     private void handleProvocation(Goose goose, Brain<Goose> brain) {
         brain.getMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(attacker -> {
-            if (goose.isCarrying()) goose.dropCarriedItem();
+            if (attacker instanceof Player player && (player.isCreative() || player.isSpectator())) return;
+            if (goose.isCarrying() && !goose.isArmed()) goose.dropCarriedItem();
 
             UUID attackerId = attacker.getUUID();
             holdGrudgeAndAnger(goose, attackerId);
@@ -78,7 +87,7 @@ public class GooseCoreBehavior extends Behavior<Goose> {
                 }
             }
 
-            if (goose.canFight() && goose.isAttackReady() && brain.getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
+            if (goose.canFight() && goose.isAttackReady() && !goose.isMigrating() && brain.getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
                 commitToAttack(goose, attacker);
             }
         });

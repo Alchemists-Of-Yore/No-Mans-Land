@@ -57,6 +57,7 @@ public class GooseAI {
         initIdleActivity(brain);
         initFightActivity(brain);
         initAvoidActivity(brain);
+        brain.addActivity(Activity.RIDE, 0, ImmutableList.of());
         brain.setCoreActivities(Set.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.useDefaultActivity();
@@ -64,7 +65,11 @@ public class GooseAI {
     }
 
     public static void updateActivity(Goose goose) {
-        goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.AVOID, Activity.FIGHT, Activity.IDLE));
+        if (goose.isFlying()) {
+            goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.RIDE));
+        } else {
+            goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.AVOID, Activity.FIGHT, Activity.IDLE));
+        }
     }
 
     private static void initCoreActivity(Brain<Goose> brain) {
@@ -75,6 +80,8 @@ public class GooseAI {
                         new LookAtTargetSink(45, 90),
                         new MoveToTargetSink(),
                         new GooseCoreBehavior(),
+                        new GooseMigrationBehavior(),
+                        new GooseFlightBehavior(),
                         new GooseCarryBehavior(),
                         new GoosePeaceOfferingBehavior()
                 )
@@ -90,9 +97,10 @@ public class GooseAI {
                         Pair.of(2, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
                         Pair.of(3, new GooseStealBehavior()),
                         Pair.of(4, new GooseHonkAtBehavior()),
-                        Pair.of(5, new GooseSocializeBehavior()),
-                        Pair.of(6, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
-                        Pair.of(7, new RunOne<>(
+                        Pair.of(5, new GooseDrinkBehavior()),
+                        Pair.of(6, new GooseSocializeBehavior()),
+                        Pair.of(7, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
+                        Pair.of(8, new RunOne<>(
                                 ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                 ImmutableList.of(
                                         Pair.of(RandomStroll.stroll(1.0F), 1),

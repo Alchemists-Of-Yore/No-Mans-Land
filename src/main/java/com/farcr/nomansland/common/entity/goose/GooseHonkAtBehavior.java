@@ -17,28 +17,39 @@ import java.util.Map;
 
 public class GooseHonkAtBehavior extends Behavior<Goose> {
     private static final double NOTICE_RADIUS = 12.0;
-    private static final double HONK_DISTANCE_SQR = 6.0;
+    private static final double CLOSE_RANGE_SQR = 6.0;
+    private static final double PECK_RANGE_SQR = 4.0;
     private static final float APPROACH_SPEED = 1.1F;
     private static final int START_CHANCE = 200;
 
     @Nullable
     private LivingEntity focus;
+    private int honkCooldown;
+    private int peckCooldown;
 
     public GooseHonkAtBehavior() {
-        super(Map.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT), 40, 100);
+        super(Map.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT), 60, 140);
     }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, Goose goose) {
-        if (goose.isBaby() || goose.getRandom().nextInt(START_CHANCE) != 0) return false;
+        if (goose.isBaby() || goose.isCarrying() || goose.isFlying() || goose.getRandom().nextInt(START_CHANCE) != 0) return false;
         focus = pickVictim(goose);
         return focus != null;
+    }
+
+    @Override
+    protected void start(ServerLevel level, Goose goose, long gameTime) {
+        honkCooldown = 0;
+        peckCooldown = 20;
     }
 
     @Override
     protected boolean canStillUse(ServerLevel level, Goose goose, long gameTime) {
         return focus != null
                 && focus.isAlive()
+                && !goose.isCarrying()
+                && !goose.isFlying()
                 && goose.distanceToSqr(focus) < NOTICE_RADIUS * NOTICE_RADIUS
                 && goose.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
                 && goose.getBrain().getMemory(MemoryModuleType.AVOID_TARGET).isEmpty();
@@ -47,9 +58,21 @@ public class GooseHonkAtBehavior extends Behavior<Goose> {
     @Override
     protected void tick(ServerLevel level, Goose goose, long gameTime) {
         if (focus == null) return;
+        if (honkCooldown > 0) honkCooldown--;
+        if (peckCooldown > 0) peckCooldown--;
         goose.getLookControl().setLookAt(focus);
-        if (goose.distanceToSqr(focus) <= HONK_DISTANCE_SQR) {
-            goose.flapBriefly();
+        double distanceSqr = goose.distanceToSqr(focus);
+        if (distanceSqr <= CLOSE_RANGE_SQR) {
+            if (honkCooldown == 0) {
+                goose.flapBriefly();
+                goose.honk();
+                honkCooldown = 25 + goose.getRandom().nextInt(20);
+            }
+            if (peckCooldown == 0 && distanceSqr <= PECK_RANGE_SQR) {
+                goose.peck();
+                goose.doHurtTarget(focus);
+                peckCooldown = 30 + goose.getRandom().nextInt(30);
+            }
         } else {
             BehaviorUtils.setWalkAndLookTargetMemories(goose, focus, APPROACH_SPEED, 1);
         }
@@ -67,8 +90,9 @@ public class GooseHonkAtBehavior extends Behavior<Goose> {
         List<LivingEntity> candidates = new ArrayList<>();
         visible.findAll(entity -> entity != goose
                 && !(entity instanceof Goose)
-                && !(entity instanceof Player)
                 && !(entity instanceof Monster)
+                && entity.attackable()
+                && !(entity instanceof Player player && player.isSpectator())
                 && goose.distanceToSqr(entity) < NOTICE_RADIUS * NOTICE_RADIUS
         ).forEach(candidates::add);
         return candidates.isEmpty() ? null : candidates.get(goose.getRandom().nextInt(candidates.size()));
