@@ -2,3 +2,4 @@
 - Fixed mangrove trees placing dirt above their roots
 - Fixed monster anchors duplicating slime and magma cubes
 - Fixed mod incompatibility with Larion
+- Updated mixed litter to 1.2.2
