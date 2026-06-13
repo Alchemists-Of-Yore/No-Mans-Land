@@ -1,1 +1,2 @@
 - Added Appleskin compat for bandage healing
+- Fixed crash with Horseman
