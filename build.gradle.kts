@@ -150,6 +150,7 @@ dependencies {
     compileOnly("maven.modrinth:supplementaries:1.21-3.5.27-neoforge")
     implementation("maven.modrinth:vanity-core:5.0.2")
     compileOnly("maven.modrinth:snow-real-magic:12.1.2+neoforge")
+    compileOnly("maven.modrinth:etched:h6eJfwiW")
 
     compileOnly("mezz.jei:jei-${mc["version"]}-common-api:${deps["jei"]}")
     compileOnly("mezz.jei:jei-${mc["version"]}-neoforge-api:${deps["jei"]}")

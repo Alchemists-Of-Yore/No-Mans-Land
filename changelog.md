@@ -1,1 +1,2 @@
 - Fixed archeology loot modifiers breaking
+- Fixed the communion music disc interaction not working with Etched's album jukebox
