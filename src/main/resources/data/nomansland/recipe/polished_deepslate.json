@@ -2,23 +2,23 @@
   "neoforge:conditions": [
     {
       "type": "nomansland:boolean_config",
-      "option": "stone_bricks",
-      "enabled_when": false
+      "option": "polished_deepslate",
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "minecraft:stone"
+    "S": {
+      "item": "minecraft:deepslate"
     }
   },
   "pattern": [
-    "##",
-    "##"
+    "SS",
+    "SS"
   ],
   "result": {
     "count": 4,
-    "id": "minecraft:stone_bricks"
+    "id": "minecraft:polished_deepslate"
   }
 }

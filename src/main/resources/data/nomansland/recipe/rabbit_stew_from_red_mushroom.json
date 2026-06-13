@@ -3,7 +3,7 @@
     {
       "type": "nomansland:boolean_config",
       "option": "rabbit_stew_from_red_mushroom",
-      "enabled_when": false
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shapeless",
@@ -23,11 +23,10 @@
       "item": "minecraft:carrot"
     },
     {
-      "item": "minecraft:red_mushroom"
+      "item": "nomansland:field_mushroom"
     }
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:rabbit_stew"
   }
 }

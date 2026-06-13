@@ -2,28 +2,28 @@
   "neoforge:conditions": [
     {
       "type": "nomansland:boolean_config",
-      "option": "lodestone",
+      "option": "smoker",
       "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "#S#",
-    "SCS",
-    "#S#"
+    "#G#",
+    "GFG",
+    "#G#"
   ],
   "key": {
     "#": {
-      "item": "minecraft:chiseled_stone_bricks"
+      "tag": "minecraft:logs"
     },
-    "S": {
-      "item": "nomansland:polished_stone"
+    "G": {
+      "item": "nomansland:resin"
     },
-    "C": {
-      "item": "minecraft:compass"
+    "F": {
+      "item": "minecraft:furnace"
     }
   },
   "result": {
-    "id": "minecraft:lodestone"
+    "id": "minecraft:smoker"
   }
 }

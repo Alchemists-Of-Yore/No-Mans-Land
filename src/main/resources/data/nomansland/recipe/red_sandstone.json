@@ -3,22 +3,21 @@
     {
       "type": "nomansland:boolean_config",
       "option": "red_sandstone",
-      "enabled_when": false
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shaped",
-  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
   "key": {
     "#": {
       "item": "minecraft:red_sand"
     }
   },
-  "pattern": [
-    "##",
-    "##"
-  ],
   "result": {
-    "count": 1,
-    "id": "minecraft:red_sandstone"
+    "id": "minecraft:red_sandstone",
+    "count": 2
   }
 }

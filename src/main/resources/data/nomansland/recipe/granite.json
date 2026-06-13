@@ -2,28 +2,26 @@
   "neoforge:conditions": [
     {
       "type": "nomansland:boolean_config",
-      "option": "lodestone",
+      "option": "granite",
       "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shaped",
+  "category": "building",
   "pattern": [
-    "#S#",
-    "SCS",
-    "#S#"
+    "#C",
+    "C#"
   ],
   "key": {
     "#": {
-      "item": "minecraft:chiseled_stone_bricks"
-    },
-    "S": {
-      "item": "nomansland:polished_stone"
+      "item": "minecraft:quartz"
     },
     "C": {
-      "item": "minecraft:compass"
+      "item": "minecraft:diorite"
     }
   },
   "result": {
-    "id": "minecraft:lodestone"
+    "id": "minecraft:granite",
+    "count": 3
   }
 }
