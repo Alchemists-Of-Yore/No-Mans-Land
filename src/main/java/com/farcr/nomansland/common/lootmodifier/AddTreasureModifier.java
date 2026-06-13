@@ -35,7 +35,7 @@ public class AddTreasureModifier extends LootModifier {
     @Nonnull
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        if (context.getRandom().nextFloat() < this.chance) {
+        if (context.getRandom().nextFloat() >= this.chance) {
             return generatedLoot;
         }
 
