@@ -2,6 +2,8 @@ package com.farcr.nomansland.common.friend;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.blockentity.MoonlightBasinBlockEntity;
+import com.farcr.nomansland.common.integration.EtchedIntegration;
+import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.friend.condition.MoonlightContextualConditions;
@@ -42,6 +44,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
@@ -249,8 +252,12 @@ public class FriendMoon extends SavedData {
 
     private void completeJukeboxInteraction() {
         if (level != null && targetJukeboxPos != null) {
-            if (level.getBlockEntity(targetJukeboxPos) instanceof JukeboxBlockEntity jukebox)
+            BlockEntity blockEntity = level.getBlockEntity(targetJukeboxPos);
+            if (blockEntity instanceof JukeboxBlockEntity jukebox) {
                 jukebox.popOutTheItem();
+            } else if (Mods.ETCHED.isLoaded()) {
+                EtchedIntegration.ejectPlayingDisc(level, targetJukeboxPos, blockEntity);
+            }
         }
         targetJukeboxPos = null;
         jukeboxInteractionTicks = -1;
