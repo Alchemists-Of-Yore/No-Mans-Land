@@ -1,3 +1,1 @@
-- Fixed archeology loot modifiers breaking
-- Fixed the communion music disc interaction not working with Etched's album jukebox
-- Added config options for vanilla recipe changes
+- Added Appleskin compat for bandage healing
