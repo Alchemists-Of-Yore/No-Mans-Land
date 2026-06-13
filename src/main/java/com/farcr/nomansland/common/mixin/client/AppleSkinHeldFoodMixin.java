@@ -17,9 +17,9 @@ public class AppleSkinHeldFoodMixin {
 
     @ModifyReturnValue(method = "result", at = @At("RETURN"))
     private FoodHelper.QueriedFoodResult nml$bandageResult(FoodHelper.QueriedFoodResult original, int guiTick, Player player) {
-        ItemStack bandage = BandageHud.held(player);
-        if (!bandage.isEmpty()) {
-            FoodProperties food = BandageHud.food();
+        if (BandageHud.shouldShow(player)) {
+            ItemStack bandage = BandageHud.held(player);
+            FoodProperties food = BandageHud.food(bandage);
             return new FoodHelper.QueriedFoodResult(food, food, bandage);
         }
         return original;

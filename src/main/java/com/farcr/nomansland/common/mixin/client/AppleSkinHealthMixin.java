@@ -17,6 +17,6 @@ public class AppleSkinHealthMixin {
 
     @Inject(method = "shouldRenderOverlay", at = @At("RETURN"), cancellable = true)
     private void nml$bandageShouldRender(Minecraft minecraft, Player player, GuiGraphics guiGraphics, int guiTicks, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && BandageHud.isHolding(player)) cir.setReturnValue(true);
+        if (!cir.getReturnValueZ() && BandageHud.shouldShow(player)) cir.setReturnValue(true);
     }
 }
