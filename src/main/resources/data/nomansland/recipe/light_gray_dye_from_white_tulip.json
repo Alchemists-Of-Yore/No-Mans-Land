@@ -2,20 +2,19 @@
   "neoforge:conditions": [
     {
       "type": "nomansland:boolean_config",
-      "option": "light_blue_dye_from_blue_orchid",
-      "enabled_when": false
+      "option": "light_gray_dye_from_white_tulip",
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
-  "group": "light_blue_dye",
+  "group": "white_dye",
   "ingredients": [
     {
-      "item": "minecraft:blue_orchid"
+      "item": "minecraft:white_tulip"
     }
   ],
   "result": {
-    "count": 1,
-    "id": "minecraft:light_blue_dye"
+    "id": "minecraft:white_dye"
   }
 }

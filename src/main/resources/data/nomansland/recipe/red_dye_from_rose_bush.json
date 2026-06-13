@@ -2,22 +2,20 @@
   "neoforge:conditions": [
     {
       "type": "nomansland:boolean_config",
-      "option": "andesite",
-      "enabled_when": false
+      "option": "red_dye_from_rose_bush",
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shapeless",
-  "category": "building",
+  "category": "misc",
+  "group": "red_dye",
   "ingredients": [
     {
-      "item": "minecraft:diorite"
-    },
-    {
-      "item": "minecraft:cobblestone"
+      "item": "minecraft:rose_bush"
     }
   ],
   "result": {
     "count": 2,
-    "id": "minecraft:andesite"
+    "id": "nomansland:rose_vines"
   }
 }

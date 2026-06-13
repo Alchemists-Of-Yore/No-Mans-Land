@@ -3,14 +3,14 @@
     {
       "type": "nomansland:boolean_config",
       "option": "lectern",
-      "enabled_when": false
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
     "B": {
-      "item": "minecraft:bookshelf"
+      "tag": "c:bookshelves"
     },
     "S": {
       "tag": "minecraft:wooden_slabs"
@@ -22,7 +22,7 @@
     " S "
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:lectern"
-  }
+  },
+  "show_notification": true
 }

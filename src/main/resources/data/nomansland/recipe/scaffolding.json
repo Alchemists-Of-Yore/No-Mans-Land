@@ -3,26 +3,22 @@
     {
       "type": "nomansland:boolean_config",
       "option": "scaffolding",
-      "enabled_when": false
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "key": {
-    "I": {
-      "item": "minecraft:bamboo"
-    },
-    "~": {
-      "item": "minecraft:string"
-    }
-  },
   "pattern": [
-    "I~I",
+    "III",
     "I I",
     "I I"
   ],
+  "key": {
+    "I": {
+      "item": "minecraft:bamboo"
+    }
+  },
   "result": {
-    "count": 6,
-    "id": "minecraft:scaffolding"
+    "id": "minecraft:scaffolding",
+    "count": 6
   }
 }

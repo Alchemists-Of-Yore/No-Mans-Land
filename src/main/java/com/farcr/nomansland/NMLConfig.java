@@ -1,11 +1,25 @@
 package com.farcr.nomansland;
 
+import com.farcr.nomansland.common.condition.BooleanConfigCondition;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NMLConfig {
 
     public static ModConfigSpec COMMON_CONFIG;
     public static final String CATEGORY_OVERRIDES = "overrides";
+    public static final String CATEGORY_RECIPES = "recipe_tweaks";
+    public static final List<String> VANILLA_RECIPE_TWEAKS = List.of(
+            "andesite", "bookshelf", "diorite", "granite", "lectern",
+            "light_blue_dye_from_blue_orchid", "light_gray_dye_from_white_tulip", "lodestone",
+            "mushroom_stew", "polished_deepslate", "rabbit_stew_from_red_mushroom",
+            "red_dye_from_rose_bush", "red_sandstone", "sandstone", "scaffolding",
+            "smoker", "stone_bricks", "tnt"
+    );
+    public static final Map<String, ModConfigSpec.BooleanValue> RECIPE_TWEAKS = new HashMap<>();
     public static ModConfigSpec.BooleanValue MYCELIUM_SPREADS;
     public static ModConfigSpec.BooleanValue GRASS_SPREADS;
     public static ModConfigSpec.BooleanValue MALEVOLENT_SPAWNER;
@@ -299,7 +313,16 @@ public class NMLConfig {
                 .define("witchesEatStew", true);
         COMMON_BUILDER.pop();
 
+        COMMON_BUILDER.push(CATEGORY_RECIPES);
+        COMMON_BUILDER.comment("Toggle changes to vanilla crafting recipes.");
+        for (String recipe : VANILLA_RECIPE_TWEAKS) {
+            RECIPE_TWEAKS.put(recipe, COMMON_BUILDER.define(recipe, true));
+        }
+        COMMON_BUILDER.pop();
+
         COMMON_CONFIG = COMMON_BUILDER.build();
+
+        VANILLA_RECIPE_TWEAKS.forEach(recipe -> BooleanConfigCondition.OPTIONS.put(recipe, () -> RECIPE_TWEAKS.get(recipe).get()));
 
         final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
 

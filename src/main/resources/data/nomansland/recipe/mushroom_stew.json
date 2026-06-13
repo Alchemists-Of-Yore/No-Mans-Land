@@ -3,7 +3,7 @@
     {
       "type": "nomansland:boolean_config",
       "option": "mushroom_stew",
-      "enabled_when": false
+      "enabled_when": true
     }
   ],
   "type": "minecraft:crafting_shapeless",
@@ -13,14 +13,13 @@
       "item": "minecraft:brown_mushroom"
     },
     {
-      "item": "minecraft:red_mushroom"
+      "item": "nomansland:field_mushroom"
     },
     {
       "item": "minecraft:bowl"
     }
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:mushroom_stew"
   }
 }
