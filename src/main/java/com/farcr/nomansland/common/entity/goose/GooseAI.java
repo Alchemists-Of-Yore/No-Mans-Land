@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -137,8 +138,20 @@ public class GooseAI {
         );
     }
 
-    // Anything that wanders within a few blocks — a passing player or a lurking monster — earns a wary standoff.
-    public static boolean isThreat(LivingEntity entity) {
-        return (entity instanceof Monster || entity instanceof Player) && entity.canBeSeenAsEnemy();
+    private static final double FACING_DOT = 0.4;
+
+    public static boolean isThreat(Goose goose, LivingEntity entity) {
+        if (!entity.canBeSeenAsEnemy()) return false;
+        if (entity instanceof Monster) return true;
+        if (entity instanceof Player player) {
+            return !player.isCreative() && !player.isSpectator() && isFacing(player, goose);
+        }
+        return false;
+    }
+
+    public static boolean isFacing(Player player, Goose goose) {
+        Vec3 toGoose = goose.getEyePosition().subtract(player.getEyePosition());
+        if (toGoose.lengthSqr() < 1.0E-4) return true;
+        return player.getViewVector(1.0F).normalize().dot(toGoose.normalize()) > FACING_DOT;
     }
 }

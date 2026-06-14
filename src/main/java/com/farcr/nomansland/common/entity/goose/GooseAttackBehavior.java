@@ -10,7 +10,9 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -23,6 +25,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
     private static final float CHASE_SPEED = 1.45F;
     private static final float RETURN_SPEED = 1.2F;
     private static final double ANCHOR_REACHED_SQR = 6.25;
+    private static final double RETREAT_RANGE_SQR = 144.0;
     private static final float RETREAT_HEALTH_FRACTION = 0.6F;
 
     private static final double WEAPON_SEARCH_RADIUS = 8.0;
@@ -33,6 +36,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
 
     private boolean landedHit;
     private boolean returning;
+    private boolean retreatSet;
     private int attackCooldown;
     private int returnTicks;
     private int chaseTicks;
@@ -56,6 +60,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
     protected void start(ServerLevel level, Goose goose, long gameTime) {
         landedHit = false;
         returning = false;
+        retreatSet = false;
         attackCooldown = 0;
         returnTicks = 0;
         chaseTicks = 0;
@@ -76,7 +81,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
         }
 
         if (returning) {
-            returnToAnchor(goose);
+            retreat(goose, target);
         } else if (!detourToWeapon(goose)) {
             chaseAndPeck(level, goose, target);
         }
@@ -129,13 +134,31 @@ public class GooseAttackBehavior extends Behavior<Goose> {
         }
     }
 
-    private void returnToAnchor(Goose goose) {
-        BlockPos anchor = goose.getAggressionAnchor();
-        if (anchor == null || ++returnTicks > MAX_RETURN_TICKS || goose.blockPosition().distSqr(anchor) <= ANCHOR_REACHED_SQR) {
+    private void retreat(Goose goose, LivingEntity target) {
+        if (++returnTicks > MAX_RETURN_TICKS) {
             goose.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
             return;
         }
-        BehaviorUtils.setWalkAndLookTargetMemories(goose, anchor, RETURN_SPEED, 2);
+        if (goose.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET)) return;
+        if (!retreatSet) {
+            BlockPos anchor = goose.getAggressionAnchor();
+            double toAnchor = anchor == null ? Double.MAX_VALUE : goose.blockPosition().distSqr(anchor);
+            BlockPos spot = anchor != null && toAnchor > ANCHOR_REACHED_SQR && toAnchor < RETREAT_RANGE_SQR
+                    ? anchor
+                    : awayFrom(goose, target);
+            if (spot != null) {
+                retreatSet = true;
+                BehaviorUtils.setWalkAndLookTargetMemories(goose, spot, RETURN_SPEED, 1);
+                return;
+            }
+        }
+        goose.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+    }
+
+    @Nullable
+    private static BlockPos awayFrom(Goose goose, LivingEntity target) {
+        Vec3 away = DefaultRandomPos.getPosAway(goose, 8, 4, target.position());
+        return away == null ? null : BlockPos.containing(away);
     }
 
     @Override

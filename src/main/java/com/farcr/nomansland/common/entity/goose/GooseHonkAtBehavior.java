@@ -65,7 +65,7 @@ public class GooseHonkAtBehavior extends Behavior<Goose> {
         if (distanceSqr <= CLOSE_RANGE_SQR) {
             if (honkCooldown == 0) {
                 goose.flapBriefly();
-                goose.honk();
+                goose.honkAngry();
                 honkCooldown = 25 + goose.getRandom().nextInt(20);
             }
             if (peckCooldown == 0 && distanceSqr <= PECK_RANGE_SQR) {

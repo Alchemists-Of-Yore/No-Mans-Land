@@ -38,7 +38,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
     private static final int MAX_LAND_TICKS = 240;
     private static final double LAND_DISTANCE_SQR = 16.0;
     private static final double SPIRAL_RADIUS_SQR = 4.0;
-    private static final int MAX_GROUND_TICKS = 8;
+    private static final int MAX_GROUND_TICKS = 3;
     private static final double CONTINUE_DISTANCE_SQR = 9.0;
     private static final float CONTINUE_SPEED = 1.1F;
 
@@ -49,6 +49,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
     private double takeoffY;
     private int phaseTicks;
     private int groundTicks;
+    private boolean escaping;
     private long nextLeisureTime;
 
     public GooseFlightBehavior() {
@@ -64,6 +65,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         LivingEntity danger = pressingThreat(goose);
         if (danger != null) {
             destination = escapeDestination(goose, danger);
+            escaping = true;
             return true;
         }
 
@@ -71,6 +73,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
                 && level.getGameTime() >= nextLeisureTime
                 && goose.getRandom().nextInt(LEISURE_CHANCE) == 0) {
             destination = leisureDestination(goose);
+            escaping = false;
             return destination != null;
         }
         return false;
@@ -84,7 +87,8 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         brain.eraseMemory(MemoryModuleType.PATH);
         goose.getNavigation().stop();
         goose.setFlying(true);
-        goose.honk();
+        if (escaping) goose.honkAfraid();
+        else goose.honk();
         phase = Phase.TAKEOFF;
         phaseTicks = 0;
         flightYaw = goose.getYRot();
@@ -144,7 +148,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
             enterPhase(Phase.LAND);
             return;
         }
-        if (goose.onGround()) {
+        if (goose.horizontalCollision || goose.onGround()) {
             if (++groundTicks > MAX_GROUND_TICKS) {
                 goose.setFlying(false);
                 return;
@@ -156,7 +160,6 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         Vec3 direction = yawDirection();
         double desiredY = clearanceAhead(level, goose, direction) + TERRAIN_CLEARANCE;
         double lift = Mth.clamp((desiredY - goose.getY()) * 0.12, -0.5 * FLY_SPEED, 0.55 * FLY_SPEED);
-        if (goose.horizontalCollision) lift = Math.max(lift, 0.55 * FLY_SPEED);
         goose.setDeltaMovement(direction.scale(FLY_SPEED).add(0, lift, 0));
         applyRotation(goose);
 
@@ -179,7 +182,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         goose.setDeltaMovement(direction.scale(LAND_SPEED).add(0, sink, 0));
         applyRotation(goose);
 
-        if (goose.onGround() || goose.isInWater() || phaseTicks > MAX_LAND_TICKS) {
+        if (goose.onGround() || goose.isInWater() || goose.horizontalCollision || phaseTicks > MAX_LAND_TICKS) {
             goose.setFlying(false);
         }
     }

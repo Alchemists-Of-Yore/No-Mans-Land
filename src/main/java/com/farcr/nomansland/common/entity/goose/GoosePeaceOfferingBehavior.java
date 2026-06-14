@@ -82,8 +82,10 @@ public class GoosePeaceOfferingBehavior extends Behavior<Goose> {
         stack.shrink(1);
         if (stack.isEmpty()) offering.discard();
 
+        goose.peck();
         if (thrower != null && goose.getGrudges().offerPeace(thrower.getUUID(), goose.getRandom())) {
             goose.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
+            goose.honkCurious();
         }
         offering = null;
     }

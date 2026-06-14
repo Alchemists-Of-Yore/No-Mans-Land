@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,10 +21,12 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
     private static final int CONFIDENCE_BONUS = 10;
     private static final int MIN_PATIENCE = 80;
     private static final int ESCALATION_CHANCE = 60;
+    private static final int MAX_STANDOFF_TICKS = 160;
     private static final double CROWDING_RANGE_SQR = 6.25;
     private static final float BACKPEDAL_SPEED = 0.45F;
-    private static final double LOST_THREAT_SQR = 64.0;
+    private static final double LOST_THREAT_SQR = 25.0;
     private static final float FLEE_SPEED = 1.4F;
+    private static final float STRUT_SPEED = 0.9F;
     private static final double ADULT_SEARCH_RADIUS = 16.0;
     private static final double HIDE_BEHIND_PARENT = 1.5;
     private static final double WEAPON_SEARCH_RADIUS = 8.0;
@@ -68,8 +71,9 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
         LivingEntity threat = goose.getBrain().getMemory(MemoryModuleType.AVOID_TARGET).orElse(null);
         if (threat == null) return;
 
-        if (!threat.isAlive() || goose.distanceToSqr(threat) > LOST_THREAT_SQR) {
-            goose.getBrain().eraseMemory(MemoryModuleType.AVOID_TARGET);
+        boolean provoked = goose.getLastHurtByMob() == threat;
+        if (!threat.isAlive() || goose.distanceToSqr(threat) > LOST_THREAT_SQR || lostInterest(goose, threat, provoked)) {
+            disengage(goose, threat);
             return;
         }
         goose.getBrain().setMemoryWithExpiry(MemoryModuleType.AVOID_TARGET, threat, 40L);
@@ -82,11 +86,10 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
             }
             menace(goose, threat);
             if (--honkCooldown <= 0) {
-                goose.honk();
+                goose.honkAngry();
                 honkCooldown = 30 + goose.getRandom().nextInt(25);
             }
             threatenTicks++;
-            boolean provoked = goose.getLastHurtByMob() == threat;
             int patience = Math.max(MIN_PATIENCE, BASE_PATIENCE - CONFIDENCE_BONUS * goose.flockConfidence());
             boolean crowded = threatenTicks >= patience
                     && goose.isAttackReady()
@@ -95,6 +98,8 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
             if (provoked || crowded) {
                 goose.beginAttack(threat);
                 goose.rallyFlock(threat);
+            } else if (threatenTicks > MAX_STANDOFF_TICKS) {
+                disengage(goose, threat);
             }
         } else {
             Goose parent = goose.isBaby() ? nearestAdult(goose) : null;
@@ -103,9 +108,27 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
             } else if (!flee(goose, threat)) {
                 menace(goose, threat);
                 if (--honkCooldown <= 0) {
-                    goose.honk();
+                    goose.honkAfraid();
                     honkCooldown = 30 + goose.getRandom().nextInt(25);
                 }
+            } else if (--honkCooldown <= 0) {
+                goose.honkAfraid();
+                honkCooldown = 25 + goose.getRandom().nextInt(20);
+            }
+        }
+    }
+
+    private static boolean lostInterest(Goose goose, LivingEntity threat, boolean provoked) {
+        return !provoked && threat instanceof Player player && !GooseAI.isFacing(player, goose);
+    }
+
+    private void disengage(Goose goose, LivingEntity threat) {
+        goose.getBrain().eraseMemory(MemoryModuleType.AVOID_TARGET);
+        goose.setAttackCooldown(60);
+        if (goose.canFight() && !goose.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET)) {
+            Vec3 away = DefaultRandomPos.getPosAway(goose, 8, 4, threat.position());
+            if (away != null) {
+                BehaviorUtils.setWalkAndLookTargetMemories(goose, BlockPos.containing(away), STRUT_SPEED, 0);
             }
         }
     }
@@ -125,7 +148,7 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
         }
         if (goose.distanceToSqr(weaponTarget) <= WEAPON_GRAB_SQR) {
             goose.grabItem(weaponTarget);
-            goose.honk();
+            goose.honkAngry();
             goose.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             weaponTarget = null;
             return false;

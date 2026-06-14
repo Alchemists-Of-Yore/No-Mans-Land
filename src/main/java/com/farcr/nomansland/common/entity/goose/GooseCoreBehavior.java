@@ -66,7 +66,8 @@ public class GooseCoreBehavior extends Behavior<Goose> {
         }
 
         LivingEntity threat = closestInRange(goose, visible,
-                entity -> GooseAI.isThreat(entity) || goose.getGrudges().holdsGrudgeAgainst(entity.getUUID()));
+                entity -> GooseAI.isThreat(goose, entity)
+                        || (goose.getGrudges().holdsGrudgeAgainst(entity.getUUID()) && !(entity instanceof Player)));
         if (threat != null) {
             standOffAgainst(brain, threat);
         }

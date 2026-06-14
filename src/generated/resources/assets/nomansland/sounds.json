@@ -1406,6 +1406,27 @@
     ],
     "subtitle": "nomansland.subtitle.entity.generic.sticky_cauldron_slide"
   },
+  "entity.goose.afraid": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/goose/afraid1",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/afraid2",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/afraid3",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/afraid4",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.goose.afraid"
+  },
   "entity.goose.ambient": {
     "sounds": [
       {
@@ -1430,6 +1451,56 @@
       }
     ],
     "subtitle": "nomansland.subtitle.entity.goose.ambient"
+  },
+  "entity.goose.angry": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/goose/angry1",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/angry2",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/angry3",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/angry4",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/angry5",
+        "volume": 0.9
+      },
+      {
+        "name": "nomansland:entity/goose/angry6",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.goose.angry"
+  },
+  "entity.goose.curious": {
+    "sounds": [
+      {
+        "name": "nomansland:entity/goose/curious1",
+        "volume": 0.8
+      },
+      {
+        "name": "nomansland:entity/goose/curious2",
+        "volume": 0.8
+      },
+      {
+        "name": "nomansland:entity/goose/curious3",
+        "volume": 0.8
+      },
+      {
+        "name": "nomansland:entity/goose/curious4",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.goose.curious"
   },
   "entity.goose.death": {
     "sounds": [

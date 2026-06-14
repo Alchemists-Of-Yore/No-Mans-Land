@@ -127,6 +127,9 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.GOOSE_DEATH, s -> s.with(allSounds("entity/goose/death")));
         add(NMLSounds.GOOSE_HURT, s -> s.with(allSounds("entity/goose/hurt", se -> se.volume(0.8f))));
         add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))).subtitle("subtitles.block.generic.footsteps"));
+        add(NMLSounds.GOOSE_ANGRY, s -> s.with(allSounds("entity/goose/angry", se -> se.volume(0.9f))));
+        add(NMLSounds.GOOSE_AFRAID, s -> s.with(allSounds("entity/goose/afraid", se -> se.volume(0.9f))));
+        add(NMLSounds.GOOSE_CURIOUS, s -> s.with(allSounds("entity/goose/curious", se -> se.volume(0.8f))));
 
         //Tortoise
         add(NMLSounds.TORTOISE_AMBIENT, s -> s.with(sound("minecraft:entity.turtle.ambient_land", EVENT).pitch(0.8f)));

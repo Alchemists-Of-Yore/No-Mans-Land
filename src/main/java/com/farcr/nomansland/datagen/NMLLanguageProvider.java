@@ -78,6 +78,9 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.goose.death", "Goose dies");
         add("nomansland.subtitle.entity.goose.hurt", "Goose hurts");
         add("nomansland.subtitle.entity.goose.ambient", "Goose honks");
+        add("nomansland.subtitle.entity.goose.angry", "Goose threatens");
+        add("nomansland.subtitle.entity.goose.afraid", "Goose panics");
+        add("nomansland.subtitle.entity.goose.curious", "Goose inquires");
         add("nomansland.subtitle.entity.tortoise.ambient", "Tortoise chirps");
         add("nomansland.subtitle.entity.tortoise.hurt", "Tortoise hurts");
         add("nomansland.subtitle.entity.tortoise.hurt_baby", "Baby Tortoise hurts");

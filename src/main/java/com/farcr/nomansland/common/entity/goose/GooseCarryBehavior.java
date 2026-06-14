@@ -148,19 +148,44 @@ public class GooseCarryBehavior extends Behavior<Goose> {
         goose.honk();
     }
 
-    private void eat(Goose goose) {
+    private void consume(Goose goose) {
         ItemStack carried = goose.getCarriedItem();
-        if (!isEdible(goose, carried)) {
+        if (!isConsumable(goose, carried)) {
             stash(goose);
             return;
         }
+        boolean drink = isDrink(carried);
         if (--eatDelay > 0) return;
-        eatDelay = 12;
+        eatDelay = drink ? 8 : 12;
         goose.peck();
-        goose.playSound(SoundEvents.GENERIC_EAT, 0.5F, 1.2F + goose.getRandom().nextFloat() * 0.4F);
+        goose.playSound(drink ? SoundEvents.GENERIC_DRINK : SoundEvents.GENERIC_EAT,
+                0.5F, 1.1F + goose.getRandom().nextFloat() * 0.4F);
         if (++bites >= BITES_TO_FINISH) {
+            applyConsumeEffects(goose, carried);
+            carried.shrink(1);
+            goose.setCarriedItem(carried.isEmpty() ? ItemStack.EMPTY : carried);
+        }
+    }
+
+    private static void applyConsumeEffects(Goose goose, ItemStack stack) {
+        FoodProperties food = stack.get(DataComponents.FOOD);
+        if (food != null) {
+            goose.heal(Math.max(1.0F, food.nutrition() / 2.0F));
+            for (FoodProperties.PossibleEffect possible : food.effects()) {
+                if (goose.getRandom().nextFloat() < possible.probability()) {
+                    goose.addEffect(new MobEffectInstance(possible.effect()));
+                }
+            }
+        }
+        PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
+        if (potion != null) {
+            potion.forEachEffect(goose::addEffect);
+        }
+        if (stack.is(Items.MILK_BUCKET)) {
+            goose.removeAllEffects();
+        }
+        if (food == null && potion == null) {
             goose.heal(2.0F);
-            goose.setCarriedItem(ItemStack.EMPTY);
         }
     }
 

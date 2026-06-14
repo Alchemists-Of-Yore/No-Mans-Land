@@ -40,6 +40,7 @@ public class GooseSocializeBehavior extends Behavior<Goose> {
     @Override
     protected void tick(ServerLevel level, Goose goose, long gameTime) {
         if (buddy != null) {
+            if (goose.getRandom().nextInt(80) == 0) goose.honkCurious();
             BehaviorUtils.setWalkAndLookTargetMemories(goose, buddy.blockPosition(), SPEED, 3);
         }
     }

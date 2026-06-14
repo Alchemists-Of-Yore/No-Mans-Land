@@ -99,6 +99,9 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_DEATH = registerSound("entity.goose.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_HURT = registerSound("entity.goose.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_STEP = registerSound("entity.goose.step");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_ANGRY = registerSound("entity.goose.angry");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_AFRAID = registerSound("entity.goose.afraid");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_CURIOUS = registerSound("entity.goose.curious");
 
     //Tortoise
     public static final DeferredHolder<SoundEvent, SoundEvent> TORTOISE_AMBIENT = registerSound("entity.tortoise.ambient");

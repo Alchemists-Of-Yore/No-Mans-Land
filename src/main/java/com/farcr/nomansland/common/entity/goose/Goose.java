@@ -82,6 +82,11 @@ public class Goose extends Animal {
     private boolean drinking;
     private long lastFlightControlTime;
     private int honkCooldown;
+    private double lastTickX;
+    private double lastTickZ;
+    private int stationaryTicks;
+    private static final int RUNNING_GRACE_TICKS = 3;
+    private static final double MOVING_THRESHOLD_SQR = 2.5E-4;
     private FlightPose flightPose = FlightPose.FORWARD;
     private FlightPose pendingFlightPose = FlightPose.FORWARD;
     private int pendingFlightPoseTicks;
@@ -265,9 +270,25 @@ public class Goose extends Animal {
     }
 
     public void honk() {
+        voice(NMLSounds.GOOSE_AMBIENT.get());
+    }
+
+    public void honkAngry() {
+        voice(NMLSounds.GOOSE_ANGRY.get());
+    }
+
+    public void honkAfraid() {
+        voice(NMLSounds.GOOSE_AFRAID.get());
+    }
+
+    public void honkCurious() {
+        voice(NMLSounds.GOOSE_CURIOUS.get());
+    }
+
+    private void voice(SoundEvent sound) {
         if (honkCooldown > 0) return;
         honkCooldown = HONK_COOLDOWN_TICKS;
-        makeSound(NMLSounds.GOOSE_AMBIENT.get());
+        makeSound(sound);
     }
 
     public void dropCarriedItem() {
@@ -305,7 +326,7 @@ public class Goose extends Animal {
         brain.eraseMemory(MemoryModuleType.AVOID_TARGET);
         brain.setMemoryWithExpiry(MemoryModuleType.ATTACK_TARGET, target, ATTACK_TARGET_EXPIRY);
         setTarget(target);
-        honk();
+        honkAngry();
     }
 
     public void rallyFlock(LivingEntity target) {
@@ -451,6 +472,13 @@ public class Goose extends Animal {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
+        Brain<Goose> brain = getBrain();
+        if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+            return NMLSounds.GOOSE_ANGRY.get();
+        }
+        if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) {
+            return canFight() ? NMLSounds.GOOSE_ANGRY.get() : NMLSounds.GOOSE_AFRAID.get();
+        }
         return NMLSounds.GOOSE_AMBIENT.get();
     }
     @Nullable
@@ -497,15 +525,15 @@ public class Goose extends Animal {
         if (flying) {
             setState(State.FLYING);
         } else if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
-            setState(brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) ? State.RUNNING : State.IDLING);
+            setState(isRunningPose() ? State.RUNNING : State.IDLING);
         } else if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) {
             if (canFight()) {
                 setState(State.INTIMIDATING);
             } else {
-                setState(brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) ? State.RUNNING : State.IDLING);
+                setState(isRunningPose() ? State.RUNNING : State.IDLING);
             }
         } else if (isCarrying()) {
-            setState(brain.hasMemoryValue(MemoryModuleType.WALK_TARGET) ? State.RUNNING : State.IDLING);
+            setState(isRunningPose() ? State.RUNNING : State.IDLING);
         } else if (drinking) {
             setState(State.DRINKING);
         } else if (flapTicks > 0) {
@@ -585,9 +613,19 @@ public class Goose extends Animal {
         if (!level().isClientSide) {
             if (flapTicks > 0) flapTicks--;
             if (honkCooldown > 0) honkCooldown--;
+            double dx = getX() - lastTickX;
+            double dz = getZ() - lastTickZ;
+            if (dx * dx + dz * dz > MOVING_THRESHOLD_SQR) stationaryTicks = 0;
+            else stationaryTicks++;
+            lastTickX = getX();
+            lastTickZ = getZ();
         }
 
         floatGoose();
+    }
+
+    private boolean isRunningPose() {
+        return stationaryTicks <= RUNNING_GRACE_TICKS;
     }
 
     private void updateFlightPose() {

@@ -72,6 +72,7 @@ public class GooseStealBehavior extends Behavior<Goose> {
         goose.setStealing(true);
         raidPecks = 0;
         raidPeckDelay = 0;
+        goose.honkCurious();
     }
 
     @Override
