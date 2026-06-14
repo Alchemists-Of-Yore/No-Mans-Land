@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +23,7 @@ import java.util.List;
 public class CarvingSelectionScreen extends Screen {
     private static final ResourceLocation SLOT = NoMansLand.location("item_slot");
     private static final ResourceLocation SLOT_SELECTED = NoMansLand.location("item_slot_selected");
+    private static CarvingType lastSelectedType = null;
 
     private final BlockPos startPos;
     private final Direction face;
@@ -37,6 +39,15 @@ public class CarvingSelectionScreen extends Screen {
         this.face = face;
         this.hand = hand;
         this.types = types;
+
+        if(lastSelectedType != null) {
+            if(this.types.contains(lastSelectedType)) {
+                this.selectedIndex = this.types.indexOf(lastSelectedType);
+                this.offset = this.selectedIndex;
+            } else {
+                lastSelectedType = null;
+            }
+        }
     }
 
     public static void open(BlockPos clickedPos, Direction clickedFace, InteractionHand hand, List<CarvingType> types) {
@@ -82,7 +93,12 @@ public class CarvingSelectionScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        int lastSelected = this.selectedIndex;
         this.selectedIndex = (int) Math.clamp(this.selectedIndex + scrollY, 0, this.types.size() - 1);
+        lastSelectedType = this.types.get(this.selectedIndex);
+        if(this.selectedIndex != lastSelected) {
+            Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK.value, 0.3f, 1.1f);
+        }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
