@@ -411,6 +411,7 @@
   "item.minecraft.tipped_arrow.effect.stasis": "Arrow of Stasis",
   "item.nomansland.ancestral_oath_sword": "Ancestral Oath Sword",
   "item.nomansland.ancestral_oath_sword.refuse": "The sword refuses to violate its oath of pacifism...",
+  "item.nomansland.ancient_bronze_chisel": "Ancient Bronze Chisel",
   "item.nomansland.ancient_bronze_mask": "Ancient Bronze Mask",
   "item.nomansland.antidote_bandage": "Antidote Bandage",
   "item.nomansland.awkward_residue": "Awkward Residue",
@@ -595,5 +596,6 @@
   "painting.nomansland.sun.author": "Farcr",
   "painting.nomansland.sun.title": "Sun",
   "painting.nomansland.white_eyes.author": "Probleyes",
-  "painting.nomansland.white_eyes.title": "White Eyes"
+  "painting.nomansland.white_eyes.title": "White Eyes",
+  "screen.nomansland.carving": "Scroll to select carving"
 }
