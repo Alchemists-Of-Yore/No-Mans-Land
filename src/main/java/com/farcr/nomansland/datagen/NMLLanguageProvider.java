@@ -204,8 +204,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.advancements.find_mineshaft.description", "Find a Mineshaft");
         add("nomansland.advancements.find_alchemist_ruins.title", "Old Stories");
         add("nomansland.advancements.find_alchemist_ruins.description", "Discover an ancestral ruin lost to time");
-        add("nomansland.advancements.collect_ancestral_tools.title", "Sticks and Rope");
-        add("nomansland.advancements.collect_ancestral_tools.description", "Collect every piece of ancient bronze equipment");
+        add("nomansland.advancements.collect_ancient_tools.title", "Sticks and Rope");
+        add("nomansland.advancements.collect_ancient_tools.description", "Collect every piece of ancient bronze equipment");
         add("nomansland.advancements.dream_friend_moon.title", "First Contact");
         add("nomansland.advancements.dream_friend_moon.description", "Dream of a cosmic presence");
         add("nomansland.advancements.meet_friend_moon.title", "Friendship");
