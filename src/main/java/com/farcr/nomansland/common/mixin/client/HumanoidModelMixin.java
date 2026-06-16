@@ -134,5 +134,14 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             this.leftArm.yRot -= AncestralOathSwordClientExtensions.getShakePosition(
                 entityExtension.nml$getShakeAnimationTime()) / 160f;
         }
+
+        this.leftArm.yRot -= AncestralOathSwordClientExtensions.swordRotationTransform(
+            entityExtension.nml$getParryAnimationTime(HumanoidArm.LEFT)) / 50f;
+        this.rightArm.yRot += AncestralOathSwordClientExtensions.swordRotationTransform(
+            entityExtension.nml$getParryAnimationTime(HumanoidArm.RIGHT)) / 50f;
+
+        entityExtension.nml$updateParryAnimationTime(
+            Minecraft.getInstance().getTimer().getGameTimeDeltaTicks()
+        );
     }
 }

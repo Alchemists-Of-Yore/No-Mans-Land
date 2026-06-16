@@ -32,8 +32,7 @@ import org.joml.Matrix4fStack;
 
 import java.util.Objects;
 
-import static com.farcr.nomansland.common.item.AncestralOathSwordItem.MAX_ANIMATE_TIME;
-import static com.farcr.nomansland.common.item.AncestralOathSwordItem.MAX_GLINT_ANIMATE;
+import static com.farcr.nomansland.common.item.AncestralOathSwordItem.*;
 
 public class AncestralOathSwordClientExtensions implements IClientItemExtensions {
 
@@ -64,10 +63,14 @@ public class AncestralOathSwordClientExtensions implements IClientItemExtensions
         if (!minecraft.options.getCameraType().isFirstPerson()) return;
 
         float glintAnimateTime = getGlintAnimateTime(player.getItemInHand(InteractionHand.MAIN_HAND), partialTick);
+        // this is a mess i know im like starting to get really burnt out so please bare with me
         // apply time here because this only runs once and if the player is in first person anyways
         ((LivingEntityExtension) player).nml$setShakeAnimationTime(
             ((LivingEntityExtension) player).nml$getShakeAnimationTime() - partialTick
         );
+        ((LivingEntityExtension) player).nml$updateParryAnimationTime(partialTick);
+
+        if (true) return;
 
         if (glintAnimateTime <= 0f) {
             TRAIL_INSTANCE.persistentTarget.forceClear(false);
@@ -165,6 +168,15 @@ public class AncestralOathSwordClientExtensions implements IClientItemExtensions
             poseStack.mulPose(Axis.XP.rotationDegrees(-102.25F));
             poseStack.mulPose(Axis.YP.rotationDegrees((float) invert * 13.365F));
             poseStack.mulPose(Axis.ZP.rotationDegrees((float) invert * 78.05F));
+            //
+            poseStack.mulPose(Axis.YP.rotationDegrees(
+                swordRotationTransform(((LivingEntityExtension) player)
+                    .nml$getParryAnimationTime(arm))
+            ));
+            poseStack.mulPose(Axis.ZN.rotationDegrees(
+                swordRotationTransform(((LivingEntityExtension) player)
+                    .nml$getParryAnimationTime(arm))
+            ));
             return true;
         }
         swordShakeTransform(poseStack, ((LivingEntityExtension) player).nml$getShakeAnimationTime());
@@ -181,6 +193,11 @@ public class AncestralOathSwordClientExtensions implements IClientItemExtensions
     public static float getShakePosition(float animateTime) {
         return SHAKE_ARRAY[(int) ((SHAKE_ARRAY.length - 1)
             * ((MAX_ANIMATE_TIME - animateTime) / MAX_ANIMATE_TIME))];
+    }
+
+    public static float swordRotationTransform(float animateTime) {
+        double time = Math.pow(animateTime / MAX_PARRY_ANIMATE_TIME, 2.0D);
+        return (float) (25f * time);
     }
 
     public static void swordShakeTransform(PoseStack poseStack, float animateTime) {

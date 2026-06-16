@@ -26,10 +26,7 @@ import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.mixin.BlockBehaviourAccessModifier;
 import com.farcr.nomansland.common.networking.*;
-import com.farcr.nomansland.common.networking.alchemist_tools.ClientboundOathSwordAnimate;
-import com.farcr.nomansland.common.networking.alchemist_tools.ClientboundRitualPickResponsePacket;
-import com.farcr.nomansland.common.networking.alchemist_tools.ServerboundOathSwordAnimate;
-import com.farcr.nomansland.common.networking.alchemist_tools.ServerboundRitualPickRequestPacket;
+import com.farcr.nomansland.common.networking.alchemist_tools.*;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
@@ -343,6 +340,7 @@ public class CommonSetupEvents {
 
         // ancestral oath sword packets
         registrar.playToClient(ClientboundOathSwordAnimate.TYPE, ClientboundOathSwordAnimate.STREAM_CODEC, ClientboundOathSwordAnimate::handleData);
+        registrar.playToClient(ClientboundOathSwordParry.TYPE, ClientboundOathSwordParry.STREAM_CODEC, ClientboundOathSwordParry::handleData);
         registrar.playToServer(ServerboundOathSwordAnimate.TYPE, ServerboundOathSwordAnimate.STREAM_CODEC, ServerboundOathSwordAnimate::handleData);
 
         // ritual pickaxe packets

@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.item;
 
+import com.farcr.nomansland.common.networking.alchemist_tools.ClientboundOathSwordParry;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -11,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -41,6 +44,7 @@ public class AncestralOathSwordItem extends SwordItem {
 
     public static final int MAX_ANIMATE_TIME = 7;
     public static final int MAX_GLINT_ANIMATE = 45;
+    public static final int MAX_PARRY_ANIMATE_TIME = 10;
 
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return 72000;
@@ -91,6 +95,15 @@ public class AncestralOathSwordItem extends SwordItem {
         return (getParryTiming(itemStack, livingEntity) <= SWORD_PARRY_TICKS);
     }
 
+    // why is this not standardized anywhere in the base game's codebase I've had to manually do this like
+    // 30 times now and im just getting tired of writing it manually so I'm just going to make this
+    public static HumanoidArm getHumanoidArm(LivingEntity player, InteractionHand interactionHand) {
+        HumanoidArm dominantHand = player.getMainArm();
+        if (interactionHand == InteractionHand.OFF_HAND)
+            return dominantHand.getOpposite();
+        return dominantHand;
+    }
+
     public void handleBlockingEvent(LivingIncomingDamageEvent event, ItemStack itemStack) {
         LivingEntity damagedEntity = event.getEntity();
         Entity directEntity = event.getSource().getDirectEntity();
@@ -103,24 +116,21 @@ public class AncestralOathSwordItem extends SwordItem {
                 null, damagedEntity.blockPosition(),
                 NMLSounds.OATH_PARRY.get(), SoundSource.PLAYERS
             );
-
             AncestralOathSwordItem.setUseTime(damagedEntity, MAX_GLINT_ANIMATE, false);
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(damagedEntity, new ClientboundOathSwordParry(
+                damagedEntity.getId(), getHumanoidArm(damagedEntity, damagedEntity.getUsedItemHand()).getId()
+            ));
 
             // deflect arrow
             if (directEntity instanceof Projectile projectile) {
-                // TODO: idk if this code is working rn tbh but for now I won't worry about it
-                Vector3f toDirection = damagedEntity.position().toVector3f();
-                Vector3f fromDirection = projectile.position().toVector3f();
-
-                Quaternionf quaternion = new Quaternionf().rotationTo(toDirection, fromDirection);
-
-                Vec3 originalMovement = projectile.getDeltaMovement().scale(2f);
-                Vector3f reversedMovement = originalMovement.toVector3f().rotate(quaternion);
-                projectile.setDeltaMovement(reversedMovement.x, reversedMovement.y, reversedMovement.z);
+                Vec3 newVelocity = damagedEntity.getForward().normalize()
+                    .scale(projectile.getDeltaMovement().length());
+                projectile.setDeltaMovement(newVelocity);
+                projectile.setPos(projectile.position().add(projectile.getDeltaMovement()));
             }
             for (LivingEntity livingEntity : level.getNearbyEntities(
-                LivingEntity.class, TargetingConditions.forNonCombat().range(3.0),
-                damagedEntity, damagedEntity.getBoundingBox().inflate(3)
+                LivingEntity.class, TargetingConditions.forNonCombat().range(STASIS_RANGE),
+                damagedEntity, damagedEntity.getBoundingBox().inflate(STASIS_RANGE)
             )) this.applyStasisTicks(livingEntity, damagedEntity, 100 + (int) (20 * event.getOriginalAmount()));
             event.setCanceled(true);
             return;
@@ -135,7 +145,6 @@ public class AncestralOathSwordItem extends SwordItem {
             );
             applyStasisTicks(livingEntity, damagedEntity, 40 + (int) (20 * event.getOriginalAmount()));
             event.setAmount(event.getAmount() * .25f);
-
         }
     }
 
