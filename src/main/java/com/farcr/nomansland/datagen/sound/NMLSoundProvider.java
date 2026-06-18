@@ -211,11 +211,11 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         ));
 
         add(NMLSounds.MUSHROOM_BIOME_MUSIC, s -> s.subtitle(null).with(
-                sound("nomansland:music/anachronistic").weight(15).stream(),
+                sound("nomansland:music/anachronistic").weight(15).stream().volume(0.7f),
                 sound("minecraft:music/game/puzzlebox").weight(3).stream().volume(0.4f),
                 sound("minecraft:music/game/pokopoko").weight(3).stream().volume(0.4f),
-                sound("minecraft:music/game/endless").weight(3).stream().volume(0.4f),
-                sound("minecraft:music/game/swamp/firebugs").weight(3).stream().volume(0.4f)
+                sound("minecraft:music/game/endless").weight(5).stream().volume(0.4f),
+                sound("minecraft:music/game/swamp/firebugs").weight(7).stream().volume(0.4f)
         ));
 
         add(NMLSounds.ANACHRONISTIC_MUSIC, s -> s.subtitle(null).with(sound("music/anachronistic").stream()));
