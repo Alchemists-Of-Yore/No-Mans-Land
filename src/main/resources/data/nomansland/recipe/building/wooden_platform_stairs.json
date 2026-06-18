@@ -21,7 +21,7 @@
   "pattern": [
     "Y  ",
     "XY ",
-    " XY"
+    "XXY"
   ],
   "result": {
     "count": 6,
