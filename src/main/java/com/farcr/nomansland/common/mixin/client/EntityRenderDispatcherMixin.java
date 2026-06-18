@@ -35,7 +35,7 @@ public class EntityRenderDispatcherMixin<T extends Entity> {
         int packedLight, Operation<Void> original
     ) {
         StasisEntityContext.setEntityContext(p_entity);
-        original.call(instance, p_entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+        original.call(instance, StasisEntityContext.getEntitySnapshot(p_entity), entityYaw, partialTick, poseStack, bufferSource, packedLight);
         StasisEntityContext.clearEntityContext();
     }
 }
