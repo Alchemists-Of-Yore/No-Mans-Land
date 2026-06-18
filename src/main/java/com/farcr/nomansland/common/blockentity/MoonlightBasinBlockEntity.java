@@ -360,8 +360,8 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
                                     break;
                                 }
                                 case MAP: {
-                                    if (!friendMoon.mapInteraction(level, entity, pos))
-                                        blockEntity.setInspectionContext(null, friendMoon);
+                                    if (friendMoon.getDialogueTicks() >= 0 && friendMoon.getDialogueTicks() <= FriendMoon.MAP_PARTICLE_DURATION)
+                                        friendMoon.mapInteraction(level, entity, pos);
                                     break;
                                 }
                                 case BAD_OMEN: {
