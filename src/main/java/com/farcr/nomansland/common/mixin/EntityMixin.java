@@ -71,6 +71,12 @@ public abstract class EntityMixin implements EntityExtension {
 
     @Shadow public abstract float getYRot();
 
+    @Shadow
+    public abstract void setDeltaMovement(Vec3 deltaMovement);
+
+    @Shadow
+    public abstract Vec3 getDeltaMovement();
+
     @Unique private boolean NML$offering = false;
     @Unique private boolean NML$previouslyInspected = false;
     @Unique private float NML$inspectionFade = 0f;

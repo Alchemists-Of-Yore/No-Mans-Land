@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.mixin;
 
+import com.farcr.nomansland.common.effect.StasisEffect;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
@@ -142,14 +143,19 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void nml$skipTick(CallbackInfo ci) {
         if (this.getEffect(NMLEffects.STASIS) != null) {
-            this.tickEffects();
-            this.pushEntities();
             nml$setVisualTickMultiplier(Math.max(nml$getVisualTickMultiplier() - (1 / 20f), 0f));
-            if (!nml$Self.level().isClientSide && !nml$Self.hasEffect(NMLEffects.STASIS)) {
-                ((ServerLevel) nml$Self.level()).getChunkSource().broadcast(nml$Self,
-                    new ClientboundRemoveMobEffectPacket(nml$Self.getId(), NMLEffects.STASIS));
+            if (nml$getVisualTickMultiplier() <= 0f) {
+                this.tickEffects();
+                if (!nml$Self.level().isClientSide && !nml$Self.hasEffect(NMLEffects.STASIS)) {
+                    ((ServerLevel) nml$Self.level()).getChunkSource().broadcast(nml$Self,
+                        new ClientboundRemoveMobEffectPacket(nml$Self.getId(), NMLEffects.STASIS));
+                }
+                this.pushEntities();
+                // limit max speed
+                if (this.getDeltaMovement().lengthSqr() > StasisEffect.MAX_SPEED * StasisEffect.MAX_SPEED)
+                    this.setDeltaMovement(this.getDeltaMovement().normalize().scale(StasisEffect.MAX_SPEED));
+                ci.cancel();
             }
-            if (nml$getVisualTickMultiplier() <= 0f) ci.cancel();
         } else if (this.hasData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER))
             nml$setVisualTickMultiplier(1f);
     }
