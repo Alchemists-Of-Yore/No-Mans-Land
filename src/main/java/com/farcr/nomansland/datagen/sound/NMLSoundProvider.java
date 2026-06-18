@@ -207,6 +207,8 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
                 sound("minecraft:music/game/dry_hands").weight(3).stream()
         ));
 
+        add(NMLSounds.ANACHRONISTIC_MUSIC, s -> s.subtitle(null).with(sound("music/anachronistic").stream()));
+
         add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.subtitle(null).with(sound("records/guidance").stream()));
 
         //Misc

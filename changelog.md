@@ -1,5 +1,2 @@
-- Extended the incendiary arrow config option to disable ember spawning
-- Fixed mangrove trees placing dirt above their roots
-- Fixed monster anchors duplicating slime and magma cubes
-- Fixed mod incompatibility with Larion
-- Updated mixed litter to 1.2.2
+- Expanded on Friend Moon dialogues with more entities
+- Reduced cave pot generation rates

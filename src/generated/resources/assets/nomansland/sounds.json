@@ -1934,6 +1934,14 @@
       }
     ]
   },
+  "music.overworld.anachronistic": {
+    "sounds": [
+      {
+        "name": "nomansland:music/anachronistic",
+        "stream": true
+      }
+    ]
+  },
   "music.overworld.cave_depths": {
     "sounds": [
       {
