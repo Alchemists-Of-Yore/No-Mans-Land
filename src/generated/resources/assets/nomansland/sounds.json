@@ -2081,6 +2081,7 @@
       {
         "name": "nomansland:music/anachronistic",
         "stream": true,
+        "volume": 0.7,
         "weight": 15
       },
       {
@@ -2099,13 +2100,13 @@
         "name": "music/game/endless",
         "stream": true,
         "volume": 0.4,
-        "weight": 3
+        "weight": 5
       },
       {
         "name": "music/game/swamp/firebugs",
         "stream": true,
         "volume": 0.4,
-        "weight": 3
+        "weight": 7
       }
     ]
   },
