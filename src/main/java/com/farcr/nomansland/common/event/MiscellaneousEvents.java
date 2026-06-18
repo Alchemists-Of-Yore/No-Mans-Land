@@ -753,6 +753,13 @@ public class MiscellaneousEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        if (event.getEntity().hasEffect(NMLEffects.STASIS)
+        || DreamManager.getAmbiguousDreamTypeInstance(event.getEntity()) != null)
+            event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onIncomingDamageStasis(LivingIncomingDamageEvent event) {
         LivingEntity livingEntity = event.getEntity();
         if (livingEntity.getUseItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
