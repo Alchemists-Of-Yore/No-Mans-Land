@@ -25,6 +25,7 @@ import com.mojang.math.Axis;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -66,6 +67,36 @@ public class FriendMoonRenderer implements AutoCloseable {
 
     @Override
     public void close() {}
+
+    private int ticksSinceMoonUpdate = 0;
+    private static final int COOLDOWN_TICKS = 5;
+
+    public void tickClientState() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.isPaused()) return;
+        if (mc.level == null || mc.level.effects().skyType() != DimensionSpecialEffects.SkyType.NORMAL) {
+            friendMoonOpacity = 0f;
+            friendMoonDarkneningOpacity = 0f;
+            friendShadowOpacity = 0f;
+            friendShadowFaceOpacity = 0f;
+            fogOpacity = 0f;
+            animationProgress = 0f;
+            badOmenWaitTime = 0f;
+            return;
+        }
+        if (++ticksSinceMoonUpdate <= COOLDOWN_TICKS) return;
+
+        float fadeSpeed = 1f / 25f;
+        friendMoonOpacity = Math.max(friendMoonOpacity - fadeSpeed, 0f);
+        friendMoonDarkneningOpacity = Mth.lerp(fadeSpeed, friendMoonDarkneningOpacity, 0f);
+        friendShadowOpacity = Mth.lerp(fadeSpeed, friendShadowOpacity, 0f);
+        friendShadowFaceOpacity = Mth.lerp(fadeSpeed, friendShadowFaceOpacity, 0f);
+        fogOpacity = Mth.lerp(fadeSpeed, fogOpacity, 0f);
+        if (friendMoonOpacity <= 0f) {
+            animationProgress = 0f;
+            badOmenWaitTime = 0f;
+        }
+    }
 
     public enum FriendMoonAnimation {
         TALKING(0, "talking", 1, 2),
@@ -126,14 +157,10 @@ public class FriendMoonRenderer implements AutoCloseable {
         return ambientLight * darkeningAmount;
     }
     public void modifySkyLightColor(Vector3f color, int skyLightLevel) {
-        float darkeningAmount = 1 - this.friendMoonDarkneningOpacity;
-        color.set(
-                color.x * darkeningAmount,
-                color.x * darkeningAmount,
-                color.x * darkeningAmount
-        );
+        color.mul(1 - this.friendMoonDarkneningOpacity);
     }
     public void modifyBlockLightColor(Vector3f color, int blockLightLevel) {
+        if (this.friendMoonDarkneningOpacity <= 0) return;
         if (blockLightLevel < MoonlightCandleBlock.LIGHT_LEVEL) {
             float factor = Mth.map(blockLightLevel, 0, MoonlightCandleBlock.LIGHT_LEVEL, 0, 1);
             factor = (float) Math.pow(factor, Mth.lerp(this.friendMoonDarkneningOpacity, 1, 5));
@@ -317,6 +344,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         Minecraft mc = Minecraft.getInstance();
         if (mc.isPaused())
             return;
+        ticksSinceMoonUpdate = 0;
 
         LocalPlayer player = mc.player;
         boolean fadeOut = true;
@@ -524,15 +552,12 @@ public class FriendMoonRenderer implements AutoCloseable {
 
                 applyMultiplyBlendFunction();
 
-                enableStencil();
-
                 RenderSystem.colorMask(false, false, false, false);
                 renderFriendMoonInternal(tesselator, moonViewMatrix, FriendMoonAnimation.HIDDEN_2, compositeOpacity, 0, false);
                 RenderSystem.colorMask(true, true, true, true);
 
                 stencilHideState();
             }, true);
-            disableStencil();
 
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableCull();
@@ -638,7 +663,7 @@ public class FriendMoonRenderer implements AutoCloseable {
         float t = (float) (1f - Math.exp(deltaTime * -.2f));
         fogOpacity = Mth.lerp(t, fogOpacity, (enabledFog ? (0.5f + (getFriendMoonOpacity() / 2f)) : 0));
 
-        if (fogOpacity > 0.01f) {
+        if (fogOpacity > 0.01f && MoonlightDreamRenderer.GRADIENT_SHADER != null) {
             poseStack.pushPose();
             // Render Sky Fog prior to skybox as well
             float divider = 1 / 24f;

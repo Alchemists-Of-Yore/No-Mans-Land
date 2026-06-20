@@ -13,7 +13,10 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.util.RandomSource;
@@ -44,6 +47,10 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
 
     public @Nullable BlockPos targetBell;
     public @Nullable Direction targetDir;
+    // dimension of the paired bell; null is treated as this bell's own dimension (legacy/same-dimension pairs)
+    public @Nullable ResourceKey<Level> targetDimension;
+
+    private boolean recheckAttempted = false;
 
     public int ringCooldown = 0;
 
@@ -76,7 +83,7 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (this.getLevel() instanceof final ServerLevel serverLevel) {
             InvertedBellServerHandler.get(serverLevel).beginTeleport(serverLevel,
                     this.getBlockPos(), this.getBlockState().getValue(InvertedBellBlock.HORIZONTAL_FACING),
-                    this.targetBell, this.targetDir
+                    this.targetBell, this.targetDir, this.targetDimension
             );
             this.ringCooldown = COOLDOWN;
         } else {
@@ -85,13 +92,44 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     }
 
     public void link(final InvertedBellControllerBlockEntity other) {
+        this.link(other, false);
+    }
+
+    public void link(final InvertedBellControllerBlockEntity other, final boolean persist) {
         this.targetBell = other.getBlockPos();
         this.targetDir = other.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        this.targetDimension = other.getLevel().dimension();
         this.state = PositionState.BLOCK_POS;
 
         other.targetBell = this.getBlockPos();
         other.targetDir = this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+        other.targetDimension = this.getLevel().dimension();
         other.state = PositionState.BLOCK_POS;
+
+        if (persist) {
+            this.setChanged();
+            other.setChanged();
+        }
+    }
+    
+    public void attemptRecheck(final ServerLevel serverLevel) {
+        if (this.targetBell != null || this.recheckAttempted) {
+            return;
+        }
+        this.recheckAttempted = true;
+
+        final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
+        final ChunkPos partnerArea = getLikelyOtherSanctuary(grid, this.getBlockPos());
+        if (partnerArea == null) {
+            this.setChanged();
+            return;
+        }
+
+        this.targetArea = partnerArea;
+        this.escalationTimer = 10;
+        this.escalationValue = ChunkPyramid.GENERATION_PYRAMID.steps().size();
+        this.state = PositionState.CHUNK;
+        this.setChanged();
     }
 
     @Override
@@ -160,27 +198,46 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (ibbe.escalationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
             ibbe.escalationTimer++;
             if (ibbe.escalationTimer > 10) {
-                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 0, ibbe.targetArea);
+                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 1, ibbe.targetArea);
                 ibbe.escalationTimer = 0;
                 ibbe.escalationValue++;
+                ibbe.setChanged();
             }
         } else {
+            if (!isSearchAreaLoaded(serverLevel, ibbe.targetArea)) {
+                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 1, ibbe.targetArea);
+                return;
+            }
             final InvertedBellControllerBlockEntity otherIbbe = handleTheSearch(serverLevel, ibbe.targetArea);
-            if (otherIbbe != null) {
-                ibbe.link(otherIbbe);
+            if (otherIbbe != null && otherIbbe != ibbe
+                    && (otherIbbe.targetBell == null || otherIbbe.targetBell.equals(ibbe.getBlockPos()))) {
+                ibbe.link(otherIbbe, true);
             } else {
                 ibbe.failureType = FAIL_TYPE.NO_BLOCK_ENTITY_POS;
                 NoMansLand.LOGGER.error(ibbe.failureType);
                 NoMansLand.LOGGER.error("Inverted Bell at {} || {} failed to find paired bell block position around chunk {} || {}", pos, new ChunkPos(pos), ibbe.targetArea.getBlockAt(8, 0, 8), ibbe.targetArea);
                 ibbe.state = PositionState.DONT_SEARCH;
+                ibbe.setChanged();
             }
         }
+    }
+
+    private static boolean isSearchAreaLoaded(final ServerLevel level, final ChunkPos target) {
+        for (int x = -1; x < 2; x++) {
+            for (int z = -1; z < 2; z++) {
+                if (level.getChunkSource().getChunkNow(target.x + x, target.z + z) == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private static @Nullable InvertedBellControllerBlockEntity handleTheSearch(final ServerLevel level, final ChunkPos target) {
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
-                final LevelChunk chunk = level.getChunk(target.x + x, target.z + z);
+                final LevelChunk chunk = level.getChunkSource().getChunkNow(target.x + x, target.z + z);
+                if (chunk == null) continue;
                 for (final BlockPos bePos : chunk.getBlockEntitiesPos()) {
                     if (chunk.getBlockEntity(bePos) instanceof final InvertedBellControllerBlockEntity ibbe) {
                         return ibbe;
@@ -195,17 +252,25 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
     protected void saveAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("State", this.state.ordinal());
+        if (this.recheckAttempted) {
+            tag.putBoolean("RecheckAttempted", true);
+        }
 
         switch (this.state) {
             case CHUNK -> {
                 tag.putInt("chunkX", this.targetArea.x);
                 tag.putInt("chunkZ", this.targetArea.z);
+                tag.putInt("EscalationTimer", this.escalationTimer);
+                tag.putInt("EscalationValue", this.escalationValue);
             }
             case BLOCK_POS -> {
                 tag.putInt("targetX", this.targetBell.getX());
                 tag.putInt("targetY", this.targetBell.getY());
                 tag.putInt("targetZ", this.targetBell.getZ());
                 tag.putInt("targetOrientation", this.targetDir.get2DDataValue());
+                if (this.targetDimension != null) {
+                    tag.putString("targetDimension", this.targetDimension.location().toString());
+                }
             }
         }
     }
@@ -217,12 +282,15 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (state >= 0 && state < PositionState.values().length) {
             this.state = PositionState.values()[state];
         }
+        this.recheckAttempted = tag.getBoolean("RecheckAttempted");
         switch (this.state) {
             case CHUNK -> {
                 this.targetArea = new ChunkPos(
                         tag.getInt("chunkX"),
                         tag.getInt("chunkZ")
                 );
+                this.escalationTimer = tag.contains("EscalationTimer") ? tag.getInt("EscalationTimer") : 10;
+                this.escalationValue = tag.getInt("EscalationValue");
             }
             case BLOCK_POS -> {
                 this.targetBell = new BlockPos(
@@ -231,6 +299,9 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                         tag.getInt("targetZ")
                 );
                 this.targetDir = Direction.from2DDataValue(tag.getInt("targetOrientation"));
+                this.targetDimension = tag.contains("targetDimension")
+                        ? ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("targetDimension")))
+                        : null;
             }
         }
     }

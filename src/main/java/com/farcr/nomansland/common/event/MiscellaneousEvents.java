@@ -659,7 +659,8 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Pre event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
-            FriendMoon.getOrDefault(serverLevel).tick();
+            if (event.getLevel().equals(serverLevel.getServer().overworld()))
+                FriendMoon.getOrDefault(serverLevel).tick();
             RegeneratingPotsData.getOrDefault(serverLevel).tick();
             SunDog.getOrDefault(serverLevel).tick();
             InvertedBellServerHandler.get(serverLevel).tick(serverLevel);
@@ -676,7 +677,8 @@ public class MiscellaneousEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDimensionSyncPacket(serverPlayer.server.levelKeys()));
             SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);
-            FriendMoon.getOrDefault(serverPlayer.serverLevel()).playerSendShadowPacket(serverPlayer);
+            if (serverPlayer.serverLevel().equals(serverPlayer.getServer().overworld()))
+                FriendMoon.getOrDefault(serverPlayer.serverLevel()).playerSendShadowPacket(serverPlayer);
             DreamManager.getOrDefault(serverPlayer.getServer()).notifyClient(serverPlayer);
         }
     }

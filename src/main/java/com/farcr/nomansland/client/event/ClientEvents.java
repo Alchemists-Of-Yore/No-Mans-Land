@@ -100,7 +100,9 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
-        if (Minecraft.getInstance().player == null) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null) FriendMoonRenderer.getInstance().tickClientState();
+        if (mc.player == null) return;
         InvertedBellClientHandler.instance.tick();
         CarvingClientHandler.instance.tick();
     }

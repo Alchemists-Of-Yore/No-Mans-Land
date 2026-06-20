@@ -192,13 +192,21 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         ));
 
         add(NMLSounds.CAVE_DEPTH_MUSIC, s -> s.subtitle(null).with(
-                sound("minecraft:music/game/oxygene").stream(),
-                sound("minecraft:music/game/key").stream(),
-                sound("minecraft:music/game/minecraft").stream(),
-                sound("minecraft:music/game/mice_on_venus").stream(),
-                sound("minecraft:music/game/dry_hands").stream(),
-                sound("minecraft:music/game/yakusoku").stream().volume(0.4f),
-                sound("minecraft:music/game/endless").stream().volume(0.4f)
+                sound("minecraft:music/game/oxygene").weight(5).stream(),
+                sound("minecraft:music/game/key").weight(5).stream(),
+                sound("minecraft:music/game/minecraft").weight(3).stream(),
+                sound("minecraft:music/game/mice_on_venus").weight(5).stream(),
+                sound("minecraft:music/game/dry_hands").weight(5).stream(),
+                sound("minecraft:music/game/yakusoku").weight(3).stream().volume(0.4f),
+                sound("minecraft:music/game/endless").weight(3).stream().volume(0.4f)
+        ));
+
+        add(NMLSounds.ALCHEMIST_RUINS_MUSIC, s -> s.subtitle(null).with(
+                sound("minecraft:music/game/oxygene").weight(5).stream(),
+                sound("minecraft:music/game/key").weight(5).stream(),
+                sound("minecraft:music/game/minecraft").weight(3).stream(),
+                sound("minecraft:music/game/mice_on_venus").weight(3).stream(),
+                sound("minecraft:music/game/dry_hands").weight(3).stream()
         ));
 
         add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.subtitle(null).with(sound("records/guidance").stream()));

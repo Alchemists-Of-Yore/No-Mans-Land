@@ -1,6 +1,5 @@
 package com.farcr.nomansland.common.mixin;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamLevelHandler;
 import com.llamalad7.mixinextras.sugar.Local;

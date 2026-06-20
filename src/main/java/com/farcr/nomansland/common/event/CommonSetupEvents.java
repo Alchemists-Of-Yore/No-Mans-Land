@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.pots.PotionTable;
 import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.blockentity.BombDispenseBehavior;
 import com.farcr.nomansland.common.commands.DreamCommand;
+import com.farcr.nomansland.common.commands.MeetingPointCommand;
 import com.farcr.nomansland.common.commands.SunDogCommand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
@@ -74,6 +75,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
@@ -250,7 +252,6 @@ public class CommonSetupEvents {
     private static class AwkwardResidueDowngradeRecipe implements IBrewingRecipe {
         @Override
         public boolean isInput(@NotNull ItemStack stack) {
-            if (stack.is(NMLItems.BANDAGE)) return false;
             if (!stack.is(Items.POTION) && !stack.is(Items.SPLASH_POTION) && !stack.is(Items.LINGERING_POTION)) return false;
             PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
             return isUpgradedPotion(contents);
@@ -263,7 +264,7 @@ public class CommonSetupEvents {
 
         @Override
         public @NotNull ItemStack getOutput(@NotNull ItemStack input, @NotNull ItemStack ingredient) {
-            if (input.is(NMLItems.BANDAGE)) return ItemStack.EMPTY;
+            if (!isInput(input) || !isIngredient(ingredient)) return ItemStack.EMPTY;
             PotionContents potionContents = input.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
             Optional<Holder<Potion>> basePotion = getBasePotionFromUpgraded(potionContents);
             if (basePotion.isEmpty()) return ItemStack.EMPTY;
@@ -336,7 +337,6 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundDistantChunkPacket.TYPE, ClientboundDistantChunkPacket.STREAM_CODEC, ClientboundDistantChunkPacket::handleData);
 
         registrar.playToClient(ClientboundBandageSoundPacket.TYPE, ClientboundBandageSoundPacket.STREAM_CODEC, ClientboundBandageSoundPacket::handleData);
-        registrar.playToClient(ClientboundStopBandageSoundPacket.TYPE, ClientboundStopBandageSoundPacket.STREAM_CODEC, ClientboundStopBandageSoundPacket::handleData);
 
         // ancestral oath sword packets
         registrar.playToClient(ClientboundOathSwordAnimate.TYPE, ClientboundOathSwordAnimate.STREAM_CODEC, ClientboundOathSwordAnimate::handleData);
@@ -353,6 +353,12 @@ public class CommonSetupEvents {
     public static void registerListeners(RegisterCommandsEvent event) {
         DreamCommand.register(event.getDispatcher(), event.getBuildContext());
         SunDogCommand.register(event.getDispatcher());
+        MeetingPointCommand.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public static void onServerStarting(ServerStartingEvent event) {
+        MeetingPointCommand.applyPersistedOverride(event.getServer());
     }
 
     @SubscribeEvent

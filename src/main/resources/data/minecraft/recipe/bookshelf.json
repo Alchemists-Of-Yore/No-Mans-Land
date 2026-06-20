@@ -1,10 +1,16 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "nomansland:boolean_config",
+      "option": "bookshelf",
+      "enabled_when": false
+    }
+  ],
   "type": "minecraft:crafting_shaped",
   "category": "building",
-  "group": "bookshelves",
   "key": {
     "#": {
-      "item": "minecraft:oak_planks"
+      "tag": "minecraft:planks"
     },
     "X": {
       "item": "minecraft:book"

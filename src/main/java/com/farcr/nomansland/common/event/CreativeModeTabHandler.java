@@ -36,17 +36,36 @@ public class CreativeModeTabHandler {
     private BuildCreativeModeTabContentsEvent event;
 
     private void insertBefore(Item existingEntry, ItemLikeDefinition<?, ?> newEntry) {
-        ItemStack existingStack = existingEntry.getDefaultInstance();
-        ItemStack newStack = newEntry.stack();
-        event.remove(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-        event.insertBefore(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        insertBeforeStack(existingEntry.getDefaultInstance(), newEntry.stack());
     }
 
     private void insertAfter(Item existingEntry, ItemLikeDefinition<?, ?> newEntry) {
-        ItemStack existingStack = existingEntry.getDefaultInstance();
-        ItemStack newStack = newEntry.stack();
+        insertAfterStack(existingEntry.getDefaultInstance(), newEntry.stack());
+    }
+
+    private void insertBeforeStack(ItemStack anchor, ItemStack newStack) {
         event.remove(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-        event.insertAfter(existingStack, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        if (tabContains(event.getParentEntries(), anchor) && tabContains(event.getSearchEntries(), anchor)) {
+            event.insertBefore(anchor, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        } else {
+            event.accept(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
+    }
+
+    private void insertAfterStack(ItemStack anchor, ItemStack newStack) {
+        event.remove(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        if (tabContains(event.getParentEntries(), anchor) && tabContains(event.getSearchEntries(), anchor)) {
+            event.insertAfter(anchor, newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        } else {
+            event.accept(newStack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
+    }
+
+    private static boolean tabContains(Iterable<ItemStack> entries, ItemStack anchor) {
+        for (ItemStack stack : entries) {
+            if (ItemStack.isSameItemSameComponents(stack, anchor)) return true;
+        }
+        return false;
     }
 
     private static void generateBandageEffectTypes(BuildCreativeModeTabContentsEvent output, HolderLookup.RegistryLookup<Potion> potions, Item item, FeatureFlagSet featureFlag) {
@@ -204,8 +223,7 @@ public class CreativeModeTabHandler {
             insertBefore(MANGROVE_LOG, WILLOW.button());
 
             insertAfter(OAK_SLAB, TRIMMED_OAK_PLANKS);
-            event.remove(BOOKSHELF.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-            event.insertAfter(OAK_SLAB.getDefaultInstance(), BOOKSHELF.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            insertAfterStack(OAK_SLAB.getDefaultInstance(), BOOKSHELF.getDefaultInstance());
             insertAfter(SPRUCE_SLAB, TRIMMED_SPRUCE_PLANKS);
             insertAfter(SPRUCE_SLAB, SPRUCE_BOOKSHELF);
             insertAfter(BIRCH_SLAB, TRIMMED_BIRCH_PLANKS);
@@ -480,8 +498,7 @@ public class CreativeModeTabHandler {
 
 //            insertAfter(TROPICAL_FISH_BUCKET, CAVE_CARP_BUCKET);
             if (!event.getFlags().contains(FeatureFlags.BUNDLE)) {
-                event.remove(BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-                event.insertBefore(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                insertBeforeStack(FLINT_AND_STEEL.getDefaultInstance(), BUNDLE.getDefaultInstance());
             }
         }
 

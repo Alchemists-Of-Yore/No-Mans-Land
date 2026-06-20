@@ -18,6 +18,7 @@ public class UpperAtmosphericRenderer {
     private VertexBuffer ozoneMesh;
 
     public void render(PoseStack poseStack, Matrix4f projectionMatrix, float skyR, float skyG, float skyB, float partialTick) {
+        if (UPPER_ATMOSPHERE_SHADER == null) return;
         if (ozoneMesh == null)
             this.createOzoneMesh();
 

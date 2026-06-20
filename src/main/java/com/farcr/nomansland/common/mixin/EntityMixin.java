@@ -71,6 +71,8 @@ public abstract class EntityMixin implements EntityExtension {
 
     @Shadow public abstract float getYRot();
 
+    @Shadow public abstract float getXRot();
+
     @Shadow
     public abstract void setDeltaMovement(Vec3 deltaMovement);
 
@@ -124,6 +126,20 @@ public abstract class EntityMixin implements EntityExtension {
         return rotY * nml$getVisualTickMultiplier();
     }
 
+
+    @Inject(method = "isNoGravity", at = @At("RETURN"), cancellable = true)
+    private void NML$isNoGravity(CallbackInfoReturnable<Boolean> cir) {
+        if (NML$isBeingInspected()) cir.setReturnValue(true);
+    }
+
+    @ModifyVariable(method = "setXRot", at = @At("HEAD"), argsOnly = true)
+    private float NML$slowInspectionSpin(float xRot) {
+        if (NML$isBeingInspected()) {
+            float current = getXRot();
+            return current + (xRot - current) * 0.3f;
+        }
+        return xRot;
+    }
 
     @Unique @Nullable
     private Vec3 startingToFallPosition;

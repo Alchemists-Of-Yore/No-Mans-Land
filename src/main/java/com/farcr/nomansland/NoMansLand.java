@@ -62,6 +62,7 @@ public class NoMansLand {
         NMLCriteriaTriggers.TRIGGERS.register(bus);
         NMLRecipeSerializers.RECIPE_SERIALIZERS.register(bus);
         NMLRecipeSerializers.RECIPE_TYPES.register(bus);
+        NMLConditions.CONDITION_CODECS.register(bus);
         NMLFluids.FLUID_TYPES.register(bus);
         NMLFluids.FLUIDS.register(bus);
         NMLBiomeModifiers.BIOME_MODIFIERS.register(bus);

@@ -1923,37 +1923,73 @@
     ],
     "subtitle": "nomansland.subtitle.item.generic.consumed"
   },
+  "music.overworld.alchemist_ruins": {
+    "sounds": [
+      {
+        "name": "music/game/oxygene",
+        "stream": true,
+        "weight": 5
+      },
+      {
+        "name": "music/game/key",
+        "stream": true,
+        "weight": 5
+      },
+      {
+        "name": "music/game/minecraft",
+        "stream": true,
+        "weight": 3
+      },
+      {
+        "name": "music/game/mice_on_venus",
+        "stream": true,
+        "weight": 3
+      },
+      {
+        "name": "music/game/dry_hands",
+        "stream": true,
+        "weight": 3
+      }
+    ]
+  },
   "music.overworld.cave_depths": {
     "sounds": [
       {
         "name": "music/game/oxygene",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/key",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/minecraft",
-        "stream": true
+        "stream": true,
+        "weight": 3
       },
       {
         "name": "music/game/mice_on_venus",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/dry_hands",
-        "stream": true
+        "stream": true,
+        "weight": 5
       },
       {
         "name": "music/game/yakusoku",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 3
       },
       {
         "name": "music/game/endless",
         "stream": true,
-        "volume": 0.4
+        "volume": 0.4,
+        "weight": 3
       }
     ]
   },

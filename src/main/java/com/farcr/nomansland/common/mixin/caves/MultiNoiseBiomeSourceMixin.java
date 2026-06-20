@@ -19,7 +19,7 @@ public abstract class MultiNoiseBiomeSourceMixin extends BiomeSource {
     public @NotNull Set<Holder<Biome>> possibleBiomes() {
         Set<Holder<Biome>> biomes = new HashSet<>(super.possibleBiomes());
         BiomeCoordinator.getBiomeLookup().ifPresent(lookup ->
-                Stream.of(NMLBiomes.CAVES, NMLBiomes.CAVE_DEPTHS, NMLBiomes.ALCHEMIST_RUINS)
+                Stream.of(NMLBiomes.CAVES, NMLBiomes.CAVE_DEPTHS)
                         .forEach(key -> lookup.get(key).ifPresent(biomes::add))
         );
         return biomes;

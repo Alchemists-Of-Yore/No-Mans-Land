@@ -1,2 +1,2 @@
-- Changed monster anchors to protect all entities of type `Enemy`
-- Fix crash when Farmer's Delight is not installed
+- Added Appleskin compat for bandage healing
+- Fixed crash with Horseman

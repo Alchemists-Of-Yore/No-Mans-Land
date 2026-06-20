@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -68,7 +69,8 @@ public class FrostedGrassBlock extends BushBlock implements BonemealableBlock {
     }
 
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(SNOWLOGGED) ? SNOWLOGGED_SHAPE : SHAPE;
+        Vec3 offset = state.getOffset(level, pos);
+        return (state.getValue(SNOWLOGGED) ? SNOWLOGGED_SHAPE : SHAPE).move(offset.x, offset.y, offset.z);
     }
 
     @Override

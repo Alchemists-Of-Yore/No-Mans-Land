@@ -1,15 +1,33 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-      "##",
-      "##"
+  "neoforge:conditions": [
+    {
+      "type": "nomansland:boolean_config",
+      "option": "tnt",
+      "enabled_when": false
+    }
   ],
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "key": {
-      "#": {
-          "item": "nomansland:explosive"
+    "#": [
+      {
+        "item": "minecraft:sand"
+      },
+      {
+        "item": "minecraft:red_sand"
       }
+    ],
+    "X": {
+      "item": "minecraft:gunpowder"
+    }
   },
+  "pattern": [
+    "X#X",
+    "#X#",
+    "X#X"
+  ],
   "result": {
-      "id": "minecraft:tnt"
+    "count": 1,
+    "id": "minecraft:tnt"
   }
 }

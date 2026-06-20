@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.BlockCollisions;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipBlockStateContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -47,8 +49,8 @@ public class InvertedBellServerHandler extends SavedData {
 
     private final List<ActiveTeleport> teleports = new ArrayList<>();
 
-    public void beginTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, @Nullable BlockPos toPos, @Nullable Direction toDir) {
-        this.teleports.add(new ActiveTeleport(level, fromPos, fromDir, toPos, toDir));
+    public void beginTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, @Nullable BlockPos toPos, @Nullable Direction toDir, @Nullable ResourceKey<Level> toDimension) {
+        this.teleports.add(new ActiveTeleport(level, fromPos, fromDir, toPos, toDir, toDimension));
     }
 
     public static boolean canTeleport(Entity entity, Vec3 from) {
@@ -94,12 +96,15 @@ public class InvertedBellServerHandler extends SavedData {
         private final Direction fromDir;
         private final @Nullable BlockPos toPos;
         private final @Nullable Direction toDir;
+        private final ServerLevel toLevel;
 
-        private ActiveTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, @Nullable BlockPos toPos, @Nullable Direction toDir) {
-            if (toPos != null && !level.getWorldBorder().isWithinBounds(toPos)) {
+        private ActiveTeleport(ServerLevel level, BlockPos fromPos, Direction fromDir, @Nullable BlockPos toPos, @Nullable Direction toDir, @Nullable ResourceKey<Level> toDimension) {
+            ServerLevel toLevel = (toDimension == null || toDimension == level.dimension()) ? level : level.getServer().getLevel(toDimension);
+            if (toPos != null && (toLevel == null || !toLevel.getWorldBorder().isWithinBounds(toPos))) {
                 toPos = null;
                 toDir = null;
             }
+            this.toLevel = toLevel != null ? toLevel : level;
             this.teleportingEntities = level.getEntities(null, new AABB(fromPos).inflate(16)).stream()
                     .filter(e -> InvertedBellServerHandler.canTeleport(e, fromPos.getCenter())).collect(Collectors.toList());
             this.teleportingPlayers = new ArrayList<>();
@@ -118,9 +123,9 @@ public class InvertedBellServerHandler extends SavedData {
 
             if (toPos != null) {
                 ChunkPos fromChunk = new ChunkPos(toPos);
-                level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
+                this.toLevel.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, fromChunk, 0, fromChunk);
                 ChunkPos toChunk = new ChunkPos(toPos);
-                level.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
+                this.toLevel.getChunkSource().addRegionTicket(InvertedBellControllerBlockEntity.BELL_TICKET, toChunk, 0, toChunk);
             }
 
             this.teleportingEntities.forEach(e -> {
@@ -160,7 +165,7 @@ public class InvertedBellServerHandler extends SavedData {
                         this.doTeleportEntity(entity, level);
                         if (this.toPos != null &&
                                 level.getBlockEntity(this.fromPos) instanceof InvertedBellControllerBlockEntity fromIbbe &&
-                                level.getBlockEntity(this.toPos) instanceof InvertedBellControllerBlockEntity toIbbe) {
+                                this.toLevel.getBlockEntity(this.toPos) instanceof InvertedBellControllerBlockEntity toIbbe) {
                             toIbbe.ringCooldown = fromIbbe.ringCooldown;
                         }
                     }
@@ -198,12 +203,12 @@ public class InvertedBellServerHandler extends SavedData {
             diff = diff.yRot((float)(dYRot / 180 * Math.PI));
             Vec3 newPos = this.toPos.getCenter().add(diff);
 
-            if (entityAtPositionIsColliding(entity, newPos, level)) {
+            if (entityAtPositionIsColliding(entity, newPos, this.toLevel)) {
                 applyFailedTeleport(entity, level);
                 return false;
             } else {
                 if (!entity.isPassenger()) {
-                    entity.teleportTo(level, newPos.x, newPos.y, newPos.z,
+                    entity.teleportTo(this.toLevel, newPos.x, newPos.y, newPos.z,
                             EnumSet.noneOf(RelativeMovement.class),
                             entity.getYRot() - dYRot, entity.getXRot());
                 }

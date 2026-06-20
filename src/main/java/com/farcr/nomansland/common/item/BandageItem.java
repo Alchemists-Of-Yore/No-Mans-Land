@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.item;
 
+import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.common.networking.ClientboundBandageSoundPacket;
-import com.farcr.nomansland.common.networking.ClientboundStopBandageSoundPacket;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.component.DataComponents;
@@ -57,7 +57,6 @@ public class BandageItem extends Item {
         Player player = user instanceof Player ? (Player) user : null;
         if (player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
-            PacketDistributor.sendToPlayersTrackingEntityAndSelf(serverPlayer, new ClientboundStopBandageSoundPacket(serverPlayer.getId()));
         }
 
         LivingEntity target = getTargetEntity(user);
@@ -72,12 +71,12 @@ public class BandageItem extends Item {
             }
         });
 
-        target.heal(4);
+        target.heal(NMLConfig.BANDAGE_HEAL_AMOUNT.get().floatValue());
 
         if (player != null) {
             player.awardStat(Stats.ITEM_USED.get(this));
             stack.consume(1, player);
-            int cooldownTicks = 140;
+            int cooldownTicks = NMLConfig.BANDAGE_COOLDOWN.getAsInt();
             player.getCooldowns().addCooldown(NMLItems.BANDAGE.get(), cooldownTicks);
             player.getCooldowns().addCooldown(NMLItems.ANTIDOTE_BANDAGE.get(), cooldownTicks);
             player.getCooldowns().addCooldown(NMLItems.MEDICINAL_BANDAGE.get(), cooldownTicks);
@@ -94,7 +93,6 @@ public class BandageItem extends Item {
             if (target.isDeadOrDying() || player.distanceTo(target) > 4.0) {
                 TARGET_ENTITY.remove();
                 player.stopUsingItem();
-                if (player instanceof ServerPlayer sp) PacketDistributor.sendToPlayersTrackingEntityAndSelf(sp, new ClientboundStopBandageSoundPacket(sp.getId()));
             }
         }
     }
@@ -102,7 +100,6 @@ public class BandageItem extends Item {
     @Override
     public void releaseUsing(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity user, int timeCharged) {
         TARGET_ENTITY.remove();
-        if (user instanceof ServerPlayer sp) PacketDistributor.sendToPlayersTrackingEntityAndSelf(sp, new ClientboundStopBandageSoundPacket(sp.getId()));
     }
 
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {

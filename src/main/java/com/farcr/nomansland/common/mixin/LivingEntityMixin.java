@@ -67,6 +67,8 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Unique
     private boolean nomansland$skipDroppingDeathLoot = false;
     @Unique
+    private boolean nomansland$beingResurrected = false;
+    @Unique
     private int nml$bellParalysisTimer = 0;
 
     @Inject(method = "startSleeping", at = @At("TAIL"))
@@ -88,6 +90,16 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     @Override
     public void nml$skipDroppingDeathLoot() {
         this.nomansland$skipDroppingDeathLoot = true;
+    }
+
+    @Override
+    public void nml$setBeingResurrected() {
+        this.nomansland$beingResurrected = true;
+    }
+
+    @Override
+    public boolean nml$isBeingResurrected() {
+        return this.nomansland$beingResurrected;
     }
 
     @Inject(method = "dropAllDeathLoot", at = @At("HEAD"), cancellable = true)

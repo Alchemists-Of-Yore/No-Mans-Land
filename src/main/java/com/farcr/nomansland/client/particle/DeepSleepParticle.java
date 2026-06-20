@@ -1,6 +1,5 @@
 package com.farcr.nomansland.client.particle;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.model.utils.AnimUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;

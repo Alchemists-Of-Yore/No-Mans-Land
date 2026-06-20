@@ -71,7 +71,7 @@ void main() {
         yIntensity *= abs(adjustedPosition.y);
     }
 
-    float i;
+    float i = 0.0;
     float stepSize = 0.1;
     vec3 position = vec3(0., adjustedPosition.y, 0.);
 
@@ -79,7 +79,8 @@ void main() {
     float timeAdjust = Time / 8.;
     for (colorLine *= i; i < 20.0; i++) {
         position.xz += yIntensity + sin(timeAdjust);
-        position.xy *= r(-position.y * 0.0001);
+        // guessing this behavior has to be explicitly defined?
+        position.xy = r(-position.y * 0.0001) * position.xy;
         stepSize = max(stepSize, 4.0 * (-length(position.z) + 10.0));
         stepSize += abs(
             cos(position.z) * 0.015 +

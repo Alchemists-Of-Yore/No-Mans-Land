@@ -1,21 +1,20 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
+import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.extension.SoundInstanceExtension;
-import com.farcr.nomansland.common.item.AncestralOathSwordItem;
-import com.farcr.nomansland.common.networking.alchemist_tools.ServerboundOathSwordAnimate;
-import com.farcr.nomansland.common.registry.entities.NMLEffects;
-import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
-import com.farcr.nomansland.common.registry.items.NMLItems;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
+import com.farcr.nomansland.common.item.AncestralOathSwordItem;
+import com.farcr.nomansland.common.networking.alchemist_tools.ServerboundOathSwordAnimate;
+import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
+import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.DeltaTracker;
-import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
-import com.farcr.nomansland.common.dreams.DreamManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ProgressScreen;
+import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.*;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,18 +22,14 @@ import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import net.minecraft.client.sounds.SoundManager;
 import org.spongepowered.asm.mixin.Final;
-import net.minecraft.client.gui.screens.InBedChatScreen;
-import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -140,5 +135,21 @@ public abstract class MinecraftMixin {
         if (renderer.clientIsDreaming() && renderer.dreamShouldRender()
         && ClientDreamRenderer.isBlacklistedScreen(guiScreen))
             ci.cancel();
+    }
+
+    @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
+    private void nml$skipBellDimensionScreen(Screen guiScreen, CallbackInfo ci) {
+        if (InvertedBellClientHandler.instance.isActive()
+                && (guiScreen instanceof ReceivingLevelScreen || guiScreen instanceof ProgressScreen)) {
+            ci.cancel();
+        }
+    }
+
+    @WrapOperation(method = "updateScreenAndTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;stop()V"))
+    private void nml$keepSoundsThroughTransitions(SoundManager soundManager, Operation<Void> original) {
+        if (InvertedBellClientHandler.instance.isActive()) return;
+        ClientDreamRenderer renderer = ClientDreamRenderer.getInstance();
+        if (renderer.clientIsDreaming()) return;
+        original.call(soundManager);
     }
 }

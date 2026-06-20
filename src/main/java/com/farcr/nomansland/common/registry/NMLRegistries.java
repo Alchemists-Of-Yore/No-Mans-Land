@@ -9,6 +9,7 @@ import com.farcr.nomansland.common.block.tap.TapInteraction;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.carving.CarvingType;
 import com.farcr.nomansland.common.dreams.DreamType;
+import com.farcr.nomansland.common.dreams.DreamType;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
 import com.farcr.nomansland.common.friend.dialogue.DialogueRegistry;
