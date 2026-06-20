@@ -3,11 +3,14 @@ package com.farcr.nomansland.common.mixin.client;
 import com.farcr.nomansland.client.extensions.AncestralOathSwordClientExtensions;
 import com.farcr.nomansland.client.handler.InvertedBellClientHandler;
 import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
+import com.farcr.nomansland.client.renderer.effect.GreyscaleEffectRenderer;
+import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.spongepowered.asm.mixin.Final;
@@ -28,6 +31,13 @@ public class GameRendererMixin {
         if (this.minecraft.player != null) {
             if (this.minecraft.player.isHolding(NMLItems.ANCESTRAL_OATH_SWORD.get()))
                 AncestralOathSwordClientExtensions.render(deltaTracker.getRealtimeDeltaTicks());
+        }
+        Entity cameraEntity = Minecraft.getInstance().cameraEntity;
+        if (cameraEntity != null && cameraEntity.hasData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER)) {
+            GreyscaleEffectRenderer.getInstance().render(
+                this.minecraft, deltaTracker.getRealtimeDeltaTicks(),
+                1f - cameraEntity.getData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER)
+            );
         }
     }
 }

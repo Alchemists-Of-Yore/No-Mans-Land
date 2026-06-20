@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.mixin.client;
 
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
+import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -30,6 +31,14 @@ public class ItemInHandRendererMixin {
         assert Minecraft.getInstance().player != null;
         ItemStack itemStack = Minecraft.getInstance().player.getItemInHand(hand);
         if (itemStack.is(NMLItems.ANCESTRAL_OATH_SWORD)) ci.cancel();
+    }
+
+    @ModifyVariable(method = "renderHandsWithItems", at = @At("HEAD"), argsOnly = true)
+    private float nml$modifyStasisPartialTick(float partialTick) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.hasData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER))
+            return partialTick * player.getData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER);
+        return partialTick;
     }
 
     @ModifyVariable(method = "renderArmWithItem", at = @At("HEAD"), argsOnly = true)

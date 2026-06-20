@@ -5,6 +5,8 @@ import com.farcr.nomansland.common.extension.LivingEntityExtension;
 import com.farcr.nomansland.common.extension.SoundInstanceExtension;
 import com.farcr.nomansland.common.item.AncestralOathSwordItem;
 import com.farcr.nomansland.common.networking.alchemist_tools.ServerboundOathSwordAnimate;
+import com.farcr.nomansland.common.registry.entities.NMLEffects;
+import com.farcr.nomansland.common.registry.entities.NMLEntityDataAttachments;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -27,6 +29,7 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import net.minecraft.client.sounds.SoundManager;
 import org.spongepowered.asm.mixin.Final;
@@ -56,6 +59,25 @@ public abstract class MinecraftMixin {
     @Shadow
     @Nullable
     public HitResult hitResult;
+
+    @Unique private boolean nml$onStasisCancel() {
+        return (this.player != null && this.player.getExistingData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER).orElse(1f) <= 0.01f);
+    }
+
+    @Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
+    private void nml$cancelAttackStasis(CallbackInfoReturnable<Boolean> cir) {
+        if (this.nml$onStasisCancel()) cir.setReturnValue(false);
+    }
+
+    @Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
+    private void nml$cancelContinueAttackStasis(boolean leftClick, CallbackInfo ci) {
+        if (this.nml$onStasisCancel()) ci.cancel();
+    }
+
+    @Inject(method = "startUseItem", at = @At("HEAD"), cancellable = true)
+    private void nml$cancelUseItem(CallbackInfo ci) {
+        if (this.nml$onStasisCancel()) ci.cancel();
+    }
 
     @WrapOperation(
         method = "startAttack",

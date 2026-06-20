@@ -15,6 +15,7 @@ import com.farcr.nomansland.client.renderer.SunDogRenderer;
 import com.farcr.nomansland.client.renderer.UpperAtmosphericRenderer;
 import com.farcr.nomansland.client.renderer.dreams.MoonlightDreamRenderer;
 import com.farcr.nomansland.client.renderer.effect.AccumulateZoomRenderer;
+import com.farcr.nomansland.client.renderer.effect.GreyscaleEffectRenderer;
 import com.farcr.nomansland.client.renderer.entity.*;
 import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderLayer;
 import com.farcr.nomansland.client.renderer.rendertype.AncestralGlintRenderType;
@@ -336,6 +337,14 @@ public class ClientSetupEvents {
                 AncestralOathSwordClientExtensions.getRenderTarget(),
                 "nomansland:accumulate_zoom_alpha"
             );
+        } catch (final IOException e) {
+            NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
+        } catch (final JsonSyntaxException e) {
+            NoMansLand.LOGGER.warn("Failed to parse shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
+        }
+        // Greyscale post effect for stasis
+        try {
+            GreyscaleEffectRenderer.getInstance().setupPostChain();
         } catch (final IOException e) {
             NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
         } catch (final JsonSyntaxException e) {
