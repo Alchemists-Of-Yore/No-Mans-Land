@@ -346,9 +346,9 @@ public class ClientSetupEvents {
         try {
             GreyscaleEffectRenderer.getInstance().setupPostChain();
         } catch (final IOException e) {
-            NoMansLand.LOGGER.warn("Failed to load shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
+            NoMansLand.LOGGER.warn("Failed to load shader: {}", GreyscaleEffectRenderer.GREYSCALE_SHADER, e);
         } catch (final JsonSyntaxException e) {
-            NoMansLand.LOGGER.warn("Failed to parse shader: {}", AccumulateZoomRenderer.ACCUMULATE_ZOOM_SHADER, e);
+            NoMansLand.LOGGER.warn("Failed to parse shader: {}", GreyscaleEffectRenderer.GREYSCALE_SHADER, e);
         }
     }
 
