@@ -43,6 +43,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     private long potionTableSeed = 0L;
     public boolean skipBreakEffects;
     public boolean shouldDropItems;
+    public boolean preventRegen;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
     private ItemStack item = ItemStack.EMPTY;
