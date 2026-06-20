@@ -43,6 +43,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -68,6 +69,7 @@ import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, Fallable {
     public static final MapCodec<PotBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -367,7 +369,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
                 if (!level.isClientSide) {
                     applyBreakEffects((ServerLevel) level, pos.getCenter(),
                             state, pot.variant, pot.getModifiers(),
-                            pot.getStoredPotion(), size == PotSize.LARGE);
+                            pot.getStoredPotion(), size == PotSize.LARGE, !pot.preventRegen);
                 }
                 level.updateNeighbourForOutputSignal(pos, state.getBlock());
             }
@@ -379,7 +381,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             ServerLevel level, Vec3 pos,
             BlockState state, PotVariant variant,
             Set<PotModifier> modifiers, PotionContents storedPotion,
-            boolean isLarge
+            boolean isLarge, boolean canRegenerate
     ) {
         RandomSource random = level.getRandom();
         BlockPos blockPos = BlockPos.containing(pos);
@@ -410,7 +412,7 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             spawnPotionCloud(level, blockPos, storedPotion);
         }
 
-        if (variant != null && variant.traits().contains(PotTrait.REGENERATES)) {
+        if (canRegenerate && variant != null && variant.traits().contains(PotTrait.REGENERATES)) {
             ResourceLocation variantKey = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY).getKey(variant);
             if (variantKey != null) {
                 int delay = random.nextInt(20, 40) * 20;
@@ -543,6 +545,25 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
             pot.wakeUp(null);
         }
         super.stepOn(level, pos, state, entity);
+    }
+
+    @Override
+    protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
+        if (explosion.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
+            if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+                pot.shouldDropItems = true;
+                pot.preventRegen = true;
+            }
+            state.onBlockExploded(level, pos, explosion);
+        }
+    }
+
+    @Override
+    public void onCaughtFire(BlockState state, Level level, BlockPos pos, @Nullable Direction direction, @Nullable LivingEntity igniter) {
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
+            pot.preventRegen = true;
+        }
+        super.onCaughtFire(state, level, pos, direction, igniter);
     }
 
     protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
