@@ -754,6 +754,11 @@ public class MiscellaneousEvents {
         && livingEntity.hasEffect(NMLEffects.STASIS)) event.setCanceled(true);
     }
 
+    @SubscribeEvent
+    public static void disableParticleEvent(EffectParticleModificationEvent event) {
+        if (event.getEffect().is(NMLEffects.STASIS)) event.setVisible(false);
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity().hasEffect(NMLEffects.STASIS)
