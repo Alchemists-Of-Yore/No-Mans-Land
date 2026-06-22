@@ -1,2 +1,5 @@
+- Added Appleskin compat for bandage healing
+- Fixed crash with Horseman
+- Fixed ancient pots dropping from explosions
 - Expanded on Friend Moon dialogues with more entities
 - Reduced cave pot generation rates
