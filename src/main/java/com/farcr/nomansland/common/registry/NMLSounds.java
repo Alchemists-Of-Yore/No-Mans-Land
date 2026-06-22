@@ -146,6 +146,8 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_MUSIC = registerSound("music.overworld.caves");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_DEPTH_MUSIC = registerSound("music.overworld.cave_depths");
     public static final DeferredHolder<SoundEvent, SoundEvent> ALCHEMIST_RUINS_MUSIC = registerSound("music.overworld.alchemist_ruins");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MUSHROOM_BIOME_MUSIC = registerSound("music.overworld.mushroom_biome");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANACHRONISTIC_MUSIC = registerSound("music.overworld.anachronistic");
 
     public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
 
