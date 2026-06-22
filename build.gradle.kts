@@ -164,6 +164,16 @@ dependencies {
 
 //    implementation "maven.modrinth:DistantHorizonsApi:$distant_horizons_api_version"
     compileOnly("maven.modrinth:DistantHorizons:${deps["distant_horizons"]}-${mc["version"]}")
+
+    // Stellar View - Friend Moon sky compatibility (compile-only; never bundled).
+    // Using the local jar in libs/ so this builds out of the box. For upstream you
+    // probably want a maven coordinate instead - pick ONE of:
+    //   compileOnly("maven.modrinth:stellarview:<VERSION_ID>")  // grab the Version ID
+    //       from https://modrinth.com/mod/stellarview/versions (Metadata > Version ID)
+    //       for the 1.21.1 NeoForge build; the version NUMBER "0.5.2" is shared across
+    //       loaders/MC versions and is ambiguous, so a Version ID is required.
+    //   compileOnly("curse.maven:stellarview-865273:7177905")   // 1.21.1 NeoForge 0.5.2
+    compileOnly("curse.maven:stellarview-865273:7177905")
 }
 
 tasks.withType<ProcessResources>().configureEach {

@@ -86,3 +86,10 @@ config="${mod_id}.mixins.json"
     type="optional"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId="stellarview"
+    type="optional"
+    reason="Friend Moon sky compatibility (NML draws the Friend Moon inside Stellar View's sky pass when present)"
+    ordering="AFTER"
+    side="CLIENT"
