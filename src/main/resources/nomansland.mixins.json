@@ -106,7 +106,8 @@
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
     "client.SoundInstanceMixin",
-    "client.WitchModelMixin"
+    "client.WitchModelMixin",
+    "client.integration.StellarViewOverworldEffectsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

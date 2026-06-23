@@ -1,2 +1,3 @@
 - Fixed anachronistic soundtrack playing at all times in high elevation
 - Fixed coarse dirt placing inside modded trees
+- Added compatibility with Stellar View to render the Friend Moon over their sky
