@@ -303,6 +303,7 @@ public class MoonlightBasinBlockEntity extends BlockEntity {
             blockEntity.trackedCandles = 0;
             blockEntity.setInspectionContext(null, friendMoon);
             if (!level.isClientSide()) {
+                friendMoon.abortAscension();
                 ArrayList<BlockPos> candleList = getCandles(level, pos);
                 candleList.forEach((blockPos) -> {
                     BlockState blockState = level.getBlockState(blockPos);
