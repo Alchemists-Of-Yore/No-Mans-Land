@@ -25,16 +25,16 @@ public class VanillaFluidTargetsMixin {
     @Inject(method = "canProvideFluidWithoutCapability", at = @At("RETURN"), cancellable = true)
     private static void canProvideFluidWithoutCapability(BlockState state, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) {
-            cir.setReturnValue(state.is(NMLBlocks.MILK_CAULDRON.block()) || state.is(NMLBlocks.HONEY_CAULDRON.block()) || state.is(NMLBlocks.RESIN_OIL_CAULDRON.block()));
+            cir.setReturnValue(state.is(NMLBlocks.MILK_CAULDRON.block()) || state.is(NMLBlocks.HONEY_CAULDRON.block()) || state.is(NMLBlocks.OIL_CAULDRON.block()));
         }
     }
 
     @Inject(method = "drainBlock", at = @At("RETURN"), cancellable = true)
     private static void drainBlock(Level level, BlockPos pos, BlockState state, boolean simulate, CallbackInfoReturnable<FluidStack> cir) {
-        if (cir.getReturnValue() == FluidStack.EMPTY && (state.is(NMLBlocks.MILK_CAULDRON.block()) || state.is(NMLBlocks.HONEY_CAULDRON.block()) || state.is(NMLBlocks.RESIN_OIL_CAULDRON.block()))) {
+        if (cir.getReturnValue() == FluidStack.EMPTY && (state.is(NMLBlocks.MILK_CAULDRON.block()) || state.is(NMLBlocks.HONEY_CAULDRON.block()) || state.is(NMLBlocks.OIL_CAULDRON.block()))) {
             if (!simulate) level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
 
-            cir.setReturnValue(new FluidStack(state.is(NMLBlocks.RESIN_OIL_CAULDRON.block()) ? NMLFluids.RESIN_OIL.get() : state.is(NMLBlocks.HONEY_CAULDRON.block()) ? Mods.CREATE.getFluid("honey") : NeoForgeMod.MILK.get(), state.getValue(LEVEL) * 250));
+            cir.setReturnValue(new FluidStack(state.is(NMLBlocks.OIL_CAULDRON.block()) ? NMLFluids.RESIN_OIL.get() : state.is(NMLBlocks.HONEY_CAULDRON.block()) ? Mods.CREATE.getFluid("honey") : NeoForgeMod.MILK.get(), state.getValue(LEVEL) * 250));
         }
     }
 }

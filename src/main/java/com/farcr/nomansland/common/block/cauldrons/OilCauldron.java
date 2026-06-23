@@ -26,14 +26,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class ResinOilCauldron extends FourLayeredCauldronBlock {
-    public ResinOilCauldron() {
+public class OilCauldron extends FourLayeredCauldronBlock {
+    public OilCauldron() {
         super(NMLParticleTypes.OIL);
     }
 
     @Override
-    protected MapCodec<ResinOilCauldron> codec() {
-        return MapCodec.unit(ResinOilCauldron::new);
+    protected MapCodec<OilCauldron> codec() {
+        return MapCodec.unit(OilCauldron::new);
     }
 
     @Override

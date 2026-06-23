@@ -76,7 +76,7 @@ public class ResinCauldron extends FourLayeredCauldronBlock {
                 if (itemEntity.getItem().is(NMLTags.MAKES_RESIN_OIL) && level.getBlockState(pos.below()).is(NMLTags.HEAT_SOURCES)) {
                     entity.remove(Entity.RemovalReason.DISCARDED);
                     level.playSound(null, pos, NMLSounds.HONEYCOMB_CONSUMED.get(), SoundSource.BLOCKS, 1, 0.5F);
-                    level.setBlockAndUpdate(pos, NMLBlocks.RESIN_OIL_CAULDRON.get().withPropertiesOf(state));
+                    level.setBlockAndUpdate(pos, NMLBlocks.OIL_CAULDRON.get().withPropertiesOf(state));
                 }
             }
         }

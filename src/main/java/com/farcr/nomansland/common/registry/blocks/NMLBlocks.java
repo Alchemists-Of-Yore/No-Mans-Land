@@ -95,7 +95,7 @@ public class NMLBlocks {
 
     public static final BlockDefinition<ResinCauldron> RESIN_CAULDRON = registerNoItem("resin_cauldron", ResinCauldron::new, BlockProperties.custom(true));
 
-    public static final BlockDefinition<ResinOilCauldron> RESIN_OIL_CAULDRON = registerNoItem("resin_oil_cauldron", ResinOilCauldron::new, BlockProperties.cauldron());
+    public static final BlockDefinition<OilCauldron> OIL_CAULDRON = registerNoItem("oil_cauldron", OilCauldron::new, BlockProperties.cauldron());
 
     public static final BlockDefinition<HoneyCauldron> HONEY_CAULDRON = registerNoItem("honey_cauldron", HoneyCauldron::new, BlockProperties.cauldron());
 

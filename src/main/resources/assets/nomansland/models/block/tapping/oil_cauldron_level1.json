@@ -2,7 +2,7 @@
   "parent": "nomansland:block/tapping/template_cauldron_level1",
   "textures": {
     "bottom": "minecraft:block/cauldron_bottom",
-    "content": "nomansland:block/resin_oil_layer",
+    "content": "nomansland:block/oil_layer",
     "inside": "minecraft:block/cauldron_inner",
     "particle": "minecraft:block/cauldron_side",
     "side": "minecraft:block/cauldron_side",

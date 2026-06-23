@@ -193,7 +193,7 @@ public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void registerCauldronFluidContent(final RegisterCauldronFluidContentEvent event) {
-        event.register(NMLBlocks.RESIN_OIL_CAULDRON.get(), NMLFluids.RESIN_OIL.get(), 1000, LEVEL);
+        event.register(NMLBlocks.OIL_CAULDRON.get(), NMLFluids.RESIN_OIL.get(), 1000, LEVEL);
         if (NeoForgeMod.MILK.isBound())
             event.register(NMLBlocks.MILK_CAULDRON.get(), NeoForgeMod.MILK.get(), 1000, LEVEL);
         if (Mods.CREATE.isLoaded())

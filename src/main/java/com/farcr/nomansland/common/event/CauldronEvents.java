@@ -71,7 +71,7 @@ public class CauldronEvents {
                 } else if (stack.is(NMLItems.RESIN_OIL_BOTTLE)) {
                     player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, Items.GLASS_BOTTLE.getDefaultInstance()));
                     interacted = true;
-                    newState = NMLBlocks.RESIN_OIL_CAULDRON.get().defaultBlockState();
+                    newState = NMLBlocks.OIL_CAULDRON.get().defaultBlockState();
                     level.setBlockAndUpdate(pos, newState);
                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS);
                 } else if (stack.is(NMLItems.RESIN) && (player.hasInfiniteMaterials() || stack.getCount() >= 2)) {
