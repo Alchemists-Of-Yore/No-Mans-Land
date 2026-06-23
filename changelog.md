@@ -1,1 +1,2 @@
 - Fixed anachronistic soundtrack playing at all times in high elevation
+- Fixed coarse dirt placing inside modded trees
