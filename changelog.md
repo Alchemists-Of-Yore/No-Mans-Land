@@ -2,3 +2,4 @@
 - Fixed coarse dirt placing inside modded trees
 - Added compatibility with Stellar View to render the Friend Moon over their sky
 - Tagged biomes with overworld-specific biome tags, fixing some incompatibilities
+- Fixed the ascension ritual sometimes not properly resetting the buddy when aborted
