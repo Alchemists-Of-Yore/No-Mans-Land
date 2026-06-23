@@ -1,5 +1,7 @@
 {
   "values": [
-    "nomansland:goose"
+    "#minecraft:illager",
+    "#nomansland:malevolent_creation",
+    "minecraft:wither_skeleton"
   ]
 }
