@@ -190,10 +190,10 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.OIL_FLAT.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new FluidLandParticle(clientLevel, d, e, f, sprites));
-        event.registerSpriteSet(NMLParticleTypes.RESIN_OIL_BUBBLE.get(), sprites
+        event.registerSpriteSet(NMLParticleTypes.OIL_BUBBLE.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-                -> new BubbleParticle(clientLevel, d, e, f, g, h, i, sprites, NMLParticleTypes.RESIN_OIL_BUBBLE_POP));
-        event.registerSpriteSet(NMLParticleTypes.RESIN_OIL_BUBBLE_POP.get(), sprites
+                -> new BubbleParticle(clientLevel, d, e, f, g, h, i, sprites, NMLParticleTypes.OIL_BUBBLE_POP));
+        event.registerSpriteSet(NMLParticleTypes.OIL_BUBBLE_POP.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new BubblePopParticle(clientLevel, d, e, f, g, h, i, sprites));
         event.registerSpriteSet(NMLParticleTypes.SCULK_AMBIENCE.get(), sprites

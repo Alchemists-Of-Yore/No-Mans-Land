@@ -42,7 +42,7 @@ public class ResinOilCauldron extends FourLayeredCauldronBlock {
             double d0 = pos.getX() + 0.5 + random.nextInt(-40, 40)*0.01;
             double d1 = pos.getY() + random.nextInt(-10, 40)*0.001 + getContentHeight(state);
             double d2 = pos.getZ() + 0.5 + random.nextInt(-40, 40)*0.01;
-            level.addParticle(NMLParticleTypes.RESIN_OIL_BUBBLE.get(), d0, d1, d2, 0.0, 0.0, 0.0);
+            level.addParticle(NMLParticleTypes.OIL_BUBBLE.get(), d0, d1, d2, 0.0, 0.0, 0.0);
         }
     }
 
