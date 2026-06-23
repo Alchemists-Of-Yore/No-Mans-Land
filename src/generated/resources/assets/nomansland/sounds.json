@@ -1375,6 +1375,22 @@
       }
     ]
   },
+  "entity.friend_moon.speak_bgr": {
+    "sounds": [
+      "nomansland:entity/friend_moon/speak_bgr1",
+      "nomansland:entity/friend_moon/speak_bgr2",
+      "nomansland:entity/friend_moon/speak_bgr3",
+      "nomansland:entity/friend_moon/speak_bgr4",
+      "nomansland:entity/friend_moon/speak_bgr5",
+      "nomansland:entity/friend_moon/speak_bgr6",
+      "nomansland:entity/friend_moon/speak_bgr7",
+      "nomansland:entity/friend_moon/speak_bgr8",
+      "nomansland:entity/friend_moon/speak_bgr9",
+      "nomansland:entity/friend_moon/speak_bgr10",
+      "nomansland:entity/friend_moon/speak_bgr11",
+      "nomansland:entity/friend_moon/speak_bgr12"
+    ]
+  },
   "entity.friend_moon.speak_sad": {
     "sounds": [
       "nomansland:entity/friend_moon/speak_sad1",
