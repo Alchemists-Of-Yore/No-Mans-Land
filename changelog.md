@@ -4,3 +4,4 @@
 - Tagged biomes with overworld-specific biome tags, fixing some incompatibilities
 - Fixed the ascension ritual sometimes not properly resetting the buddy when aborted
 - Fixed a wall sign related crash on startup with certain mods
+- Fixed the flammable effect crashing if already on fire
