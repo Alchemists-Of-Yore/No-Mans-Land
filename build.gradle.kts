@@ -151,6 +151,7 @@ dependencies {
     implementation("maven.modrinth:vanity-core:5.0.2")
     compileOnly("maven.modrinth:snow-real-magic:12.1.2+neoforge")
     compileOnly("maven.modrinth:etched:h6eJfwiW")
+    compileOnly("maven.modrinth:stellarview:QD13LaRR")
     implementation("maven.modrinth:appleskin:3.0.5+mc1.21")
 
     compileOnly("mezz.jei:jei-${mc["version"]}-common-api:${deps["jei"]}")
