@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.friend.dialogue;
 
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueTrackerPacket;
-import com.farcr.nomansland.common.registry.NMLRegistries;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +34,7 @@ public class DialogueTracker extends SavedData {
 
     public static class PlayerDialogueData {
         public boolean heardAnyDialogue = false;
-        public final Set<ResourceLocation> heardOfferingDialogues = new HashSet<>();
+        public final Map<ResourceLocation, Set<ResourceLocation>> heardByRegistry = new HashMap<>();
     }
 
     private final Map<UUID, PlayerDialogueData> playerData = new HashMap<>();
@@ -47,8 +47,8 @@ public class DialogueTracker extends SavedData {
         PlayerDialogueData data = getData(player.getUUID());
         boolean changed = !data.heardAnyDialogue;
         data.heardAnyDialogue = true;
-        if (NMLRegistries.OFFERING_DIALOGUE_KEY.location().equals(registryLocation) && dialogueLocation != null)
-            changed |= data.heardOfferingDialogues.add(dialogueLocation);
+        if (dialogueLocation != null)
+            changed |= data.heardByRegistry.computeIfAbsent(registryLocation, (key) -> new HashSet<>()).add(dialogueLocation);
         if (changed) {
             setDirty();
             sync(player);
@@ -57,9 +57,9 @@ public class DialogueTracker extends SavedData {
 
     public void sync(ServerPlayer player) {
         PlayerDialogueData data = getData(player.getUUID());
-        PacketDistributor.sendToPlayer(player, new ClientboundDialogueTrackerPacket(
-            data.heardAnyDialogue, new ArrayList<>(data.heardOfferingDialogues)
-        ));
+        Map<ResourceLocation, List<ResourceLocation>> heard = new HashMap<>();
+        data.heardByRegistry.forEach((registry, dialogues) -> heard.put(registry, new ArrayList<>(dialogues)));
+        PacketDistributor.sendToPlayer(player, new ClientboundDialogueTrackerPacket(data.heardAnyDialogue, heard));
     }
 
     public DialogueTracker load(CompoundTag tag) {
@@ -69,10 +69,16 @@ public class DialogueTracker extends SavedData {
                 continue;
             PlayerDialogueData data = new PlayerDialogueData();
             data.heardAnyDialogue = playerTag.getBoolean("HeardAnyDialogue");
-            for (Tag heardTag : playerTag.getList("HeardDialogues", Tag.TAG_STRING)) {
-                ResourceLocation location = ResourceLocation.tryParse(heardTag.getAsString());
-                if (location != null)
-                    data.heardOfferingDialogues.add(location);
+            CompoundTag heardTag = playerTag.getCompound("DialoguesHeard");
+            for (String registryKey : heardTag.getAllKeys()) {
+                ResourceLocation registry = ResourceLocation.tryParse(registryKey);
+                if (registry == null) continue;
+                Set<ResourceLocation> dialogues = new HashSet<>();
+                for (Tag dialogueTag : heardTag.getList(registryKey, Tag.TAG_STRING)) {
+                    ResourceLocation dialogue = ResourceLocation.tryParse(dialogueTag.getAsString());
+                    if (dialogue != null) dialogues.add(dialogue);
+                }
+                data.heardByRegistry.put(registry, dialogues);
             }
             playerData.put(NbtUtils.loadUUID(playerTag.get("Player")), data);
         }
@@ -86,9 +92,13 @@ public class DialogueTracker extends SavedData {
             CompoundTag playerTag = new CompoundTag();
             playerTag.put("Player", NbtUtils.createUUID(uuid));
             playerTag.putBoolean("HeardAnyDialogue", data.heardAnyDialogue);
-            ListTag heardTag = new ListTag();
-            data.heardOfferingDialogues.forEach((location) -> heardTag.add(StringTag.valueOf(location.toString())));
-            playerTag.put("HeardDialogues", heardTag);
+            CompoundTag heardTag = new CompoundTag();
+            data.heardByRegistry.forEach((registry, dialogues) -> {
+                ListTag dialogueList = new ListTag();
+                dialogues.forEach((dialogue) -> dialogueList.add(StringTag.valueOf(dialogue.toString())));
+                heardTag.put(registry.toString(), dialogueList);
+            });
+            playerTag.put("DialoguesHeard", heardTag);
             playersTag.add(playerTag);
         });
         tag.put("Players", playersTag);

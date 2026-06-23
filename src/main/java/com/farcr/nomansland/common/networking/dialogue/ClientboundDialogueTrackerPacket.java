@@ -9,17 +9,19 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public record ClientboundDialogueTrackerPacket(
     boolean heardAnyDialogue,
-    List<ResourceLocation> heardOfferingDialogues
+    Map<ResourceLocation, List<ResourceLocation>> heardByRegistry
 ) implements CustomPacketPayload {
     public static final StreamCodec<ByteBuf, ClientboundDialogueTrackerPacket> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.BOOL,
         ClientboundDialogueTrackerPacket::heardAnyDialogue,
-        ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()),
-        ClientboundDialogueTrackerPacket::heardOfferingDialogues,
+        ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list())),
+        ClientboundDialogueTrackerPacket::heardByRegistry,
         ClientboundDialogueTrackerPacket::new
     );
 
@@ -32,7 +34,7 @@ public record ClientboundDialogueTrackerPacket(
 
     public void handleData(final IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> ClientDialogueTracker.acceptSync(heardAnyDialogue, heardOfferingDialogues));
+            context.enqueueWork(() -> ClientDialogueTracker.acceptSync(heardAnyDialogue, heardByRegistry));
         }
     }
 }

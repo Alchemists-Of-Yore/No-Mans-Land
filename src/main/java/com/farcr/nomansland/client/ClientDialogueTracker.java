@@ -6,29 +6,31 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class ClientDialogueTracker {
     private ClientDialogueTracker() {}
 
     private static boolean heardAnyDialogue = false;
-    private static final Set<ResourceLocation> heardOfferingDialogues = new HashSet<>();
+    private static final Map<ResourceLocation, Set<ResourceLocation>> heardByRegistry = new HashMap<>();
 
-    public static void acceptSync(boolean heardAny, Collection<ResourceLocation> heardOffering) {
+    public static void acceptSync(boolean heardAny, Map<ResourceLocation, List<ResourceLocation>> heard) {
         heardAnyDialogue = heardAny;
-        heardOfferingDialogues.clear();
-        heardOfferingDialogues.addAll(heardOffering);
+        heardByRegistry.clear();
+        heard.forEach((registry, dialogues) -> heardByRegistry.put(registry, new HashSet<>(dialogues)));
     }
 
     public static boolean hasHeardAnyDialogue() {
         return heardAnyDialogue;
     }
 
-    public static boolean hasHeardOfferingDialogue(ResourceLocation dialogueLocation) {
-        return heardOfferingDialogues.contains(dialogueLocation);
+    public static boolean hasHeardDialogue(ResourceLocation registryLocation, ResourceLocation dialogueLocation) {
+        Set<ResourceLocation> dialogues = heardByRegistry.get(registryLocation);
+        return dialogues != null && dialogues.contains(dialogueLocation);
     }
 
     public static List<ResourceLocation> getOfferingDialoguesForItem(Item item) {
