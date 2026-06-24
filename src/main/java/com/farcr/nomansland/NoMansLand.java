@@ -58,6 +58,7 @@ public class NoMansLand {
         NMLFogModifiers.FOG_MODIFIERS.register(bus);
         NMLMobVariants.FROG_VARIANTS.register(bus);
         NMLEffects.MOB_EFFECTS.register(bus);
+        NMLPotions.POTIONS.register(bus);
         NMLStructureProcessorTypes.STRUCTURE_PROCESSOR_TYPES.register(bus);
         NMLCriteriaTriggers.TRIGGERS.register(bus);
         NMLRecipeSerializers.RECIPE_SERIALIZERS.register(bus);

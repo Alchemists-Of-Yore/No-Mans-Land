@@ -7,8 +7,10 @@ import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -39,6 +41,18 @@ public class NMLArmorMaterials {
             NMLSounds.ANCIENT_BRONZE_MASK_EQUIP,
             () -> Ingredient.EMPTY,
             "ancient_bronze_mask",
+            () -> 0F,
+            () -> 0F
+    );
+
+    public static final Holder<ArmorMaterial> GAS_MASK = register(
+            "gas_mask",
+            ArmorItem.Type.HELMET,
+            () -> 3,
+            9,
+            SoundEvents.ARMOR_EQUIP_LEATHER,
+            () -> Ingredient.of(Items.LEATHER),
+            "gas_mask",
             () -> 0F,
             () -> 0F
     );

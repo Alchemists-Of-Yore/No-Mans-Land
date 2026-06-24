@@ -322,6 +322,7 @@ public class CreativeModeTabHandler {
             insertBefore(GRAVEL, SILT_PATH);
             insertAfter(RED_MUSHROOM, SHELF_MUSHROOM);
             insertAfter(RED_MUSHROOM, NMLItems.FIELD_MUSHROOM);
+            insertAfter(RED_MUSHROOM, MINERS_GILL);
             if (Mods.FARMERSDELIGHT.isLoaded()) insertAfter(RED_MUSHROOM, FDIntegration.FIELD_MUSHROOM_COLONY);
             insertAfter(RED_MUSHROOM_BLOCK, SHELF_MUSHROOM_BLOCK);
             insertAfter(RED_MUSHROOM_BLOCK, FIELD_MUSHROOM_BLOCK);
@@ -340,6 +341,10 @@ public class CreativeModeTabHandler {
             insertAfter(AMETHYST_CLUSTER, SMALL_QUARTZITE_BUD);
             insertAfter(AMETHYST_CLUSTER, BUDDING_QUARTZITE);
             insertAfter(AMETHYST_CLUSTER, QUARTZITE);
+
+            insertAfter(COAL_ORE, SULFUR_ORE);
+            insertAfter(DEEPSLATE_COAL_ORE, DEEPSLATE_SULFUR_ORE);
+            insertAfter(COAL_BLOCK, SULFUR_BLOCK);
 
             insertAfter(HAY_BLOCK, TROPICAL_FISH_BARREL);
             insertAfter(HAY_BLOCK, PUFFERFISH_BARREL);
@@ -505,11 +510,14 @@ public class CreativeModeTabHandler {
         if (tab == CreativeModeTabs.COMBAT) {
             insertAfter(WIND_CHARGE, INK_BOMB);
             insertAfter(WIND_CHARGE, FIREBOMB);
+            insertAfter(WIND_CHARGE, ACRID_BOMB);
+            insertAfter(WIND_CHARGE, AQUA_REGIA);
             insertAfter(SNOWBALL, LIVING_URN);
             insertBefore(TNT, EXPLOSIVE);
             insertAfter(EGG, RESIN_OIL_BOTTLE);
             insertAfter(TURTLE_HELMET, TORTOISE_SHELL);
             insertAfter(TURTLE_HELMET, ANCIENT_BRONZE_MASK);
+            insertAfter(TURTLE_HELMET, GAS_MASK);
             insertAfter(SPECTRAL_ARROW, INCENDIARY_ARROW);
         }
 
@@ -518,6 +526,10 @@ public class CreativeModeTabHandler {
             insertAfter(RESIN.asItem(), RESIN_OIL_BOTTLE);
             insertAfter(TURTLE_SCUTE, STURDY_SCUTE);
             insertAfter(NETHER_WART, AWKWARD_RESIDUE);
+            insertAfter(GUNPOWDER, SULFUR);
+            insertAfter(SULFUR.asItem(), ORPIMENT);
+            insertAfter(SPIDER_EYE, BILE_SAC);
+            insertAfter(SPIDER_EYE, CHARCOAL_FILTER);
         }
 
         if (tab == CreativeModeTabs.REDSTONE_BLOCKS) {

@@ -137,6 +137,12 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
         addToTags(NMLBlocks.SEASHELLS.get(), BlockTags.COMBINATION_STEP_SOUND_BLOCKS);
         addToTags(NMLBlocks.SMALL_QUARTZITE_BUD.get(), BlockTags.INSIDE_STEP_SOUND_BLOCKS);
 
+        addToTags(NMLBlocks.SULFUR_ORE.block(), BlockTags.NEEDS_STONE_TOOL);
+        addToTags(NMLBlocks.DEEPSLATE_SULFUR_ORE.block(), BlockTags.NEEDS_STONE_TOOL);
+        addToTags(NMLBlocks.SULFUR_BLOCK.block(), BlockTags.NEEDS_STONE_TOOL);
+        tag(Tags.Blocks.ORES).add(NMLBlocks.SULFUR_ORE.block(), NMLBlocks.DEEPSLATE_SULFUR_ORE.block());
+        tag(Tags.Blocks.STORAGE_BLOCKS).add(NMLBlocks.SULFUR_BLOCK.block());
+
         tag(NMLTags.ORE_VEIN_REPLACEABLE).add(Blocks.STONE, Blocks.DEEPSLATE, Blocks.STONE_STAIRS, Blocks.STONE_SLAB);
         tag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.COAL_BLOCK, Blocks.RAW_GOLD_BLOCK, NMLBlocks.SILTSTONE.get(), NMLBlocks.QUARTZITE.get(), Blocks.TUFF, Blocks.COAL_ORE, Blocks.SMOOTH_BASALT, Blocks.BASALT);
     }

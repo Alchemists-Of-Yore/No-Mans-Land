@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": { "item": "minecraft:leather" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "F": { "item": "nomansland:charcoal_filter" }
+  },
+  "pattern": [
+    "LIL",
+    "LFL"
+  ],
+  "result": {
+    "id": "nomansland:gas_mask",
+    "count": 1
+  }
+}

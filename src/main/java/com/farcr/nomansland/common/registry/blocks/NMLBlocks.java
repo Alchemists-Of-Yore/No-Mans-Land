@@ -373,6 +373,25 @@ public class NMLBlocks {
 
     public static final BlockDefinition<Block> SILTSTONE = register("siltstone",
             () -> new Block(ofFullCopy(Blocks.STONE).sound(NMLSounds.SILTSTONE)), BlockProperties.stoneLike());
+
+    public static final BlockDefinition<SulfurOreBlock> SULFUR_ORE = register("sulfur_ore",
+            () -> new SulfurOreBlock(ofFullCopy(Blocks.STONE).strength(3.0F, 3.0F).requiresCorrectToolForDrops()),
+            new BlockProperties(new OreBlockLootType(NMLItems.SULFUR::get, 2.0F, 4.0F, NMLItems.ORPIMENT, 0.04F), false));
+    public static final BlockDefinition<SulfurOreBlock> DEEPSLATE_SULFUR_ORE = register("deepslate_sulfur_ore",
+            () -> new SulfurOreBlock(ofFullCopy(Blocks.DEEPSLATE).strength(4.5F, 3.0F).requiresCorrectToolForDrops()),
+            new BlockProperties(new OreBlockLootType(NMLItems.SULFUR::get, 2.0F, 4.0F, NMLItems.ORPIMENT, 0.05F), false));
+    public static final BlockDefinition<Block> SULFUR_BLOCK = register("sulfur_block",
+            () -> new Block(ofFullCopy(Blocks.STONE).mapColor(MapColor.COLOR_YELLOW).strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE)),
+            BlockProperties.stoneLike());
+    public static final BlockDefinition<ToxicGasBlock> TOXIC_GAS = registerNoItem("toxic_gas",
+            () -> new ToxicGasBlock(of().replaceable().noCollission().noLootTable().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY).sound(SoundType.WOOL)));
+    public static final BlockDefinition<MinersGillBlock> MINERS_GILL = register("miners_gill",
+            () -> new MinersGillBlock(of().mapColor(MapColor.COLOR_GREEN).noCollission().randomTicks().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY).offsetType(OffsetType.XZ)),
+            new BlockProperties(new ShearsBlockLootType(), true));
+    public static final BlockDefinition<PottedMinersGillBlock> POTTED_MINERS_GILL = registerNoItem("potted_miners_gill",
+            () -> new PottedMinersGillBlock(() -> ((FlowerPotBlock) Blocks.FLOWER_POT), MINERS_GILL, ofFullCopy(Blocks.POTTED_RED_MUSHROOM).randomTicks().noOcclusion()),
+            BlockProperties.flowerPot(MINERS_GILL));
+
     public static final BlockDefinition<StairBlock> SILTSTONE_STAIRS = register("siltstone_stairs",
             () -> new StairBlock(SILTSTONE.get().defaultBlockState(), ofFullCopy(NMLBlocks.SILTSTONE.get())), BlockProperties.stoneLikeStairs());
     public static final BlockDefinition<SlabBlock> SILTSTONE_SLAB = register("siltstone_slab",

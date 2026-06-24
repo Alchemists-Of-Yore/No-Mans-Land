@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "dispersion=0": { "model": "nomansland:block/toxic_gas" },
+    "dispersion=1": { "model": "nomansland:block/toxic_gas" },
+    "dispersion=2": { "model": "nomansland:block/toxic_gas" },
+    "dispersion=3": { "model": "nomansland:block/toxic_gas" },
+    "dispersion=4": { "model": "nomansland:block/toxic_gas" },
+    "dispersion=5": { "model": "nomansland:block/toxic_gas" },
+    "dispersion=6": { "model": "nomansland:block/toxic_gas" }
+  }
+}

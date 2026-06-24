@@ -3,7 +3,10 @@ package com.farcr.nomansland.common.event;
 import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
+import com.farcr.nomansland.common.block.SulfurOreBlock;
+import com.farcr.nomansland.common.block.ToxicGasBlock;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
+import com.farcr.nomansland.common.item.GasMaskItem;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.effect.FlammableEffect;
@@ -13,6 +16,7 @@ import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
+import com.farcr.nomansland.common.handler.ToxicGasHandler;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
@@ -59,6 +63,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.projectile.windcharge.AbstractWindCharge;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
@@ -83,6 +89,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -100,6 +107,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -509,9 +517,18 @@ public class MiscellaneousEvents {
 
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof ItemEntity itemEntity && itemEntity.level() instanceof ServerLevel serverLevel
+                && itemEntity.getItem().is(NMLItems.SULFUR) && (itemEntity.isInLava() || itemEntity.isOnFire())) {
+            ToxicGasBlock.scatterAround(serverLevel, itemEntity.blockPosition().above(), itemEntity.getItem().getCount());
+            itemEntity.discard();
+            return;
+        }
+
         if (event.getEntity() instanceof LivingEntity entity) {
-            if (!entity.level().isClientSide())
+            if (!entity.level().isClientSide()) {
                 FlammableEffect.dampenWhenWet(entity);
+                ToxicGasHandler.handle(entity);
+            }
 
             ItemStack stack = entity.getItemBySlot(EquipmentSlot.HEAD);
             if (stack.is(NMLItems.ANCIENT_BRONZE_MASK)) {
@@ -538,6 +555,22 @@ public class MiscellaneousEvents {
         Explosion explosion = event.getExplosion();
         Level level = event.getLevel();
 
+        if (level instanceof ServerLevel windLevel && explosion.getDirectSourceEntity() instanceof AbstractWindCharge) {
+            ToxicGasBlock.clearArea(windLevel, explosion.center(), explosion.radius() + 2.0);
+        }
+
+        List<BlockPos> sulfurSeeds = new ArrayList<>();
+        if (level instanceof ServerLevel) {
+            Iterator<BlockPos> iterator = event.getAffectedBlocks().iterator();
+            while (iterator.hasNext()) {
+                BlockPos pos = iterator.next();
+                if (SulfurOreBlock.isSulfurOre(level.getBlockState(pos))) {
+                    sulfurSeeds.add(pos.immutable());
+                    iterator.remove();
+                }
+            }
+        }
+
         for (BlockPos pos : event.getAffectedBlocks()) {
             BlockState state = level.getBlockState(pos);
 
@@ -553,6 +586,25 @@ public class MiscellaneousEvents {
             if (event.getExplosion().getDirectSourceEntity() instanceof Explosive explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
                 NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
             }
+        }
+
+        if (!sulfurSeeds.isEmpty() && level instanceof ServerLevel serverLevel) {
+            serverLevel.getServer().execute(() -> {
+                for (BlockPos seed : sulfurSeeds) SulfurOreBlock.chainExplode(serverLevel, seed);
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onGasMaskAnvil(AnvilUpdateEvent event) {
+        ItemStack left = event.getLeft();
+        ItemStack right = event.getRight();
+        if (left.getItem() instanceof GasMaskItem && right.getItem() instanceof GasMaskItem) {
+            int total = Math.min(GasMaskItem.MAX_DURATION, GasMaskItem.getDuration(left) + GasMaskItem.getDuration(right));
+            ItemStack output = left.copyWithCount(1);
+            GasMaskItem.setDuration(output, total);
+            event.setOutput(output);
+            event.setCost(1);
         }
     }
 

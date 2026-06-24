@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.registry.entities;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.effect.CorrosionEffect;
 import com.farcr.nomansland.common.effect.FlammableEffect;
 import com.farcr.nomansland.common.effect.HappinessEffect;
 import com.farcr.nomansland.common.effect.PacifiedEffect;
@@ -22,4 +23,7 @@ public class NMLEffects {
 
     public static final DeferredHolder<MobEffect, MobEffect> HAPPINESS = MOB_EFFECTS.register("happiness",
         () -> new HappinessEffect(MobEffectCategory.BENEFICIAL, 16746142));
+
+    public static final DeferredHolder<MobEffect, MobEffect> CORROSION = MOB_EFFECTS.register("corrosion",
+        () -> new CorrosionEffect(MobEffectCategory.HARMFUL, 3383456));
 }

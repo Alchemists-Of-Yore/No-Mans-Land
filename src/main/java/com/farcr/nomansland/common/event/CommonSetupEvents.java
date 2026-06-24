@@ -41,6 +41,7 @@ import com.farcr.nomansland.common.networking.friend.ClientboundMeetingPointPack
 import com.farcr.nomansland.common.networking.friend.ClientboundMoonlightBasinTrackPacket;
 import com.farcr.nomansland.common.networking.friend.FriendMoonUpdatePacket;
 import com.farcr.nomansland.common.registry.NMLFluids;
+import com.farcr.nomansland.common.registry.NMLPotions;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
@@ -206,8 +207,39 @@ public class CommonSetupEvents {
     public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
         event.getBuilder().addMix(Potions.WATER, NMLItems.AWKWARD_RESIDUE.get(), Potions.AWKWARD);
 
+        event.getBuilder().addMix(Potions.AWKWARD, NMLItems.BILE_SAC.get(), NMLPotions.CORROSION);
+        event.getBuilder().addMix(NMLPotions.CORROSION, Items.GLOWSTONE_DUST, NMLPotions.STRONG_CORROSION);
+
         event.getBuilder().addRecipe(new AwkwardResidueDowngradeRecipe());
         event.getBuilder().addRecipe(new BandageInfusionRecipe());
+        event.getBuilder().addRecipe(new AquaRegiaBrewingRecipe());
+    }
+
+    private static boolean isCorrosionPotion(ItemStack stack) {
+        if (!stack.is(Items.POTION)) return false;
+        PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+        if (contents == null) return false;
+        return contents.potion()
+                .map(holder -> holder.value() == NMLPotions.CORROSION.value() || holder.value() == NMLPotions.STRONG_CORROSION.value())
+                .orElse(false);
+    }
+
+    private static class AquaRegiaBrewingRecipe implements IBrewingRecipe {
+        @Override
+        public boolean isInput(@NotNull ItemStack stack) {
+            return isCorrosionPotion(stack);
+        }
+
+        @Override
+        public boolean isIngredient(@NotNull ItemStack stack) {
+            return stack.is(NMLItems.ORPIMENT);
+        }
+
+        @Override
+        public @NotNull ItemStack getOutput(@NotNull ItemStack input, @NotNull ItemStack ingredient) {
+            if (!isInput(input) || !isIngredient(ingredient)) return ItemStack.EMPTY;
+            return new ItemStack(NMLItems.AQUA_REGIA.get());
+        }
     }
 
     private static boolean isEmptyBandage(ItemStack stack) {

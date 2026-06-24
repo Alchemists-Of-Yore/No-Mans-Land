@@ -70,6 +70,8 @@ public class NMLParticleTypes {
 
     public static final Supplier<SimpleParticleType> LIVING_URN_SHARD_FACE = register("living_urn_shard_face");
 
+    public static final Supplier<SimpleParticleType> TOXIC_GAS = register("toxic_gas");
+
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
         return PARTICLE_TYPES.register(name, () -> new ParticleType<T>(overrideLimitter) {
             public MapCodec<T> codec() {

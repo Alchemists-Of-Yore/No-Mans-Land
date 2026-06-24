@@ -18,6 +18,7 @@ public class NMLTags {
     public static final TagKey<Item> TORTOISE_FOOD = createItemTag("tortoise_food");
     public static final TagKey<Item> MAKES_RESIN_OIL = createItemTag("makes_resin_oil");
     public static final TagKey<Item> INK_IMMUNE = createItemTag("ink_immune");
+    public static final TagKey<Item> DOES_NOT_CORRODE = createItemTag("does_not_corrode");
 
     public static final SharedTag MAPLE_LOGS = createSharedTag("maple_logs");
     public static final SharedTag PINE_LOGS = createSharedTag("pine_logs");

@@ -28,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
@@ -65,6 +66,7 @@ public class ClientSetupEvents {
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/firebomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/ink_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/explosive")));
+        event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/acrid_bomb")));
         event.register(ModelResourceLocation.standalone(NoMansLand.location("entity/living_urn")));
         event.register(ModelResourceLocation.standalone(InvertedBellRenderer.BELL_MODEL.id()));
         event.register(ModelResourceLocation.standalone(InvertedBellRenderer.CLAPPER_MODEL.id()));
@@ -123,6 +125,8 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.FIREBOMB.get(), FirebombRenderer::new);
         event.registerEntityRenderer(NMLEntities.INK_BOMB.get(), InkBombRenderer::new);
         event.registerEntityRenderer(NMLEntities.EXPLOSIVE.get(), ExplosiveRenderer::new);
+        event.registerEntityRenderer(NMLEntities.ACRID_BOMB.get(), AcridBombRenderer::new);
+        event.registerEntityRenderer(NMLEntities.AQUA_REGIA.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(NMLEntities.LIVING_URN.get(), LivingUrnRenderer::new);
         if (Mods.NIRVANA.isLoaded()) event.registerEntityRenderer(NirvanaIntegration.FAT_JOINT.get(), FatJointRenderer::new);
 
@@ -228,6 +232,9 @@ public class ClientSetupEvents {
                 -> new DeepSleepParticle(clientLevel, d, e, f, g, h, i, sprites));
         event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
         event.registerSpriteSet(NMLParticleTypes.LIVING_URN_SHARD_FACE.get(), LivingUrnShardFaceParticle.Provider::new);
+        event.registerSpriteSet(NMLParticleTypes.TOXIC_GAS.get(), sprites
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new ToxicGasParticle(clientLevel, d, e, f, g, h, i, sprites));
     }
 
     @SubscribeEvent

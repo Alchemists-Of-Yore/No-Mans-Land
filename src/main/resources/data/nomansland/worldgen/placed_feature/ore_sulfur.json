@@ -1,0 +1,16 @@
+{
+  "feature": "nomansland:ore_sulfur",
+  "placement": [
+    { "type": "minecraft:count", "count": 14 },
+    { "type": "minecraft:in_square" },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "trapezoid",
+        "min_inclusive": { "absolute": -64 },
+        "max_inclusive": { "absolute": 80 }
+      }
+    },
+    { "type": "minecraft:biome" }
+  ]
+}
