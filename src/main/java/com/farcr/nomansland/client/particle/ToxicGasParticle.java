@@ -13,7 +13,7 @@ public class ToxicGasParticle extends TextureSheetParticle {
         this.sprites = sprites;
         this.gravity = 0.0F;
         this.lifetime = 40 + this.random.nextInt(40);
-        this.quadSize *= 2.0F + this.random.nextFloat();
+        this.quadSize *= 1.2F + this.random.nextFloat() * 0.5F;
         this.friction = 0.96F;
         this.xd = (this.random.nextDouble() - 0.5) * 0.005;
         this.yd = 0.005 + this.random.nextDouble() * 0.005;

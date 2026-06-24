@@ -25,7 +25,7 @@ public class PottedMinersGillBlock extends FlowerPotBlock {
 
     @Override
     public void randomTick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        if (MinersGillBlock.absorbGas(level, pos, ABSORB_RANGE, 12) > 0) {
+        if (MinersGillBlock.absorbNearestGas(level, pos, ABSORB_RANGE)) {
             level.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5, 5, 0.2, 0.2, 0.2, 0.0);
         }
     }

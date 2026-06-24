@@ -108,8 +108,10 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
@@ -559,39 +561,42 @@ public class MiscellaneousEvents {
             ToxicGasBlock.clearArea(windLevel, explosion.center(), explosion.radius() + 2.0);
         }
 
-        List<BlockPos> sulfurSeeds = new ArrayList<>();
-        if (level instanceof ServerLevel) {
+        Set<BlockPos> sulfurOres = new HashSet<>();
+        if (level instanceof ServerLevel serverLevel) {
             Iterator<BlockPos> iterator = event.getAffectedBlocks().iterator();
+            Explosion.BlockInteraction interaction = explosion.getBlockInteraction();
+            boolean destroysBlocks = interaction == Explosion.BlockInteraction.DESTROY || interaction == Explosion.BlockInteraction.DESTROY_WITH_DECAY;
             while (iterator.hasNext()) {
                 BlockPos pos = iterator.next();
-                if (SulfurOreBlock.isSulfurOre(level.getBlockState(pos))) {
-                    sulfurSeeds.add(pos.immutable());
-                    iterator.remove();
+                if (destroysBlocks) {
+                    if (SulfurOreBlock.isSulfurOre(level.getBlockState(pos))) {
+                        sulfurOres.add(pos.immutable());
+                        for (Direction direction : Direction.values()) {
+                            BlockPos edge = pos.relative(direction);
+                            if (SulfurOreBlock.isSulfurOre(level.getBlockState(edge))) sulfurOres.add(edge.immutable());
+                        }
+                    }
+                }
+
+                BlockState state = level.getBlockState(pos);
+
+                for (ExtinguishableBlockPairing block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
+                    if (state.is(block.litBlock())) {
+                        level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
+                        level.setBlock(pos, block.extinguishedBlock().withPropertiesOf(state), 11);
+                        level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                        break;
+                    }
+                }
+
+                if (event.getExplosion().getDirectSourceEntity() instanceof Explosive explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
+                    NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
                 }
             }
-        }
 
-        for (BlockPos pos : event.getAffectedBlocks()) {
-            BlockState state = level.getBlockState(pos);
-
-            for (ExtinguishableBlockPairing block : NMLRegistries.EXTINGUISHABLE_BLOCKS) {
-                if (state.is(block.litBlock())) {
-                    level.gameEvent(explosion.getDirectSourceEntity(), GameEvent.BLOCK_CHANGE, pos);
-                    level.setBlock(pos, block.extinguishedBlock().withPropertiesOf(state), 11);
-                    level.playSound(null, pos, NMLSounds.TORCH_EXTINGUISH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                    break;
-                }
+            if (!sulfurOres.isEmpty()) {
+                for (BlockPos sulfurOre : sulfurOres) SulfurOreBlock.prime(serverLevel, sulfurOre);
             }
-
-            if (event.getExplosion().getDirectSourceEntity() instanceof Explosive explosive && explosive.getOwner() instanceof ServerPlayer serverPlayer && state.is(Tags.Blocks.ORES)) {
-                NMLCriteriaTriggers.MINE_ORE_WITH_EXPLOSIVE.get().trigger(serverPlayer, pos);
-            }
-        }
-
-        if (!sulfurSeeds.isEmpty() && level instanceof ServerLevel serverLevel) {
-            serverLevel.getServer().execute(() -> {
-                for (BlockPos seed : sulfurSeeds) SulfurOreBlock.chainExplode(serverLevel, seed);
-            });
         }
     }
 

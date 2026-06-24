@@ -26,7 +26,6 @@ public class MinersGillBlock extends BushBlock {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_3;
     private static final VoxelShape SHAPE = box(3.0, 0.0, 3.0, 13.0, 11.0, 13.0);
     private static final int ABSORB_RANGE = 4;
-    private static final int ABSORB_DISPERSION = 12;
 
     public MinersGillBlock(Properties properties) {
         super(properties);
@@ -63,12 +62,46 @@ public class MinersGillBlock extends BushBlock {
         int age = state.getValue(AGE);
         if (age >= MAX_AGE) return;
 
-        int absorbed = absorbGas(level, pos, ABSORB_RANGE, ABSORB_DISPERSION);
-        if (absorbed <= 0) return;
+        if (!absorbNearestGas(level, pos, ABSORB_RANGE)) return;
 
+        react(level, pos, state, random);
+    }
+
+    private static void react(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
         level.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.0);
 
-        if (random.nextInt(3) == 0) level.setBlock(pos, state.setValue(AGE, age + 1), 2);
+        if (state.getBlock() instanceof MinersGillBlock && state.hasProperty(AGE)) {
+            int age = state.getValue(AGE);
+            if (age < MAX_AGE && random.nextInt(3) == 0) level.setBlock(pos, state.setValue(AGE, age + 1), 2);
+        }
+    }
+
+    private static boolean canFeed(BlockState state) {
+        if (state.getBlock() instanceof PottedMinersGillBlock) return true;
+        if (state.getBlock() instanceof MinersGillBlock) return state.getValue(AGE) < MAX_AGE;
+        return false;
+    }
+
+    public static BlockPos findFeedable(ServerLevel level, BlockPos origin, int range) {
+        BlockPos nearest = null;
+        double nearestSq = Double.MAX_VALUE;
+        for (BlockPos candidate : BlockPos.betweenClosed(origin.offset(-range, -range, -range), origin.offset(range, range, range))) {
+            if (canFeed(level.getBlockState(candidate))) {
+                double distSq = candidate.distSqr(origin);
+                if (distSq < nearestSq) {
+                    nearestSq = distSq;
+                    nearest = candidate.immutable();
+                }
+            }
+        }
+        return nearest;
+    }
+
+    public static boolean feed(ServerLevel level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (!canFeed(state)) return false;
+        react(level, pos, state, level.random);
+        return true;
     }
 
     @Override
@@ -94,16 +127,20 @@ public class MinersGillBlock extends BushBlock {
         }
     }
 
-    public static int absorbGas(ServerLevel level, BlockPos pos, int range, int maxDispersion) {
-        int absorbed = 0;
+    public static boolean absorbNearestGas(ServerLevel level, BlockPos pos, int range) {
+        BlockPos nearest = null;
+        double nearestSq = Double.MAX_VALUE;
         for (BlockPos candidate : BlockPos.betweenClosed(pos.offset(-range, -range, -range), pos.offset(range, range, range))) {
-            if (absorbed >= maxDispersion) break;
-            BlockState state = level.getBlockState(candidate);
-            if (ToxicGasBlock.isToxicGas(state)) {
-                absorbed += state.getValue(ToxicGasBlock.DISPERSION) + 1;
-                level.removeBlock(candidate, false);
+            if (ToxicGasBlock.isToxicGas(level.getBlockState(candidate))) {
+                double distSq = candidate.distSqr(pos);
+                if (distSq < nearestSq) {
+                    nearestSq = distSq;
+                    nearest = candidate.immutable();
+                }
             }
         }
-        return absorbed;
+        if (nearest == null) return false;
+        level.removeBlock(nearest, false);
+        return true;
     }
 }

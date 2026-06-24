@@ -155,8 +155,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("death.attack.nomansland.spike_skewer.player", "%1$s was skewered by a spike trap while fighting %2$s");
         add("death.attack.nomansland.combust", "%1$s faced immolation");
         add("death.attack.nomansland.combust.player", "%1$s was immolated by %2$s");
-        add("death.attack.nomansland.corrosion", "%1$s corroded away in toxic gas");
-        add("death.attack.nomansland.corrosion.player", "%1$s corroded away in toxic gas while fighting %2$s");
+        add("death.attack.nomansland.corrosion", "%1$s corroded away");
+        add("death.attack.nomansland.corrosion.player", "%1$s corroded away while fighting %2$s");
         add("entity.nomansland.explosive", "Explosive");
         add("entity.nomansland.firebomb", "Firebomb");
         add("entity.nomansland.acrid_bomb", "Acrid Bomb");

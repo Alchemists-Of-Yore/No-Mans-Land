@@ -11,9 +11,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class SulfurOreBlock extends Block {
-    private static final int MAX_CHAIN = 220;
-    private static final int MAX_EXPLOSIONS = 6;
+    private static final Set<BlockPos> PRIMED = new HashSet<>();
+    private static final float EXPLOSION_POWER = 2.5F;
 
     public SulfurOreBlock(Properties properties) {
         super(properties);
@@ -31,12 +34,17 @@ public class SulfurOreBlock extends Block {
 
     @Override
     public void tick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
+        if (PRIMED.remove(pos)) {
+            detonate(level, pos);
+            return;
+        }
+
         if (!hasAdjacentFire(level, pos)) return;
 
         for (Direction direction : Direction.values()) {
             BlockPos target = pos.relative(direction);
             if (ToxicGasBlock.canFlowInto(level.getBlockState(target)) && random.nextFloat() < 0.5F) {
-                ToxicGasBlock.place(level, target, ToxicGasBlock.MAX_DISPERSION);
+                ToxicGasBlock.place(level, target);
                 break;
             }
         }
@@ -60,47 +68,28 @@ public class SulfurOreBlock extends Block {
         return state.getBlock() instanceof SulfurOreBlock;
     }
 
-    public static void chainExplode(ServerLevel level, BlockPos origin) {
-        chainExplode(level, origin, new int[]{MAX_CHAIN, MAX_EXPLOSIONS});
+    public static void prime(ServerLevel level, BlockPos pos) {
+        if (!isSulfurOre(level.getBlockState(pos))) return;
+        BlockPos immutable = pos.immutable();
+        if (PRIMED.add(immutable)) {
+            level.scheduleTick(immutable, level.getBlockState(immutable).getBlock(), 2 + level.random.nextInt(4));
+        }
     }
 
-    private static void chainExplode(ServerLevel level, BlockPos pos, int[] budget) {
-        if (budget[0] <= 0 || !isSulfurOre(level.getBlockState(pos))) return;
-        budget[0]--;
-
+    private static void detonate(ServerLevel level, BlockPos pos) {
+        if (!isSulfurOre(level.getBlockState(pos))) return;
         RandomSource random = level.random;
-        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+        level.removeBlock(pos, false);
+        level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, EXPLOSION_POWER, Level.ExplosionInteraction.BLOCK);
 
+        if (random.nextFloat() < 0.7F) ToxicGasBlock.place(level, pos);
         for (Direction direction : Direction.values()) {
-            BlockPos neighbor = pos.relative(direction);
-            BlockState neighborState = level.getBlockState(neighbor);
-            if (!neighborState.isAir() && !isSulfurOre(neighborState)
-                    && neighborState.getFluidState().isEmpty()
-                    && neighborState.getDestroySpeed(level, neighbor) >= 0.0F
-                    && random.nextFloat() < 0.35F) {
-                level.setBlock(neighbor, Blocks.AIR.defaultBlockState(), 3);
-            }
+            if (random.nextFloat() < 0.3F) ToxicGasBlock.place(level, pos.relative(direction));
         }
 
-        if (random.nextFloat() < 0.6F && ToxicGasBlock.canFlowInto(level.getBlockState(pos))) {
-            ToxicGasBlock.place(level, pos, ToxicGasBlock.MAX_DISPERSION);
-        } else if (random.nextFloat() < 0.06F && level.getBlockState(pos).isAir()
+        if (random.nextFloat() < 0.15F && level.getBlockState(pos).isAir()
                 && level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)) {
             level.setBlock(pos, Blocks.FIRE.defaultBlockState(), 3);
-        }
-
-        if (budget[1] > 0 && random.nextFloat() < 0.2F) {
-            budget[1]--;
-            level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2.0F, Level.ExplosionInteraction.NONE);
-        }
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    if (dx == 0 && dy == 0 && dz == 0) continue;
-                    chainExplode(level, pos.offset(dx, dy, dz), budget);
-                }
-            }
         }
     }
 }

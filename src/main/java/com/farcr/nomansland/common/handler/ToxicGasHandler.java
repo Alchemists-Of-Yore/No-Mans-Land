@@ -46,7 +46,7 @@ public class ToxicGasHandler {
         boolean masked = hasMask && GasMaskItem.getDuration(mask) > 0;
         if (headInGas && !masked) {
             exposure[1]++;
-            int duration = 20 + (exposure[1] / 3) * 20;
+            int duration = 20 + (exposure[1] / 2) * 20;
             entity.addEffect(new MobEffectInstance(NMLEffects.CORROSION, duration, 0, false, false, true));
         } else {
             exposure[1] = 0;

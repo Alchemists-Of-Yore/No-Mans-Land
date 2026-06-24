@@ -82,7 +82,7 @@ public class AcridBomb extends ThrowableBombEntity {
             int gasRadiusSq = GAS_RADIUS * GAS_RADIUS;
             for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-GAS_RADIUS, -GAS_RADIUS, -GAS_RADIUS), origin.offset(GAS_RADIUS, GAS_RADIUS, GAS_RADIUS))) {
                 if (pos.distSqr(origin) <= gasRadiusSq && level.getBlockState(pos).isAir()) {
-                    ToxicGasBlock.place(level, pos.immutable(), ToxicGasBlock.MAX_DISPERSION);
+                    ToxicGasBlock.place(level, pos.immutable());
                 }
             }
 
