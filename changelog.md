@@ -1,1 +1,2 @@
 - Fixed occasional music-related crash
+- Improved meeting point generation

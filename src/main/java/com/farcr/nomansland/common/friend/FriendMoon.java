@@ -348,6 +348,8 @@ public class FriendMoon extends SavedData {
             meetingPointOverride = new ChunkPos(tag.getInt("MeetingPointOverrideX"), tag.getInt("MeetingPointOverrideZ"));
         else meetingPointOverride = null;
 
+        meetingPointMigrated = tag.getBoolean("MeetingPointMigrated");
+
         return this;
     }
 
@@ -387,6 +389,7 @@ public class FriendMoon extends SavedData {
             tag.putInt("MeetingPointOverrideX", meetingPointOverride.x);
             tag.putInt("MeetingPointOverrideZ", meetingPointOverride.z);
         }
+        tag.putBoolean("MeetingPointMigrated", meetingPointMigrated);
         return tag;
     }
 
@@ -572,6 +575,7 @@ public class FriendMoon extends SavedData {
     }
 
     @Nullable private ChunkPos meetingPointOverride = null;
+    private boolean meetingPointMigrated = false;
 
     @Nullable
     public ChunkPos getMeetingPointOverride() {
@@ -580,6 +584,15 @@ public class FriendMoon extends SavedData {
 
     public void setMeetingPointOverride(@Nullable ChunkPos pos) {
         this.meetingPointOverride = pos;
+        setDirty();
+    }
+
+    public boolean hasMigratedMeetingPoint() {
+        return meetingPointMigrated;
+    }
+
+    public void setMeetingPointMigrated(boolean migrated) {
+        this.meetingPointMigrated = migrated;
         setDirty();
     }
 

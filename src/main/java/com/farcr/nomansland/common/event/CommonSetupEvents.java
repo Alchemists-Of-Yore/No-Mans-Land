@@ -347,7 +347,7 @@ public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
-        MeetingPointCommand.applyPersistedOverride(event.getServer());
+        MeetingPointCommand.initializeMeetingPoint(event.getServer());
     }
 
     @SubscribeEvent

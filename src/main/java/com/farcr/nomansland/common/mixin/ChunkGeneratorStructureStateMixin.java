@@ -28,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -52,6 +54,9 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
     private CompletableFuture<ChunkPos> meetingPointPosition = null;
 
     @Unique
+    private HolderSet<Biome> nomansland$preferredBiomes = null;
+
+    @Unique
     private ChunkPos nomansland$meetingPointOverride = null;
 
     @Unique
@@ -73,47 +78,87 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
             if (nomansland$chunkGenerator == null) {
                 nomansland$chunkGenerator = ChunkGeneratorStructureStateExtension.CURRENT_GENERATOR.get();
             }
+            nomansland$preferredBiomes = meetingPointPlacement.preferredBiomes;
             meetingPointPosition = generateMeetingPointPosition(setHolder.value(), meetingPointPlacement);
         }
     }
 
     private CompletableFuture<ChunkPos> generateMeetingPointPosition(StructureSet structureSet, MeetingPointStructurePlacement placement) {
-        CompletableFuture<ChunkPos> task;
         HolderSet<Biome> preferredBiomes = placement.preferredBiomes;
         RandomSource random = RandomSource.create();
         random.setSeed(levelSeed);
 
         RandomSource biomeSearchGenerator = random.fork();
-        task = CompletableFuture.supplyAsync(
+        return CompletableFuture.supplyAsync(
                 () -> {
-                    Pair<BlockPos, Holder<Biome>> closestBiome = null;
-                    int tries = 0;
-                    while (closestBiome == null && tries < 50) {
+                    List<BlockPos> preferredCandidates = new ArrayList<>();
+                    List<BlockPos> fallbackCandidates = new ArrayList<>();
+
+                    for (int tries = 0; tries < 50; tries++) {
                         double angle = random.nextDouble() * Math.PI * 2.0;
                         double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
                         int x = (int) Math.round(Math.cos(angle) * distance);
                         int z = (int) Math.round(Math.sin(angle) * distance);
+
+                        BlockPos rawPosition = new BlockPos(x, 0, z);
+                        if (!isOverWater(rawPosition)) {
+                            fallbackCandidates.add(rawPosition);
+                        }
+
                         Pair<BlockPos, Holder<Biome>> candidate = findBiome(x, z, preferredBiomes, biomeSearchGenerator);
                         if (candidate != null && !isOverWater(candidate.getFirst())) {
-                            closestBiome = candidate;
+                            preferredCandidates.add(candidate.getFirst());
                         }
-                        tries++;
                     }
 
-                    if (closestBiome == null) {
+                    BlockPos chosen;
+                    if (!preferredCandidates.isEmpty()) {
+                        chosen = flattestCandidate(preferredCandidates);
+                    } else if (!fallbackCandidates.isEmpty()) {
+                        chosen = flattestCandidate(fallbackCandidates);
+                    } else {
                         double angle = random.nextDouble() * Math.PI * 2.0;
                         double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
-                        int x = (int) Math.round(Math.cos(angle) * distance);
-                        int z = (int) Math.round(Math.sin(angle) * distance);
-                        return new ChunkPos(new BlockPos(x, 0, z));
-                    } else {
-                        BlockPos position = closestBiome.getFirst();
-                        return new ChunkPos(SectionPos.blockToSectionCoord(position.getX()), SectionPos.blockToSectionCoord(position.getZ()));
+                        chosen = new BlockPos((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
                     }
+
+                    return new ChunkPos(SectionPos.blockToSectionCoord(chosen.getX()), SectionPos.blockToSectionCoord(chosen.getZ()));
                 }, Util.backgroundExecutor()
         );
+    }
 
-        return task.thenApply(meetingPointPosition -> meetingPointPosition);
+    @Unique
+    private BlockPos flattestCandidate(List<BlockPos> candidates) {
+        BlockPos flattest = candidates.get(0);
+        int lowestRoughness = nomansland$terrainRoughness(flattest);
+        for (int i = 1; i < candidates.size(); i++) {
+            BlockPos candidate = candidates.get(i);
+            int roughness = nomansland$terrainRoughness(candidate);
+            if (roughness < lowestRoughness) {
+                lowestRoughness = roughness;
+                flattest = candidate;
+            }
+        }
+        return flattest;
+    }
+
+    @Unique
+    private int nomansland$terrainRoughness(BlockPos center) {
+        ChunkGenerator generator = nomansland$chunkGenerator;
+        if (generator == null) return Integer.MAX_VALUE;
+        LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(generator.getMinY(), generator.getGenDepth());
+        int radius = 16;
+        int step = 8;
+        int minHeight = Integer.MAX_VALUE;
+        int maxHeight = Integer.MIN_VALUE;
+        for (int dx = -radius; dx <= radius; dx += step) {
+            for (int dz = -radius; dz <= radius; dz += step) {
+                int height = generator.getFirstOccupiedHeight(center.getX() + dx, center.getZ() + dz, Heightmap.Types.WORLD_SURFACE_WG, heightAccessor, randomState);
+                if (height < minHeight) minHeight = height;
+                if (height > maxHeight) maxHeight = height;
+            }
+        }
+        return maxHeight - minHeight;
     }
 
     @Unique
@@ -150,5 +195,46 @@ public abstract class ChunkGeneratorStructureStateMixin implements ChunkGenerato
     @Override
     public void nomansland$setMeetingPointPosition(ChunkPos pos) {
         this.nomansland$meetingPointOverride = pos;
+    }
+
+    @Override
+    public ChunkPos nomansland$generatedMeetingPointPosition() {
+        ensureStructuresGenerated();
+        return meetingPointPosition == null ? null : meetingPointPosition.join();
+    }
+
+    @Override
+    public ChunkPos nomansland$computeLegacyMeetingPointPosition() {
+        ensureStructuresGenerated();
+        if (nomansland$preferredBiomes == null) return null;
+
+        RandomSource random = RandomSource.create();
+        random.setSeed(levelSeed);
+        RandomSource biomeSearchGenerator = random.fork();
+
+        Pair<BlockPos, Holder<Biome>> closestBiome = null;
+        int tries = 0;
+        while (closestBiome == null && tries < 50) {
+            double angle = random.nextDouble() * Math.PI * 2.0;
+            double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
+            int x = (int) Math.round(Math.cos(angle) * distance);
+            int z = (int) Math.round(Math.sin(angle) * distance);
+            Pair<BlockPos, Holder<Biome>> candidate = findBiome(x, z, nomansland$preferredBiomes, biomeSearchGenerator);
+            if (candidate != null && !isOverWater(candidate.getFirst())) {
+                closestBiome = candidate;
+            }
+            tries++;
+        }
+
+        if (closestBiome == null) {
+            double angle = random.nextDouble() * Math.PI * 2.0;
+            double distance = random.nextInt(NMLConfig.MIN_MEETING_POINT_DISTANCE.get(), NMLConfig.MAX_MEETING_POINT_DISTANCE.get());
+            int x = (int) Math.round(Math.cos(angle) * distance);
+            int z = (int) Math.round(Math.sin(angle) * distance);
+            return new ChunkPos(new BlockPos(x, 0, z));
+        } else {
+            BlockPos position = closestBiome.getFirst();
+            return new ChunkPos(SectionPos.blockToSectionCoord(position.getX()), SectionPos.blockToSectionCoord(position.getZ()));
+        }
     }
 }
