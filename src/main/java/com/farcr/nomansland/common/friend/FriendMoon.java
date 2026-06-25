@@ -163,7 +163,8 @@ public class FriendMoon extends SavedData {
             Entity entity = offeringContext.getEntity();
             if (entity instanceof ItemEntity itemEntity) {
                 ItemStack stack = itemEntity.getItem();
-                if (stack.is(Items.FILLED_MAP) || stack.is(Items.MAP))
+                if (stack.is(Items.FILLED_MAP) || stack.is(Items.MAP)
+                || (Mods.FIELDGUIDE.isLoaded() && stack.is(Mods.FIELDGUIDE.getItem("field_guide"))))
                     return OfferingType.MAP;
                 if (stack.is(NMLItems.TRINKET))
                     return OfferingType.BAD_OMEN;
@@ -185,15 +186,16 @@ public class FriendMoon extends SavedData {
         return true;
     }
 
-    public boolean mapInteraction(Level level, Entity entity, BlockPos basinPos) {
+    public void mapInteraction(Level level, Entity entity, BlockPos basinPos) {
+        if (mapInteractionActive && mapInteractionTicks >= MAP_PARTICLE_DURATION)
+            return;
         if (!mapInteractionActive) {
             mapInteractionActive = true;
             mapInteractionTicks = 0;
-            setDirty();
-            return true;
         }
 
         mapInteractionTicks++;
+        setDirty();
         for (int i = 0; i < 2; i++) {
             double offsetX = (level.getRandom().nextDouble() - 0.5) * 0.6;
             double offsetZ = (level.getRandom().nextDouble() - 0.5) * 0.6;
@@ -204,11 +206,8 @@ public class FriendMoon extends SavedData {
             );
         }
 
-        if (mapInteractionTicks >= MAP_PARTICLE_DURATION) {
+        if (mapInteractionTicks >= MAP_PARTICLE_DURATION)
             completeMapInteraction(level, entity, basinPos);
-            return false;
-        }
-        return true;
     }
 
     private void completeMapInteraction(Level level, Entity entity, BlockPos basinPos) {
@@ -224,8 +223,6 @@ public class FriendMoon extends SavedData {
                 itemEntity.setItem(stack);
             }
         }
-        mapInteractionActive = false;
-        mapInteractionTicks = -1;
         setDirty();
     }
 
@@ -351,6 +348,8 @@ public class FriendMoon extends SavedData {
             meetingPointOverride = new ChunkPos(tag.getInt("MeetingPointOverrideX"), tag.getInt("MeetingPointOverrideZ"));
         else meetingPointOverride = null;
 
+        meetingPointMigrated = tag.getBoolean("MeetingPointMigrated");
+
         return this;
     }
 
@@ -390,6 +389,7 @@ public class FriendMoon extends SavedData {
             tag.putInt("MeetingPointOverrideX", meetingPointOverride.x);
             tag.putInt("MeetingPointOverrideZ", meetingPointOverride.z);
         }
+        tag.putBoolean("MeetingPointMigrated", meetingPointMigrated);
         return tag;
     }
 
@@ -575,6 +575,7 @@ public class FriendMoon extends SavedData {
     }
 
     @Nullable private ChunkPos meetingPointOverride = null;
+    private boolean meetingPointMigrated = false;
 
     @Nullable
     public ChunkPos getMeetingPointOverride() {
@@ -583,6 +584,15 @@ public class FriendMoon extends SavedData {
 
     public void setMeetingPointOverride(@Nullable ChunkPos pos) {
         this.meetingPointOverride = pos;
+        setDirty();
+    }
+
+    public boolean hasMigratedMeetingPoint() {
+        return meetingPointMigrated;
+    }
+
+    public void setMeetingPointMigrated(boolean migrated) {
+        this.meetingPointMigrated = migrated;
         setDirty();
     }
 

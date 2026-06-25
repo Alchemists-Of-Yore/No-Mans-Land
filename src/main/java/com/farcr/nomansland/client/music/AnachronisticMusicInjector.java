@@ -20,10 +20,12 @@ public class AnachronisticMusicInjector {
 
     public static Music select(Music incoming) {
         if (incoming == null) return null;
+        if (!conditionsMet()) return incoming;
+        if (!NMLSounds.ANACHRONISTIC_MUSIC.isBound() || !incoming.getEvent().isBound()) return incoming;
 
         final ResourceLocation incomingLocation = incoming.getEvent().value().getLocation();
-        if (incomingLocation.equals(NMLSounds.ANACHRONISTIC_MUSIC.value().getLocation())) return incoming;
-        if (isContextual(incomingLocation) || !conditionsMet()) return incoming;
+        if (incomingLocation.equals(NMLSounds.ANACHRONISTIC_MUSIC.getId())) return incoming;
+        if (isContextual(incomingLocation)) return incoming;
 
         if (RANDOM.nextInt(ANACHRONISTIC_WEIGHT + OTHER_MUSIC_WEIGHT) < ANACHRONISTIC_WEIGHT)
             return ANACHRONISTIC_SONG;
@@ -43,7 +45,8 @@ public class AnachronisticMusicInjector {
         if (!ContextualMusicHandler.builtContext) return false;
         for (MusicCondition.MusicConditionInstance instance : ContextualMusicHandler.instanceList) {
             final Music contextual = instance.getMusic();
-            if (contextual != null && contextual.getEvent().value().getLocation().equals(incomingLocation))
+            if (contextual != null && contextual.getEvent().isBound()
+                && contextual.getEvent().value().getLocation().equals(incomingLocation))
                 return true;
         }
         return false;

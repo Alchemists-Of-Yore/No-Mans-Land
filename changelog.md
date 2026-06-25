@@ -1,6 +1,2 @@
-- Added Appleskin compat for bandage healing
-- Fixed crash with Horseman
-- Fixed ancient pots dropping from explosions
-- Expanded on Friend Moon dialogues with more entities
-- Reduced cave pot generation rates
-- Added various new soundtracks to the game, including music for the Alchemist Ruins
+- Fixed occasional music-related crash
+- Improved meeting point generation

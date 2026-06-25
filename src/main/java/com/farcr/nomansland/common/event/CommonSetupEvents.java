@@ -29,9 +29,11 @@ import com.farcr.nomansland.common.mixin.BlockBehaviourAccessModifier;
 import com.farcr.nomansland.common.networking.*;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
+import com.farcr.nomansland.common.friend.dialogue.DialogueTracker;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueResetPacket;
+import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueTrackerPacket;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
 import com.farcr.nomansland.common.networking.dream.ClientboundDreamPacket;
 import com.farcr.nomansland.common.networking.dream.ServerboundDreamAcknowledgePacket;
@@ -307,6 +309,7 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundDialoguePacket.TYPE, ClientboundDialoguePacket.STREAM_CODEC, ClientboundDialoguePacket::handleData);
         registrar.playToClient(ClientboundDialogueResetPacket.TYPE, ClientboundDialogueResetPacket.STREAM_CODEC, ClientboundDialogueResetPacket::handleData);
         registrar.playToClient(ClientboundDialogueRegistrySyncPacket.TYPE, ClientboundDialogueRegistrySyncPacket.STREAM_CODEC, ClientboundDialogueRegistrySyncPacket::handleData);
+        registrar.playToClient(ClientboundDialogueTrackerPacket.TYPE, ClientboundDialogueTrackerPacket.STREAM_CODEC, ClientboundDialogueTrackerPacket::handleData);
 
         // Friend Moon related packets
         registrar.playToServer(FriendMoonUpdatePacket.ToServer.TYPE, FriendMoonUpdatePacket.ToServer.STREAM_CODEC, FriendMoonUpdatePacket.ToServer::handleData);
@@ -344,7 +347,7 @@ public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
-        MeetingPointCommand.applyPersistedOverride(event.getServer());
+        MeetingPointCommand.initializeMeetingPoint(event.getServer());
     }
 
     @SubscribeEvent
@@ -354,7 +357,9 @@ public class CommonSetupEvents {
 
     @SubscribeEvent
     public static void onDatapackSync(OnDatapackSyncEvent event) {
-        event.getRelevantPlayers().forEach((player)
-            -> PacketDistributor.sendToPlayer(player, new ClientboundDialogueRegistrySyncPacket()));
+        event.getRelevantPlayers().forEach((player) -> {
+            PacketDistributor.sendToPlayer(player, new ClientboundDialogueRegistrySyncPacket());
+            DialogueTracker.getOrDefault(player.server).sync(player);
+        });
     }
 }

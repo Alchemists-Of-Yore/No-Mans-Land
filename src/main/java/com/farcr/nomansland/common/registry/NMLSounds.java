@@ -137,6 +137,7 @@ public class NMLSounds {
 
     //Friend Moon
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK = registerSound("entity.friend_moon.speak");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_BGR = registerSound("entity.friend_moon.speak_bgr");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_SAD = registerSound("entity.friend_moon.speak_sad");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_AMBIENT_LOOP = registerSound("entity.friend_moon.speak_ambient_loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_OFFERING_LOOP = registerSound("entity.friend_moon.offering_loop");
