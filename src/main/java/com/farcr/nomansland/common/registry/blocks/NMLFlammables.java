@@ -69,6 +69,8 @@ public class NMLFlammables {
 
         fireBlock.setFlammable(NMLBlocks.APPLE_CRATE.get(), 5, 20);
         fireBlock.setFlammable(NMLBlocks.PEAR_CRATE.get(), 5, 20);
+
+        fireBlock.setFlammable(NMLBlocks.OIL_PUDDLE.get(), 50, 75);
     }
 
 

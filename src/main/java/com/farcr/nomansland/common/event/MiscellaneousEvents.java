@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.effect.FlammableEffect;
+import com.farcr.nomansland.common.entity.ThrownOilBottle;
 import com.farcr.nomansland.common.entity.ai.WitchBowlStewGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
@@ -77,6 +78,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -84,6 +86,7 @@ import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -722,5 +725,17 @@ public class MiscellaneousEvents {
         if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
             return false;
         return (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) > 100L;
+    }
+    @SubscribeEvent
+    public static void spawnOilPuddle(ProjectileImpactEvent event) {
+        if(event.getProjectile() instanceof ThrownOilBottle oilBottle) {
+            if (event.getRayTraceResult() instanceof BlockHitResult hitResult) {
+                Level level = oilBottle.level();
+                BlockPos pos = hitResult.getBlockPos().above();
+                if (level.isEmptyBlock(pos)) {
+                    level.setBlock(pos, NMLBlocks.OIL_PUDDLE.get().defaultBlockState(), Block.UPDATE_ALL);
+                }
+            }
+        }
     }
 }

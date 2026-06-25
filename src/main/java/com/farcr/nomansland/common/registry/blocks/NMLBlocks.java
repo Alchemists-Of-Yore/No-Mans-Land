@@ -315,6 +315,11 @@ public class NMLBlocks {
 
     public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
             () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).sound(SoundType.COPPER).noOcclusion()));
+
+    //Oil Puddle
+    public static final BlockDefinition<OilPuddleBlock> OIL_PUDDLE = register("oil_puddle",
+            () -> new OilPuddleBlock(ofFullCopy(Blocks.REDSTONE_WIRE)));
+
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
