@@ -1,11 +1,15 @@
 package com.farcr.nomansland.common.item;
 
 import com.farcr.nomansland.common.networking.alchemist_tools.ClientboundOathSwordParry;
+import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
@@ -31,6 +35,8 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.function.Supplier;
+
 public class AncestralOathSwordItem extends SwordItem {
     public AncestralOathSwordItem(Tier tier, Properties properties) {
         super(tier, properties);
@@ -45,6 +51,8 @@ public class AncestralOathSwordItem extends SwordItem {
     public static final int MAX_ANIMATE_TIME = 7;
     public static final int MAX_GLINT_ANIMATE = 45;
     public static final int MAX_PARRY_ANIMATE_TIME = 10;
+
+    public static final int PARTICLE_AMOUNT = 5;
 
     public int getUseDuration(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
         return 72000;
@@ -131,7 +139,10 @@ public class AncestralOathSwordItem extends SwordItem {
             for (LivingEntity livingEntity : level.getNearbyEntities(
                 LivingEntity.class, TargetingConditions.forNonCombat().range(STASIS_RANGE),
                 damagedEntity, damagedEntity.getBoundingBox().inflate(STASIS_RANGE)
-            )) this.applyStasisTicks(livingEntity, damagedEntity, 100 + (int) (20 * event.getOriginalAmount()));
+            )) {
+                this.applyStasisTicks(livingEntity, damagedEntity, 100 + (int) (20 * event.getOriginalAmount()));
+                createParticles(livingEntity, NMLParticleTypes.STASIS_HIT_PARRY, (PARTICLE_AMOUNT * 2));
+            }
             event.setCanceled(true);
             return;
         }
@@ -144,7 +155,18 @@ public class AncestralOathSwordItem extends SwordItem {
                 NMLSounds.OATH_BLOCK.get(), SoundSource.PLAYERS
             );
             applyStasisTicks(livingEntity, damagedEntity, 40 + (int) (20 * event.getOriginalAmount()));
+            createParticles(livingEntity, NMLParticleTypes.STASIS_HIT, PARTICLE_AMOUNT);
             event.setAmount(event.getAmount() * .25f);
+        }
+    }
+
+    public static void createParticles(LivingEntity livingEntity, Supplier<SimpleParticleType> supplier, int amount) {
+        if (livingEntity.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(supplier.get(),
+                livingEntity.getX(), livingEntity.getY(0.5),
+                livingEntity.getZ(), amount, 0.1,
+                0.0, 0.1, 0.2
+            );
         }
     }
 

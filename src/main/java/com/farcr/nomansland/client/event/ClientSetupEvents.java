@@ -30,6 +30,7 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.CritParticle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -248,6 +249,10 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.DEEP_SLEEP.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new DeepSleepParticle(clientLevel, d, e, f, g, h, i, sprites));
+
+        event.registerSpriteSet(NMLParticleTypes.STASIS_HIT.get(), StasisHitProvider::new);
+        event.registerSpriteSet(NMLParticleTypes.STASIS_HIT_PARRY.get(), StasisHitProvider::new);
+        event.registerSpriteSet(NMLParticleTypes.STASIS_BREAK.get(), StasisHitProvider::new);
 
         event.registerSpriteSet(NMLParticleTypes.FUNNY_PLACEHOLDER_DEBUG_RITUAL_PICK.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)

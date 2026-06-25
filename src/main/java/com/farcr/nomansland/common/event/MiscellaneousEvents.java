@@ -15,10 +15,7 @@ import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
 import com.farcr.nomansland.common.item.AncestralOathSwordItem;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
-import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.farcr.nomansland.common.registry.NMLSounds;
-import com.farcr.nomansland.common.registry.NMLTags;
+import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -734,7 +731,8 @@ public class MiscellaneousEvents {
             if (event.getEntity() instanceof ServerPlayer serverPlayer) {
                 AncestralOathSwordItem.setUseTime(serverPlayer, AncestralOathSwordItem.MAX_GLINT_ANIMATE, true);
                 serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(
-                    Component.translatable("item.nomansland.ancestral_oath_sword.refuse"))
+                    Component.translatable("item.nomansland.ancestral_oath_sword.refuse")
+                        .withColor(0xFFF8D473))
                 );
             }
             event.setCanceled(true);
@@ -786,8 +784,10 @@ public class MiscellaneousEvents {
             livingEntity.removeEffect(NMLEffects.STASIS);
             if (event.getSource().getWeaponItem() != null && event.getSource().getWeaponItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
                 livingEntity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 300));
-                event.setInvulnerabilityTicks(0);
-                event.setAmount(0.0f);
+                AncestralOathSwordItem.createParticles(livingEntity,
+                    NMLParticleTypes.STASIS_BREAK, (AncestralOathSwordItem.PARTICLE_AMOUNT * 2));
+//                event.setInvulnerabilityTicks(0);
+//                event.setAmount(0.0f);
                 return;
             }
             livingEntity.addEffect(

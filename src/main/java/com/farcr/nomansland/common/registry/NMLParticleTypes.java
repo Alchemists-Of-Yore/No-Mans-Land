@@ -63,6 +63,10 @@ public class NMLParticleTypes {
 
     public static final Supplier<SimpleParticleType> DEEP_SLEEP = register("deep_sleep");
 
+    public static final Supplier<SimpleParticleType> STASIS_HIT = register("stasis_hit");
+    public static final Supplier<SimpleParticleType> STASIS_HIT_PARRY = register("stasis_hit_parry");
+    public static final Supplier<SimpleParticleType> STASIS_BREAK = register("stasis_break");
+
     public static final Supplier<ParticleType<PotShatterParticleOption>> POT_SHATTER = register(
             "pot_shatter", false,
             PotShatterParticleOption::codec, PotShatterParticleOption::streamCodec
