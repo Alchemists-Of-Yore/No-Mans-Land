@@ -66,7 +66,7 @@ public class GooseAI {
     }
 
     public static void updateActivity(Goose goose) {
-        if (goose.isFlying()) {
+        if (goose.isFlying() && !goose.onGround()) {
             goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.RIDE));
         } else {
             goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.AVOID, Activity.FIGHT, Activity.IDLE));
@@ -98,7 +98,6 @@ public class GooseAI {
                         Pair.of(2, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
                         Pair.of(3, new GooseStealBehavior()),
                         Pair.of(4, new GooseHonkAtBehavior()),
-                        Pair.of(5, new GooseDrinkBehavior()),
                         Pair.of(6, new GooseSocializeBehavior()),
                         Pair.of(7, new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)),
                         Pair.of(8, new RunOne<>(

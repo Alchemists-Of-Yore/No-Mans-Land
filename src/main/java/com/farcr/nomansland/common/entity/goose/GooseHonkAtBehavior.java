@@ -18,7 +18,7 @@ import java.util.Map;
 public class GooseHonkAtBehavior extends Behavior<Goose> {
     private static final double NOTICE_RADIUS = 12.0;
     private static final double CLOSE_RANGE_SQR = 6.0;
-    private static final double PECK_RANGE_SQR = 4.0;
+    private static final double PECK_RANGE_SQR = 2.0;
     private static final float APPROACH_SPEED = 1.1F;
     private static final int START_CHANCE = 200;
 
@@ -62,19 +62,23 @@ public class GooseHonkAtBehavior extends Behavior<Goose> {
         if (peckCooldown > 0) peckCooldown--;
         goose.getLookControl().setLookAt(focus);
         double distanceSqr = goose.distanceToSqr(focus);
-        if (distanceSqr <= CLOSE_RANGE_SQR) {
-            if (honkCooldown == 0) {
-                goose.flapBriefly();
-                goose.honkAngry();
-                honkCooldown = 25 + goose.getRandom().nextInt(20);
-            }
-            if (peckCooldown == 0 && distanceSqr <= PECK_RANGE_SQR) {
+
+        if (distanceSqr <= CLOSE_RANGE_SQR && honkCooldown == 0) {
+            goose.flapBriefly();
+            goose.honkAngry();
+            honkCooldown = 70 + goose.getRandom().nextInt(60);
+        }
+
+        if (distanceSqr <= PECK_RANGE_SQR) {
+            goose.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            goose.faceToward(focus.getX(), focus.getZ());
+            if (peckCooldown == 0) {
                 goose.peck();
                 goose.doHurtTarget(focus);
                 peckCooldown = 30 + goose.getRandom().nextInt(30);
             }
         } else {
-            BehaviorUtils.setWalkAndLookTargetMemories(goose, focus, APPROACH_SPEED, 1);
+            BehaviorUtils.setWalkAndLookTargetMemories(goose, focus, APPROACH_SPEED, 0);
         }
     }
 

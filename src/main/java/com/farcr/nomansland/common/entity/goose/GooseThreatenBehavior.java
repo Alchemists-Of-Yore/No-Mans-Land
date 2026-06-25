@@ -87,7 +87,7 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
             menace(goose, threat);
             if (--honkCooldown <= 0) {
                 goose.honkAngry();
-                honkCooldown = 30 + goose.getRandom().nextInt(25);
+                honkCooldown = 90 + goose.getRandom().nextInt(60);
             }
             threatenTicks++;
             int patience = Math.max(MIN_PATIENCE, BASE_PATIENCE - CONFIDENCE_BONUS * goose.flockConfidence());
@@ -109,11 +109,11 @@ public class GooseThreatenBehavior extends Behavior<Goose> {
                 menace(goose, threat);
                 if (--honkCooldown <= 0) {
                     goose.honkAfraid();
-                    honkCooldown = 30 + goose.getRandom().nextInt(25);
+                    honkCooldown = 70 + goose.getRandom().nextInt(40);
                 }
             } else if (--honkCooldown <= 0) {
                 goose.honkAfraid();
-                honkCooldown = 25 + goose.getRandom().nextInt(20);
+                honkCooldown = 60 + goose.getRandom().nextInt(40);
             }
         }
     }

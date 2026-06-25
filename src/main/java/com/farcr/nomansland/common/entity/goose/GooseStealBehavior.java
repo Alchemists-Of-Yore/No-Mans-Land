@@ -6,6 +6,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,16 +29,22 @@ import java.util.Map;
 public class GooseStealBehavior extends Behavior<Goose> {
     private static final int START_CHANCE = 120;
     private static final int GRUDGE_STEAL_CHANCE = 40;
+    private static final int PUMPKIN_STEAL_CHANCE = 12;
     private static final int CONTAINER_CHANCE = 3;
     private static final double ITEM_SEARCH_RADIUS = 8.0;
     private static final double HAND_SEARCH_RADIUS = 6.0;
     private static final double CONTAINER_SEARCH_RADIUS = 10.0;
+    private static final double RESCUE_RADIUS = 12.0;
+    private static final double PLAYER_NEARBY_RADIUS = 32.0;
+    private static final int DESPAWN_AGE = 5400;
     private static final double TAKE_DISTANCE_SQR = 2.0;
-    private static final double RAID_DISTANCE_SQR = 3.5;
+    private static final double RAID_DISTANCE_SQR = 1.8;
+    private static final double RAID_APPROACH_SQR = 3.5;
     private static final double GIVE_UP_SQR = 256.0;
     private static final double OBSERVED_CONE = 0.7;
     private static final float APPROACH_SPEED = 1.15F;
     private static final int RAID_PECKS = 3;
+    private static final float RUMMAGE_MISS_CHANCE = 0.15F;
     private static final int FRESH_AGE_TICKS = 100;
     private static final int SEASONED_AGE_TICKS = 1200;
     private static final float FRESH_PICK_CHANCE = 0.15F;
@@ -43,6 +52,7 @@ public class GooseStealBehavior extends Behavior<Goose> {
 
     @Nullable private ItemEntity targetItem;
     @Nullable private Player targetPlayer;
+    private InteractionHand targetHand = InteractionHand.MAIN_HAND;
     @Nullable private BlockPos targetContainer;
     private int raidPecks;
     private int raidPeckDelay;
@@ -54,16 +64,60 @@ public class GooseStealBehavior extends Behavior<Goose> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, Goose goose) {
         if (goose.isBaby() || goose.isCarrying() || goose.isFlying()) return false;
-        boolean eager = !goose.getGrudges().targets().isEmpty() && goose.getRandom().nextInt(GRUDGE_STEAL_CHANCE) == 0;
+
+        targetItem = findRescueItem(goose);
+        if (targetItem != null) return true;
+
+        if (!playerNearby(goose)) return false;
+
+        boolean eager = (!goose.getGrudges().targets().isEmpty() && goose.getRandom().nextInt(GRUDGE_STEAL_CHANCE) == 0)
+                || (pumpkinNearby(goose) && goose.getRandom().nextInt(PUMPKIN_STEAL_CHANCE) == 0);
         if (!eager && goose.getRandom().nextInt(START_CHANCE) != 0) return false;
+
         targetItem = findDroppedItem(goose);
         if (targetItem != null) return true;
         targetPlayer = findVictimPlayer(goose);
-        if (targetPlayer != null) return true;
+        if (targetPlayer != null) {
+            targetHand = pickHand(goose, targetPlayer);
+            return true;
+        }
         if (goose.getRandom().nextInt(CONTAINER_CHANCE) == 0) {
             targetContainer = findContainer(level, goose);
         }
         return targetContainer != null;
+    }
+
+    private static boolean playerNearby(Goose goose) {
+        return goose.level().hasNearbyAlivePlayer(goose.getX(), goose.getY(), goose.getZ(), PLAYER_NEARBY_RADIUS);
+    }
+
+    private static boolean pumpkinNearby(Goose goose) {
+        for (ItemEntity item : goose.level().getEntitiesOfClass(ItemEntity.class, goose.getBoundingBox().inflate(ITEM_SEARCH_RADIUS))) {
+            if (item.getItem().is(Items.PUMPKIN_SEEDS)) return true;
+        }
+        for (Player player : goose.level().getEntitiesOfClass(Player.class, goose.getBoundingBox().inflate(HAND_SEARCH_RADIUS))) {
+            if (player.getMainHandItem().is(Items.PUMPKIN_SEEDS) || player.getOffhandItem().is(Items.PUMPKIN_SEEDS)) return true;
+        }
+        return false;
+    }
+
+    @Nullable
+    private static ItemEntity findRescueItem(Goose goose) {
+        ItemEntity best = null;
+        double bestScore = -Double.MAX_VALUE;
+        for (ItemEntity item : goose.level().getEntitiesOfClass(ItemEntity.class, goose.getBoundingBox().inflate(RESCUE_RADIUS))) {
+            if (!isDesirable(item.getItem())) continue;
+            boolean owned = item.getPersistentData().getBoolean("GooseDropped");
+            boolean nearDespawn = item.getAge() >= DESPAWN_AGE;
+            if (!owned && !nearDespawn) continue;
+            if (owned && !nearDespawn && goose.getRandom().nextInt(20) != 0) continue;
+            double score = (owned ? 1.0E6 : 0.0) + (nearDespawn ? 1.0E5 : 0.0) - goose.distanceToSqr(item);
+            if (score > bestScore) {
+                bestScore = score;
+                best = item;
+            }
+        }
+        return best;
     }
 
     @Override
@@ -86,7 +140,7 @@ public class GooseStealBehavior extends Behavior<Goose> {
             return targetPlayer.isAlive()
                     && !targetPlayer.isCreative()
                     && !targetPlayer.isSpectator()
-                    && isDesirable(targetPlayer.getMainHandItem())
+                    && isDesirable(targetPlayer.getItemInHand(targetHand))
                     && Math.abs(targetPlayer.getY() - goose.getY()) <= REACHABLE_HEIGHT
                     && goose.distanceToSqr(targetPlayer) < GIVE_UP_SQR;
         }
@@ -112,6 +166,7 @@ public class GooseStealBehavior extends Behavior<Goose> {
             setContainerOpen(level, targetContainer, false);
         }
         goose.setStealing(false);
+        goose.setRummaging(false);
         targetItem = null;
         targetPlayer = null;
         targetContainer = null;
@@ -120,6 +175,7 @@ public class GooseStealBehavior extends Behavior<Goose> {
     private void stealDroppedItem(Goose goose) {
         goose.getLookControl().setLookAt(targetItem);
         if (goose.distanceToSqr(targetItem) <= TAKE_DISTANCE_SQR) {
+            goose.peck();
             take(goose, targetItem.getItem());
             targetItem.getItem().shrink(1);
             if (targetItem.getItem().isEmpty()) targetItem.discard();
@@ -129,48 +185,99 @@ public class GooseStealBehavior extends Behavior<Goose> {
     }
 
     private void stealFromHand(Goose goose) {
-        goose.getLookControl().setLookAt(targetPlayer.getEyePosition());
+        ItemStack handStack = targetPlayer.getItemInHand(targetHand);
+        if (!isDesirable(handStack)) {
+            targetPlayer = null;
+            return;
+        }
+        Vec3 handPos = handPosition(targetPlayer, targetHand);
+        goose.getLookControl().setLookAt(handPos.x, handPos.y, handPos.z);
         boolean watched = isObservedBy(goose, targetPlayer);
         if (!watched && goose.distanceToSqr(targetPlayer) <= TAKE_DISTANCE_SQR) {
-            ItemStack hand = targetPlayer.getMainHandItem();
-            take(goose, hand);
-            hand.shrink(1);
+            goose.faceToward(targetPlayer.getX(), targetPlayer.getZ());
+            goose.playGrabAnimation();
+            take(goose, handStack);
+            handStack.shrink(1);
             goose.honk();
             return;
         }
-        Vec3 approach = watched ? blindSpot(targetPlayer) : targetPlayer.position();
+        Vec3 approach = behindToward(targetPlayer, targetHand);
         BehaviorUtils.setWalkAndLookTargetMemories(goose, BlockPos.containing(approach), APPROACH_SPEED, 0);
+    }
+
+    private static InteractionHand pickHand(Goose goose, Player player) {
+        boolean main = isDesirable(player.getMainHandItem());
+        boolean off = isDesirable(player.getOffhandItem());
+        if (main && off) return goose.getRandom().nextBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+        return main ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+    }
+
+    private static HumanoidArm armFor(Player player, InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
+    }
+
+    private static Vec3 rightOf(Player player) {
+        Vec3 view = player.getViewVector(1.0F).multiply(1.0, 0.0, 1.0);
+        view = view.lengthSqr() < 1.0E-4 ? new Vec3(0.0, 0.0, 1.0) : view.normalize();
+        return new Vec3(-view.z, 0.0, view.x);
+    }
+
+    private static Vec3 handPosition(Player player, InteractionHand hand) {
+        double side = armFor(player, hand) == HumanoidArm.RIGHT ? 1.0 : -1.0;
+        return player.position().add(rightOf(player).scale(0.45 * side)).add(0.0, player.getBbHeight() * 0.6, 0.0);
+    }
+
+    private static Vec3 behindToward(Player player, InteractionHand hand) {
+        Vec3 view = player.getViewVector(1.0F).multiply(1.0, 0.0, 1.0);
+        view = view.lengthSqr() < 1.0E-4 ? new Vec3(0.0, 0.0, 1.0) : view.normalize();
+        double side = armFor(player, hand) == HumanoidArm.RIGHT ? 1.0 : -1.0;
+        return player.position().subtract(view.scale(1.2)).add(rightOf(player).scale(0.6 * side));
     }
 
     private void raidContainer(ServerLevel level, Goose goose) {
         Vec3 center = Vec3.atCenterOf(targetContainer);
-        goose.getLookControl().setLookAt(center.x, center.y, center.z);
-        if (goose.distanceToSqr(center) > RAID_DISTANCE_SQR) {
-            BehaviorUtils.setWalkAndLookTargetMemories(goose, targetContainer, APPROACH_SPEED, 1);
+        double distSqr = goose.distanceToSqr(center);
+        double reach = goose.isRummaging() ? RAID_APPROACH_SQR : RAID_DISTANCE_SQR;
+        if (distSqr > reach) {
+            goose.setRummaging(false);
+            goose.getLookControl().setLookAt(center.x, center.y, center.z);
+            BehaviorUtils.setWalkAndLookTargetMemories(goose, targetContainer, APPROACH_SPEED, 0);
             return;
         }
 
         goose.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+        faceContainer(goose, center);
+        goose.setRummaging(true);
         if (--raidPeckDelay > 0) return;
         raidPeckDelay = 12 + goose.getRandom().nextInt(8);
 
         Container container = lootableContainer(level, targetContainer);
         if (container == null) return;
 
-        goose.peck();
         if (++raidPecks == 1) {
             setContainerOpen(level, targetContainer, true);
         }
         if (raidPecks < RAID_PECKS) return;
 
-        int slot = randomFilledSlot(container, goose);
-        if (slot >= 0) {
-            take(goose, container.removeItem(slot, 1));
-            container.setChanged();
+        if (goose.getRandom().nextFloat() >= RUMMAGE_MISS_CHANCE) {
+            int slot = randomFilledSlot(container, goose);
+            if (slot >= 0) {
+                take(goose, container.removeItem(slot, 1));
+                container.setChanged();
+            }
         }
         setContainerOpen(level, targetContainer, false);
+        goose.setRummaging(false);
         goose.honk();
         targetContainer = null;
+    }
+
+    private static void faceContainer(Goose goose, Vec3 center) {
+        goose.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+        goose.getLookControl().setLookAt(center.x, center.y, center.z);
+        goose.faceToward(center.x, center.z);
+        Vec3 motion = goose.getDeltaMovement();
+        goose.setDeltaMovement(0.0, motion.y, 0.0);
     }
 
     private static void setContainerOpen(ServerLevel level, BlockPos pos, boolean open) {
@@ -232,11 +339,6 @@ public class GooseStealBehavior extends Behavior<Goose> {
         return closest;
     }
 
-    private static Vec3 blindSpot(Player player) {
-        Vec3 facing = player.getViewVector(1.0F).multiply(1.0, 0.0, 1.0).normalize();
-        return player.position().subtract(facing.scale(2.0));
-    }
-
     private static void take(Goose goose, ItemStack source) {
         goose.setCarriedItem(source.copyWithCount(1));
         goose.getBrain().eraseMemory(MemoryModuleType.AVOID_TARGET);
@@ -245,18 +347,20 @@ public class GooseStealBehavior extends Behavior<Goose> {
 
     @Nullable
     private static ItemEntity findDroppedItem(Goose goose) {
-        ItemEntity closest = null;
-        double best = Double.MAX_VALUE;
+        ItemEntity best = null;
+        double bestScore = -Double.MAX_VALUE;
         for (ItemEntity item : goose.level().getEntitiesOfClass(ItemEntity.class, goose.getBoundingBox().inflate(ITEM_SEARCH_RADIUS))) {
             if (!isDesirable(item.getItem())) continue;
-            if (goose.getRandom().nextFloat() > pickChance(item)) continue;
-            double distance = goose.distanceToSqr(item);
-            if (distance < best) {
-                best = distance;
-                closest = item;
+            boolean pumpkin = item.getItem().is(Items.PUMPKIN_SEEDS);
+            float chance = pumpkin ? 1.0F : pickChance(item);
+            if (goose.getRandom().nextFloat() > chance) continue;
+            double score = (pumpkin ? 1.0E6 : 0.0) - goose.distanceToSqr(item);
+            if (score > bestScore) {
+                bestScore = score;
+                best = item;
             }
         }
-        return closest;
+        return best;
     }
 
     private static float pickChance(ItemEntity item) {
@@ -266,23 +370,21 @@ public class GooseStealBehavior extends Behavior<Goose> {
 
     @Nullable
     private static Player findVictimPlayer(Goose goose) {
-        Player grudged = null, stranger = null;
-        double grudgedBest = Double.MAX_VALUE, strangerBest = Double.MAX_VALUE;
+        Player best = null;
+        double bestScore = -Double.MAX_VALUE;
         for (Player player : goose.level().getEntitiesOfClass(Player.class, goose.getBoundingBox().inflate(HAND_SEARCH_RADIUS))) {
-            if (player.isSpectator() || player.isCreative() || !isDesirable(player.getMainHandItem())) continue;
+            if (player.isSpectator() || player.isCreative()) continue;
+            if (!isDesirable(player.getMainHandItem()) && !isDesirable(player.getOffhandItem())) continue;
             if (Math.abs(player.getY() - goose.getY()) > REACHABLE_HEIGHT) continue;
-            double distance = goose.distanceToSqr(player);
-            if (goose.getGrudges().holdsGrudgeAgainst(player.getUUID())) {
-                if (distance < grudgedBest) {
-                    grudgedBest = distance;
-                    grudged = player;
-                }
-            } else if (distance < strangerBest) {
-                strangerBest = distance;
-                stranger = player;
+            boolean grudged = goose.getGrudges().holdsGrudgeAgainst(player.getUUID());
+            boolean pumpkin = player.getMainHandItem().is(Items.PUMPKIN_SEEDS) || player.getOffhandItem().is(Items.PUMPKIN_SEEDS);
+            double score = (grudged ? 2.0E6 : 0.0) + (pumpkin ? 1.0E6 : 0.0) - goose.distanceToSqr(player);
+            if (score > bestScore) {
+                bestScore = score;
+                best = player;
             }
         }
-        return grudged != null ? grudged : stranger;
+        return best;
     }
 
     private static boolean isDesirable(ItemStack stack) {

@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -56,19 +57,23 @@ public class Goose extends Animal {
     private static final EntityDataAccessor<State> DATA_STATE = SynchedEntityData.defineId(Goose.class, NMLEntityDataSerializers.GOOSE_STATE.get());
     private static final EntityDataAccessor<ItemStack> DATA_CARRIED_ITEM = SynchedEntityData.defineId(Goose.class, EntityDataSerializers.ITEM_STACK);
     private int hurtAnimationTick = 0;
-    private int peckAnimationTick = 0;
+    private int harassAnimationTick = 0;
+    private int grabAnimationTick = 0;
     public final AnimationState hurtingAnimationState = new AnimationState();
     public final AnimationState fallingAnimationState = new AnimationState();
     public final AnimationState intimidatingAnimationState = new AnimationState();
-    public final AnimationState peckingAnimationState = new AnimationState();
+    public final AnimationState harassAnimationState = new AnimationState();
+    public final AnimationState chestStealAnimationState = new AnimationState();
+    public final AnimationState grabAnimationState = new AnimationState();
     public final AnimationState flyingAnimationState = new AnimationState();
-    public final AnimationState drinkingAnimationState = new AnimationState();
 
     private static final double FLOCK_RADIUS = 12.0;
     private static final int FLAP_DISPLAY_TICKS = 12;
     private static final long ATTACK_TARGET_EXPIRY = 240L;
-    private static final byte EVENT_PECK = 61;
-    private static final int PECK_ANIMATION_TICKS = 10;
+    private static final byte EVENT_HARASS = 61;
+    private static final byte EVENT_GRAB = 62;
+    private static final int HARASS_ANIMATION_TICKS = 15;
+    private static final int GRAB_ANIMATION_TICKS = 50;
     private static final int HONK_COOLDOWN_TICKS = 15;
     private static final int FLIGHT_POSE_DWELL_TICKS = 4;
 
@@ -79,7 +84,7 @@ public class Goose extends Animal {
     private int flapTicks;
     private boolean stealing;
     private boolean flying;
-    private boolean drinking;
+    private boolean rummaging;
     private long lastFlightControlTime;
     private int honkCooldown;
     private double lastTickX;
@@ -92,6 +97,7 @@ public class Goose extends Animal {
     private int pendingFlightPoseTicks;
     private boolean migrating;
     private boolean arriving;
+    private boolean migrationTransit;
     private int formationIndex;
     @Nullable
     private Goose flockLeader;
@@ -103,6 +109,8 @@ public class Goose extends Animal {
 
     public Goose(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
+        setPathfindingMalus(PathType.WATER, 0.0F);
+        setPathfindingMalus(PathType.WATER_BORDER, 0.0F);
     }
 
     public GooseGrudges getGrudges() {
@@ -144,19 +152,12 @@ public class Goose extends Animal {
 
     public void setFlying(boolean flying) {
         this.flying = flying;
+        setNoGravity(flying);
         if (flying) markFlightControl();
     }
 
     public void markFlightControl() {
         if (!level().isClientSide) lastFlightControlTime = level().getGameTime();
-    }
-
-    public boolean isDrinking() {
-        return level().isClientSide ? getState() == State.DRINKING : drinking;
-    }
-
-    public void setDrinking(boolean drinking) {
-        this.drinking = drinking;
     }
 
     public FlightPose getFlightPose() {
@@ -169,6 +170,10 @@ public class Goose extends Animal {
 
     public boolean isArriving() {
         return arriving;
+    }
+
+    public boolean isTransit() {
+        return migrationTransit;
     }
 
     public int getFormationIndex() {
@@ -197,6 +202,7 @@ public class Goose extends Animal {
     public void startMigration(@Nullable Goose leader, int index, Vec3 heading, double ceiling) {
         migrating = true;
         arriving = false;
+        migrationTransit = false;
         flockLeader = leader;
         formationIndex = index;
         migrationHeading = heading;
@@ -211,6 +217,7 @@ public class Goose extends Animal {
     public void startArrival(@Nullable Goose leader, int index, Vec3 heading, BlockPos landing) {
         migrating = true;
         arriving = true;
+        migrationTransit = false;
         flockLeader = leader;
         formationIndex = index;
         migrationHeading = heading;
@@ -219,9 +226,24 @@ public class Goose extends Animal {
         setFlying(true);
     }
 
+    public void startTransit(@Nullable Goose leader, int index, Vec3 heading) {
+        migrating = true;
+        arriving = false;
+        migrationTransit = true;
+        flockLeader = leader;
+        formationIndex = index;
+        migrationHeading = heading;
+        migrationCeiling = getY();
+        landingSpot = null;
+        setFlying(true);
+        getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+        getNavigation().stop();
+    }
+
     public void finishMigrationFlight() {
         migrating = false;
         arriving = false;
+        migrationTransit = false;
         flockLeader = null;
         migrationHeading = null;
         landingSpot = null;
@@ -266,7 +288,19 @@ public class Goose extends Animal {
     }
 
     public void peck() {
-        if (!level().isClientSide) level().broadcastEntityEvent(this, EVENT_PECK);
+        if (!level().isClientSide) level().broadcastEntityEvent(this, EVENT_HARASS);
+    }
+
+    public void playGrabAnimation() {
+        if (!level().isClientSide) level().broadcastEntityEvent(this, EVENT_GRAB);
+    }
+
+    public boolean isRummaging() {
+        return level().isClientSide ? getState() == State.RUMMAGING : rummaging;
+    }
+
+    public void setRummaging(boolean rummaging) {
+        this.rummaging = rummaging;
     }
 
     public void honk() {
@@ -294,7 +328,14 @@ public class Goose extends Animal {
     public void dropCarriedItem() {
         ItemStack carried = getCarriedItem();
         if (!carried.isEmpty()) {
-            if (!level().isClientSide) spawnAtLocation(carried);
+            if (!level().isClientSide) {
+                ItemEntity dropped = spawnAtLocation(carried);
+                if (dropped != null) {
+                    dropped.setUnlimitedLifetime();
+                    dropped.setNoPickUpDelay();
+                    dropped.getPersistentData().putBoolean("GooseDropped", true);
+                }
+            }
             setCarriedItem(ItemStack.EMPTY);
         }
     }
@@ -313,6 +354,15 @@ public class Goose extends Animal {
 
     public List<Goose> nearbyGeese(double radius) {
         return level().getEntitiesOfClass(Goose.class, getBoundingBox().inflate(radius), other -> other != this && other.isAlive());
+    }
+
+    public void faceToward(double x, double z) {
+        double dx = x - getX();
+        double dz = z - getZ();
+        if (dx * dx + dz * dz < 1.0E-4) return;
+        float yaw = (float) (Mth.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0F;
+        setYRot(yaw);
+        yBodyRot = yaw;
     }
 
     public int flockConfidence() {
@@ -369,6 +419,18 @@ public class Goose extends Animal {
         if (isCarrying()) {
             compound.put("CarriedItem", getCarriedItem().save(registryAccess()));
         }
+        if (migrating && !migrationTransit) {
+            CompoundTag mig = new CompoundTag();
+            mig.putBoolean("Arriving", arriving);
+            mig.putInt("FormationIndex", formationIndex);
+            if (migrationHeading != null) {
+                mig.putDouble("HeadingX", migrationHeading.x);
+                mig.putDouble("HeadingZ", migrationHeading.z);
+            }
+            mig.putDouble("Ceiling", migrationCeiling);
+            if (landingSpot != null) mig.putLong("Landing", landingSpot.asLong());
+            compound.put("Migration", mig);
+        }
     }
 
     @Override
@@ -378,6 +440,19 @@ public class Goose extends Animal {
         setCarriedItem(compound.contains("CarriedItem")
                 ? ItemStack.parseOptional(registryAccess(), compound.getCompound("CarriedItem"))
                 : ItemStack.EMPTY);
+        if (compound.contains("Migration")) {
+            CompoundTag mig = compound.getCompound("Migration");
+            migrating = true;
+            migrationTransit = false;
+            arriving = mig.getBoolean("Arriving");
+            formationIndex = mig.getInt("FormationIndex");
+            migrationHeading = mig.contains("HeadingX")
+                    ? new Vec3(mig.getDouble("HeadingX"), 0, mig.getDouble("HeadingZ")) : null;
+            migrationCeiling = mig.getDouble("Ceiling");
+            landingSpot = mig.contains("Landing") ? BlockPos.of(mig.getLong("Landing")) : null;
+            flockLeader = null;
+            setFlying(true);
+        }
     }
 
     @Override
@@ -420,18 +495,10 @@ public class Goose extends Animal {
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (DATA_STATE.equals(key)) {
-            resetAnimations();
-            if (getState() == State.INTIMIDATING) {
-                intimidatingAnimationState.startIfStopped(tickCount);
-            }
             refreshDimensions();
         }
 
         super.onSyncedDataUpdated(key);
-    }
-
-    private void resetAnimations() {
-        intimidatingAnimationState.stop();
     }
 
     public State getState() {
@@ -476,8 +543,8 @@ public class Goose extends Animal {
         if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
             return NMLSounds.GOOSE_ANGRY.get();
         }
-        if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)) {
-            return canFight() ? NMLSounds.GOOSE_ANGRY.get() : NMLSounds.GOOSE_AFRAID.get();
+        if (brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET) && !canFight()) {
+            return NMLSounds.GOOSE_AFRAID.get();
         }
         return NMLSounds.GOOSE_AMBIENT.get();
     }
@@ -495,7 +562,7 @@ public class Goose extends Animal {
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState block) {
-        playSound(NMLSounds.GOOSE_STEP.get(), 0.15F, 1);
+        playSound(NMLSounds.GOOSE_STEP.get(), 0.15F, 0.9F + random.nextFloat() * 0.2F);
     }
 
     public boolean canFight() {
@@ -511,7 +578,10 @@ public class Goose extends Animal {
         level.getProfiler().pop();
 
         if (flying && level.getGameTime() - lastFlightControlTime > 4) {
-            flying = false;
+            setFlying(false);
+        }
+        if (!flying && isNoGravity()) {
+            setNoGravity(false);
         }
 
         GooseAI.updateActivity(this);
@@ -532,10 +602,10 @@ public class Goose extends Animal {
             } else {
                 setState(isRunningPose() ? State.RUNNING : State.IDLING);
             }
+        } else if (rummaging) {
+            setState(State.RUMMAGING);
         } else if (isCarrying()) {
             setState(isRunningPose() ? State.RUNNING : State.IDLING);
-        } else if (drinking) {
-            setState(State.DRINKING);
         } else if (flapTicks > 0) {
             setState(State.INTIMIDATING);
         } else {
@@ -563,15 +633,29 @@ public class Goose extends Animal {
     }
 
     @Override
+    public void travel(Vec3 travelVector) {
+        if (isFlying() && !isInWater() && !onGround()) {
+            move(MoverType.SELF, getDeltaMovement());
+        } else {
+            super.travel(travelVector);
+        }
+    }
+
+    @Override
     public void handleEntityEvent(byte id) {
         if (id == 4) {
             hurtingAnimationState.start(tickCount);
             hurtAnimationTick = 22;
         }
 
-        if (id == EVENT_PECK) {
-            peckingAnimationState.start(tickCount);
-            peckAnimationTick = PECK_ANIMATION_TICKS;
+        if (id == EVENT_HARASS) {
+            harassAnimationState.start(tickCount);
+            harassAnimationTick = HARASS_ANIMATION_TICKS;
+        }
+
+        if (id == EVENT_GRAB) {
+            grabAnimationState.start(tickCount);
+            grabAnimationTick = GRAB_ANIMATION_TICKS;
         }
 
         super.handleEntityEvent(id);
@@ -594,8 +678,11 @@ public class Goose extends Animal {
         if (hurtAnimationTick > 0) hurtAnimationTick--;
         else hurtingAnimationState.ifStarted(AnimationState::stop);
 
-        if (peckAnimationTick > 0) peckAnimationTick--;
-        else peckingAnimationState.ifStarted(AnimationState::stop);
+        if (harassAnimationTick > 0) harassAnimationTick--;
+        else harassAnimationState.ifStarted(AnimationState::stop);
+
+        if (grabAnimationTick > 0) grabAnimationTick--;
+        else grabAnimationState.ifStarted(AnimationState::stop);
 
         if (level().isClientSide) {
             if (inFlight) {
@@ -606,8 +693,11 @@ public class Goose extends Animal {
                 flightPose = FlightPose.FORWARD;
             }
 
-            if (getState() == State.DRINKING) drinkingAnimationState.startIfStopped(tickCount);
-            else drinkingAnimationState.stop();
+            if (getState() == State.INTIMIDATING) intimidatingAnimationState.startIfStopped(tickCount);
+            else intimidatingAnimationState.stop();
+
+            if (getState() == State.RUMMAGING) chestStealAnimationState.startIfStopped(tickCount);
+            else chestStealAnimationState.stop();
         }
 
         if (!level().isClientSide) {
@@ -622,6 +712,12 @@ public class Goose extends Animal {
         }
 
         floatGoose();
+
+        if (isInWater() && !isFlying()) {
+            float maxBodyTurn = 6.0F;
+            float bodyDiff = Mth.wrapDegrees(yBodyRot - yBodyRotO);
+            if (Math.abs(bodyDiff) > maxBodyTurn) yBodyRot = yBodyRotO + Math.copySign(maxBodyTurn, bodyDiff);
+        }
     }
 
     private boolean isRunningPose() {
@@ -672,7 +768,9 @@ public class Goose extends Animal {
 
     @Override
     protected PathNavigation createNavigation(Level level) {
-        return new GoosePathNavigation(this, level);
+        GoosePathNavigation navigation = new GoosePathNavigation(this, level);
+        navigation.setCanFloat(true);
+        return navigation;
     }
 
     public static class GoosePathNavigation extends GroundPathNavigation {
@@ -706,7 +804,7 @@ public class Goose extends Animal {
         INTIMIDATING(1),
         RUNNING(2),
         FLYING(3),
-        DRINKING(4);
+        RUMMAGING(4);
 
         public static final IntFunction<State> BY_ID = ByIdMap.continuous(State::id, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
         public static final StreamCodec<ByteBuf, State> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, State::id);

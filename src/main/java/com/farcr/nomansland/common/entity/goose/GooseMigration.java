@@ -22,21 +22,31 @@ public class GooseMigration extends SavedData {
     private static final String DATA_NAME = "goose_migration";
     private static final int MIN_FLOCK = 3;
     private static final int MAX_FLOCK = 5;
+    private static final int FLYOVER_MIN = 5;
+    private static final int FLYOVER_MAX = 9;
     private static final double GATHER_RADIUS = 48.0;
-    private static final int LOCAL_GOOSE_CAP = 10;
+    private static final int LOCAL_GOOSE_CAP = 12;
     private static final double LOCAL_CAP_RADIUS = 64.0;
-    private static final int DEPARTURE_INTERVAL = 12000;
-    private static final int ARRIVAL_INTERVAL = 6000;
-    private static final int WATER_SEARCH_RADIUS = 24;
-    private static final double SPAWN_DISTANCE = 56.0;
-    private static final double CLIMB_HEIGHT = 40.0;
-    private static final double ARRIVAL_ALTITUDE = 32.0;
+    private static final int WATER_SEARCH_RADIUS = 28;
+    private static final double SPAWN_DISTANCE = 84.0;
+    private static final double CLIMB_HEIGHT = 42.0;
+    private static final double ARRIVAL_ALTITUDE = 30.0;
+    private static final double FLYOVER_ALTITUDE = 46.0;
     private static final double CLUSTER_RADIUS_SQR = 400.0;
-    private static final int UNDERGROUND_DEPTH = 12;
+    private static final int UNDERGROUND_DEPTH = 10;
+    private static final int DEPARTURE_COOLDOWN = 16000;
+    private static final int ARRIVAL_COOLDOWN = 10000;
+    private static final int FLYOVER_COOLDOWN = 4000;
+    private static final int RETRY_DELAY = 800;
+    private static final long DUSK_START = 11800L;
+    private static final long DUSK_END = 13700L;
+    private static final long DAWN_START = 22000L;
+    private static final long DAWN_END = 23800L;
 
     private int airborne;
     private long nextDeparture;
     private long nextArrival;
+    private long nextFlyover;
 
     public static GooseMigration get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(GooseMigration::new, GooseMigration::load), DATA_NAME);
@@ -47,6 +57,7 @@ public class GooseMigration extends SavedData {
         data.airborne = tag.getInt("Airborne");
         data.nextDeparture = tag.getLong("NextDeparture");
         data.nextArrival = tag.getLong("NextArrival");
+        data.nextFlyover = tag.getLong("NextFlyover");
         return data;
     }
 
@@ -55,6 +66,7 @@ public class GooseMigration extends SavedData {
         tag.putInt("Airborne", airborne);
         tag.putLong("NextDeparture", nextDeparture);
         tag.putLong("NextArrival", nextArrival);
+        tag.putLong("NextFlyover", nextFlyover);
         return tag;
     }
 
@@ -66,14 +78,30 @@ public class GooseMigration extends SavedData {
     public void tick(ServerLevel level) {
         if (level.players().isEmpty()) return;
         long time = level.getGameTime();
+        long day = level.getDayTime() % 24000L;
+        boolean dusk = day >= DUSK_START && day < DUSK_END;
+        boolean dawn = day >= DAWN_START && day < DAWN_END;
+        boolean storm = level.isThundering();
 
-        if (time >= nextArrival && airborne > 0 && tryArrival(level)) {
-            nextArrival = time + ARRIVAL_INTERVAL + level.random.nextInt(ARRIVAL_INTERVAL);
+        if (dawn && !storm && airborne > 0 && time >= nextArrival) {
+            if (tryArrival(level)) nextArrival = time + ARRIVAL_COOLDOWN + level.random.nextInt(ARRIVAL_COOLDOWN);
+            else nextArrival = time + RETRY_DELAY;
             setDirty();
         }
 
-        if (time >= nextDeparture && tryDeparture(level)) {
-            nextDeparture = time + DEPARTURE_INTERVAL + level.random.nextInt(DEPARTURE_INTERVAL);
+        if (dusk && !storm && time >= nextDeparture) {
+            if (tryDeparture(level)) nextDeparture = time + DEPARTURE_COOLDOWN + level.random.nextInt(DEPARTURE_COOLDOWN);
+            else nextDeparture = time + RETRY_DELAY;
+            setDirty();
+        }
+
+        if (!storm && time >= nextFlyover) {
+            boolean twilight = dusk || dawn;
+            if ((twilight || level.random.nextInt(4) == 0) && tryFlyover(level)) {
+                nextFlyover = time + FLYOVER_COOLDOWN + level.random.nextInt(FLYOVER_COOLDOWN);
+            } else {
+                nextFlyover = time + RETRY_DELAY + level.random.nextInt(RETRY_DELAY);
+            }
             setDirty();
         }
     }
@@ -128,7 +156,7 @@ public class GooseMigration extends SavedData {
                 level.getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(spawnBase.x), Mth.floor(spawnBase.z))) + ARRIVAL_ALTITUDE;
         if (!level.isLoaded(BlockPos.containing(spawnBase.x, spawnY, spawnBase.z))) return false;
         Vec3 heading = fromDirection.scale(-1);
-        float yaw = (float) (Mth.atan2(heading.z, heading.x) * (180.0 / Math.PI)) - 90.0F;
+        float yaw = yawOf(heading);
 
         Goose leader = null;
         int spawned = 0;
@@ -150,6 +178,37 @@ public class GooseMigration extends SavedData {
         airborne -= spawned;
         setDirty();
         return true;
+    }
+
+    private boolean tryFlyover(ServerLevel level) {
+        ServerPlayer player = pickAudience(level);
+        if (player == null) return false;
+        if (!level.canSeeSky(player.blockPosition().above(2))) return false;
+        if (level.getEntitiesOfClass(Goose.class, player.getBoundingBox().inflate(LOCAL_CAP_RADIUS), Goose::isMigrating).size() >= FLYOVER_MAX) return false;
+
+        double angle = level.random.nextDouble() * Math.PI * 2;
+        Vec3 cross = new Vec3(Math.cos(angle), 0, Math.sin(angle));
+        double lateral = (level.random.nextDouble() - 0.5) * 48.0;
+        Vec3 perp = new Vec3(-cross.z, 0, cross.x).scale(lateral);
+        Vec3 base = player.position().add(perp).subtract(cross.scale(SPAWN_DISTANCE));
+        int terrain = level.getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(base.x), Mth.floor(base.z));
+        double altitude = Math.max(player.getY(), terrain) + FLYOVER_ALTITUDE + level.random.nextInt(22);
+        if (!level.isLoaded(BlockPos.containing(base.x, altitude, base.z))) return false;
+
+        float yaw = yawOf(cross);
+        int size = FLYOVER_MIN + level.random.nextInt(FLYOVER_MAX - FLYOVER_MIN + 1);
+        Goose leader = null;
+        for (int index = 0; index < size; index++) {
+            Goose goose = NMLEntities.GOOSE.get().create(level);
+            if (goose == null) break;
+            Vec3 offset = index == 0 ? Vec3.ZERO : GooseMigrationBehavior.formationOffset(index, cross);
+            Vec3 position = new Vec3(base.x, altitude, base.z).add(offset);
+            goose.moveTo(position.x, position.y, position.z, yaw, 0);
+            goose.startTransit(index == 0 ? null : leader, index, cross);
+            level.addFreshEntity(goose);
+            if (index == 0) leader = goose;
+        }
+        return leader != null;
     }
 
     @Nullable
@@ -199,5 +258,9 @@ public class GooseMigration extends SavedData {
         int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
         BlockPos ground = new BlockPos(x, y, z);
         return level.getBlockState(ground.below()).isAir() ? null : ground;
+    }
+
+    private static float yawOf(Vec3 heading) {
+        return (float) (Mth.atan2(heading.z, heading.x) * (180.0 / Math.PI)) - 90.0F;
     }
 }

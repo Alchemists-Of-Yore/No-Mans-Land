@@ -10,7 +10,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber(modid = NoMansLand.MODID)
 public class GooseMigrationEvents {
-    private static final int CHECK_INTERVAL = 400;
+    private static final int CHECK_INTERVAL = 200;
 
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
