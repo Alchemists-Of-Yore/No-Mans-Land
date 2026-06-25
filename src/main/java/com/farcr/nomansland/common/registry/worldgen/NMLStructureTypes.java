@@ -16,6 +16,7 @@ public class NMLStructureTypes {
             DeferredRegister.create(Registries.STRUCTURE_TYPE, NoMansLand.MODID);
 
     public static final Supplier<StructureType<CaveStructure>> CAVE = register("cave", CaveStructure.CODEC);
+    public static final Supplier<StructureType<BuriedStructure>> BURIED = register("buried", BuriedStructure.CODEC);
     public static final Supplier<StructureType<AlchemistRuinsStructure>> ALCHEMIST_RUINS = register("alchemist_ruins", AlchemistRuinsStructure.CODEC);
     public static final Supplier<StructureType<DreamMeetingPoint>> DREAM_MEETING_POINT = register("dream_meeting_point", DreamMeetingPoint.CODEC);
     public static final Supplier<StructureType<MeetingPointStructure>> MEETING_POINT = register("meeting_point", MeetingPointStructure.CODEC);

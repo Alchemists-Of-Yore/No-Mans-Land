@@ -1,5 +1,5 @@
 {
-  "type": "nomansland:cave",
+  "type": "nomansland:buried",
   "start_pool": "nomansland:small_dungeon/core",
   "size": 20,
   "max_distance_from_center": 100,
