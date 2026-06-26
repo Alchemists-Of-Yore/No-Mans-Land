@@ -55,6 +55,8 @@ public class Beetle extends Animal {
     private int flipTicks;
     private int notBotheredTicks;
     private int flightCooldown;
+    private boolean flightLeftGround;
+    private double flightStartY;
     private double flightTargetX;
     private double flightTargetY;
     private double flightTargetZ;
@@ -136,6 +138,8 @@ public class Beetle extends Animal {
         abandonDungBall();
         setState(STATE_FLYING);
         flightTicks = 50 + random.nextInt(30);
+        flightLeftGround = false;
+        flightStartY = getY();
         flightTargetX = targetX;
         flightTargetY = targetY;
         flightTargetZ = targetZ;
@@ -214,6 +218,10 @@ public class Beetle extends Animal {
 
     private void tickFlight() {
         flightTicks--;
+        if (!flightLeftGround && !onGround()) {
+            flightLeftGround = true;
+        }
+
         double dx = flightTargetX - getX();
         double dz = flightTargetZ - getZ();
         double horizontal = Math.sqrt(dx * dx + dz * dz);
@@ -228,7 +236,7 @@ public class Beetle extends Animal {
             double inv = horizontal > 1.0E-4 ? 1.0 / horizontal : 0.0;
             vx = vx * 0.82 + dx * inv * 0.05;
             vz = vz * 0.82 + dz * inv * 0.05;
-            double climbTo = flightTargetY + 1.5;
+            double climbTo = Math.max(flightStartY, flightTargetY) + 2.0;
             if (getY() < climbTo) {
                 vy = Math.min(vy + 0.07, 0.32);
             } else {
@@ -255,11 +263,15 @@ public class Beetle extends Animal {
 
         if (bumped && !onGround()) {
             startFlip();
-        } else if (arrived && onGround()) {
-            setState(STATE_IDLE);
-            flightCooldown = 200 + random.nextInt(200);
-            notBotheredTicks = 0;
+        } else if (flightLeftGround && onGround()) {
+            land(arrived);
         }
+    }
+
+    private void land(boolean reachedTarget) {
+        setState(STATE_IDLE);
+        flightCooldown = reachedTarget ? 200 + random.nextInt(200) : 40 + random.nextInt(40);
+        notBotheredTicks = 0;
     }
 
     @Override
@@ -365,6 +377,8 @@ public class Beetle extends Animal {
         compound.putInt("FlipTicks", flipTicks);
         compound.putInt("FlightCooldown", flightCooldown);
         compound.putInt("NotBotheredTicks", notBotheredTicks);
+        compound.putBoolean("FlightLeftGround", flightLeftGround);
+        compound.putDouble("FlightStartY", flightStartY);
         compound.putDouble("FlightTargetX", flightTargetX);
         compound.putDouble("FlightTargetY", flightTargetY);
         compound.putDouble("FlightTargetZ", flightTargetZ);
@@ -379,6 +393,8 @@ public class Beetle extends Animal {
         flipTicks = compound.getInt("FlipTicks");
         flightCooldown = compound.getInt("FlightCooldown");
         notBotheredTicks = compound.getInt("NotBotheredTicks");
+        flightLeftGround = compound.getBoolean("FlightLeftGround");
+        flightStartY = compound.getDouble("FlightStartY");
         flightTargetX = compound.getDouble("FlightTargetX");
         flightTargetY = compound.getDouble("FlightTargetY");
         flightTargetZ = compound.getDouble("FlightTargetZ");
