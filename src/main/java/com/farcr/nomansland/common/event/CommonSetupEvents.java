@@ -12,6 +12,8 @@ import com.farcr.nomansland.common.commands.SunDogCommand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
+import com.farcr.nomansland.common.entity.beetle.Beetle;
+import com.farcr.nomansland.common.entity.beetle.Grub;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
@@ -178,6 +180,8 @@ public class CommonSetupEvents {
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
         event.put(NMLEntities.FRIENDERMAN.get(), Frienderman.createAttributes().build());
+        event.put(NMLEntities.BEETLE.get(), Beetle.createAttributes().build());
+        event.put(NMLEntities.GRUB.get(), Grub.createAttributes().build());
         event.put(NMLEntities.DREAMING_PLAYER.get(), Mob.createMobAttributes().build());
     }
 
@@ -191,6 +195,8 @@ public class CommonSetupEvents {
         event.register(EntityType.HUSK, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.TORTOISE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Tortoise::checkTortoiseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.GOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.OCEAN_FLOOR, Goose::checkGooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Beetle::checkBeetleSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.GRUB.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Grub::checkGrubSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent

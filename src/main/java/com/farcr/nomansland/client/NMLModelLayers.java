@@ -5,6 +5,9 @@ import com.farcr.nomansland.client.model.BillhookBassModel;
 import com.farcr.nomansland.client.model.BuddyModel;
 import com.farcr.nomansland.client.model.BuriedModel;
 import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
+import com.farcr.nomansland.client.model.beetle.BeetleModel;
+import com.farcr.nomansland.client.model.beetle.DungBallModel;
+import com.farcr.nomansland.client.model.beetle.GrubModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.frienderman.FriendermanModel;
 import com.farcr.nomansland.client.model.goose.GooseModel;
@@ -27,6 +30,9 @@ public class NMLModelLayers {
     public static final ModelLayerLocation TORTOISE_LAYER = new ModelLayerLocation(NoMansLand.location("tortoise"), "main");
     public static final ModelLayerLocation BUDDY_LAYER = new ModelLayerLocation(NoMansLand.location("buddy"), "main");
     public static final ModelLayerLocation FRIENDERMAN_LAYER = new ModelLayerLocation(NoMansLand.location("frienderman"), "main");
+    public static final ModelLayerLocation BEETLE_LAYER = new ModelLayerLocation(NoMansLand.location("beetle"), "main");
+    public static final ModelLayerLocation GRUB_LAYER = new ModelLayerLocation(NoMansLand.location("grub"), "main");
+    public static final ModelLayerLocation DUNG_BALL_LAYER = new ModelLayerLocation(NoMansLand.location("dung_ball"), "main");
 
     //Armor
     public static final ModelLayerLocation ANCIENT_BRONZE_MASK_LAYER = new ModelLayerLocation(NoMansLand.location("ancient_bronze_mask"), "main");
@@ -42,6 +48,9 @@ public class NMLModelLayers {
         event.registerLayerDefinition(NMLModelLayers.TORTOISE_LAYER, TortoiseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BUDDY_LAYER, BuddyModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.FRIENDERMAN_LAYER, FriendermanModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.BEETLE_LAYER, BeetleModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.GRUB_LAYER, GrubModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.DUNG_BALL_LAYER, DungBallModel::createBodyLayer);
 
         event.registerLayerDefinition(NMLModelLayers.ANCIENT_BRONZE_MASK_LAYER, AncientBronzeMaskModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.TORTOISE_SHELL_LAYER, TortoiseShellModel::createBodyLayer);

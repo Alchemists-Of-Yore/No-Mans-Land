@@ -3,6 +3,9 @@ package com.farcr.nomansland.common.registry.entities;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.entity.*;
+import com.farcr.nomansland.common.entity.beetle.Beetle;
+import com.farcr.nomansland.common.entity.beetle.DungBall;
+import com.farcr.nomansland.common.entity.beetle.Grub;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.bombs.Firebomb;
@@ -89,6 +92,14 @@ public class NMLEntities {
 //    public static final Supplier<EntityType<BuriedEntity>> BURIED =
 //            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)
 //                    .sized(1.0f, 1.0f).clientTrackingRange(8).build("buried"));
+
+    public static final Supplier<EntityType<Beetle>> BEETLE = register("beetle", Beetle::new, MobCategory.CREATURE, 0.7F, 0.5F);
+
+    public static final Supplier<EntityType<Grub>> GRUB = register("grub", Grub::new, MobCategory.CREATURE, 0.5F, 0.4F);
+
+    public static final Supplier<EntityType<DungBall>> DUNG_BALL =
+            ENTITIES.register("dung_ball", () -> EntityType.Builder.of(DungBall::new, MobCategory.MISC)
+                    .sized(0.7F, 0.7F).clientTrackingRange(8).updateInterval(3).build("dung_ball"));
 
     // TODO: moose
 //    public static final Supplier<EntityType<Moose>> MOOSE =

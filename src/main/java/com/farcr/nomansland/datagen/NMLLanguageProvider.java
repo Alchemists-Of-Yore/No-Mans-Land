@@ -124,6 +124,9 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.moose", "Moose");
         add("entity.nomansland.tortoise", "Tortoise");
         add("entity.nomansland.goose", "Goose");
+        add("entity.nomansland.beetle", "Beetle");
+        add("entity.nomansland.grub", "Grub");
+        add("entity.nomansland.dung_ball", "Dung Ball");
         add("entity.nomansland.living_pot", "Living Pot");
         add("entity.nomansland.frienderman", "Frienderman");
         add("entity.nomansland.fat_joint", "Fat Joint");

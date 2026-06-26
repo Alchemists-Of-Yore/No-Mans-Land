@@ -54,6 +54,11 @@ public class NMLItems {
     public static final ItemDefinition<Item> RAW_VENISON = register("raw_venison", () -> new Item(new Properties().food(NMLFoods.RAW_VENISON)));
     public static final ItemDefinition<Item> COOKED_VENISON = register("cooked_venison", () -> new Item(new Properties().food(NMLFoods.COOKED_VENISON)));
 
+    public static final ItemDefinition<Item> BUG_MEAT = register("bug_meat", () -> new Item(new Properties().food(NMLFoods.BUG_MEAT)));
+    public static final ItemDefinition<Item> RAW_GRUB = register("raw_grub", () -> new Item(new Properties().food(NMLFoods.RAW_GRUB)));
+    public static final ItemDefinition<Item> FRIED_GRUB = register("fried_grub", () -> new Item(new Properties().food(NMLFoods.FRIED_GRUB)));
+    public static final ItemDefinition<Item> GRUBROOT = register("grubroot", () -> new Item(new Properties()));
+
     public static final ItemDefinition<Item> BILLHOOK_BASS = register("billhook_bass",
             () -> new Item(new Properties().food(NMLFoods.BILLHOOK_BASS)), true);
     public static final ItemDefinition<Item> COOKED_BILLHOOK_BASS = register("cooked_billhook_bass", () -> new Item(new Properties().food(NMLFoods.COOKED_BILLHOOK_BASS)));
@@ -163,6 +168,12 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> BUDDY_SPAWN_EGG = register("buddy_spawn_egg",
         () -> new DeferredSpawnEggItem(NMLEntities.BUDDY, 9252139, 4798761, new Properties()));
+
+    public static final ItemDefinition<Item> BEETLE_SPAWN_EGG = register("beetle_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.BEETLE, 3025952, 7031851, new Properties()));
+
+    public static final ItemDefinition<Item> GRUB_SPAWN_EGG = register("grub_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.GRUB, 15259573, 13209178, new Properties()));
 
 //    public static final ItemDefinition<Item> CAVE_CARP_BUCKET = registerItem("cave_carp_bucket",
 //            () -> new MobBucketItem(EntityType.PIG, Fluids.WATER, SoundEvents.BUCKET_EMPTY_FISH,
