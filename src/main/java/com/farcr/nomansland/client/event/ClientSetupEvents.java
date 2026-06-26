@@ -117,6 +117,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.TORTOISE.get(), TortoiseRenderer::new);
         event.registerEntityRenderer(NMLEntities.BUDDY.get(), BuddyRenderer::new);
         event.registerEntityRenderer(NMLEntities.FRIENDERMAN.get(), FriendermanRenderer::new);
+        event.registerEntityRenderer(NMLEntities.BURIED.get(), BuriedRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.DREAMING_PLAYER.get(), DreamingPlayerRenderer::new);
 

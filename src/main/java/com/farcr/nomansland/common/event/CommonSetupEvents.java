@@ -11,6 +11,7 @@ import com.farcr.nomansland.common.commands.MeetingPointCommand;
 import com.farcr.nomansland.common.commands.SunDogCommand;
 import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
+import com.farcr.nomansland.common.entity.BuriedEntity;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
@@ -178,6 +179,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
         event.put(NMLEntities.FRIENDERMAN.get(), Frienderman.createAttributes().build());
+        event.put(NMLEntities.BURIED.get(), BuriedEntity.createAttributes().build());
         event.put(NMLEntities.DREAMING_PLAYER.get(), Mob.createMobAttributes().build());
     }
 

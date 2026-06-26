@@ -86,9 +86,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<Goose>> GOOSE = register("goose", Goose::new, MobCategory.CREATURE, 0.6F, 0.9F);
 
-//    public static final Supplier<EntityType<BuriedEntity>> BURIED =
-//            ENTITIES.register("buried", () -> EntityType.Builder.of(BuriedEntity::new, MobCategory.MONSTER)
-//                    .sized(1.0f, 1.0f).clientTrackingRange(8).build("buried"));
+    public static final Supplier<EntityType<BuriedEntity>> BURIED = register("buried", BuriedEntity::new, MobCategory.MONSTER, 0.9F, 0.6F);
 
     // TODO: moose
 //    public static final Supplier<EntityType<Moose>> MOOSE =
