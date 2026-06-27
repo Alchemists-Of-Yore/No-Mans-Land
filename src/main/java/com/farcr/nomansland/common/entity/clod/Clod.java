@@ -1,8 +1,10 @@
 package com.farcr.nomansland.common.entity.clod;
 
+import com.farcr.nomansland.common.entity.clod.ai.ClodAvoidSunGoal;
 import com.farcr.nomansland.common.entity.clod.ai.ClodAvoidThreatGoal;
 import com.farcr.nomansland.common.entity.clod.ai.ClodFreezeGoal;
 import com.farcr.nomansland.common.entity.clod.ai.ClodGroupGoal;
+import com.farcr.nomansland.common.entity.clod.ai.ClodInvestigateGoal;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -24,10 +26,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
-import net.minecraft.world.entity.ai.goal.FleeSunGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.FollowParentGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -60,7 +64,6 @@ import java.util.List;
 public class Clod extends Animal {
 
     private static final EntityDataAccessor<Float> DATA_OPACITY = SynchedEntityData.defineId(Clod.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> DATA_CONFUSED = SynchedEntityData.defineId(Clod.class, EntityDataSerializers.BOOLEAN);
 
     private static final float FADE_OUT_STEP = 0.05F;
     private static final float FADE_IN_STEP = 0.2F;
@@ -68,11 +71,13 @@ public class Clod extends Animal {
     private static final double THREAT_RANGE = 10.0;
     private static final double LEAVE_RANGE = 15.0;
     private static final double ALARM_RANGE = 20.0;
+    private static final int INVESTIGATE_TICKS = 100;
 
     private int fleeTicks;
-    private int confusedTicks;
-    private boolean mountAttempted;
     private boolean hiding;
+    private int investigateTicks;
+    @Nullable
+    private Vec3 lastThreatPos;
 
     public Clod(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -107,7 +112,8 @@ public class Clod extends Animal {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new ClodFreezeGoal(this));
         this.goalSelector.addGoal(2, new ClodAvoidThreatGoal(this, 1.5));
-        this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.1));
+        this.goalSelector.addGoal(2, new ClodInvestigateGoal(this, 1.0));
+        this.goalSelector.addGoal(3, new ClodAvoidSunGoal(this, 1.2));
         this.goalSelector.addGoal(3, new RestrictSunGoal(this));
         this.goalSelector.addGoal(4, new BreedGoal(this, 1.0));
         this.goalSelector.addGoal(5, new TemptGoal(this, 1.0, stack -> stack.is(NMLTags.CLOD_FOOD), false));
@@ -122,7 +128,6 @@ public class Clod extends Animal {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_OPACITY, 1.0F);
-        builder.define(DATA_CONFUSED, false);
     }
 
     public float getOpacity() {
@@ -145,10 +150,6 @@ public class Clod extends Animal {
         this.hiding = hiding;
     }
 
-    public boolean isConfused() {
-        return this.entityData.get(DATA_CONFUSED);
-    }
-
     public boolean isFleeing() {
         return this.fleeTicks > 0;
     }
@@ -161,16 +162,12 @@ public class Clod extends Animal {
         this.fleeTicks = 0;
     }
 
-    public boolean canSee(LivingEntity entity) {
-        return entity != null && this.getSensing().hasLineOfSight(entity);
-    }
-
     @Nullable
     public LivingEntity findThreat(double range) {
-        List<LivingEntity> candidates = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(range), this::isThreat);
         LivingEntity closest = null;
         double closestDist = Double.MAX_VALUE;
-        for (LivingEntity entity : candidates) {
+        for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(range), this::isThreat)) {
+            if (!this.canPerceive(entity, range)) continue;
             double dist = this.distanceToSqr(entity);
             if (dist < closestDist) {
                 closestDist = dist;
@@ -178,6 +175,27 @@ public class Clod extends Animal {
             }
         }
         return closest;
+    }
+
+    private boolean canPerceive(LivingEntity threat, double range) {
+        double visibility = threat.getVisibilityPercent(this);
+        double effectiveRange = Math.max(range * visibility, 2.0);
+        if (this.distanceToSqr(threat) > effectiveRange * effectiveRange) return false;
+        return this.getSensing().hasLineOfSight(threat);
+    }
+
+    public boolean hasLostThreat() {
+        return this.investigateTicks > 0 && this.lastThreatPos != null;
+    }
+
+    @Nullable
+    public Vec3 getLastThreatPos() {
+        return this.lastThreatPos;
+    }
+
+    public void clearLostThreat() {
+        this.investigateTicks = 0;
+        this.lastThreatPos = null;
     }
 
     private boolean isThreat(LivingEntity entity) {
@@ -204,25 +222,22 @@ public class Clod extends Animal {
         super.customServerAiStep();
 
         if (this.fleeTicks > 0) this.fleeTicks--;
-        if (this.confusedTicks > 0) {
-            this.confusedTicks--;
-            if (this.confusedTicks == 0) this.entityData.set(DATA_CONFUSED, false);
-        }
 
         LivingEntity threat = this.findThreat(this.leaveRange());
-        boolean within10 = threat != null && this.distanceToSqr(threat) <= THREAT_RANGE * THREAT_RANGE;
-        boolean canSee = this.canSee(threat);
-
-        if (this.isFleeing()) {
-            if (threat == null || !canSee) {
-                this.stopFleeing();
+        if (threat != null) {
+            if (!threat.isInvisible()) {
+                this.lastThreatPos = threat.position();
+                this.investigateTicks = INVESTIGATE_TICKS;
             }
-        } else if (within10 && canSee && !this.isInvisibleByStillness()) {
-            this.startFleeing();
+            boolean within10 = this.distanceToSqr(threat) <= THREAT_RANGE * THREAT_RANGE;
+            if (!this.isFleeing() && within10 && !this.isInvisibleByStillness()) {
+                this.startFleeing();
+            }
+        } else {
+            if (this.isFleeing()) this.stopFleeing();
+            if (this.investigateTicks > 0) this.investigateTicks--;
+            else this.lastThreatPos = null;
         }
-
-        this.detectPlayerVanishing();
-        this.tryMountParent();
     }
 
     @Override
@@ -245,25 +260,18 @@ public class Clod extends Animal {
         }
     }
 
-    private void detectPlayerVanishing() {
-        if (this.isBaby()) return;
-        Player player = this.level().getNearestPlayer(this, 8.0);
-        if (player != null && player.hasEffect(MobEffects.INVISIBILITY) && this.getSensing().hasLineOfSight(player)
-                && this.confusedTicks == 0 && this.random.nextFloat() < 0.35F) {
-            this.confusedTicks = 60;
-            this.entityData.set(DATA_CONFUSED, true);
-            this.getLookControl().setLookAt(player);
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData data) {
+        if (!this.isBaby() && (spawnType == MobSpawnType.NATURAL || spawnType == MobSpawnType.CHUNK_GENERATION) && this.random.nextFloat() < 0.2F) {
+            Clod baby = NMLEntities.CLOD.get().create(level.getLevel());
+            if (baby != null) {
+                baby.setBaby(true);
+                baby.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+                baby.finalizeSpawn(level, difficulty, MobSpawnType.JOCKEY, null);
+                baby.startRiding(this, true);
+            }
         }
-    }
-
-    private void tryMountParent() {
-        if (!this.isBaby() || this.isPassenger() || this.mountAttempted) return;
-        if (this.random.nextFloat() > 0.02F) return;
-        this.mountAttempted = true;
-        for (Clod adult : this.level().getEntitiesOfClass(Clod.class, this.getBoundingBox().inflate(1.5), c -> !c.isBaby() && c.getPassengers().isEmpty())) {
-            this.startRiding(adult, true);
-            break;
-        }
+        return super.finalizeSpawn(level, difficulty, spawnType, data);
     }
 
     public void alarmGroup() {
@@ -276,6 +284,7 @@ public class Clod extends Animal {
     public boolean hurt(DamageSource source, float amount) {
         boolean result = super.hurt(source, amount);
         if (result && !this.level().isClientSide) {
+            this.setOpacity(1.0F);
             this.startFleeing();
             this.alarmGroup();
         }
@@ -285,6 +294,11 @@ public class Clod extends Animal {
     @Override
     public void knockback(double strength, double x, double z) {
         super.knockback(strength * 3.0, x, z);
+    }
+
+    @Override
+    public double getVisibilityPercent(@Nullable Entity lookingEntity) {
+        return super.getVisibilityPercent(lookingEntity) * this.getOpacity();
     }
 
     @Override
@@ -333,7 +347,6 @@ public class Clod extends Animal {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Opacity", this.getOpacity());
         compound.putInt("FleeTicks", this.fleeTicks);
-        compound.putBoolean("MountAttempted", this.mountAttempted);
     }
 
     @Override
@@ -341,7 +354,6 @@ public class Clod extends Animal {
         super.readAdditionalSaveData(compound);
         this.setOpacity(compound.getFloat("Opacity"));
         this.fleeTicks = compound.getInt("FleeTicks");
-        this.mountAttempted = compound.getBoolean("MountAttempted");
     }
 
     @Override

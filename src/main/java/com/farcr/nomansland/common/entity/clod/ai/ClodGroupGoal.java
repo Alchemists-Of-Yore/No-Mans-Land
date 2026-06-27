@@ -22,13 +22,12 @@ public class ClodGroupGoal extends Goal {
         if (this.clod.isFleeing() || this.clod.isHiding()) return false;
         if (this.clod.isGroupLeader()) return false;
         this.leader = this.clod.findGroupCenter();
-        return this.leader != null && this.clod.distanceToSqr(this.leader) > 64.0;
+        return this.leader != null && this.clod.distanceToSqr(this.leader) > 128;
     }
 
     @Override
     public boolean canContinueToUse() {
-        return this.leader != null && this.leader.isAlive() && !this.clod.isFleeing()
-                && this.clod.distanceToSqr(this.leader) > 12.0;
+        return this.leader != null && this.leader.isAlive() && !this.clod.isFleeing() && this.clod.distanceToSqr(this.leader) > 12;
     }
 
     @Override

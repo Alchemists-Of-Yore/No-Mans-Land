@@ -57,7 +57,7 @@ public class ClodRenderer extends MobRenderer<Clod, ClodModel<Clod>> {
 
     @Override
     protected RenderType getRenderType(Clod clod, boolean bodyVisible, boolean translucent, boolean glowing) {
-        return RenderType.itemEntityTranslucentCull(this.getTextureLocation(clod));
+        return RenderType.entityTranslucentCull(this.getTextureLocation(clod));
     }
 
     @Override

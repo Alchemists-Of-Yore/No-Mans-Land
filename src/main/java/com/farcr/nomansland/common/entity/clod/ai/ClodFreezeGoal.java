@@ -17,9 +17,8 @@ public class ClodFreezeGoal extends Goal {
     @Override
     public boolean canUse() {
         if (this.clod.isFleeing()) return false;
-        LivingEntity threat = this.clod.findThreat(this.clod.leaveRange());
-        if (threat == null) return false;
-        return this.clod.isInvisibleByStillness() || !this.clod.canSee(threat);
+        if (this.clod.findThreat(this.clod.leaveRange()) == null) return false;
+        return this.clod.isInvisibleByStillness();
     }
 
     @Override
