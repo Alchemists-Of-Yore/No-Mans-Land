@@ -1,6 +1,7 @@
 package com.farcr.nomansland.client.model;
 
-import net.minecraft.client.model.HumanoidModel;
+import com.farcr.nomansland.common.entity.Buried;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,87 +9,100 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Mob;
 
-public class BuriedModel<T extends Mob> extends HumanoidModel<T> {
-    private static final float ARM_GROUND_REACH = 1.45F;
-    private static final float LEG_GROUND_REACH = 1.45F;
-    private static final float HAND_GAIT_AMPLITUDE = 0.7F;
-    private static final float LEG_GAIT_AMPLITUDE = 0.4F;
-    private static final float ARM_SPLAY = 0.25F;
-    private static final float LEG_SPLAY = 0.2F;
+public class BuriedModel extends HierarchicalModel<Buried> {
+
+    private final ModelPart root;
+    private final ModelPart head;
 
     public BuriedModel(ModelPart root) {
-        super(root);
+        this.root = root;
+        this.head = root.getChild("buried").getChild("Head");
     }
 
     public static LayerDefinition createBodyLayer() {
-        MeshDefinition mesh = HumanoidModel.createMesh(CubeDeformation.NONE, 0.0F);
+        MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
 
-        root.addOrReplaceChild("head",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F),
-                PartPose.offset(0.0F, 0.0F, 0.0F));
+        PartDefinition buried = root.addOrReplaceChild("buried", CubeListBuilder.create(), PartPose.offset(0, 34, -6));
 
-        root.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
+        buried.addOrReplaceChild("Head",
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4, -6, -8, 8, 8, 8),
+                PartPose.offsetAndRotation(0, -13, 0, 0.0436F, 0, 0.1309F));
 
-        root.addOrReplaceChild("body",
-                CubeListBuilder.create().texOffs(0, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F),
-                PartPose.offset(0.0F, 0.0F, 0.0F));
+        PartDefinition body = buried.addOrReplaceChild("Body",
+                CubeListBuilder.create().texOffs(0, 16).addBox(-4, 0, -2, 8, 12, 4),
+                PartPose.offsetAndRotation(0, -13, 0, 1.4835F, 0, 0));
 
-        root.addOrReplaceChild("right_arm",
+        body.addOrReplaceChild("LeftLeg",
                 CubeListBuilder.create()
-                        .texOffs(40, 16).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F)
-                        .texOffs(2, 0).addBox(-1.0F, 5.0F, -1.0F, 2.0F, 0.0F, 2.0F),
-                PartPose.offset(-5.0F, 2.0F, 0.0F));
+                        .texOffs(32, 0).mirror().addBox(-1, 0, -1, 2, 12, 2).mirror(false)
+                        .texOffs(-2, 2).mirror().addBox(-1, 6, -1, 2, 0, 2).mirror(false),
+                PartPose.offsetAndRotation(-2, 12, 0, -0.0444F, 0.0852F, 0.1120F));
 
-        root.addOrReplaceChild("left_arm",
+        body.addOrReplaceChild("RightLeg",
                 CubeListBuilder.create()
-                        .texOffs(40, 0).mirror().addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F).mirror(false)
-                        .texOffs(-2, 0).mirror().addBox(-1.0F, 5.0F, -1.0F, 2.0F, 0.0F, 2.0F).mirror(false),
-                PartPose.offset(5.0F, 2.0F, 0.0F));
+                        .texOffs(32, 16).addBox(-1, -1, -2, 2, 12, 2)
+                        .texOffs(2, 2).mirror().addBox(-1, 5, -2, 2, 0, 2).mirror(false),
+                PartPose.offsetAndRotation(2, 13, -1, 0, 0, -0.2182F));
 
-        root.addOrReplaceChild("right_leg",
+        body.addOrReplaceChild("RightArm",
                 CubeListBuilder.create()
-                        .texOffs(32, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F)
-                        .texOffs(2, 2).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 0.0F, 2.0F),
-                PartPose.offset(-2.0F, 12.0F, 0.0F));
+                        .texOffs(40, 16).addBox(-1, -1, -1, 2, 12, 2)
+                        .texOffs(2, 0).mirror().addBox(-1, 5, -1, 2, 0, 2, new CubeDeformation(0.01F)).mirror(false),
+                PartPose.offsetAndRotation(5, 1, 0, -2.7242F, -0.4157F, 0.1073F));
 
-        root.addOrReplaceChild("left_leg",
+        body.addOrReplaceChild("LeftArm",
                 CubeListBuilder.create()
-                        .texOffs(32, 0).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F).mirror(false)
-                        .texOffs(-2, 2).mirror().addBox(-1.0F, 6.0F, -1.0F, 2.0F, 0.0F, 2.0F).mirror(false),
-                PartPose.offset(2.0F, 12.0F, 0.0F));
+                        .texOffs(40, 0).mirror().addBox(-1, -1, -1, 2, 12, 2).mirror(false)
+                        .texOffs(-2, 0).mirror().addBox(-1, 5, -1, 2, 0, 2, new CubeDeformation(-0.01F)).mirror(false),
+                PartPose.offsetAndRotation(-5, 1, 0, -2.7213F, 0.0735F, -0.4305F));
+
+        return LayerDefinition.create(mesh, 64, 32);
+    }
+
+    public static LayerDefinition createArmorLayer(CubeDeformation deformation) {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+
+        PartDefinition buried = root.addOrReplaceChild("buried", CubeListBuilder.create(), PartPose.offset(0, 34, -6));
+
+        buried.addOrReplaceChild("Head",
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4, -6, -8, 8, 8, 8, deformation),
+                PartPose.offsetAndRotation(0, -13, 0, 0.0436F, 0, 0.1309F));
+
+        PartDefinition body = buried.addOrReplaceChild("Body", CubeListBuilder.create(),
+                PartPose.offsetAndRotation(0, -13, 0, 1.4835F, 0, 0));
+
+        body.addOrReplaceChild("BodyArmor",
+                CubeListBuilder.create().texOffs(16, 16).addBox(-4, 0, -2, 8, 12, 4, deformation),
+                PartPose.ZERO);
+
+        body.addOrReplaceChild("LeftLeg",
+                CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-2, 0, -2, 4, 12, 4, deformation),
+                PartPose.offsetAndRotation(-2, 12, 0, -0.0444F, 0.0852F, 0.1120F));
+
+        body.addOrReplaceChild("RightLeg",
+                CubeListBuilder.create().texOffs(0, 16).addBox(-2, -1, -3, 4, 12, 4, deformation),
+                PartPose.offsetAndRotation(2, 13, -1, 0, 0, -0.2182F));
+
+        body.addOrReplaceChild("RightArm",
+                CubeListBuilder.create().texOffs(40, 16).addBox(-2, -1, -2, 4, 12, 4, deformation),
+                PartPose.offsetAndRotation(5, 1, 0, -2.7242F, -0.4157F, 0.1073F));
+
+        body.addOrReplaceChild("LeftArm",
+                CubeListBuilder.create().texOffs(40, 16).mirror().addBox(-2, -1, -2, 4, 12, 4, deformation),
+                PartPose.offsetAndRotation(-5, 1, 0, -2.7213F, 0.0735F, -0.4305F));
 
         return LayerDefinition.create(mesh, 64, 32);
     }
 
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+    public void setupAnim(Buried entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    }
 
-        float amount = Math.min(limbSwingAmount, 1.0F);
-        float phase = limbSwing * 0.7F;
-        float diagonalA = Mth.cos(phase) * amount;
-        float diagonalB = Mth.cos(phase + Mth.PI) * amount;
-
-        this.head.xRot = -1.4F + headPitch * ((float) Math.PI / 180.0F);
-        this.head.yRot = netHeadYaw * ((float) Math.PI / 180.0F);
-        this.head.zRot = 0.0F;
-
-        this.rightArm.xRot = ARM_GROUND_REACH + diagonalA * HAND_GAIT_AMPLITUDE;
-        this.rightArm.yRot = 0.0F;
-        this.rightArm.zRot = -ARM_SPLAY;
-
-        this.leftArm.xRot = ARM_GROUND_REACH + diagonalB * HAND_GAIT_AMPLITUDE;
-        this.leftArm.yRot = 0.0F;
-        this.leftArm.zRot = ARM_SPLAY;
-
-        this.rightLeg.xRot = LEG_GROUND_REACH + diagonalB * LEG_GAIT_AMPLITUDE;
-        this.rightLeg.zRot = -LEG_SPLAY;
-
-        this.leftLeg.xRot = LEG_GROUND_REACH + diagonalA * LEG_GAIT_AMPLITUDE;
-        this.leftLeg.zRot = LEG_SPLAY;
+    @Override
+    public ModelPart root() {
+        return this.root;
     }
 }

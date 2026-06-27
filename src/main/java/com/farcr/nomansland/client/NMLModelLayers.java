@@ -17,6 +17,7 @@ import com.farcr.nomansland.client.model.moose.MooseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class NMLModelLayers {
@@ -24,6 +25,8 @@ public class NMLModelLayers {
     //Creatures
     public static final ModelLayerLocation LIVING_POT_LAYER = new ModelLayerLocation(NoMansLand.location("living_pot"), "main");
     public static final ModelLayerLocation BURIED_LAYER = new ModelLayerLocation(NoMansLand.location("buried"), "main");
+    public static final ModelLayerLocation BURIED_INNER_ARMOR = new ModelLayerLocation(NoMansLand.location("buried"), "inner_armor");
+    public static final ModelLayerLocation BURIED_OUTER_ARMOR = new ModelLayerLocation(NoMansLand.location("buried"), "outer_armor");
     public static final ModelLayerLocation MOOSE_LAYER = new ModelLayerLocation(NoMansLand.location("moose/maple"), "main");
     public static final ModelLayerLocation BASS_LAYER = new ModelLayerLocation(NoMansLand.location("bass"), "main");
     public static final ModelLayerLocation DEER_LAYER = new ModelLayerLocation(NoMansLand.location("deer"), "main");
@@ -43,6 +46,8 @@ public class NMLModelLayers {
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(NMLModelLayers.LIVING_POT_LAYER, LivingPotModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BURIED_LAYER, BuriedModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.BURIED_INNER_ARMOR, () -> BuriedModel.createArmorLayer(new CubeDeformation(0.5F)));
+        event.registerLayerDefinition(NMLModelLayers.BURIED_OUTER_ARMOR, () -> BuriedModel.createArmorLayer(new CubeDeformation(1.0F)));
         event.registerLayerDefinition(NMLModelLayers.MOOSE_LAYER, MooseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BASS_LAYER, BillhookBassModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.DEER_LAYER, DeerModel::createBodyLayer);

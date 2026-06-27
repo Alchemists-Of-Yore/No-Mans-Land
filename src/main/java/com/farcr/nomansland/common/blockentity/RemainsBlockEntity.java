@@ -1,7 +1,7 @@
 package com.farcr.nomansland.common.blockentity;
 
 import com.farcr.nomansland.NMLConfig;
-import com.farcr.nomansland.common.entity.BuriedEntity;
+import com.farcr.nomansland.common.entity.Buried;
 import com.farcr.nomansland.common.registry.NMLBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,9 +34,9 @@ public class RemainsBlockEntity extends BrushableBlockEntity {
             BlockPos spawnPos = worldPosition.relative(direction);
             if (serverLevel.getBlockState(spawnPos).isAir()) {
                 Vec3 center = spawnPos.getCenter();
-                BuriedEntity.spawnFromRemains(serverLevel, center.x, center.y, center.z);
+                Buried.spawnFromRemains(serverLevel, center.x, center.y, center.z);
             } else {
-                BuriedEntity.spawnFromRemains(serverLevel,
+                Buried.spawnFromRemains(serverLevel,
                         (player.getX() + worldPosition.getX()) / 2,
                         (player.getY() + worldPosition.getY()) / 2,
                         (player.getZ() + worldPosition.getZ()) / 2);

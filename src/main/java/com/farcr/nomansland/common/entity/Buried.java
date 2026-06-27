@@ -20,14 +20,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-public class BuriedEntity extends AbstractSkeleton {
+public class Buried extends AbstractSkeleton {
 
-    public BuriedEntity(EntityType<? extends BuriedEntity> entityType, Level level) {
+    public Buried(EntityType<? extends Buried> entityType, Level level) {
         super(entityType, level);
     }
 
     public static void spawnFromRemains(ServerLevel level, double x, double y, double z) {
-        BuriedEntity buried = NMLEntities.BURIED.get().create(level);
+        Buried buried = NMLEntities.BURIED.get().create(level);
         if (buried == null) return;
         buried.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
         buried.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(x, y, z)), MobSpawnType.SPAWNER, null);

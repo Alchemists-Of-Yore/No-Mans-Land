@@ -91,7 +91,7 @@ public class NMLEntities {
 
     public static final Supplier<EntityType<Goose>> GOOSE = register("goose", Goose::new, MobCategory.CREATURE, 0.6F, 0.9F);
 
-    public static final Supplier<EntityType<BuriedEntity>> BURIED = register("buried", BuriedEntity::new, MobCategory.MONSTER, 0.9F, 0.6F);
+    public static final Supplier<EntityType<Buried>> BURIED = register("buried", Buried::new, MobCategory.MONSTER, 1.0F, 0.6F);
 
     public static final Supplier<EntityType<Beetle>> BEETLE = register("beetle", Beetle::new, MobCategory.CREATURE, 0.7F, 0.5F);
 
