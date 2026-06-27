@@ -1231,6 +1231,48 @@
     ],
     "subtitle": "nomansland.subtitle.entity.buddy.hurt"
   },
+  "entity.clod.ambient": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.fox.sniff",
+        "pitch": 0.8,
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.clod.ambient"
+  },
+  "entity.clod.death": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.fox.death",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.clod.death"
+  },
+  "entity.clod.hurt": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.fox.hurt",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "nomansland.subtitle.entity.clod.hurt"
+  },
+  "entity.clod.step": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.spider.step",
+        "pitch": 1.1,
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
   "entity.deer.ambient": {
     "sounds": [
       {

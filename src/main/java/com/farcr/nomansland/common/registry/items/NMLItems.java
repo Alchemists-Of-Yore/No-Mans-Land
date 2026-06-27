@@ -59,6 +59,11 @@ public class NMLItems {
     public static final ItemDefinition<Item> FRIED_GRUB = register("fried_grub", () -> new Item(new Properties().food(NMLFoods.FRIED_GRUB)));
     public static final ItemDefinition<Item> GRUBROOT = register("grubroot", () -> new Item(new Properties()));
 
+    public static final ItemDefinition<Item> TRANSLUCENT_SAC = register("translucent_sac", () -> new Item(new Properties()));
+
+    public static final ItemDefinition<TranslucentItemFrameItem> TRANSLUCENT_ITEM_FRAME = register("translucent_item_frame",
+            () -> new TranslucentItemFrameItem(NMLEntities.TRANSLUCENT_ITEM_FRAME.get(), new Properties()));
+
     public static final ItemDefinition<Item> BILLHOOK_BASS = register("billhook_bass",
             () -> new Item(new Properties().food(NMLFoods.BILLHOOK_BASS)), true);
     public static final ItemDefinition<Item> COOKED_BILLHOOK_BASS = register("cooked_billhook_bass", () -> new Item(new Properties().food(NMLFoods.COOKED_BILLHOOK_BASS)));
@@ -161,6 +166,9 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> GOOSE_SPAWN_EGG = register("goose_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.GOOSE, 11773851, 11888408, new Properties()));
+
+    public static final ItemDefinition<Item> CLOD_SPAWN_EGG = register("clod_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.CLOD, 10266268, 14082258, new Properties()));
 
     // TODO: moose
 //    public static final ItemDefinition<Item> MOOSE_SPAWN_EGG = register("moose_spawn_egg",

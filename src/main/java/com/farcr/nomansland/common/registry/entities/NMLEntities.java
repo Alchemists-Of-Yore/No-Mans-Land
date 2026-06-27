@@ -13,6 +13,8 @@ import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
+import com.farcr.nomansland.common.entity.clod.Clod;
+import com.farcr.nomansland.common.entity.clod.TranslucentItemFrame;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
@@ -98,6 +100,22 @@ public class NMLEntities {
     public static final Supplier<EntityType<DungBall>> DUNG_BALL =
             ENTITIES.register("dung_ball", () -> EntityType.Builder.of(DungBall::new, MobCategory.MISC)
                     .sized(0.7F, 0.7F).clientTrackingRange(8).updateInterval(3).build("dung_ball"));
+
+    public static final Supplier<EntityType<Clod>> CLOD =
+            ENTITIES.register("clod", () -> EntityType.Builder.of(Clod::new, MobCategory.CREATURE)
+                    .sized(0.6F, 0.55F)
+                    .eyeHeight(0.4F)
+                    .passengerAttachments(new Vec3(0.0F, 0.55F, 0.0F))
+                    .clientTrackingRange(8)
+                    .build("clod"));
+
+    public static final Supplier<EntityType<TranslucentItemFrame>> TRANSLUCENT_ITEM_FRAME =
+            ENTITIES.register("translucent_item_frame", () -> EntityType.Builder.<TranslucentItemFrame>of(TranslucentItemFrame::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .eyeHeight(0.0F)
+                    .clientTrackingRange(10)
+                    .updateInterval(Integer.MAX_VALUE)
+                    .build("translucent_item_frame"));
 
     // TODO: moose
 //    public static final Supplier<EntityType<Moose>> MOOSE =

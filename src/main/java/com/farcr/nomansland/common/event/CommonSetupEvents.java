@@ -18,6 +18,7 @@ import com.farcr.nomansland.common.entity.beetle.Grub;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
+import com.farcr.nomansland.common.entity.clod.Clod;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
@@ -177,6 +178,7 @@ public class CommonSetupEvents {
         // TODO: moose
 //        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
         event.put(NMLEntities.GOOSE.get(), Goose.createAttributes().build());
+        event.put(NMLEntities.CLOD.get(), Clod.createAttributes().build());
         event.put(NMLEntities.TORTOISE.get(), Tortoise.createAttributes().build());
         event.put(NMLEntities.LIVING_POT.get(), LivingPot.createAttributes().build());
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
@@ -213,6 +215,7 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
         event.getBuilder().addMix(Potions.WATER, NMLItems.AWKWARD_RESIDUE.get(), Potions.AWKWARD);
+        event.getBuilder().addMix(Potions.AWKWARD, NMLItems.TRANSLUCENT_SAC.get(), Potions.INVISIBILITY);
 
         event.getBuilder().addRecipe(new AwkwardResidueDowngradeRecipe());
         event.getBuilder().addRecipe(new BandageInfusionRecipe());

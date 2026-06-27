@@ -16,6 +16,7 @@ public class NMLTags {
     public static final TagKey<Item> DEER_FOOD = createItemTag("deer_food");
     public static final TagKey<Item> MOOSE_FOOD = createItemTag("moose_food");
     public static final TagKey<Item> TORTOISE_FOOD = createItemTag("tortoise_food");
+    public static final TagKey<Item> CLOD_FOOD = createItemTag("clod_food");
     public static final TagKey<Item> MAKES_RESIN_OIL = createItemTag("makes_resin_oil");
     public static final TagKey<Item> INK_IMMUNE = createItemTag("ink_immune");
 

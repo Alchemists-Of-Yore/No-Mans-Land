@@ -8,6 +8,7 @@ import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
 import com.farcr.nomansland.client.model.beetle.BeetleModel;
 import com.farcr.nomansland.client.model.beetle.DungBallModel;
 import com.farcr.nomansland.client.model.beetle.GrubModel;
+import com.farcr.nomansland.client.model.clod.ClodModel;
 import com.farcr.nomansland.client.model.deer.DeerModel;
 import com.farcr.nomansland.client.model.frienderman.FriendermanModel;
 import com.farcr.nomansland.client.model.goose.GooseModel;
@@ -27,6 +28,7 @@ public class NMLModelLayers {
     public static final ModelLayerLocation BASS_LAYER = new ModelLayerLocation(NoMansLand.location("bass"), "main");
     public static final ModelLayerLocation DEER_LAYER = new ModelLayerLocation(NoMansLand.location("deer"), "main");
     public static final ModelLayerLocation GOOSE_LAYER = new ModelLayerLocation(NoMansLand.location("goose"), "main");
+    public static final ModelLayerLocation CLOD_LAYER = new ModelLayerLocation(NoMansLand.location("clod"), "main");
     public static final ModelLayerLocation TORTOISE_LAYER = new ModelLayerLocation(NoMansLand.location("tortoise"), "main");
     public static final ModelLayerLocation BUDDY_LAYER = new ModelLayerLocation(NoMansLand.location("buddy"), "main");
     public static final ModelLayerLocation FRIENDERMAN_LAYER = new ModelLayerLocation(NoMansLand.location("frienderman"), "main");
@@ -45,6 +47,7 @@ public class NMLModelLayers {
         event.registerLayerDefinition(NMLModelLayers.BASS_LAYER, BillhookBassModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.DEER_LAYER, DeerModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.GOOSE_LAYER, GooseModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.CLOD_LAYER, ClodModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.TORTOISE_LAYER, TortoiseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BUDDY_LAYER, BuddyModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.FRIENDERMAN_LAYER, FriendermanModel::createBodyLayer);

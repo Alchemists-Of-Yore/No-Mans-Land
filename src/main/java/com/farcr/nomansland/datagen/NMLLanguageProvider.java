@@ -78,6 +78,9 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.goose.death", "Goose dies");
         add("nomansland.subtitle.entity.goose.hurt", "Goose hurts");
         add("nomansland.subtitle.entity.goose.ambient", "Goose honks");
+        add("nomansland.subtitle.entity.clod.ambient", "Clod breathes");
+        add("nomansland.subtitle.entity.clod.hurt", "Clod hurts");
+        add("nomansland.subtitle.entity.clod.death", "Clod dies");
         add("nomansland.subtitle.entity.tortoise.ambient", "Tortoise chirps");
         add("nomansland.subtitle.entity.tortoise.hurt", "Tortoise hurts");
         add("nomansland.subtitle.entity.tortoise.hurt_baby", "Baby Tortoise hurts");
@@ -124,6 +127,8 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("entity.nomansland.moose", "Moose");
         add("entity.nomansland.tortoise", "Tortoise");
         add("entity.nomansland.goose", "Goose");
+        add("entity.nomansland.clod", "Clod");
+        add("entity.nomansland.translucent_item_frame", "Translucent Item Frame");
         add("entity.nomansland.beetle", "Beetle");
         add("entity.nomansland.grub", "Grub");
         add("entity.nomansland.dung_ball", "Dung Ball");
