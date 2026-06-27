@@ -38,6 +38,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +56,7 @@ public class Beetle extends Animal {
     private int flipTicks;
     private int notBotheredTicks;
     private int flightCooldown;
+    private int flightGrace;
     private boolean flightLeftGround;
     private double flightStartY;
     private double flightTargetX;
@@ -134,10 +136,11 @@ public class Beetle extends Animal {
     }
 
     public void startFlight(double targetX, double targetY, double targetZ) {
-        if (isIncapacitated()) return;
+        if (isIncapacitated() || !hasFlightHeadroom()) return;
         abandonDungBall();
         setState(STATE_FLYING);
         flightTicks = 50 + random.nextInt(30);
+        flightGrace = 8;
         flightLeftGround = false;
         flightStartY = getY();
         flightTargetX = targetX;
@@ -164,6 +167,49 @@ public class Beetle extends Animal {
         setState(STATE_FLIPPED);
         flipTicks = 40 + random.nextInt(40);
         getNavigation().stop();
+    }
+
+    public boolean hasFlightHeadroom() {
+        return hasHeadroomAt(blockPosition());
+    }
+
+    private boolean hasHeadroomAt(BlockPos standPos) {
+        for (int i = 1; i <= 2; i++) {
+            BlockPos above = standPos.above(i);
+            if (!level().getBlockState(above).getCollisionShape(level(), above).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Nullable
+    public BlockPos findOpenSkySpot() {
+        for (int attempt = 0; attempt < 10; attempt++) {
+            BlockPos around = blockPosition().offset(random.nextInt(11) - 5, 0, random.nextInt(11) - 5);
+            BlockPos stand = standableWithHeadroom(around);
+            if (stand != null) {
+                Path path = getNavigation().createPath(stand, 0);
+                if (path != null && path.canReach()) {
+                    return stand;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private BlockPos standableWithHeadroom(BlockPos around) {
+        for (int y = 2; y >= -3; y--) {
+            BlockPos pos = around.offset(0, y, 0);
+            BlockPos below = pos.below();
+            if (level().getBlockState(below).isSolidRender(level(), below)
+                    && level().getBlockState(pos).getCollisionShape(level(), pos).isEmpty()
+                    && hasHeadroomAt(pos)) {
+                return pos;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -218,8 +264,13 @@ public class Beetle extends Animal {
 
     private void tickFlight() {
         flightTicks--;
-        if (!flightLeftGround && !onGround()) {
-            flightLeftGround = true;
+        if (!flightLeftGround) {
+            if (!onGround()) {
+                flightLeftGround = true;
+            } else if (--flightGrace <= 0) {
+                land(false);
+                return;
+            }
         }
 
         double dx = flightTargetX - getX();
@@ -265,6 +316,8 @@ public class Beetle extends Animal {
             startFlip();
         } else if (flightLeftGround && onGround()) {
             land(arrived);
+        } else if (flightTicks <= -100) {
+            land(false);
         }
     }
 

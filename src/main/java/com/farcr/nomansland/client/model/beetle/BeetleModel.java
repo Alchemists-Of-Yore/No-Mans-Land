@@ -46,46 +46,46 @@ public class BeetleModel<T extends Beetle> extends HierarchicalModel<T> {
         PartDefinition root = mesh.getRoot();
 
         PartDefinition body = root.addOrReplaceChild("body",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-4.5F, -7.0F, -5.0F, 9.0F, 7.0F, 10.0F),
-                PartPose.offset(0.0F, 23.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4.5F, -7, -5, 9, 7, 10),
+                PartPose.offset(0, 23, 0));
 
         body.addOrReplaceChild("head",
                 CubeListBuilder.create()
-                        .texOffs(34, 17).addBox(-2.0F, -4.0F, -2.0F, 5.0F, 4.0F, 3.0F)
-                        .texOffs(34, 24).addBox(-1.0F, -8.0F, -2.0F, 3.0F, 4.0F, 2.0F),
-                PartPose.offset(-0.5F, -1.0F, -6.0F));
+                        .texOffs(46, 0).addBox(-2, -4, -3, 5, 4, 4)
+                        .texOffs(38, 12).addBox(-2, -8, -3, 5, 4, 2),
+                PartPose.offset(-0.5F, -1, -6));
 
         body.addOrReplaceChild("elytra_right",
-                CubeListBuilder.create().texOffs(0, 17).addBox(-4.75F, -7.0F, -5.0F, 5.0F, 6.0F, 12.0F, new CubeDeformation(0.15F)),
-                PartPose.offset(0.0F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 17).mirror().addBox(-4.65F, -7, -5, 5, 6, 12, new CubeDeformation(0.1F)).mirror(false),
+                PartPose.offset(0, 0, 0));
 
         body.addOrReplaceChild("elytra_left",
-                CubeListBuilder.create().texOffs(0, 35).addBox(-0.25F, -7.0F, -5.0F, 5.0F, 6.0F, 12.0F, new CubeDeformation(0.15F)),
-                PartPose.offset(0.0F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 35).mirror().addBox(-0.35F, -7, -5, 5, 6, 12, new CubeDeformation(0.1F)).mirror(false),
+                PartPose.offset(0, 0, 0));
 
         body.addOrReplaceChild("leg_front_right",
-                CubeListBuilder.create().texOffs(34, 30).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(-0.01F)),
-                PartPose.offset(-3.5F, -1.0F, -4.0F));
+                CubeListBuilder.create().texOffs(38, 0).mirror().addBox(-1, 0, -1, 2, 2, 2, new CubeDeformation(-0.01F)).mirror(false),
+                PartPose.offset(-3.5F, -1, -4));
 
         body.addOrReplaceChild("leg_middle_right",
-                CubeListBuilder.create().texOffs(34, 34).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(-0.01F)),
-                PartPose.offset(-3.5F, -1.0F, 0.0F));
+                CubeListBuilder.create().texOffs(38, 4).mirror().addBox(-1, 0, -1, 2, 2, 2, new CubeDeformation(-0.01F)).mirror(false),
+                PartPose.offset(-3.5F, -1, 0));
 
         body.addOrReplaceChild("leg_back_right",
-                CubeListBuilder.create().texOffs(34, 38).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(-0.01F)),
-                PartPose.offset(-3.5F, -1.0F, 4.0F));
+                CubeListBuilder.create().texOffs(38, 8).mirror().addBox(-1, 0, -1, 2, 2, 2, new CubeDeformation(-0.01F)).mirror(false),
+                PartPose.offset(-3.5F, -1, 4));
 
         body.addOrReplaceChild("leg_front_left",
-                CubeListBuilder.create().texOffs(38, 0).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(-0.01F)),
-                PartPose.offset(3.5F, -1.0F, -4.0F));
+                CubeListBuilder.create().texOffs(38, 0).addBox(-1, 0, -1, 2, 2, 2, new CubeDeformation(-0.01F)),
+                PartPose.offset(3.5F, -1, -4));
 
         body.addOrReplaceChild("leg_middle_left",
-                CubeListBuilder.create().texOffs(38, 4).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(-0.01F)),
-                PartPose.offset(3.5F, -1.0F, 0.0F));
+                CubeListBuilder.create().texOffs(38, 4).addBox(-1, 0, -1, 2, 2, 2, new CubeDeformation(-0.01F)),
+                PartPose.offset(3.5F, -1, 0));
 
         body.addOrReplaceChild("leg_back_left",
-                CubeListBuilder.create().texOffs(38, 8).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(-0.01F)),
-                PartPose.offset(3.5F, -1.0F, 4.0F));
+                CubeListBuilder.create().texOffs(38, 8).addBox(-1, 0, -1, 2, 2, 2, new CubeDeformation(-0.01F)),
+                PartPose.offset(3.5F, -1, 4));
 
         return LayerDefinition.create(mesh, 64, 64);
     }
@@ -117,14 +117,6 @@ public class BeetleModel<T extends Beetle> extends HierarchicalModel<T> {
             phaseA = Mth.cos(limbSwing * 0.9F) * 0.7F * amount;
             phaseB = Mth.cos(limbSwing * 0.9F + (float) Math.PI) * 0.7F * amount;
         }
-
-        float splay = 0.35F;
-        legFrontRight.zRot = splay;
-        legMiddleRight.zRot = splay;
-        legBackRight.zRot = splay;
-        legFrontLeft.zRot = -splay;
-        legMiddleLeft.zRot = -splay;
-        legBackLeft.zRot = -splay;
 
         legFrontRight.xRot = phaseA;
         legBackRight.xRot = phaseA;

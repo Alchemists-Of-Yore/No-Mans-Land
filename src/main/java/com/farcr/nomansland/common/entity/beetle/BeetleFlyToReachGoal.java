@@ -10,9 +10,11 @@ import java.util.EnumSet;
 
 public class BeetleFlyToReachGoal extends Goal {
     private final Beetle beetle;
+    private boolean seeking;
     private double targetX;
     private double targetY;
     private double targetZ;
+    private BlockPos seekPos;
 
     public BeetleFlyToReachGoal(Beetle beetle) {
         this.beetle = beetle;
@@ -25,22 +27,43 @@ public class BeetleFlyToReachGoal extends Goal {
         if (beetle.getFlightCooldown() > 0) return false;
         if (beetle.getDungBall() != null) return false;
         if (beetle.getRandom().nextInt(160) != 0) return false;
-        BlockPos spot = findUnreachableSpot();
-        if (spot == null) return false;
-        targetX = spot.getX() + 0.5;
-        targetY = spot.getY();
-        targetZ = spot.getZ() + 0.5;
-        return true;
-    }
-
-    @Override
-    public boolean canContinueToUse() {
+        BlockPos gap = findUnreachableSpot();
+        if (gap == null) return false;
+        if (beetle.hasFlightHeadroom()) {
+            targetX = gap.getX() + 0.5;
+            targetY = gap.getY();
+            targetZ = gap.getZ() + 0.5;
+            seeking = false;
+            return true;
+        }
+        BlockPos open = beetle.findOpenSkySpot();
+        if (open != null) {
+            seekPos = open;
+            seeking = true;
+            return true;
+        }
         return false;
     }
 
     @Override
+    public boolean canContinueToUse() {
+        return seeking && seekPos != null && !beetle.getNavigation().isDone()
+                && beetle.getState() == Beetle.STATE_IDLE && !beetle.hasFlightHeadroom();
+    }
+
+    @Override
     public void start() {
-        beetle.startFlight(targetX, targetY, targetZ);
+        if (seeking) {
+            beetle.getNavigation().moveTo(seekPos.getX() + 0.5, seekPos.getY(), seekPos.getZ() + 0.5, 1.0);
+        } else {
+            beetle.startFlight(targetX, targetY, targetZ);
+        }
+    }
+
+    @Override
+    public void stop() {
+        seeking = false;
+        seekPos = null;
     }
 
     @Nullable
