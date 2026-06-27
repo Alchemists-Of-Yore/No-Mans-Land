@@ -32,6 +32,11 @@ public class StasisHitProvider implements ParticleProvider<SimpleParticleType> {
                 this.gravity = Math.min(this.gravity + 0.05F, 0.5F);
             }
         }
+
+        @Override
+        protected int getLightColor(float partialTick) {
+            return 240;
+        }
     }
 
     private final SpriteSet sprite;
