@@ -361,7 +361,7 @@ public class CreativeModeTabHandler {
             insertAfter(BEDROCK, ANCESTRAL_CARVING);
             insertAfter(BEDROCK, ANCESTRAL_EFFIGY);
 
-//            event.accept(REMAINS);
+            insertAfter(COARSE_DIRT, REMAINS);
 
             insertAfter(SPRUCE_LOG, PINE.log());
             insertAfter(SPRUCE_LEAVES, PINE_LEAVES);
@@ -533,6 +533,7 @@ public class CreativeModeTabHandler {
             insertAfter(CHICKEN_SPAWN_EGG, GOOSE_SPAWN_EGG);
             insertBefore(TURTLE_SPAWN_EGG, TORTOISE_SPAWN_EGG);
             insertBefore(BREEZE_SPAWN_EGG, BUDDY_SPAWN_EGG);
+            insertAfter(SKELETON_SPAWN_EGG, BURIED_SPAWN_EGG);
         }
 
        //if (tab == FDIntegration.TAB.get()); {

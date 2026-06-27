@@ -169,6 +169,9 @@ public class NMLItems {
     public static final ItemDefinition<Item> BUDDY_SPAWN_EGG = register("buddy_spawn_egg",
         () -> new DeferredSpawnEggItem(NMLEntities.BUDDY, 9252139, 4798761, new Properties()));
 
+    public static final ItemDefinition<Item> BURIED_SPAWN_EGG = register("buried_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.BURIED, 14078140, 13938487, new Properties()));
+
     public static final ItemDefinition<Item> BEETLE_SPAWN_EGG = register("beetle_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.BEETLE, 3025952, 7031851, new Properties()));
 
