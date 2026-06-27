@@ -13,30 +13,13 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Map;
 
 public class GooseMigrationBehavior extends Behavior<Goose> {
-    private static final double DESPAWN_RANGE = 128.0;
-    private static final int MIN_AIRBORNE_TICKS = 100;
-    private static final float SPIRAL_CLIMB_TURN = 7.0F;
-    private static final float CLIMB_SPEED = 0.4F;
-    private static final float CRUISE_SPEED = 0.62F;
-    private static final float CRUISE_TURN_RATE = 4.0F;
-    private static final int CRUISE_CLEARANCE = 13;
     private static final float APPROACH_SPEED = 0.5F;
-    private static final float APPROACH_TURN_RATE = 6.0F;
-    private static final double APPROACH_GLIDE_SLOPE = 0.4;
-    private static final int APPROACH_CLEARANCE = 6;
-    private static final float LANDING_SPEED = 0.34F;
     private static final float LANDING_TURN_RATE = 11.0F;
-    private static final double LANDING_DISTANCE = 12.0;
-    private static final double SPIRAL_RADIUS_SQR = 6.25;
     private static final float ACCEL = 0.11F;
     private static final double CLIMB_CAP = 0.4;
     private static final double LAND_CLIMB_CAP = 0.22;
-    private static final double FOLLOW_GAIN = 0.12;
+    private static final double DESCENT_CAP = 0.5;
     private static final double FOLLOW_MAX_SPEED = 0.85;
-    private static final int MAX_BLOCKED_TICKS = 60;
-    private static final int MAX_ARRIVAL_TICKS = 1500;
-    private static final double CONTINUE_DISTANCE_SQR = 9.0;
-    private static final float CONTINUE_SPEED = 1.1F;
 
     private int airborneTicks;
     private int blockedTicks;
@@ -101,8 +84,8 @@ public class GooseMigrationBehavior extends Behavior<Goose> {
             leadDeparture(level, goose);
         }
 
-        if (airborneTicks > MIN_AIRBORNE_TICKS
-                && !level.hasNearbyAlivePlayer(goose.getX(), goose.getY(), goose.getZ(), DESPAWN_RANGE)) {
+        if (airborneTicks > 100
+                && !level.hasNearbyAlivePlayer(goose.getX(), goose.getY(), goose.getZ(), 128.0)) {
             if (!goose.isTransit()) GooseMigration.get(level).recordDeparted();
             goose.discard();
         }
@@ -117,22 +100,22 @@ public class GooseMigrationBehavior extends Behavior<Goose> {
 
         double ceiling = goose.getMigrationCeiling();
         if (goose.getY() < ceiling - 2) {
-            GooseFlight.spiral(goose, SPIRAL_CLIMB_TURN, ceiling + 4, CLIMB_SPEED, ACCEL, CLIMB_CAP);
+            GooseFlight.spiral(goose, 7.0F, ceiling + 4, 0.4F, ACCEL, CLIMB_CAP);
             if (goose.verticalCollision) {
-                if (++blockedTicks > MAX_BLOCKED_TICKS) {
+                if (++blockedTicks > 60) {
                     goose.finishMigrationFlight();
                 }
             } else if (blockedTicks > 0) {
                 blockedTicks--;
             }
         } else {
-            double targetY = Math.max(ceiling, terrainAhead(level, goose, heading) + CRUISE_CLEARANCE);
-            GooseFlight.alongHeading(goose, heading, targetY, CRUISE_SPEED, CRUISE_TURN_RATE, ACCEL, CLIMB_CAP);
+            double targetY = Math.max(ceiling, terrainAhead(level, goose, heading) + 13);
+            GooseFlight.alongHeading(goose, heading, targetY, 0.62F, 4.0F, ACCEL, CLIMB_CAP);
         }
     }
 
     private void tickArrival(ServerLevel level, Goose goose) {
-        if (airborneTicks > MAX_ARRIVAL_TICKS) {
+        if (airborneTicks > 1500) {
             goose.finishMigrationFlight();
             return;
         }
@@ -152,25 +135,24 @@ public class GooseMigrationBehavior extends Behavior<Goose> {
         Vec3 target = Vec3.atBottomCenterOf(landing);
         double horizontal = Math.sqrt(horizontalDistanceSqr(goose, target));
 
-        if (horizontal > LANDING_DISTANCE) {
-            double glideY = landing.getY() + horizontal * APPROACH_GLIDE_SLOPE;
-            double targetY = Math.max(glideY, terrainAhead(level, goose, headingVec(goose)) + APPROACH_CLEARANCE);
-            GooseFlight.towardPoint(goose, target.x, target.z, targetY, APPROACH_SPEED, APPROACH_TURN_RATE, ACCEL, CLIMB_CAP);
+        if (horizontal > 12.0) {
+            double glideY = landing.getY() + horizontal * 0.4;
+            double targetY = Math.max(glideY, terrainAhead(level, goose, headingVec(goose)) + 6);
+            GooseFlight.towardPoint(goose, target.x, target.z, targetY, APPROACH_SPEED, 6.0F, ACCEL, CLIMB_CAP);
+        } else if (horizontal > 1.5) {
+            double targetY = landing.getY() + horizontal * 0.8;
+            float speed = (float) Mth.clamp(horizontal * 0.09, 0.17, APPROACH_SPEED);
+            GooseFlight.approach(goose, target.x, target.z, targetY, speed, LANDING_TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
         } else {
-            float speed = (float) Mth.clamp(horizontal * 0.08, 0.12, LANDING_SPEED);
-            if (horizontalDistanceSqr(goose, target) < SPIRAL_RADIUS_SQR) {
-                GooseFlight.spiral(goose, LANDING_TURN_RATE, landing.getY(), speed, ACCEL, LAND_CLIMB_CAP);
-            } else {
-                GooseFlight.towardPoint(goose, target.x, target.z, landing.getY(), speed, LANDING_TURN_RATE, ACCEL, LAND_CLIMB_CAP);
-            }
+            GooseFlight.approach(goose, target.x, target.z, landing.getY(), 0.04F, LANDING_TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
         }
 
         if (goose.onGround() || goose.isInWater()) {
             goose.finishMigrationFlight();
             goose.honk();
-            if (landing.distSqr(goose.blockPosition()) > CONTINUE_DISTANCE_SQR) {
+            if (landing.distSqr(goose.blockPosition()) > 9.0) {
                 goose.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
-                        new WalkTarget(landing, CONTINUE_SPEED, 1));
+                        new WalkTarget(landing, 1.1F, 1));
             }
         }
     }
@@ -179,7 +161,7 @@ public class GooseMigrationBehavior extends Behavior<Goose> {
         Vec3 leaderVelocity = leader.getDeltaMovement();
         Vec3 heading = horizontalOrFallback(leaderVelocity, goose);
         Vec3 target = leader.position().add(formationOffset(goose.getFormationIndex(), heading));
-        Vec3 desired = leaderVelocity.add(target.subtract(goose.position()).scale(FOLLOW_GAIN));
+        Vec3 desired = leaderVelocity.add(target.subtract(goose.position()).scale(0.12));
         if (desired.length() > FOLLOW_MAX_SPEED) desired = desired.normalize().scale(FOLLOW_MAX_SPEED);
         Vec3 velocity = goose.getDeltaMovement();
         goose.setDeltaMovement(velocity.add(desired.subtract(velocity).scale(ACCEL)));

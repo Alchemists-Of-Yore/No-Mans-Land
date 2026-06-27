@@ -83,6 +83,7 @@ public class GooseAI {
                         new GooseCoreBehavior(),
                         new GooseMigrationBehavior(),
                         new GooseFlightBehavior(),
+                        new GooseVoluntaryFlightBehavior(),
                         new GooseCarryBehavior(),
                         new GoosePeaceOfferingBehavior()
                 )
