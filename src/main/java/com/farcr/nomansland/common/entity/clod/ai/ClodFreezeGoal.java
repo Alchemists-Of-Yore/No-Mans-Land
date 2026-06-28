@@ -16,14 +16,12 @@ public class ClodFreezeGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (this.clod.isFleeing()) return false;
-        if (this.clod.findThreat(this.clod.leaveRange()) == null) return false;
-        return this.clod.isInvisibleByStillness();
+        return !this.clod.isFleeing() && !this.clod.isInvestigating() && this.clod.isAlerted();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !this.clod.isFleeing() && this.clod.findThreat(this.clod.leaveRange()) != null;
+        return !this.clod.isFleeing() && !this.clod.isInvestigating() && this.clod.isAlerted();
     }
 
     @Override

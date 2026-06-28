@@ -18,15 +18,12 @@ public class ClodInvestigateGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (this.clod.isFleeing() || !this.clod.hasLostThreat()) return false;
-        return this.clod.findThreat(this.clod.leaveRange()) == null;
+        return !this.clod.isFleeing() && this.clod.isInvestigating();
     }
 
     @Override
     public boolean canContinueToUse() {
-        if (this.clod.isFleeing() || !this.clod.hasLostThreat()) return false;
-        if (this.clod.findThreat(this.clod.leaveRange()) != null) return false;
-        return !this.clod.getNavigation().isDone();
+        return !this.clod.isFleeing() && this.clod.isInvestigating() && !this.clod.getNavigation().isDone();
     }
 
     @Override
@@ -39,6 +36,6 @@ public class ClodInvestigateGoal extends Goal {
 
     @Override
     public void stop() {
-        this.clod.clearLostThreat();
+        this.clod.clearInvestigate();
     }
 }

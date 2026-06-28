@@ -71,13 +71,17 @@ public class Clod extends Animal {
     private static final double THREAT_RANGE = 10.0;
     private static final double LEAVE_RANGE = 15.0;
     private static final double ALARM_RANGE = 20.0;
+    private static final int ALERT_TICKS = 300;
     private static final int INVESTIGATE_TICKS = 100;
 
     private int fleeTicks;
     private boolean hiding;
+    private int alertTicks;
     private int investigateTicks;
     @Nullable
     private Vec3 lastThreatPos;
+    @Nullable
+    private LivingEntity watchedThreat;
 
     public Clod(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -110,9 +114,9 @@ public class Clod extends Animal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new ClodInvestigateGoal(this, 1.0));
         this.goalSelector.addGoal(1, new ClodFreezeGoal(this));
         this.goalSelector.addGoal(2, new ClodAvoidThreatGoal(this, 1.5));
-        this.goalSelector.addGoal(2, new ClodInvestigateGoal(this, 1.0));
         this.goalSelector.addGoal(3, new ClodAvoidSunGoal(this, 1.2));
         this.goalSelector.addGoal(3, new RestrictSunGoal(this));
         this.goalSelector.addGoal(4, new BreedGoal(this, 1.0));
@@ -184,18 +188,25 @@ public class Clod extends Animal {
         return this.getSensing().hasLineOfSight(threat);
     }
 
-    public boolean hasLostThreat() {
+    public boolean isAlerted() {
+        return this.alertTicks > 0;
+    }
+
+    public void alert() {
+        this.alertTicks = ALERT_TICKS;
+    }
+
+    public boolean isInvestigating() {
         return this.investigateTicks > 0 && this.lastThreatPos != null;
+    }
+
+    public void clearInvestigate() {
+        this.investigateTicks = 0;
     }
 
     @Nullable
     public Vec3 getLastThreatPos() {
         return this.lastThreatPos;
-    }
-
-    public void clearLostThreat() {
-        this.investigateTicks = 0;
-        this.lastThreatPos = null;
     }
 
     private boolean isThreat(LivingEntity entity) {
@@ -224,20 +235,28 @@ public class Clod extends Animal {
         if (this.fleeTicks > 0) this.fleeTicks--;
 
         LivingEntity threat = this.findThreat(this.leaveRange());
+        boolean seeingVisible = threat != null && !threat.isInvisible();
         if (threat != null) {
-            if (!threat.isInvisible()) {
-                this.lastThreatPos = threat.position();
-                this.investigateTicks = INVESTIGATE_TICKS;
-            }
+            this.alertTicks = ALERT_TICKS;
+            if (seeingVisible) this.lastThreatPos = threat.position();
             boolean within10 = this.distanceToSqr(threat) <= THREAT_RANGE * THREAT_RANGE;
-            if (!this.isFleeing() && within10 && !this.isInvisibleByStillness()) {
+            if (within10 && !this.isInvisibleByStillness()) {
                 this.startFleeing();
             }
-        } else {
-            if (this.isFleeing()) this.stopFleeing();
-            if (this.investigateTicks > 0) this.investigateTicks--;
-            else this.lastThreatPos = null;
+        } else if (this.alertTicks > 0) {
+            this.alertTicks--;
+            if (this.alertTicks == 0) {
+                this.lastThreatPos = null;
+                this.investigateTicks = 0;
+            }
         }
+
+        if (this.watchedThreat != null && this.watchedThreat.isAlive() && this.watchedThreat.isInvisible()
+                && this.distanceToSqr(this.watchedThreat) <= LEAVE_RANGE * LEAVE_RANGE && this.lastThreatPos != null) {
+            this.investigateTicks = INVESTIGATE_TICKS;
+        }
+        this.watchedThreat = seeingVisible ? threat : null;
+        if (this.investigateTicks > 0) this.investigateTicks--;
     }
 
     @Override
@@ -275,7 +294,11 @@ public class Clod extends Animal {
     }
 
     public void alarmGroup() {
+        Vec3 source = this.position();
         for (Clod clod : this.level().getEntitiesOfClass(Clod.class, this.getBoundingBox().inflate(ALARM_RANGE))) {
+            if (clod == this) continue;
+            clod.lastThreatPos = source;
+            clod.alert();
             clod.startFleeing();
         }
     }
@@ -285,6 +308,8 @@ public class Clod extends Animal {
         boolean result = super.hurt(source, amount);
         if (result && !this.level().isClientSide) {
             this.setOpacity(1.0F);
+            this.lastThreatPos = source.getEntity() != null ? source.getEntity().position() : this.position();
+            this.alert();
             this.startFleeing();
             this.alarmGroup();
         }

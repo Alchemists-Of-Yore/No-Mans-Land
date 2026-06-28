@@ -5,9 +5,12 @@ import com.farcr.nomansland.client.NMLModelLayers;
 import com.farcr.nomansland.client.model.clod.ClodModel;
 import com.farcr.nomansland.common.entity.clod.Clod;
 import com.farcr.nomansland.common.integration.LambDynLightsIntegration;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -20,6 +23,24 @@ public class ClodRenderer extends MobRenderer<Clod, ClodModel<Clod>> {
 
     private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/clod/clod.png");
     private static final float MIN_CLOSE_OPACITY = 0.25F;
+
+    private static final RenderType CLOD_RENDER_TYPE = RenderType.create(
+            "nomansland:clod",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            1536,
+            true,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(TEXTURE, false, false))
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setOverlayState(RenderStateShard.OVERLAY)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .createCompositeState(true)
+    );
 
     public ClodRenderer(EntityRendererProvider.Context context) {
         super(context, new ClodModel<>(context.bakeLayer(NMLModelLayers.CLOD_LAYER)), 0.3F);
@@ -57,7 +78,7 @@ public class ClodRenderer extends MobRenderer<Clod, ClodModel<Clod>> {
 
     @Override
     protected RenderType getRenderType(Clod clod, boolean bodyVisible, boolean translucent, boolean glowing) {
-        return RenderType.entityTranslucentCull(this.getTextureLocation(clod));
+        return CLOD_RENDER_TYPE;
     }
 
     @Override

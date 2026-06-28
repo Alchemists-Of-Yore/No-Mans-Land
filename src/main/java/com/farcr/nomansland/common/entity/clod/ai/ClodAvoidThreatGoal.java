@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
@@ -14,7 +15,6 @@ public class ClodAvoidThreatGoal extends Goal {
     private final Clod clod;
     private final double speedModifier;
     private final PathNavigation navigation;
-    private LivingEntity threat;
     private Path path;
 
     public ClodAvoidThreatGoal(Clod clod, double speedModifier) {
@@ -27,11 +27,11 @@ public class ClodAvoidThreatGoal extends Goal {
     @Override
     public boolean canUse() {
         if (!this.clod.isFleeing()) return false;
-        this.threat = this.clod.findThreat(this.clod.leaveRange());
-        if (this.threat == null) return false;
-        Vec3 away = DefaultRandomPos.getPosAway(this.clod, 16, 7, this.threat.position());
+        Vec3 from = this.threatPos();
+        if (from == null) return false;
+        Vec3 away = DefaultRandomPos.getPosAway(this.clod, 16, 7, from);
         if (away == null) return false;
-        if (this.threat.distanceToSqr(away.x, away.y, away.z) < this.threat.distanceToSqr(this.clod)) return false;
+        if (from.distanceToSqr(away) < from.distanceToSqr(this.clod.position())) return false;
         this.path = this.navigation.createPath(away.x, away.y, away.z, 0);
         return this.path != null;
     }
@@ -47,21 +47,26 @@ public class ClodAvoidThreatGoal extends Goal {
     }
 
     @Override
-    public void stop() {
-        this.threat = null;
-    }
-
-    @Override
     public void tick() {
         LivingEntity current = this.clod.findThreat(this.clod.leaveRange());
         if (current != null) {
             this.clod.getLookControl().setLookAt(current);
-            if (this.navigation.isDone()) {
-                Vec3 away = DefaultRandomPos.getPosAway(this.clod, 16, 7, current.position());
+        }
+        if (this.navigation.isDone()) {
+            Vec3 from = this.threatPos();
+            if (from != null) {
+                Vec3 away = DefaultRandomPos.getPosAway(this.clod, 16, 7, from);
                 if (away != null) {
                     this.navigation.moveTo(away.x, away.y, away.z, this.speedModifier);
                 }
             }
         }
+    }
+
+    @Nullable
+    private Vec3 threatPos() {
+        LivingEntity threat = this.clod.findThreat(this.clod.leaveRange());
+        if (threat != null) return threat.position();
+        return this.clod.getLastThreatPos();
     }
 }

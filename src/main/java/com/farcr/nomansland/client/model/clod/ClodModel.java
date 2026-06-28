@@ -90,17 +90,7 @@ public class ClodModel<T extends Clod> extends HierarchicalModel<T> {
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         int newAlpha = (int) (Mth.clamp(this.alpha, 0.0F, 1.0F) * 255.0F);
-        int r = FastColor.ARGB32.red(color);
-        int g = FastColor.ARGB32.green(color);
-        int b = FastColor.ARGB32.blue(color);
-        int overlayV = (packedOverlay >> 16) & 0xFFFF;
-        if (overlayV < 8) {
-            float keep = 178.0F / 255.0F;
-            r = (int) (r * keep + 255.0F * (1.0F - keep));
-            g = (int) (g * keep);
-            b = (int) (b * keep);
-        }
-        color = FastColor.ARGB32.color(newAlpha, r, g, b);
+        color = FastColor.ARGB32.color(newAlpha, FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
