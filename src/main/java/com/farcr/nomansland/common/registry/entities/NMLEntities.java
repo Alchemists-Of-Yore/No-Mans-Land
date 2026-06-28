@@ -13,6 +13,7 @@ import com.farcr.nomansland.common.entity.bombs.Firebomb;
 import com.farcr.nomansland.common.entity.bombs.InkBomb;
 import com.farcr.nomansland.common.entity.bombs.LivingUrn;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
+import com.farcr.nomansland.common.entity.centipede.Centipede;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.clod.Clod;
 import com.farcr.nomansland.common.entity.clod.TranslucentItemFrame;
@@ -95,6 +96,8 @@ public class NMLEntities {
     public static final Supplier<EntityType<Goose>> GOOSE = register("goose", Goose::new, MobCategory.CREATURE, 0.6F, 0.9F);
 
     public static final Supplier<EntityType<Buried>> BURIED = register("buried", Buried::new, MobCategory.MONSTER, 1.0F, 0.6F);
+
+    public static final Supplier<EntityType<Centipede>> CENTIPEDE = register("centipede", Centipede::new, MobCategory.MONSTER, 0.5F, 0.4F);
 
     public static final Supplier<EntityType<Beetle>> BEETLE = register("beetle", Beetle::new, MobCategory.CREATURE, 0.7F, 0.5F);
 

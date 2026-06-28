@@ -18,6 +18,7 @@ import com.farcr.nomansland.common.entity.beetle.Beetle;
 import com.farcr.nomansland.common.entity.beetle.Grub;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.buddy.BuddyFood;
+import com.farcr.nomansland.common.entity.centipede.Centipede;
 import com.farcr.nomansland.common.entity.cervidae.deer.Deer;
 import com.farcr.nomansland.common.entity.clod.Clod;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
@@ -186,6 +187,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.BUDDY.get(), Buddy.createAttributes().build());
         event.put(NMLEntities.FRIENDERMAN.get(), Frienderman.createAttributes().build());
         event.put(NMLEntities.BURIED.get(), Buried.createAttributes().build());
+        event.put(NMLEntities.CENTIPEDE.get(), Centipede.createAttributes().build());
         event.put(NMLEntities.BEETLE.get(), Beetle.createAttributes().build());
         event.put(NMLEntities.GRUB.get(), Grub.createAttributes().build());
         event.put(NMLEntities.DREAMING_PLAYER.get(), Mob.createMobAttributes().build());
@@ -204,6 +206,7 @@ public class CommonSetupEvents {
         event.register(NMLEntities.GOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.OCEAN_FLOOR, Goose::checkGooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Beetle::checkBeetleSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.GRUB.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Grub::checkGrubSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.CENTIPEDE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Centipede::checkCentipedeSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent

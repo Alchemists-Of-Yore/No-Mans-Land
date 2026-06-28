@@ -128,6 +128,13 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.GOOSE_HURT, s -> s.with(allSounds("entity/goose/hurt", se -> se.volume(0.8f))));
         add(NMLSounds.GOOSE_STEP, s -> s.with(allSounds("minecraft:mob/chicken/step", se -> se.pitch(0.75f))).subtitle("subtitles.block.generic.footsteps"));
 
+        add(NMLSounds.CENTIPEDE_AMBIENT, s -> s.with(sound("minecraft:entity.spider.ambient", EVENT).pitch(1.4f).volume(0.6f)).subtitle("nomansland.subtitle.entity.centipede.ambient"));
+        add(NMLSounds.CENTIPEDE_HURT, s -> s.with(sound("minecraft:entity.spider.hurt", EVENT).pitch(1.4f)).subtitle("nomansland.subtitle.entity.centipede.hurt"));
+        add(NMLSounds.CENTIPEDE_DEATH, s -> s.with(sound("minecraft:entity.spider.death", EVENT).pitch(1.4f)).subtitle("nomansland.subtitle.entity.centipede.death"));
+        add(NMLSounds.CENTIPEDE_STEP, s -> s.with(sound("minecraft:entity.spider.step", EVENT).pitch(1.3f).volume(0.5f)).subtitle("subtitles.block.generic.footsteps"));
+        add(NMLSounds.CENTIPEDE_HISS, s -> s.with(sound("minecraft:entity.silverfish.hurt", EVENT).pitch(0.8f).volume(0.9f)).subtitle("nomansland.subtitle.entity.centipede.hiss"));
+
+
         // Clod
         add(NMLSounds.CLOD_AMBIENT, s -> s.with(sound("minecraft:entity.fox.sniff", EVENT).volume(0.7f).pitch(0.8f)).subtitle("nomansland.subtitle.entity.clod.ambient"));
         add(NMLSounds.CLOD_DEATH, s -> s.with(sound("minecraft:entity.fox.death", EVENT).pitch(1.2f)).subtitle("nomansland.subtitle.entity.clod.death"));

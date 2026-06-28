@@ -78,6 +78,10 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.goose.death", "Goose dies");
         add("nomansland.subtitle.entity.goose.hurt", "Goose hurts");
         add("nomansland.subtitle.entity.goose.ambient", "Goose honks");
+        add("nomansland.subtitle.entity.centipede.ambient", "Centipede skitters");
+        add("nomansland.subtitle.entity.centipede.hurt", "Centipede hurts");
+        add("nomansland.subtitle.entity.centipede.death", "Centipede dies");
+        add("nomansland.subtitle.entity.centipede.hiss", "Centipede hisses");
         add("nomansland.subtitle.entity.clod.ambient", "Clod breathes");
         add("nomansland.subtitle.entity.clod.hurt", "Clod hurts");
         add("nomansland.subtitle.entity.clod.death", "Clod dies");
@@ -123,6 +127,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("item.nomansland.music_disc_guidance", "Music Disc");
         add("jukebox_song.nomansland.guidance", "Samuel Organ - Guidance");
         add("entity.nomansland.buried", "Buried");
+        add("entity.nomansland.centipede", "Centipede");
         add("entity.nomansland.cave_carp", "Cave Carp");
         add("entity.nomansland.billhook_bass", "Billhook Bass");
         add("entity.nomansland.deer", "Deer");

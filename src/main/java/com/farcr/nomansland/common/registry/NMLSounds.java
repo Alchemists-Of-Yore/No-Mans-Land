@@ -100,6 +100,13 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_HURT = registerSound("entity.goose.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> GOOSE_STEP = registerSound("entity.goose.step");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTIPEDE_AMBIENT = registerSound("entity.centipede.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTIPEDE_HURT = registerSound("entity.centipede.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTIPEDE_DEATH = registerSound("entity.centipede.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTIPEDE_STEP = registerSound("entity.centipede.step");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTIPEDE_HISS = registerSound("entity.centipede.hiss");
+
+
     public static final DeferredHolder<SoundEvent, SoundEvent> CLOD_AMBIENT = registerSound("entity.clod.ambient");
     public static final DeferredHolder<SoundEvent, SoundEvent> CLOD_DEATH = registerSound("entity.clod.death");
     public static final DeferredHolder<SoundEvent, SoundEvent> CLOD_HURT = registerSound("entity.clod.hurt");
