@@ -109,6 +109,8 @@ public class NMLLanguageProvider extends LanguageProvider {
 
         add("item.nomansland.billhook_bass_bucket", "Bucket of Billhook Bass");
         add("item.nomansland.billhook_bass", "Raw Billhook Bass");
+        add("item.nomansland.cave_carp_bucket", "Bucket of Cave Carp");
+        add("item.nomansland.cave_carp", "Raw Cave Carp");
         add("item.nomansland.no_mans_globe", "No Man's Globe");
         add("item.nomansland.maple_chest_boat", "Maple Boat with Chest");
         add("item.nomansland.pine_chest_boat", "Pine Boat with Chest");

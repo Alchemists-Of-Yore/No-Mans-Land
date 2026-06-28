@@ -4,6 +4,7 @@ import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.model.BillhookBassModel;
 import com.farcr.nomansland.client.model.BuddyModel;
 import com.farcr.nomansland.client.model.BuriedModel;
+import com.farcr.nomansland.client.model.cave_carp.CaveCarpModel;
 import com.farcr.nomansland.client.model.armor.AncientBronzeMaskModel;
 import com.farcr.nomansland.client.model.beetle.BeetleModel;
 import com.farcr.nomansland.client.model.beetle.DungBallModel;
@@ -29,6 +30,7 @@ public class NMLModelLayers {
     public static final ModelLayerLocation BURIED_OUTER_ARMOR = new ModelLayerLocation(NoMansLand.location("buried"), "outer_armor");
     public static final ModelLayerLocation MOOSE_LAYER = new ModelLayerLocation(NoMansLand.location("moose/maple"), "main");
     public static final ModelLayerLocation BASS_LAYER = new ModelLayerLocation(NoMansLand.location("bass"), "main");
+    public static final ModelLayerLocation CAVE_CARP_LAYER = new ModelLayerLocation(NoMansLand.location("cave_carp"), "main");
     public static final ModelLayerLocation DEER_LAYER = new ModelLayerLocation(NoMansLand.location("deer"), "main");
     public static final ModelLayerLocation GOOSE_LAYER = new ModelLayerLocation(NoMansLand.location("goose"), "main");
     public static final ModelLayerLocation CLOD_LAYER = new ModelLayerLocation(NoMansLand.location("clod"), "main");
@@ -50,6 +52,7 @@ public class NMLModelLayers {
         event.registerLayerDefinition(NMLModelLayers.BURIED_OUTER_ARMOR, () -> BuriedModel.createArmorLayer(new CubeDeformation(1.0F)));
         event.registerLayerDefinition(NMLModelLayers.MOOSE_LAYER, MooseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BASS_LAYER, BillhookBassModel::createBodyLayer);
+        event.registerLayerDefinition(NMLModelLayers.CAVE_CARP_LAYER, CaveCarpModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.DEER_LAYER, DeerModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.GOOSE_LAYER, GooseModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.CLOD_LAYER, ClodModel::createBodyLayer);

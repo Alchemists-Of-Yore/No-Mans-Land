@@ -13,6 +13,7 @@ import com.farcr.nomansland.common.definitions.BlockDefinition;
 import com.farcr.nomansland.common.definitions.ItemDefinition;
 import com.farcr.nomansland.common.entity.Buried;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
+import com.farcr.nomansland.common.entity.cave_carp.CaveCarp;
 import com.farcr.nomansland.common.entity.beetle.Beetle;
 import com.farcr.nomansland.common.entity.beetle.Grub;
 import com.farcr.nomansland.common.entity.buddy.Buddy;
@@ -174,6 +175,7 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void createEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(NMLEntities.BILLHOOK_BASS.get(), BillhookBass.createAttributes().build());
+        event.put(NMLEntities.CAVE_CARP.get(), CaveCarp.createAttributes().build());
         event.put(NMLEntities.DEER.get(), Deer.createAttributes().build());
         // TODO: moose
 //        event.put(NMLEntities.MOOSE.get(), Moose.createAttributes().build());
@@ -192,6 +194,7 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void registerSpawnPlacements(final RegisterSpawnPlacementsEvent event) {
         event.register(NMLEntities.BILLHOOK_BASS.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BillhookBass::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.CAVE_CARP.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CaveCarp::checkCaveCarpSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Deer::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         // TODO: moose
 //        event.register(NMLEntities.MOOSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Moose::checkMooseSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);

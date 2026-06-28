@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.entity.beetle.Beetle;
 import com.farcr.nomansland.common.entity.beetle.DungBall;
 import com.farcr.nomansland.common.entity.beetle.Grub;
 import com.farcr.nomansland.common.entity.billhook_bass.BillhookBass;
+import com.farcr.nomansland.common.entity.cave_carp.CaveCarp;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.bombs.Firebomb;
 import com.farcr.nomansland.common.entity.bombs.InkBomb;
@@ -86,6 +87,8 @@ public class NMLEntities {
 
 
     public static final Supplier<EntityType<BillhookBass>> BILLHOOK_BASS = register("billhook_bass", BillhookBass::new, MobCategory.WATER_CREATURE, 0.7F, 0.5F);
+
+    public static final Supplier<EntityType<CaveCarp>> CAVE_CARP = register("cave_carp", CaveCarp::new, MobCategory.WATER_CREATURE, 0.5F, 0.4F);
 
     public static final Supplier<EntityType<Deer>> DEER = register("deer", Deer::new, MobCategory.CREATURE, 0.8F, 1.4F);
 

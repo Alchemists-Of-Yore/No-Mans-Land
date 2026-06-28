@@ -110,6 +110,7 @@ public class ClientSetupEvents {
     @SubscribeEvent
     public static void registerEntityRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(NMLEntities.BILLHOOK_BASS.get(), BillhookBassRenderer::new);
+        event.registerEntityRenderer(NMLEntities.CAVE_CARP.get(), CaveCarpRenderer::new);
 
         event.registerEntityRenderer(NMLEntities.DEER.get(), DeerRenderer::new);
         event.registerEntityRenderer(NMLEntities.GOOSE.get(), GooseRenderer::new);

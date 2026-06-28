@@ -67,8 +67,8 @@ public class NMLItems {
     public static final ItemDefinition<Item> BILLHOOK_BASS = register("billhook_bass",
             () -> new Item(new Properties().food(NMLFoods.BILLHOOK_BASS)), true);
     public static final ItemDefinition<Item> COOKED_BILLHOOK_BASS = register("cooked_billhook_bass", () -> new Item(new Properties().food(NMLFoods.COOKED_BILLHOOK_BASS)));
-//    public static final ItemDefinition<Item> CAVE_CARP = registerItem("cave_carp",
-//            () -> new Item(new Properties().food(NMLFoods.CAVE_CARP)), true);
+    public static final ItemDefinition<Item> CAVE_CARP = register("cave_carp",
+            () -> new Item(new Properties().food(NMLFoods.CAVE_CARP)), true);
 
     public static final ItemDefinition<Item> PEAR = register("pear", () -> new Item(new Properties().food(NMLFoods.PEAR)));
     public static final ItemDefinition<Item> SYRUPED_PEAR = register("syruped_pear", () -> new Item(new Properties().food(NMLFoods.SYRUPED_PEAR)));
@@ -157,6 +157,13 @@ public class NMLItems {
 
     public static final ItemDefinition<Item> BILLHOOK_BASS_SPAWN_EGG = register("billhook_bass_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.BILLHOOK_BASS, 6443553, 11236417, new Properties()));
+
+    public static final ItemDefinition<Item> CAVE_CARP_BUCKET = register("cave_carp_bucket",
+            () -> new MobBucketItem(NMLEntities.CAVE_CARP.get(), Fluids.WATER, SoundEvents.BUCKET_EMPTY_FISH,
+                    (new Properties()).stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)), true);
+
+    public static final ItemDefinition<Item> CAVE_CARP_SPAWN_EGG = register("cave_carp_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.CAVE_CARP, 7236702, 12565408, new Properties()));
 
     public static final ItemDefinition<Item> TORTOISE_SPAWN_EGG = register("tortoise_spawn_egg", // TODO: color
             () -> new DeferredSpawnEggItem(NMLEntities.TORTOISE, 3681313, 7098676, new Properties()));
