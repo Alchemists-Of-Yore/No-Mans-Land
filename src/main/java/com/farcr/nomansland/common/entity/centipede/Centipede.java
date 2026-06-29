@@ -1,13 +1,10 @@
 package com.farcr.nomansland.common.entity.centipede;
 
-import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
-import dev.tazer.mixed_litter.VariantUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -48,8 +45,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 public class Centipede extends Monster {
     public static final int MAX_SEGMENTS = 25;
     public static final int MAX_PIECES = MAX_SEGMENTS + 1;
@@ -66,9 +61,6 @@ public class Centipede extends Monster {
     private static final double LUNGE_SPEED = 0.55;
     public static final float GAIT_FREQ = 3.0F;
     public static final float WAVE_LAMBDA = 0.6F;
-
-    private static final ResourceLocation NORMAL_VARIANT = NoMansLand.location("centipede/normal");
-    private static final ResourceLocation VENOM_VARIANT = NoMansLand.location("centipede/venomous");
 
     private static final EntityDataAccessor<Integer> DATA_SEGMENTS = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_VENOMOUS = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BOOLEAN);
@@ -120,7 +112,6 @@ public class Centipede extends Monster {
     private double headGaitPhaseO;
     private float headSpeed;
     private boolean segmentsInitialized;
-    private boolean variantApplied;
 
     private int rearTicks;
     private int jabCooldown;
@@ -438,10 +429,6 @@ public class Centipede extends Monster {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if (!this.variantApplied) {
-            applyVariant();
-            this.variantApplied = true;
-        }
         if (this.rearTicks > 0) {
             this.rearTicks--;
             this.getNavigation().stop();
@@ -460,13 +447,6 @@ public class Centipede extends Monster {
                 this.rearTicks = 0;
                 setRearing(false);
             }
-        }
-    }
-
-    private void applyVariant() {
-        if (this.level() instanceof ServerLevel serverLevel) {
-            ResourceLocation id = isVenomous() ? VENOM_VARIANT : NORMAL_VARIANT;
-            VariantUtil.setVariants(this, VariantUtil.lookupVariantIds(List.of(id), serverLevel.registryAccess()));
         }
     }
 

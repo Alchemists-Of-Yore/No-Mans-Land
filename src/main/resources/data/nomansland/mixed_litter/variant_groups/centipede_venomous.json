@@ -1,9 +1,9 @@
 {
   "conditions": {
     "entity_predicate": {
-      "type": "nomansland:centipede"
-    },
-    "unobtainable": true
+      "type": "nomansland:centipede",
+      "nbt": "{Venomous:1b}"
+    }
   },
   "exclusive": true,
   "replace_default": true,

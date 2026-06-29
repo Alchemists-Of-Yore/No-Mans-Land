@@ -38,10 +38,10 @@ public class CentipedeSegmentModel {
                 PartPose.offset(0.0F, 0.0F, 0.0F));
 
         body.addOrReplaceChild("left_leg",
-                CubeListBuilder.create().texOffs(legU, legV).addBox(-8.0F, -1.0F, -1.0F, 8, 2, 2),
+                CubeListBuilder.create().texOffs(legU, legV).mirror().addBox(-8.0F, -1.0F, -1.0F, 8, 2, 2).mirror(false),
                 PartPose.offsetAndRotation(-4.0F, -2.0F, 0.0F, 0.0F, 0.0F, -LEG_SPLAY));
         body.addOrReplaceChild("right_leg",
-                CubeListBuilder.create().texOffs(legU, legV).mirror().addBox(0.0F, -1.0F, -1.0F, 8, 2, 2).mirror(false),
+                CubeListBuilder.create().texOffs(legU, legV).addBox(0.0F, -1.0F, -1.0F, 8, 2, 2),
                 PartPose.offsetAndRotation(4.0F, -2.0F, 0.0F, 0.0F, 0.0F, LEG_SPLAY));
 
         return LayerDefinition.create(mesh, 64, 64);
