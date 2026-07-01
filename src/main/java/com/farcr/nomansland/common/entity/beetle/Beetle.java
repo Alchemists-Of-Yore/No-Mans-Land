@@ -1,6 +1,7 @@
 package com.farcr.nomansland.common.entity.beetle;
 
 import com.farcr.nomansland.NoMansLand;
+import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import net.minecraft.core.BlockPos;
@@ -65,6 +66,16 @@ public class Beetle extends Animal {
     @Nullable
     private UUID dungBallUUID;
 
+    private float nerve;
+    private float awareness;
+    private int freezeTicks;
+    private int spookTicks;
+    private boolean sensePaused;
+    private int rhythmTicks;
+    private double lastThreatX;
+    private double lastThreatZ;
+    private float prevHealthSense;
+
     public float flipAmount;
     public float flipAmountO;
     public float wingAmount;
@@ -97,13 +108,15 @@ public class Beetle extends Animal {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new BeetleIncapacitatedGoal(this));
         goalSelector.addGoal(2, new PanicGoal(this, 1.6));
-        goalSelector.addGoal(3, new BreedGoal(this, 1.0));
-        goalSelector.addGoal(4, new TemptGoal(this, 1.1, Ingredient.of(NMLItems.GRUBROOT.get()), false));
-        goalSelector.addGoal(5, new BeetleFlyToReachGoal(this));
-        goalSelector.addGoal(6, new BeetlePushDungGoal(this, 1.0));
-        goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(3, new BeetleSkittishGoal(this, 1.6));
+        goalSelector.addGoal(4, new BreedGoal(this, 1.0));
+        goalSelector.addGoal(5, new TemptGoal(this, 1.1, Ingredient.of(NMLItems.GRUBROOT.get()), false));
+        goalSelector.addGoal(6, new BeetleFlyToReachGoal(this));
+        goalSelector.addGoal(7, new BeetlePushDungGoal(this, 1.0));
+        goalSelector.addGoal(8, new BeetleStillGoal(this));
+        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1.0));
+        goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        goalSelector.addGoal(11, new RandomLookAroundGoal(this));
     }
 
     public int getState() {
@@ -161,6 +174,134 @@ public class Beetle extends Animal {
         }
         away = away.normalize();
         startFlight(getX() + away.x * 7.0, getY(), getZ() + away.z * 7.0);
+    }
+
+    private void updateSenses() {
+        if (this.freezeTicks > 0) this.freezeTicks--;
+        if (this.spookTicks > 0) this.spookTicks--;
+
+        boolean hurt = getHealth() < this.prevHealthSense - 0.001F;
+        this.prevHealthSense = getHealth();
+        if (hurt) {
+            this.nerve = Math.min(1.0F, this.nerve + 0.4F);
+            this.awareness = Math.max(this.awareness, 0.9F);
+            this.freezeTicks = Math.max(this.freezeTicks, 4);
+        }
+
+        boolean threatNear = false;
+        double threatX = this.lastThreatX;
+        double threatZ = this.lastThreatZ;
+        double range = getAttributeValue(Attributes.FOLLOW_RANGE);
+        Player nearest = level().getNearestPlayer(this, range);
+        if (nearest != null && nearest.isAlive() && !nearest.isCreative() && !nearest.isSpectator()) {
+            double prox = 1.0 - Math.min(1.0, distanceTo(nearest) / range);
+            double loud = loudness(nearest);
+            boolean contact = distanceToSqr(nearest) < 6.25;
+            float gain = (float) (loud * prox * 0.6 + prox * 0.015) + (contact ? 0.4F : 0.0F);
+            this.awareness = Mth.clamp(this.awareness + gain - 0.02F, 0.0F, 1.0F);
+
+            boolean frightening = holdsFrightening(nearest);
+            if (frightening && prox > 0.15) {
+                this.nerve = Math.min(1.0F, this.nerve + 0.05F);
+            }
+            Vec3 fromPlayer = position().subtract(nearest.position());
+            Vec3 known = nearest.getKnownMovement();
+            if (fromPlayer.horizontalDistanceSqr() > 1.0E-4 && fromPlayer.horizontalDistanceSqr() < 36.0
+                    && known.horizontalDistanceSqr() > 1.0E-6) {
+                double toward = new Vec3(known.x, 0.0, known.z).normalize()
+                        .dot(new Vec3(fromPlayer.x, 0.0, fromPlayer.z).normalize());
+                if (toward > 0.4) {
+                    this.nerve = Math.min(1.0F, this.nerve + (float) (0.05 * loud));
+                }
+            }
+            if (this.awareness > 0.3F || frightening) {
+                threatNear = true;
+                threatX = nearest.getX();
+                threatZ = nearest.getZ();
+                this.lastThreatX = threatX;
+                this.lastThreatZ = threatZ;
+            }
+        } else {
+            this.awareness = Math.max(0.0F, this.awareness - 0.04F);
+        }
+
+        this.nerve = Math.max(0.0F, this.nerve - 0.006F);
+
+        if (this.spookTicks <= 0 && this.nerve > 0.45F && threatNear && !isIncapacitated()) {
+            spook(threatX, threatZ);
+        }
+
+        tickRhythm();
+    }
+
+    public void spook(double threatX, double threatZ) {
+        this.spookTicks = 50 + random.nextInt(40);
+        this.lastThreatX = threatX;
+        this.lastThreatZ = threatZ;
+        this.freezeTicks = 0;
+        this.sensePaused = false;
+        this.notBotheredTicks = 0;
+        if (getState() == STATE_IDLE && flightCooldown <= 0 && hasFlightHeadroom() && random.nextFloat() < 0.45F) {
+            flee(threatX, threatZ);
+        }
+    }
+
+    private double loudness(Player p) {
+        double moved = p.getKnownMovement().horizontalDistance();
+        if (p.isCrouching()) {
+            return Math.min(0.1, moved * 3.0);
+        }
+        double base = Math.min(1.0, moved * 6.0);
+        if (p.isSprinting()) {
+            base = Math.min(1.0, base + 0.35);
+        }
+        return base;
+    }
+
+    private boolean holdsFrightening(Player p) {
+        return p.getMainHandItem().is(NMLTags.FRIGHTENS_BUGS) || p.getOffhandItem().is(NMLTags.FRIGHTENS_BUGS);
+    }
+
+    private void tickRhythm() {
+        if (this.spookTicks > 0 || this.freezeTicks > 0) {
+            this.sensePaused = false;
+            return;
+        }
+        if (this.rhythmTicks > 0) {
+            this.rhythmTicks--;
+            return;
+        }
+        this.sensePaused = !this.sensePaused;
+        boolean aroused = this.awareness > 0.35F;
+        if (this.sensePaused) {
+            int base = aroused ? 5 : 20;
+            int rand = aroused ? 20 : 80;
+            this.rhythmTicks = base + random.nextInt(rand);
+        } else {
+            int base = aroused ? 6 : 12;
+            int rand = aroused ? 12 : 34;
+            this.rhythmTicks = base + random.nextInt(rand);
+        }
+    }
+
+    public boolean isSpooked() {
+        return this.spookTicks > 0;
+    }
+
+    public boolean isSensePaused() {
+        return this.sensePaused;
+    }
+
+    public boolean isFrozenStill() {
+        return this.freezeTicks > 0;
+    }
+
+    public double getLastThreatX() {
+        return this.lastThreatX;
+    }
+
+    public double getLastThreatZ() {
+        return this.lastThreatZ;
     }
 
     private void startFlip() {
@@ -243,6 +384,7 @@ public class Beetle extends Animal {
         if (state == STATE_IDLE || state == STATE_PUSHING) {
             notBotheredTicks++;
             if (flightCooldown > 0) flightCooldown--;
+            updateSenses();
         }
 
         if (state == STATE_FLYING) {

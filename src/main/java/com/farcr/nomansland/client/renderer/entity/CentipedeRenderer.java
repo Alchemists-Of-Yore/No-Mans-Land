@@ -56,21 +56,15 @@ public class CentipedeRenderer extends EntityRenderer<Centipede> {
         int segments = entity.getSegments();
         int pieces = entity.getPieceCount();
 
+        float bellyHalf = entity.getBbHeight() * 0.5F;
+
         double p0x = entity.getPieceRenderX(0, partialTick);
         double p0y = entity.getPieceRenderY(0, partialTick);
         double p0z = entity.getPieceRenderZ(0, partialTick);
 
-        float rearAmt = entity.getRearAmount(partialTick);
         Vector3f headUp = new Vector3f(entity.getHeadRenderNX(partialTick), entity.getHeadRenderNY(partialTick), entity.getHeadRenderNZ(partialTick));
-        Vector3f normUp = new Vector3f(headUp);
-        if (normUp.lengthSquared() < 1.0E-6F) normUp.set(0.0F, 1.0F, 0.0F);
-        else normUp.normalize();
-        double headLift = entity.getHeadRearLift(partialTick);
-        double hlx = ex + normUp.x * headLift;
-        double hly = ey + normUp.y * headLift;
-        double hlz = ez + normUp.z * headLift;
 
-        Vector3f headForward = new Vector3f((float) (hlx - p0x), (float) (hly - p0y), (float) (hlz - p0z));
+        Vector3f headForward = new Vector3f((float) (ex - p0x), (float) (ey - p0y), (float) (ez - p0z));
         if (headForward.lengthSquared() < 1.0E-6F) {
             float r = bodyYaw * Mth.DEG_TO_RAD;
             headForward.set(-Mth.sin(r), 0.0F, Mth.cos(r));
@@ -79,10 +73,9 @@ public class CentipedeRenderer extends EntityRenderer<Centipede> {
         Vector3f chainUp = seedUp(headForward, headUp);
 
         poseStack.pushPose();
-        poseStack.translate(normUp.x * headLift, normUp.y * headLift, normUp.z * headLift);
+        poseStack.translate(-headUp.x * bellyHalf, bellyHalf - headUp.y * bellyHalf, -headUp.z * bellyHalf);
         applyOrientation(poseStack, headForward, chainUp);
-        float jab = rearAmt * 55.0F * Math.max(0.0F, Mth.sin(ageInTicks * 0.55F));
-        this.headModel.setupHead(ageInTicks, Mth.wrapDegrees(headYaw - bodyYaw), headPitch + jab);
+        this.headModel.setupHead(ageInTicks, Mth.wrapDegrees(headYaw - bodyYaw), headPitch);
         this.headModel.render(poseStack, vertexConsumer, packedLight, overlay);
         poseStack.popPose();
 
@@ -113,7 +106,10 @@ public class CentipedeRenderer extends EntityRenderer<Centipede> {
                 forward.set(-Mth.sin(r), 0.0F, Mth.cos(r));
             }
             Vector3f fwdN = new Vector3f(forward).normalize();
-            Vector3f surfN = new Vector3f(entity.getPieceRenderNX(i, partialTick), entity.getPieceRenderNY(i, partialTick), entity.getPieceRenderNZ(i, partialTick));
+            float pnx = entity.getPieceRenderNX(i, partialTick);
+            float pny = entity.getPieceRenderNY(i, partialTick);
+            float pnz = entity.getPieceRenderNZ(i, partialTick);
+            Vector3f surfN = new Vector3f(pnx, pny, pnz);
 
             chainUp = transport(chainFwd, fwdN, chainUp);
             if (surfN.lengthSquared() > 1.0E-6F) {
@@ -132,7 +128,7 @@ public class CentipedeRenderer extends EntityRenderer<Centipede> {
             chainFwd = fwdN;
 
             poseStack.pushPose();
-            poseStack.translate(sx - ex, sy - ey, sz - ez);
+            poseStack.translate(sx - ex - pnx * bellyHalf, sy - ey + bellyHalf - pny * bellyHalf, sz - ez - pnz * bellyHalf);
             applyOrientation(poseStack, forward, chainUp);
 
             if (i >= segments) {

@@ -13,6 +13,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 
 public class NMLTags {
     public static final TagKey<Item> FIRESTARTERS = createItemTag("firestarters");
+    public static final TagKey<Item> FRIGHTENS_BUGS = createItemTag("frightens_bugs");
     public static final TagKey<Item> DEER_FOOD = createItemTag("deer_food");
     public static final TagKey<Item> MOOSE_FOOD = createItemTag("moose_food");
     public static final TagKey<Item> TORTOISE_FOOD = createItemTag("tortoise_food");

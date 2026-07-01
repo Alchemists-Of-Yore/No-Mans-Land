@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -22,28 +23,28 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class Centipede extends Monster {
     public static final int MAX_SEGMENTS = 25;
@@ -64,13 +65,10 @@ public class Centipede extends Monster {
 
     private static final EntityDataAccessor<Integer> DATA_SEGMENTS = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_VENOMOUS = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Byte> DATA_FLAGS = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Boolean> DATA_STUNNING = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_BURROWED = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_SHRIVELING = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_REARING = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BOOLEAN);
-
-    public static final float REAR_HEIGHT = 0.85F;
-    private static final int REAR_SEGMENTS = 5;
+    private static final EntityDataAccessor<Byte> DATA_SURFACE = SynchedEntityData.defineId(Centipede.class, EntityDataSerializers.BYTE);
 
     private final double[] pieceX = new double[MAX_PIECES];
     private final double[] pieceY = new double[MAX_PIECES];
@@ -113,23 +111,44 @@ public class Centipede extends Monster {
     private float headSpeed;
     private boolean segmentsInitialized;
 
-    private int rearTicks;
-    private int jabCooldown;
-    private float rearAmount;
-    private float rearAmountO;
     private float shrivelAmount;
-    private float shrivelAmountO;
 
     private int lungeTicks;
     private double lungeDirX;
-    private double lungeDirY;
     private double lungeDirZ;
+    private double lungeVelY;
+    private Vec3 surfaceNormal = new Vec3(0.0, 1.0, 0.0);
+    private boolean attached;
+    private BlockPos cellB;
+    private Direction cellF;
+    private Direction tangentT;
+    private Vec3 headDir = new Vec3(0.0, 0.0, 1.0);
+    private Vec3 moveTarget;
+    private int moveTargetAge;
+    private int floatTicks;
+    private int stuckTicks;
+    private int wanderCooldown;
+    private float awareness;
+    private float nerve;
+    private float prevHealthSense;
+    private Vec3 lastKnownPos;
+    private int freezeTicks;
+    private boolean paused;
+    private int rhythmTicks;
+    private Mood mood = Mood.CALM;
+    private Mood prevMood = Mood.CALM;
+    private List<SurfacePathfinder.Cell> surfacePath;
+    private int surfacePathIndex;
+    private int repathCooldown;
+    private BlockPos pathGoal;
 
     private int shrivelTicks;
     private int shrivelCooldown;
     private int burrowCooldown;
 
     private final CentipedePart[] parts;
+
+    private enum Mood { CALM, STALK, SEARCH, FLEE }
 
     public Centipede(EntityType<? extends Centipede> entityType, Level level) {
         super(entityType, level);
@@ -141,6 +160,9 @@ public class Centipede extends Monster {
         }
         this.parts = built;
         this.setId(ENTITY_COUNTER.getAndAdd(this.parts.length + 1) + 1);
+        this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+        this.setPathfindingMalus(PathType.DANGER_FIRE, 16.0F);
+        this.setPathfindingMalus(PathType.LAVA, -1.0F);
     }
 
     @Override
@@ -177,7 +199,12 @@ public class Centipede extends Monster {
 
     @Override
     protected int calculateFallDamage(float fallDistance, float damageMultiplier) {
-        return (int) (super.calculateFallDamage(fallDistance, damageMultiplier) * 0.8F);
+        return (int) (super.calculateFallDamage(fallDistance, damageMultiplier) * 0.5F);
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        return source.is(DamageTypes.CRAMMING) || super.isInvulnerableTo(source);
     }
 
     @Override
@@ -192,7 +219,7 @@ public class Centipede extends Monster {
                 .add(Attributes.ATTACK_DAMAGE, 3.0)
                 .add(Attributes.ARMOR, 4.0)
                 .add(Attributes.FOLLOW_RANGE, 24.0)
-                .add(Attributes.STEP_HEIGHT, 1.0);
+                .add(Attributes.STEP_HEIGHT, 0.0);
     }
 
     @Override
@@ -200,10 +227,10 @@ public class Centipede extends Monster {
         super.defineSynchedData(builder);
         builder.define(DATA_SEGMENTS, 5);
         builder.define(DATA_VENOMOUS, false);
-        builder.define(DATA_FLAGS, (byte) 0);
+        builder.define(DATA_STUNNING, false);
         builder.define(DATA_BURROWED, false);
         builder.define(DATA_SHRIVELING, false);
-        builder.define(DATA_REARING, false);
+        builder.define(DATA_SURFACE, (byte) 6);
     }
 
     @Override
@@ -212,17 +239,11 @@ public class Centipede extends Monster {
         this.goalSelector.addGoal(0, new CentipedeShrivelGoal(this));
         this.goalSelector.addGoal(1, new CentipedeBurrowGoal(this));
         this.goalSelector.addGoal(3, new CentipedeAttackGoal(this));
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.8));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, Centipede::canTargetPlayer));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Animal.class, 10, true, false, Centipede::isPrey));
-    }
-
-    public static boolean shouldAttack(LivingEntity entity) {
-        return isPrey(entity) && entity.isAlive();
     }
 
     public static boolean isPrey(LivingEntity entity) {
@@ -234,23 +255,8 @@ public class Centipede extends Monster {
     }
 
     @Override
-    protected PathNavigation createNavigation(Level level) {
-        return new WallClimberNavigation(this, level);
-    }
-
-    public boolean isClimbing() {
-        return (this.entityData.get(DATA_FLAGS) & 1) != 0;
-    }
-
-    public void setClimbing(boolean climbing) {
-        byte flags = this.entityData.get(DATA_FLAGS);
-        flags = climbing ? (byte) (flags | 1) : (byte) (flags & ~1);
-        this.entityData.set(DATA_FLAGS, flags);
-    }
-
-    @Override
     public boolean onClimbable() {
-        return this.isClimbing();
+        return false;
     }
 
     public int getSegments() {
@@ -278,6 +284,14 @@ public class Centipede extends Monster {
         this.entityData.set(DATA_VENOMOUS, venomous);
     }
 
+    public boolean isStunning() {
+        return this.entityData.get(DATA_STUNNING);
+    }
+
+    public void setStunning(boolean stunning) {
+        this.entityData.set(DATA_STUNNING, stunning);
+    }
+
     public boolean isBurrowed() {
         return this.entityData.get(DATA_BURROWED);
     }
@@ -296,30 +310,6 @@ public class Centipede extends Monster {
 
     public boolean canShrivel() {
         return this.shrivelCooldown <= 0 && !this.isShriveling();
-    }
-
-    public boolean isRearing() {
-        return this.entityData.get(DATA_REARING);
-    }
-
-    public void setRearing(boolean rearing) {
-        this.entityData.set(DATA_REARING, rearing);
-    }
-
-    public void startRear(int ticks) {
-        if (this.headNY < 0.7F || isShriveling() || isBurrowed()) return;
-        this.rearTicks = ticks;
-        this.jabCooldown = 6;
-        setRearing(true);
-        this.getNavigation().stop();
-    }
-
-    public float getRearAmount(float partialTick) {
-        return Mth.lerp(partialTick, this.rearAmountO, this.rearAmount);
-    }
-
-    public float getHeadRearLift(float partialTick) {
-        return REAR_HEIGHT * getRearAmount(partialTick);
     }
 
     public double getPieceRenderX(int i, float partialTick) {
@@ -366,25 +356,26 @@ public class Centipede extends Monster {
         return this.headSpeed;
     }
 
-    public boolean isLunging() {
-        return this.lungeTicks > 0;
-    }
-
     public void requestLunge(double dx, double dy, double dz) {
         double l = Math.sqrt(dx * dx + dy * dy + dz * dz);
         if (l < 1.0E-6) return;
         this.lungeDirX = dx / l;
-        this.lungeDirY = dy / l;
         this.lungeDirZ = dz / l;
         this.lungeTicks = LUNGE_TICKS;
+        this.attached = false;
     }
 
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         RandomSource random = level.getRandom();
-        boolean venomous = random.nextFloat() < 0.18F;
+        float r = random.nextFloat();
+        boolean venomous = r < 0.15F;
+        boolean stunning = !venomous && r < 0.30F;
         setVenomous(venomous);
-        int segments = venomous ? 3 + random.nextInt(5) : 5 + random.nextInt(6);
+        setStunning(stunning);
+        int segments;
+        if (venomous || stunning) segments = 3 + random.nextInt(5);
+        else segments = 6 + random.nextInt(8);
         setSegments(segments);
         setHealth(getMaxHealth());
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
@@ -395,6 +386,7 @@ public class Centipede extends Monster {
         super.addAdditionalSaveData(compound);
         compound.putInt("Segments", getSegments());
         compound.putBoolean("Venomous", isVenomous());
+        compound.putBoolean("Stunning", isStunning());
         compound.putInt("ShrivelCooldown", this.shrivelCooldown);
         compound.putInt("BurrowCooldown", this.burrowCooldown);
     }
@@ -406,47 +398,622 @@ public class Centipede extends Monster {
             setSegments(compound.getInt("Segments"));
         }
         setVenomous(compound.getBoolean("Venomous"));
+        setStunning(compound.getBoolean("Stunning"));
         this.shrivelCooldown = compound.getInt("ShrivelCooldown");
         this.burrowCooldown = compound.getInt("BurrowCooldown");
     }
 
     @Override
-    public void aiStep() {
-        super.aiStep();
-        if (!this.level().isClientSide) {
-            this.setClimbing(this.horizontalCollision && !this.isBurrowed() && !this.isShriveling());
+    public void travel(Vec3 input) {
+        if (this.level().isClientSide) {
+            return;
         }
-        if (this.lungeTicks > 0) {
-            boolean first = this.lungeTicks == LUNGE_TICKS;
-            this.lungeTicks--;
-            Vec3 dm = getDeltaMovement();
-            double upY = first ? Math.max(dm.y, 0.42) : dm.y + this.lungeDirY * 0.05;
-            setDeltaMovement(this.lungeDirX * LUNGE_SPEED, upY, this.lungeDirZ * LUNGE_SPEED);
-            this.getNavigation().stop();
+        surfaceTravel();
+    }
+
+    private void surfaceTravel() {
+        if (isBurrowed()) {
+            return;
         }
+        if (isShriveling()) {
+            shrivelFall();
+        } else if (this.lungeTicks > 0) {
+            lungeStep();
+        } else {
+            crawl();
+        }
+    }
+
+    private void shrivelFall() {
+        this.attached = false;
+        setSurfaceData();
+        this.setOnGround(false);
+        Vec3 dm = getDeltaMovement();
+        Vec3 fall = new Vec3(dm.x * 0.9, dm.y - 0.08, dm.z * 0.9);
+        this.move(MoverType.SELF, fall);
+        setDeltaMovement(this.horizontalCollision ? 0.0 : fall.x, this.verticalCollision ? 0.0 : fall.y, this.horizontalCollision ? 0.0 : fall.z);
+        this.resetFallDistance();
+    }
+
+    private void lungeStep() {
+        if (this.lungeTicks == LUNGE_TICKS) {
+            this.lungeVelY = 0.45;
+        }
+        this.lungeTicks--;
+        Vec3 motion = new Vec3(this.lungeDirX * LUNGE_SPEED, this.lungeVelY, this.lungeDirZ * LUNGE_SPEED);
+        this.lungeVelY -= 0.08;
+        setSurfaceData();
+        Vec3 before = position();
+        this.move(MoverType.SELF, motion);
+        setDeltaMovement(Vec3.ZERO);
+        this.resetFallDistance();
+        if (this.lungeTicks < LUNGE_TICKS - 1 && position().distanceToSqr(before) < 0.0025) {
+            this.lungeTicks = 0;
+        }
+    }
+
+    private void crawl() {
+        Vec3 pos = position();
+        double hh = getBbHeight() * 0.5;
+        Vec3 center = pos.add(0.0, hh, 0.0);
+        double step = currentSpeed();
+
+        if (!this.attached || this.cellF == null) {
+            fallStep();
+            return;
+        }
+        if (!touching(center, this.cellF)) {
+            boolean cellValid = solidBlock(this.cellB) && !solidBlock(this.cellB.relative(this.cellF))
+                    && center.distanceToSqr(anchorCenter(this.cellB, this.cellF)) < 1.0;
+            if (cellValid && this.floatTicks < 12) {
+                this.floatTicks++;
+            } else {
+                Direction f2 = bestTouchingCell(center);
+                if (f2 == null) {
+                    this.attached = false;
+                    this.floatTicks = 0;
+                    setSurfaceData();
+                    fallStep();
+                    return;
+                }
+                this.cellF = f2;
+                this.cellB = BlockPos.containing(center.subtract(dvec(f2).scale(faceExtent(f2) + 0.3)));
+                this.tangentT = projectIntentAxis(this.headDir, this.cellF, this.tangentT);
+                this.floatTicks = 0;
+            }
+        } else {
+            this.floatTicks = 0;
+        }
+
+        this.setOnGround(true);
+        this.resetFallDistance();
+        this.setSpeed((float) step);
+
+        BlockPos support = BlockPos.containing(center.subtract(dvec(this.cellF).scale(faceExtent(this.cellF) + 0.3)));
+        if (solidBlock(support)) {
+            this.cellB = support;
+        }
+
+        Vec3 want = computeMoveDir(pos);
+        boolean moving = want.lengthSqr() > 1.0E-8;
+
+        Vec3 n0 = dvec(this.cellF);
+        Vec3 desired = want.subtract(n0.scale(want.dot(n0)));
+        if (moving) {
+            Vec3 hd = this.headDir.subtract(n0.scale(this.headDir.dot(n0)));
+            hd = hd.lengthSqr() > 1.0E-8 ? hd.normalize()
+                    : (desired.lengthSqr() > 1.0E-8 ? desired.normalize() : this.headDir);
+            if (desired.lengthSqr() > 1.0E-8) {
+                this.headDir = turnToward(hd, desired.normalize(), n0, step / (1.0 + 0.11 * getSegments()));
+            } else {
+                this.headDir = hd;
+            }
+        }
+        this.tangentT = projectIntentAxis(this.headDir, this.cellF, this.tangentT);
+
+        Direction t = this.tangentT;
+        BlockPos b = this.cellB;
+        BlockPos air = b.relative(this.cellF);
+        double along = center.subtract(Vec3.atCenterOf(b)).dot(dvec(t));
+        boolean wallAhead = solidBlock(air.relative(t));
+        Vec3 oldN = dvec(this.cellF);
+        double ext = faceExtent(this.cellF);
+        Vec3 dest = center.add(this.headDir.scale(step));
+        boolean destSupported = solidBlock(BlockPos.containing(dest.subtract(oldN.scale(ext + 0.3))));
+        if (moving && wallAhead && along > 0.2) {
+            this.cellB = air.relative(t);
+            this.cellF = t.getOpposite();
+            this.headDir = oldN;
+        } else if (moving && !destSupported) {
+            this.cellF = t;
+            this.headDir = oldN.scale(-1.0);
+        }
+
+        Vec3 n = dvec(this.cellF);
+        Vec3 hp = this.headDir.subtract(n.scale(this.headDir.dot(n)));
+        this.headDir = hp.lengthSqr() > 1.0E-8 ? hp.normalize() : this.headDir;
+        Vec3 tang = moving ? this.headDir.scale(step) : Vec3.ZERO;
+        if (tang.lengthSqr() > 1.0E-8) {
+            faceSurface(tang);
+        }
+        double normOff = center.subtract(anchorCenter(this.cellB, this.cellF)).dot(n);
+        Vec3 seat = n.scale(-normOff);
+        Vec3 c = center.subtract(Vec3.atCenterOf(this.cellB));
+        double px = this.cellF.getAxis() != Direction.Axis.X && Math.abs(c.x) > 0.5 ? -(c.x - Math.signum(c.x) * 0.45) : 0.0;
+        double py = this.cellF.getAxis() != Direction.Axis.Y && Math.abs(c.y) > 0.5 ? -(c.y - Math.signum(c.y) * 0.45) : 0.0;
+        double pz = this.cellF.getAxis() != Direction.Axis.Z && Math.abs(c.z) > 0.5 ? -(c.z - Math.signum(c.z) * 0.45) : 0.0;
+        Vec3 tanPull = new Vec3(px, py, pz);
+        this.surfaceNormal = lerpNormal(this.surfaceNormal, n);
+        setSurfaceData();
+        this.move(MoverType.SELF, tang.add(seat).add(tanPull));
+        setDeltaMovement(Vec3.ZERO);
+        this.setOnGround(true);
+        this.resetFallDistance();
+
+        if (moving && position().distanceToSqr(pos) < (0.06 * step) * (0.06 * step)) {
+            if (++this.stuckTicks > 8) {
+                this.stuckTicks = 0;
+                this.attached = false;
+                this.surfacePath = null;
+                setSurfaceData();
+            }
+        } else {
+            this.stuckTicks = 0;
+        }
+    }
+
+    private double faceExtent(Direction f) {
+        return f.getAxis().isVertical() ? getBbHeight() * 0.5 : getBbWidth() * 0.5;
+    }
+
+    private boolean touching(Vec3 center, Direction f) {
+        Vec3 probe = center.subtract(dvec(f).scale(faceExtent(f) + 0.3));
+        return solidBlock(BlockPos.containing(probe));
+    }
+
+    private Direction bestTouchingCell(Vec3 center) {
+        Direction best = null;
+        double bs = -1.0E9;
+        for (Direction f : Direction.values()) {
+            if (!touching(center, f)) {
+                continue;
+            }
+            BlockPos b = BlockPos.containing(center.subtract(dvec(f).scale(faceExtent(f) + 0.3)));
+            if (!solidBlock(b) || solidBlock(b.relative(f))) {
+                continue;
+            }
+            double score = dvec(f).dot(this.surfaceNormal);
+            if (score > bs) {
+                bs = score;
+                best = f;
+            }
+        }
+        return best;
+    }
+
+    private void fallStep() {
+        setSurfaceData();
+        this.setOnGround(false);
+        Vec3 dm = getDeltaMovement();
+        Vec3 motion = new Vec3(dm.x * 0.92, dm.y - 0.08, dm.z * 0.92);
+        this.move(MoverType.SELF, motion);
+        Vec3 center = position().add(0.0, getBbHeight() * 0.5, 0.0);
+        Direction f = this.verticalCollision || this.horizontalCollision ? bestTouchingCell(center) : null;
+        if (f != null) {
+            this.cellF = f;
+            this.cellB = BlockPos.containing(center.subtract(dvec(f).scale(faceExtent(f) + 0.3)));
+            this.tangentT = projectIntentAxis(this.headDir, this.cellF, this.tangentT);
+            this.attached = true;
+            setSurfaceData();
+            setDeltaMovement(Vec3.ZERO);
+            this.setOnGround(true);
+            this.resetFallDistance();
+        } else {
+            double vy = this.verticalCollision ? 0.0 : motion.y;
+            double vx = this.horizontalCollision ? 0.0 : motion.x;
+            double vz = this.horizontalCollision ? 0.0 : motion.z;
+            setDeltaMovement(vx, vy, vz);
+        }
+    }
+
+    private void setSurfaceData() {
+        byte v = this.attached && this.cellF != null ? (byte) this.cellF.get3DDataValue() : (byte) 6;
+        if (this.entityData.get(DATA_SURFACE) != v) {
+            this.entityData.set(DATA_SURFACE, v);
+        }
+    }
+
+    private static Vec3 dvec(Direction d) {
+        return new Vec3(d.getStepX(), d.getStepY(), d.getStepZ());
+    }
+
+    private boolean solidBlock(BlockPos b) {
+        return !this.level().getBlockState(b).getCollisionShape(this.level(), b).isEmpty();
+    }
+
+    private Vec3 anchorCenter(BlockPos b, Direction f) {
+        double clr = (f.getAxis().isVertical() ? getBbHeight() * 0.5 : getBbWidth() * 0.5) + 0.02;
+        return Vec3.atCenterOf(b).add(dvec(f).scale(0.5 + clr));
+    }
+
+    private Direction firstPerp(Direction f) {
+        for (Direction d : Direction.values()) {
+            if (d.getAxis() != f.getAxis()) {
+                return d;
+            }
+        }
+        return Direction.NORTH;
+    }
+
+    private Direction projectIntentAxis(Vec3 want, Direction f, Direction prevT) {
+        Direction fallback = prevT != null && prevT.getAxis() != f.getAxis() ? prevT : firstPerp(f);
+        if (want.lengthSqr() < 1.0E-8) {
+            return fallback;
+        }
+        Vec3 p = want.subtract(dvec(f).scale(want.dot(dvec(f))));
+        if (p.lengthSqr() < 1.0E-8) {
+            return fallback;
+        }
+        Direction best = fallback;
+        double bs = -1.0E9;
+        for (Direction d : Direction.values()) {
+            if (d.getAxis() == f.getAxis()) {
+                continue;
+            }
+            double sc = p.dot(dvec(d));
+            if (sc > bs) {
+                bs = sc;
+                best = d;
+            }
+        }
+        return best;
+    }
+
+    private Vec3 turnToward(Vec3 cur, Vec3 des, Vec3 axis, double maxTurn) {
+        double dot = Mth.clamp(cur.dot(des), -1.0, 1.0);
+        double angle = Math.acos(dot);
+        if (angle <= maxTurn || angle < 1.0E-4) {
+            return des;
+        }
+        double sign = Math.signum(cur.cross(des).dot(axis));
+        if (sign == 0.0) {
+            sign = 1.0;
+        }
+        return rotateAround(cur, axis, sign * maxTurn).normalize();
+    }
+
+    private Vec3 rotateAround(Vec3 v, Vec3 axis, double angle) {
+        Vec3 a = axis.normalize();
+        double c = Math.cos(angle);
+        double s = Math.sin(angle);
+        return v.scale(c).add(a.cross(v).scale(s)).add(a.scale(a.dot(v) * (1.0 - c)));
+    }
+
+    private Vec3 computeMoveDir(Vec3 pos) {
+        if (hasUnsupportedSegments()) {
+            return supportMove(pos);
+        }
+        if (this.freezeTicks > 0) {
+            return Vec3.ZERO;
+        }
+        if (this.mood == Mood.FLEE) {
+            return fleeDir(pos);
+        }
+        if (this.paused) {
+            return Vec3.ZERO;
+        }
+        return switch (this.mood) {
+            case STALK -> stalkDir(pos);
+            case SEARCH -> searchDir(pos);
+            default -> wanderDir(pos);
+        };
+    }
+
+    private Vec3 stalkDir(Vec3 pos) {
+        LivingEntity t = getTarget();
+        if (t == null) {
+            return Vec3.ZERO;
+        }
+        double reach = getBbWidth() * 2.0 * getBbWidth() * 2.0 + t.getBbWidth();
+        if (distanceToSqr(t) <= reach) {
+            return Vec3.ZERO;
+        }
+        return steer(pos, t.blockPosition(), new Vec3(t.getX(), t.getY() + t.getBbHeight() * 0.5, t.getZ()));
+    }
+
+    private Vec3 searchDir(Vec3 pos) {
+        if (this.lastKnownPos == null) {
+            return Vec3.ZERO;
+        }
+        if (pos.distanceToSqr(this.lastKnownPos) < 2.25) {
+            this.lastKnownPos = null;
+            this.awareness = 0.0F;
+            return Vec3.ZERO;
+        }
+        return steer(pos, BlockPos.containing(this.lastKnownPos), this.lastKnownPos);
+    }
+
+    private Vec3 fleeDir(Vec3 pos) {
+        LivingEntity t = getTarget();
+        Vec3 away = t != null ? pos.subtract(t.position()) : this.headDir;
+        if (away.lengthSqr() < 1.0E-6) {
+            away = this.headDir;
+        }
+        Vec3 goal = pos.add(away.normalize().scale(10.0));
+        return steer(pos, BlockPos.containing(goal), goal);
+    }
+
+    private Vec3 wanderDir(Vec3 pos) {
+        if (this.moveTarget == null) {
+            return Vec3.ZERO;
+        }
+        double dx = this.moveTarget.x - pos.x;
+        double dz = this.moveTarget.z - pos.z;
+        if (dx * dx + dz * dz < 1.5 * 1.5) {
+            this.moveTarget = null;
+            this.wanderCooldown = 40 + this.random.nextInt(80);
+            return Vec3.ZERO;
+        }
+        return steer(pos, BlockPos.containing(this.moveTarget), this.moveTarget);
+    }
+
+    private Vec3 supportMove(Vec3 pos) {
+        int count = getPieceCount();
+        double ax = 0.0;
+        double ay = 0.0;
+        double az = 0.0;
+        int n = 0;
+        for (int i = 1; i < count; i++) {
+            if (!hasNearbySolid(this.pieceX[i], this.pieceY[i], this.pieceZ[i])) {
+                ax += this.pieceX[i];
+                ay += this.pieceY[i];
+                az += this.pieceZ[i];
+                n++;
+            }
+        }
+        if (n == 0) {
+            return Vec3.ZERO;
+        }
+        Vec3 dir = pos.subtract(ax / n, ay / n, az / n);
+        return dir.lengthSqr() > 1.0E-6 ? dir : this.headDir;
+    }
+
+    public boolean hasUnsupportedSegments() {
+        int count = getPieceCount();
+        for (int i = 1; i < count; i++) {
+            if (!hasNearbySolid(this.pieceX[i], this.pieceY[i], this.pieceZ[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Vec3 steer(Vec3 pos, BlockPos goalBlock, Vec3 goalPos) {
+        if (this.cellF == null) {
+            return goalPos.subtract(pos);
+        }
+        boolean goalMoved = this.pathGoal == null || goalBlock.distManhattan(this.pathGoal) > 3;
+        if (this.surfacePath == null || this.repathCooldown <= 0 || goalMoved) {
+            SurfacePathfinder pf = new SurfacePathfinder(this.level());
+            SurfacePathfinder.Cell goalCell = pf.cellNear(goalBlock);
+            this.surfacePath = goalCell == null ? null : pf.find(new SurfacePathfinder.Cell(this.cellB, this.cellF), goalCell, 700);
+            this.surfacePathIndex = 0;
+            this.pathGoal = goalBlock;
+            this.repathCooldown = 20;
+        } else {
+            this.repathCooldown--;
+        }
+        if (this.surfacePath == null) {
+            return goalPos.subtract(pos);
+        }
+        while (this.surfacePathIndex < this.surfacePath.size()) {
+            SurfacePathfinder.Cell c = this.surfacePath.get(this.surfacePathIndex);
+            Vec3 wp = anchorCenter(c.block(), c.face());
+            double dw = pos.distanceToSqr(wp);
+            if (dw < 0.55) {
+                this.surfacePathIndex++;
+                continue;
+            }
+            if (dw < 4.0 && this.surfacePathIndex + 1 < this.surfacePath.size()) {
+                SurfacePathfinder.Cell next = this.surfacePath.get(this.surfacePathIndex + 1);
+                if (pos.distanceToSqr(anchorCenter(next.block(), next.face())) < dw) {
+                    this.surfacePathIndex++;
+                    continue;
+                }
+            }
+            return wp.subtract(pos);
+        }
+        return goalPos.subtract(pos);
+    }
+
+    public SurfacePathfinder.Cell currentCell() {
+        return this.cellF == null ? null : new SurfacePathfinder.Cell(this.cellB, this.cellF);
+    }
+
+    public Vec3 surfaceAnchor(SurfacePathfinder.Cell cell) {
+        return anchorCenter(cell.block(), cell.face());
+    }
+
+    public void attachToCell(SurfacePathfinder.Cell cell) {
+        this.cellB = cell.block();
+        this.cellF = cell.face();
+        this.tangentT = projectIntentAxis(this.headDir, this.cellF, this.tangentT);
+        this.attached = true;
+        setSurfaceData();
+    }
+
+    private double currentSpeed() {
+        return this.getAttributeValue(Attributes.MOVEMENT_SPEED) * 0.85;
+    }
+
+    private Vec3 lerpNormal(Vec3 a, Vec3 b) {
+        Vec3 r = new Vec3(Mth.lerp(0.35, a.x, b.x), Mth.lerp(0.35, a.y, b.y), Mth.lerp(0.35, a.z, b.z));
+        double len = r.length();
+        return len < 1.0E-6 ? b : r.scale(1.0 / len);
+    }
+
+    private void faceSurface(Vec3 tangent) {
+        if (tangent.lengthSqr() < 1.0E-6) {
+            return;
+        }
+        Vec3 f = tangent.normalize();
+        float yaw = (float) (Mth.atan2(-f.x, f.z) * Mth.RAD_TO_DEG);
+        this.setYRot(yaw);
+        this.yBodyRot = yaw;
+        this.yHeadRot = yaw;
     }
 
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if (this.rearTicks > 0) {
-            this.rearTicks--;
-            this.getNavigation().stop();
-            setDeltaMovement(getDeltaMovement().multiply(0.6, 1.0, 0.6));
-            if (this.jabCooldown > 0) this.jabCooldown--;
-            LivingEntity target = getTarget();
-            if (target != null && this.jabCooldown <= 0) {
-                getLookControl().setLookAt(target, 40.0F, 40.0F);
-                double reach = getBbWidth() * 2.0 * getBbWidth() * 2.0 + target.getBbWidth();
-                if (distanceToSqr(target) <= reach + 1.5) {
-                    doHurtTarget(target);
-                    this.jabCooldown = 11;
+        if (isBurrowed() || isShriveling()) {
+            return;
+        }
+        updateSenses();
+
+        if (this.mood == Mood.CALM) {
+            if (this.moveTarget == null) {
+                this.moveTargetAge = 0;
+                if (this.wanderCooldown > 0) {
+                    this.wanderCooldown--;
+                } else if (!this.paused && this.random.nextInt(50) == 0) {
+                    double ang = this.random.nextDouble() * Math.PI * 2.0;
+                    double dist = 4.0 + this.random.nextDouble() * 5.0;
+                    this.moveTarget = position().add(Math.cos(ang) * dist, 0.0, Math.sin(ang) * dist);
                 }
+            } else if (++this.moveTargetAge > 120) {
+                this.moveTarget = null;
+                this.wanderCooldown = 30 + this.random.nextInt(40);
             }
-            if (this.rearTicks == 0 || target == null) {
-                this.rearTicks = 0;
-                setRearing(false);
+        } else {
+            this.moveTarget = null;
+        }
+    }
+
+    private void updateSenses() {
+        boolean hurt = getHealth() < this.prevHealthSense - 0.001F;
+        this.prevHealthSense = getHealth();
+        if (this.freezeTicks > 0) {
+            this.freezeTicks--;
+        }
+
+        float sizeBrave = Mth.clamp((getSegments() - 3) / 24.0F, 0.0F, 0.75F);
+        if (hurt) {
+            this.nerve = Math.min(1.0F, this.nerve + 0.35F);
+            this.awareness = Math.max(this.awareness, 0.85F);
+            this.freezeTicks = Math.max(this.freezeTicks, 5);
+        }
+        LivingEntity target = getTarget();
+        if (target instanceof Player p) {
+            if (holdsFrightening(p)) {
+                this.nerve = Math.min(1.0F, this.nerve + 0.06F);
             }
+            Vec3 toMe = position().subtract(p.position());
+            if (toMe.lengthSqr() > 1.0E-4 && toMe.lengthSqr() < 49.0
+                    && p.getDeltaMovement().dot(toMe.normalize()) < -0.25) {
+                this.nerve = Math.min(1.0F, this.nerve + 0.03F);
+            }
+        }
+        this.nerve = Math.max(0.0F, this.nerve - 0.008F - sizeBrave * 0.01F);
+
+        double range = getAttributeValue(Attributes.FOLLOW_RANGE);
+        Player nearest = level().getNearestPlayer(this, range);
+        if (nearest != null && canTargetPlayer(nearest)) {
+            double prox = 1.0 - Math.min(1.0, distanceTo(nearest) / range);
+            double loud = loudness(nearest);
+            boolean contact = distanceToSqr(nearest) < 9.0;
+            float gain = (float) (loud * prox * 0.7 + prox * 0.02) + (contact ? 0.5F : 0.0F);
+            this.awareness = Mth.clamp(this.awareness + gain - 0.02F, 0.0F, 1.0F);
+            if (this.awareness > 0.3F) {
+                this.lastKnownPos = nearest.position();
+            }
+            if (this.awareness > 0.45F && getTarget() == null) {
+                setTarget(nearest);
+            } else if (getTarget() == nearest && this.awareness < 0.06F) {
+                setTarget(null);
+            }
+        } else {
+            this.awareness = Math.max(0.0F, this.awareness - 0.04F);
+            if (getTarget() instanceof Player && this.awareness < 0.06F) {
+                setTarget(null);
+            }
+        }
+
+        LivingEntity t = getTarget();
+        if (t instanceof Player) {
+            if (this.nerve > 0.55F && distanceToSqr(t) < 144.0) {
+                this.mood = Mood.FLEE;
+            } else if (this.awareness > 0.4F) {
+                this.mood = Mood.STALK;
+            } else if (this.lastKnownPos != null) {
+                this.mood = Mood.SEARCH;
+            } else {
+                this.mood = Mood.CALM;
+            }
+        } else if (t != null) {
+            this.mood = Mood.STALK;
+        } else {
+            this.mood = Mood.CALM;
+        }
+
+        if ((this.mood == Mood.STALK || this.mood == Mood.FLEE) && this.prevMood != this.mood) {
+            this.freezeTicks = 0;
+            this.paused = false;
+            this.rhythmTicks = 6 + this.random.nextInt(10);
+        }
+        this.prevMood = this.mood;
+
+        tickRhythm();
+    }
+
+    private double loudness(Player p) {
+        double moved = p.getKnownMovement().horizontalDistance();
+        if (p.isCrouching()) {
+            return Math.min(0.1, moved * 3.0);
+        }
+        double base = Math.min(1.0, moved * 6.0);
+        if (p.isSprinting()) {
+            base = Math.min(1.0, base + 0.35);
+        }
+        return base;
+    }
+
+    private boolean holdsFrightening(Player p) {
+        return p.getMainHandItem().is(NMLTags.FRIGHTENS_BUGS) || p.getOffhandItem().is(NMLTags.FRIGHTENS_BUGS);
+    }
+
+    public boolean frightenedByHeld(LivingEntity e) {
+        return e instanceof Player p && holdsFrightening(p);
+    }
+
+    private boolean isSkittish() {
+        return getSegments() < 8 || this.nerve > 0.5F;
+    }
+
+    public boolean isFleeing() {
+        return this.mood == Mood.FLEE;
+    }
+
+    private void tickRhythm() {
+        if (this.mood == Mood.FLEE) {
+            this.paused = false;
+            return;
+        }
+        if (this.rhythmTicks > 0) {
+            this.rhythmTicks--;
+            return;
+        }
+        this.paused = !this.paused;
+        boolean aroused = this.mood == Mood.STALK || this.mood == Mood.SEARCH;
+        boolean skittish = isSkittish();
+        if (this.paused) {
+            int base = aroused ? (skittish ? 3 : 7) : (skittish ? 15 : 45);
+            int rand = aroused ? (skittish ? 8 : 14) : (skittish ? 55 : 220);
+            this.rhythmTicks = base + this.random.nextInt(rand);
+        } else {
+            int base = skittish ? 8 : 18;
+            int rand = skittish ? 16 : 46;
+            this.rhythmTicks = base + this.random.nextInt(rand);
         }
     }
 
@@ -489,7 +1056,7 @@ public class Centipede extends Monster {
         double hx = getX();
         double hy = getY();
         double hz = getZ();
-        Vec3 n = computeNormal(hx, hy + 0.1, hz);
+        Vec3 n = surfaceDataNormal();
         this.headNX = this.headNXO = (float) n.x;
         this.headNY = this.headNYO = (float) n.y;
         this.headNZ = this.headNZO = (float) n.z;
@@ -553,8 +1120,6 @@ public class Centipede extends Monster {
         this.headNYO = this.headNY;
         this.headNZO = this.headNZ;
         this.headGaitPhaseO = this.headGaitPhase;
-        this.rearAmountO = this.rearAmount;
-        this.shrivelAmountO = this.shrivelAmount;
 
         double disp = Math.sqrt(sq(hx - this.lastHeadX) + sq(hy - this.lastHeadY) + sq(hz - this.lastHeadZ));
         this.headGaitPhase += disp;
@@ -563,7 +1128,7 @@ public class Centipede extends Monster {
         this.lastHeadY = hy;
         this.lastHeadZ = hz;
 
-        Vec3 raw = computeNormal(hx, hy + 0.1, hz);
+        Vec3 raw = surfaceDataNormal();
         this.headNX = Mth.lerp(NORMAL_EMA, this.headNX, (float) raw.x);
         this.headNY = Mth.lerp(NORMAL_EMA, this.headNY, (float) raw.y);
         this.headNZ = Mth.lerp(NORMAL_EMA, this.headNZ, (float) raw.z);
@@ -675,18 +1240,6 @@ public class Centipede extends Monster {
             this.pieceAir[i] = rair;
         }
 
-        float rearTarget = isRearing() ? 1.0F : 0.0F;
-        this.rearAmount = Mth.lerp(0.18F, this.rearAmount, rearTarget);
-        if (this.rearAmount > 0.01F) {
-            for (int i = 0; i < count && i < REAR_SEGMENTS; i++) {
-                float t = (float) (REAR_SEGMENTS - i) / (REAR_SEGMENTS + 1);
-                double lift = REAR_HEIGHT * t * t * this.rearAmount;
-                this.pieceX[i] += this.headNX * lift;
-                this.pieceY[i] += this.headNY * lift;
-                this.pieceZ[i] += this.headNZ * lift;
-            }
-        }
-
         float shrivelTarget = isShriveling() ? 1.0F : 0.0F;
         this.shrivelAmount = Mth.lerp(0.15F, this.shrivelAmount, shrivelTarget);
         if (this.shrivelAmount > 0.01F) {
@@ -745,24 +1298,9 @@ public class Centipede extends Monster {
         return a * a;
     }
 
-    private Vec3 computeNormal(double x, double y, double z) {
-        BlockPos base = BlockPos.containing(x, y, z);
-        double nx = 0.0;
-        double ny = 0.0;
-        double nz = 0.0;
-        for (Direction dir : Direction.values()) {
-            BlockPos b = base.relative(dir);
-            if (!this.level().getBlockState(b).getCollisionShape(this.level(), b).isEmpty()) {
-                nx -= dir.getStepX();
-                ny -= dir.getStepY();
-                nz -= dir.getStepZ();
-            }
-        }
-        double len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-        if (len < 1.0E-6) {
-            return new Vec3(0.0, 1.0, 0.0);
-        }
-        return new Vec3(nx / len, ny / len, nz / len);
+    private Vec3 surfaceDataNormal() {
+        byte sb = this.entityData.get(DATA_SURFACE);
+        return sb >= 0 && sb < 6 ? dvec(Direction.from3DDataValue(sb)) : new Vec3(0.0, 1.0, 0.0);
     }
 
     private boolean hasNearbySolid(double x, double y, double z) {
@@ -797,7 +1335,8 @@ public class Centipede extends Monster {
             if (i >= count) {
                 part.setPos(getX(), getY(), getZ());
             } else {
-                part.setPos(this.pieceX[i], this.pieceY[i] - 0.2, this.pieceZ[i]);
+                double hh = getBbHeight() * 0.5;
+                part.setPos(this.pieceX[i] - this.pieceNX[i] * hh, this.pieceY[i] + hh - this.pieceNY[i] * hh, this.pieceZ[i] - this.pieceNZ[i] * hh);
             }
         }
     }
@@ -805,8 +1344,14 @@ public class Centipede extends Monster {
     @Override
     public boolean doHurtTarget(Entity target) {
         boolean success = super.doHurtTarget(target);
-        if (success && isVenomous() && target instanceof LivingEntity living) {
-            living.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0), this);
+        if (success && target instanceof LivingEntity living) {
+            if (isVenomous()) {
+                living.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0), this);
+            }
+            if (isStunning()) {
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 0), this);
+                living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 0), this);
+            }
         }
         return success;
     }
@@ -842,11 +1387,8 @@ public class Centipede extends Monster {
         this.shrivelTicks = SHRIVEL_DURATION;
         this.shrivelCooldown = SHRIVEL_COOLDOWN;
         setShriveling(true);
-        setClimbing(false);
         setBurrowed(false);
         setBurrowPhysics(false);
-        this.rearTicks = 0;
-        setRearing(false);
         this.getNavigation().stop();
         this.setTarget(null);
     }
@@ -876,24 +1418,6 @@ public class Centipede extends Monster {
 
     public void resetBurrowCooldown() {
         this.burrowCooldown = 600;
-    }
-
-    public boolean isOnBurrowBlock() {
-        BlockState below = this.level().getBlockState(this.blockPosition().below());
-        BlockState at = this.level().getBlockState(this.blockPosition());
-        return below.is(NMLTags.CENTIPEDE_BURROW) || at.is(NMLTags.CENTIPEDE_BURROW);
-    }
-
-    @Nullable
-    public BlockPos findNearbyBurrow() {
-        BlockPos origin = this.blockPosition();
-        for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-6, -2, -6), origin.offset(6, 2, 6))) {
-            if (this.level().getBlockState(pos).is(NMLTags.CENTIPEDE_BURROW)
-                    && this.level().getBlockState(pos.above()).getCollisionShape(this.level(), pos.above()).isEmpty()) {
-                return pos.above().immutable();
-            }
-        }
-        return null;
     }
 
     @Override
