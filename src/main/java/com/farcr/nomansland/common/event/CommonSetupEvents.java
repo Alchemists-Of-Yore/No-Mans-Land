@@ -24,6 +24,7 @@ import com.farcr.nomansland.common.entity.clod.Clod;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
+import com.farcr.nomansland.common.entity.remnant.Remnant;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import com.farcr.nomansland.common.friend.condition.DialogueConditionCompiler;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
@@ -188,6 +189,7 @@ public class CommonSetupEvents {
         event.put(NMLEntities.FRIENDERMAN.get(), Frienderman.createAttributes().build());
         event.put(NMLEntities.BURIED.get(), Buried.createAttributes().build());
         event.put(NMLEntities.CENTIPEDE.get(), Centipede.createAttributes().build());
+        event.put(NMLEntities.REMNANT.get(), Remnant.createAttributes().build());
         event.put(NMLEntities.BEETLE.get(), Beetle.createAttributes().build());
         event.put(NMLEntities.GRUB.get(), Grub.createAttributes().build());
         event.put(NMLEntities.DREAMING_PLAYER.get(), Mob.createMobAttributes().build());
@@ -208,6 +210,7 @@ public class CommonSetupEvents {
         event.register(NMLEntities.BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Beetle::checkBeetleSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.GRUB.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Grub::checkGrubSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NMLEntities.CENTIPEDE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Centipede::checkCentipedeSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(NMLEntities.REMNANT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Remnant::checkRemnantSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent

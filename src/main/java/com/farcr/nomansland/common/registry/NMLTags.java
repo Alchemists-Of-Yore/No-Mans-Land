@@ -60,6 +60,7 @@ public class NMLTags {
     public static final TagKey<Biome> HAS_GRAVEL_SHORE = createBiomeTag("has_gravel_shore");
     public static final TagKey<Block> SUITABLE_TORTOISE_HOME = createBlockTag("tortoise_valid_home");
     public static final TagKey<Block> CENTIPEDE_BURROW = createBlockTag("centipede_burrow");
+    public static final TagKey<Block> REMNANT_DIVEABLE = createBlockTag("remnant_diveable");
 
     public static class FeatureAddition {
         // Broad brushes

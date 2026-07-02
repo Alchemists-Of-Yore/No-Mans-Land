@@ -123,6 +123,7 @@ public class ClientSetupEvents {
         event.registerEntityRenderer(NMLEntities.FRIENDERMAN.get(), FriendermanRenderer::new);
         event.registerEntityRenderer(NMLEntities.BURIED.get(), BuriedRenderer::new);
         event.registerEntityRenderer(NMLEntities.CENTIPEDE.get(), CentipedeRenderer::new);
+        event.registerEntityRenderer(NMLEntities.REMNANT.get(), RemnantRenderer::new);
         event.registerEntityRenderer(NMLEntities.BEETLE.get(), BeetleRenderer::new);
         event.registerEntityRenderer(NMLEntities.GRUB.get(), GrubRenderer::new);
         event.registerEntityRenderer(NMLEntities.DUNG_BALL.get(), DungBallRenderer::new);

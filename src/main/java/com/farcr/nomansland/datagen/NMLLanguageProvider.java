@@ -82,6 +82,16 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.centipede.hurt", "Centipede hurts");
         add("nomansland.subtitle.entity.centipede.death", "Centipede dies");
         add("nomansland.subtitle.entity.centipede.hiss", "Centipede hisses");
+        add("nomansland.subtitle.entity.remnant.ambient", "Remnant hums");
+        add("nomansland.subtitle.entity.remnant.hurt", "Remnant cracks");
+        add("nomansland.subtitle.entity.remnant.death", "Remnant crumbles");
+        add("nomansland.subtitle.entity.remnant.crash", "Remnant crashes down");
+        add("nomansland.subtitle.entity.remnant.dive", "Remnant sinks into stone");
+        add("nomansland.subtitle.entity.remnant.emerge", "Remnant emerges");
+        add("nomansland.subtitle.entity.remnant.phase", "Something moves within the stone");
+        add("nomansland.subtitle.entity.remnant.grind", "Stone grinds");
+        add("nomansland.subtitle.entity.remnant.attack", "Remnant strikes");
+        add("nomansland.subtitle.entity.remnant.breathe", "Remnant breathes");
         add("nomansland.subtitle.entity.clod.ambient", "Clod breathes");
         add("nomansland.subtitle.entity.clod.hurt", "Clod hurts");
         add("nomansland.subtitle.entity.clod.death", "Clod dies");
@@ -128,6 +138,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("jukebox_song.nomansland.guidance", "Samuel Organ - Guidance");
         add("entity.nomansland.buried", "Buried");
         add("entity.nomansland.centipede", "Centipede");
+        add("entity.nomansland.remnant", "Remnant");
         add("entity.nomansland.cave_carp", "Cave Carp");
         add("entity.nomansland.billhook_bass", "Billhook Bass");
         add("entity.nomansland.deer", "Deer");

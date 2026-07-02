@@ -18,6 +18,7 @@ import com.farcr.nomansland.client.model.frienderman.FriendermanModel;
 import com.farcr.nomansland.client.model.goose.GooseModel;
 import com.farcr.nomansland.client.model.living_pot.LivingPotModel;
 import com.farcr.nomansland.client.model.moose.MooseModel;
+import com.farcr.nomansland.client.model.remnant.RemnantModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseModel;
 import com.farcr.nomansland.client.model.tortoise.TortoiseShellModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -44,6 +45,7 @@ public class NMLModelLayers {
     public static final ModelLayerLocation CENTIPEDE_FRONT = new ModelLayerLocation(NoMansLand.location("centipede"), "front");
     public static final ModelLayerLocation CENTIPEDE_MIDDLE = new ModelLayerLocation(NoMansLand.location("centipede"), "middle");
     public static final ModelLayerLocation CENTIPEDE_TAIL = new ModelLayerLocation(NoMansLand.location("centipede"), "tail");
+    public static final ModelLayerLocation REMNANT_LAYER = new ModelLayerLocation(NoMansLand.location("remnant"), "main");
     public static final ModelLayerLocation BEETLE_LAYER = new ModelLayerLocation(NoMansLand.location("beetle"), "main");
     public static final ModelLayerLocation GRUB_LAYER = new ModelLayerLocation(NoMansLand.location("grub"), "main");
     public static final ModelLayerLocation DUNG_BALL_LAYER = new ModelLayerLocation(NoMansLand.location("dung_ball"), "main");
@@ -70,6 +72,7 @@ public class NMLModelLayers {
         event.registerLayerDefinition(NMLModelLayers.CENTIPEDE_FRONT, () -> CentipedeSegmentModel.createLayer(32, 0, 32, 21));
         event.registerLayerDefinition(NMLModelLayers.CENTIPEDE_MIDDLE, () -> CentipedeSegmentModel.createLayer(0, 0, 0, 21));
         event.registerLayerDefinition(NMLModelLayers.CENTIPEDE_TAIL, CentipedeTailModel::createLayer);
+        event.registerLayerDefinition(NMLModelLayers.REMNANT_LAYER, RemnantModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.BEETLE_LAYER, BeetleModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.GRUB_LAYER, GrubModel::createBodyLayer);
         event.registerLayerDefinition(NMLModelLayers.DUNG_BALL_LAYER, DungBallModel::createBodyLayer);

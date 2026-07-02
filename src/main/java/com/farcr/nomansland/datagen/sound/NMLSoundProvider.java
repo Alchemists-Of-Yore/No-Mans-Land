@@ -134,6 +134,18 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.CENTIPEDE_STEP, s -> s.with(sound("minecraft:entity.spider.step", EVENT).pitch(1.3f).volume(0.5f)).subtitle("subtitles.block.generic.footsteps"));
         add(NMLSounds.CENTIPEDE_HISS, s -> s.with(sound("minecraft:entity.silverfish.hurt", EVENT).pitch(0.8f).volume(0.9f)).subtitle("nomansland.subtitle.entity.centipede.hiss"));
 
+        add(NMLSounds.REMNANT_AMBIENT, s -> s.with(sound("minecraft:entity.warden.ambient", EVENT).pitch(0.55f).volume(0.45f)).subtitle("nomansland.subtitle.entity.remnant.ambient"));
+        add(NMLSounds.REMNANT_HURT, s -> s.with(sound("minecraft:block.deepslate.break", EVENT).pitch(0.6f)).subtitle("nomansland.subtitle.entity.remnant.hurt"));
+        add(NMLSounds.REMNANT_DEATH, s -> s.with(sound("minecraft:block.deepslate.break", EVENT).pitch(0.45f)).subtitle("nomansland.subtitle.entity.remnant.death"));
+        add(NMLSounds.REMNANT_STEP, s -> s.with(sound("minecraft:block.deepslate.step", EVENT).pitch(0.6f).volume(0.9f)).subtitle("subtitles.block.generic.footsteps"));
+        add(NMLSounds.REMNANT_CRASH, s -> s.with(sound("minecraft:block.anvil.land", EVENT).pitch(0.55f).volume(0.9f)).subtitle("nomansland.subtitle.entity.remnant.crash"));
+        add(NMLSounds.REMNANT_DIVE, s -> s.with(sound("minecraft:entity.warden.dig", EVENT).pitch(1.25f).volume(0.75f)).subtitle("nomansland.subtitle.entity.remnant.dive"));
+        add(NMLSounds.REMNANT_EMERGE, s -> s.with(sound("minecraft:entity.warden.emerge", EVENT).pitch(1.3f).volume(0.7f)).subtitle("nomansland.subtitle.entity.remnant.emerge"));
+        add(NMLSounds.REMNANT_PHASE, s -> s.with(sound("minecraft:block.deepslate.step", EVENT).pitch(0.4f).volume(0.5f)).subtitle("nomansland.subtitle.entity.remnant.phase"));
+        add(NMLSounds.REMNANT_GRIND, s -> s.with(sound("minecraft:block.grindstone.use", EVENT).pitch(0.5f).volume(0.8f)).subtitle("nomansland.subtitle.entity.remnant.grind"));
+        add(NMLSounds.REMNANT_ATTACK, s -> s.with(sound("minecraft:entity.warden.attack_impact", EVENT).pitch(1.15f).volume(0.8f)).subtitle("nomansland.subtitle.entity.remnant.attack"));
+        add(NMLSounds.REMNANT_BREATHE, s -> s.with(sound("minecraft:entity.warden.ambient", EVENT).pitch(1.25f).volume(0.35f)).subtitle("nomansland.subtitle.entity.remnant.breathe"));
+
 
         // Clod
         add(NMLSounds.CLOD_AMBIENT, s -> s.with(sound("minecraft:entity.fox.sniff", EVENT).volume(0.7f).pitch(0.8f)).subtitle("nomansland.subtitle.entity.clod.ambient"));

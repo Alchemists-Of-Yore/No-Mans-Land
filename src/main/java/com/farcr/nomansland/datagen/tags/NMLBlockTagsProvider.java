@@ -141,6 +141,16 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.COAL_BLOCK, Blocks.RAW_GOLD_BLOCK, NMLBlocks.SILTSTONE.get(), NMLBlocks.QUARTZITE.get(), Blocks.TUFF, Blocks.COAL_ORE, Blocks.SMOOTH_BASALT, Blocks.BASALT);
 
         tag(NMLTags.CENTIPEDE_BURROW).add(Blocks.STONE, Blocks.DEEPSLATE, Blocks.TUFF, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.GRAVEL, Blocks.CLAY, Blocks.MOSS_BLOCK, Blocks.MUD, NMLBlocks.SILTSTONE.get());
+
+        tag(NMLTags.REMNANT_DIVEABLE)
+                .addTag(BlockTags.BASE_STONE_OVERWORLD)
+                .addTag(BlockTags.DIRT)
+                .addTag(Tags.Blocks.ORES)
+                .addTag(Tags.Blocks.GRAVELS)
+                .addTag(Tags.Blocks.SANDS)
+                .add(Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.CALCITE, Blocks.DRIPSTONE_BLOCK, Blocks.SMOOTH_BASALT,
+                        Blocks.CLAY, Blocks.PACKED_MUD, Blocks.TERRACOTTA,
+                        NMLBlocks.SILTSTONE.get(), NMLBlocks.SILT.get(), NMLBlocks.COARSE_SILT.get());
     }
 
     @SafeVarargs

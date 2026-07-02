@@ -20,6 +20,7 @@ import com.farcr.nomansland.common.entity.clod.TranslucentItemFrame;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.entity.goose.Goose;
 import com.farcr.nomansland.common.entity.living_pot.LivingPot;
+import com.farcr.nomansland.common.entity.remnant.Remnant;
 import com.farcr.nomansland.common.entity.tortoise.Tortoise;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
@@ -143,6 +144,14 @@ public class NMLEntities {
             .sized(.75f, 2.05f)
             .ridingOffset(-0.7F)
             .build("buddy"));
+
+    public static final Supplier<EntityType<Remnant>> REMNANT =
+            ENTITIES.register("remnant", () -> EntityType.Builder.of(Remnant::new, MobCategory.MONSTER)
+                    .sized(0.8F, 2.3F)
+                    .eyeHeight(2.05F)
+                    .fireImmune()
+                    .clientTrackingRange(10)
+                    .build("remnant"));
 
     public static final Supplier<EntityType<Frienderman>> FRIENDERMAN =
             ENTITIES.register("frienderman", () -> EntityType.Builder.of(Frienderman::new, MobCategory.MONSTER)

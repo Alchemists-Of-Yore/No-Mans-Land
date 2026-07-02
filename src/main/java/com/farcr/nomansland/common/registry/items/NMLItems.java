@@ -196,6 +196,9 @@ public class NMLItems {
     public static final ItemDefinition<Item> CENTIPEDE_SPAWN_EGG = register("centipede_spawn_egg",
             () -> new DeferredSpawnEggItem(NMLEntities.CENTIPEDE, 5598767, 10506797, new Properties()));
 
+    public static final ItemDefinition<Item> REMNANT_SPAWN_EGG = register("remnant_spawn_egg",
+            () -> new DeferredSpawnEggItem(NMLEntities.REMNANT, 9145221, 4871496, new Properties()));
+
 //    public static final ItemDefinition<Item> CAVE_CARP_BUCKET = registerItem("cave_carp_bucket",
 //            () -> new MobBucketItem(EntityType.PIG, Fluids.WATER, SoundEvents.BUCKET_EMPTY_FISH,
 //                    (new Properties()).stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)), true);
