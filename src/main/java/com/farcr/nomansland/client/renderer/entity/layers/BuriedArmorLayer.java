@@ -49,13 +49,13 @@ public class BuriedArmorLayer extends RenderLayer<Buried, BuriedModel> {
         ModelPart source = this.getParentModel().root().getChild("buried");
         ModelPart target = armorRoot.getChild("buried");
         target.copyFrom(source);
-        target.getChild("Head").copyFrom(source.getChild("Head"));
+        target.getChild("LeftLeg").copyFrom(source.getChild("LeftLeg"));
+        target.getChild("RightLeg").copyFrom(source.getChild("RightLeg"));
 
         ModelPart sourceBody = source.getChild("Body");
         ModelPart targetBody = target.getChild("Body");
         targetBody.copyFrom(sourceBody);
-        targetBody.getChild("LeftLeg").copyFrom(sourceBody.getChild("LeftLeg"));
-        targetBody.getChild("RightLeg").copyFrom(sourceBody.getChild("RightLeg"));
+        targetBody.getChild("Head").copyFrom(sourceBody.getChild("Head"));
         targetBody.getChild("LeftArm").copyFrom(sourceBody.getChild("LeftArm"));
         targetBody.getChild("RightArm").copyFrom(sourceBody.getChild("RightArm"));
     }
@@ -65,13 +65,13 @@ public class BuriedArmorLayer extends RenderLayer<Buried, BuriedModel> {
         ModelPart body = buried.getChild("Body");
         buried.visible = true;
         body.visible = true;
-        buried.getChild("Head").visible = slot == EquipmentSlot.HEAD;
+        body.getChild("Head").visible = slot == EquipmentSlot.HEAD;
         body.getChild("BodyArmor").visible = slot == EquipmentSlot.CHEST || slot == EquipmentSlot.LEGS;
         boolean arms = slot == EquipmentSlot.CHEST;
         body.getChild("LeftArm").visible = arms;
         body.getChild("RightArm").visible = arms;
         boolean legs = slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET;
-        body.getChild("LeftLeg").visible = legs;
-        body.getChild("RightLeg").visible = legs;
+        buried.getChild("LeftLeg").visible = legs;
+        buried.getChild("RightLeg").visible = legs;
     }
 }
