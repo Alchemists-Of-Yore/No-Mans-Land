@@ -245,7 +245,7 @@ public class Centipede extends Monster {
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Animal.class, 10, true, false, Centipede::isPrey));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Animal.class, 10, true, false, Centipede::isPrey).setUnseenMemoryTicks(200));
     }
 
     public static boolean isPrey(LivingEntity entity) {
@@ -969,19 +969,19 @@ public class Centipede extends Monster {
             double loud = loudness(nearest);
             boolean contact = distanceToSqr(nearest) < 9.0;
             float gain = (float) (loud * prox * 0.7 + prox * 0.02) + (contact ? 0.5F : 0.0F);
-            this.awareness = Mth.clamp(this.awareness + gain - 0.02F, 0.0F, 1.0F);
-            if (this.awareness > 0.3F) {
-                this.lastKnownPos = nearest.position();
-            }
-            if (this.awareness > 0.45F && getTarget() == null) {
+            this.awareness = Mth.clamp(this.awareness + gain - 0.015F, 0.0F, 1.0F);
+            this.lastKnownPos = nearest.position();
+            if (this.awareness > 0.4F && getTarget() == null) {
                 setTarget(nearest);
-            } else if (getTarget() == nearest && this.awareness < 0.06F) {
-                setTarget(null);
+            }
+            if (getTarget() == nearest) {
+                this.awareness = Math.max(this.awareness, 0.55F);
             }
         } else {
-            this.awareness = Math.max(0.0F, this.awareness - 0.04F);
-            if (getTarget() instanceof Player && this.awareness < 0.06F) {
+            this.awareness = Math.max(0.0F, this.awareness - 0.008F);
+            if (getTarget() instanceof Player && this.awareness < 0.05F) {
                 setTarget(null);
+                this.lastKnownPos = null;
             }
         }
 
