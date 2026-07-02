@@ -30,7 +30,6 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.CritParticle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -254,9 +253,18 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.STASIS_HIT_PARRY.get(), StasisHitProvider::new);
         event.registerSpriteSet(NMLParticleTypes.STASIS_BREAK.get(), StasisHitProvider::new);
 
-        event.registerSpriteSet(NMLParticleTypes.FUNNY_PLACEHOLDER_DEBUG_RITUAL_PICK.get(), sprites
+        event.registerSpriteSet(NMLParticleTypes.RITUAL_PICK_SMOKE.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-                -> new FunnyPlaceholderDebugRitualPickParticle(clientLevel, d, e, f, g, h, i, sprites));
+                -> new RitualPickSmokeParticle(clientLevel, d, e, f, g, h, i, sprites));
+
+        event.registerSpriteSet(NMLParticleTypes.RITUAL_PICK_RESONANCE.get(), sprites
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new RitualPickResonanceParticle(clientLevel, d, e, f, g, h, i, sprites));
+
+        event.registerSpriteSet(NMLParticleTypes.RITUAL_PICK_DUST.get(), sprites
+                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
+                -> new RitualPickDustParticle(clientLevel, d, e, f, sprites));
+
 
         event.registerSpecial(NMLParticleTypes.POT_SHATTER.get(), new PotShatterParticle.Provider());
         event.registerSpriteSet(NMLParticleTypes.LIVING_URN_SHARD_FACE.get(), LivingUrnShardFaceParticle.Provider::new);
@@ -279,6 +287,8 @@ public class ClientSetupEvents {
                     shader -> MoonlightDreamRenderer.DREAM_SKY_SHADER = shader);
             GraphicsCompat.tryRegister(event, "dream_horizon_gradient", DefaultVertexFormat.POSITION_COLOR,
                     shader -> MoonlightDreamRenderer.GRADIENT_SHADER = shader);
+            GraphicsCompat.tryRegister(event, "more_translucent_particle", DefaultVertexFormat.PARTICLE,
+                    shader -> RitualPickSmokeParticle.SHADER = shader);
         }
         try {
             InvertedBellClientHandler.instance.postChain = new PostChain(

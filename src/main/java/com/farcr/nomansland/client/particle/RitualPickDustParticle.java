@@ -6,13 +6,13 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.*;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 
-public class FunnyPlaceholderDebugRitualPickParticle extends SuspendedTownParticle {
+public class RitualPickDustParticle extends EntropyDustParticle {
     public static final ParticleRenderType RENDER_TYPE = new ParticleRenderType() {
         @Override
         public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
@@ -26,20 +26,13 @@ public class FunnyPlaceholderDebugRitualPickParticle extends SuspendedTownPartic
 
         @Override
         public String toString() {
-            return "FUNNY_PLACEHOLDER_DEBUG_RITUAL_PICK";
+            return "RITUAL_PICK_DUST";
         }
     };
 
-    public FunnyPlaceholderDebugRitualPickParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet sprites) {
-        super(level, x, y, z, xSpeed, ySpeed, zSpeed);
-        this.pickSprite(sprites);
-        this.setColor(1.0F, 1.0F, 1.0F);
-        this.setLifetime(5 * 20);
-    }
-
-    @Override
-    protected int getLightColor(float partialTick) {
-        return LightTexture.FULL_BRIGHT;
+    public RitualPickDustParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet) {
+        super(level, x, y, z, spriteSet);
+        this.hasPhysics = false;
     }
 
     @Override

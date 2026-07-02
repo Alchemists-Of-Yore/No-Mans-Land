@@ -73,6 +73,7 @@
   ],
   "client": [
     "ItemInHandRendererMixin",
+    "ParticleEngineMixin",
     "client.AbstractSoundInstanceMixin",
     "client.AnimationUtilsMixin",
     "client.BlockItemMixin",

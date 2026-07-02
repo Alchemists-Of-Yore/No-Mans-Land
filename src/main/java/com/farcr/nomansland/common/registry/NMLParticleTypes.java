@@ -72,7 +72,9 @@ public class NMLParticleTypes {
             PotShatterParticleOption::codec, PotShatterParticleOption::streamCodec
     );
 
-    public static final Supplier<SimpleParticleType> FUNNY_PLACEHOLDER_DEBUG_RITUAL_PICK = register("funny_placeholder_debug_ritual_pick");
+    public static final Supplier<SimpleParticleType> RITUAL_PICK_SMOKE = register("ritual_pick_smoke");
+    public static final Supplier<SimpleParticleType> RITUAL_PICK_RESONANCE = register("ritual_pick_resonance");
+    public static final Supplier<SimpleParticleType> RITUAL_PICK_DUST = register("ritual_pick_dust");
     public static final Supplier<SimpleParticleType> LIVING_URN_SHARD_FACE = register("living_urn_shard_face");
 
     private static <T extends ParticleOptions> Supplier<ParticleType<T>> register(String name, boolean overrideLimitter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
