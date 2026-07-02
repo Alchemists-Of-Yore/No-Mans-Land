@@ -2,8 +2,10 @@ package com.farcr.nomansland.common.entity.centipede;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public final class SurfacePathfinder {
     public record Cell(BlockPos block, Direction face) {
@@ -103,7 +106,7 @@ public final class SurfacePathfinder {
         return null;
     }
 
-    public Cell pickReachable(Cell start, int minDist, int maxDist, int maxNodes, RandomSource random) {
+    public Cell pickReachable(Cell start, int minDist, int maxDist, int maxNodes, RandomSource random, Predicate<Cell> valid) {
         if (!isCell(start)) {
             return null;
         }
@@ -134,17 +137,64 @@ public final class SurfacePathfinder {
         if (candidates.isEmpty()) {
             return null;
         }
-        int bestPri = -1;
-        for (Cell c : candidates) {
-            bestPri = Math.max(bestPri, facePriority(c.face()));
-        }
-        List<Cell> preferred = new ArrayList<>();
-        for (Cell c : candidates) {
-            if (facePriority(c.face()) == bestPri) {
-                preferred.add(c);
+        int checks = 0;
+        for (int pri = 2; pri >= 0; pri--) {
+            List<Cell> tier = new ArrayList<>();
+            for (Cell c : candidates) {
+                if (facePriority(c.face()) == pri) {
+                    tier.add(c);
+                }
+            }
+            while (!tier.isEmpty() && checks < 40) {
+                Cell c = tier.remove(random.nextInt(tier.size()));
+                checks++;
+                if (valid.test(c)) {
+                    return c;
+                }
             }
         }
-        return preferred.get(random.nextInt(preferred.size()));
+        return null;
+    }
+
+    public boolean fullyBuried(Cell cell) {
+        return buriedAlong(cell.block(), cell, cell);
+    }
+
+    public boolean tunnelBuried(Cell start, Cell end) {
+        Vec3 from = Vec3.atCenterOf(start.block());
+        Vec3 to = Vec3.atCenterOf(end.block());
+        int steps = Math.max(1, (int) Math.ceil(from.distanceTo(to) / 0.1));
+        BlockPos last = null;
+        for (int i = 0; i <= steps; i++) {
+            double t = (double) i / steps;
+            BlockPos p = BlockPos.containing(Mth.lerp(t, from.x, to.x), Mth.lerp(t, from.y, to.y), Mth.lerp(t, from.z, to.z));
+            if (p.equals(last)) {
+                continue;
+            }
+            last = p;
+            if (!buriedAlong(p, start, end)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean buriedAlong(BlockPos p, Cell start, Cell end) {
+        if (!solid(p)) {
+            return false;
+        }
+        for (Direction d : Direction.values()) {
+            if (p.equals(start.block()) && d == start.face()) {
+                continue;
+            }
+            if (p.equals(end.block()) && d == end.face()) {
+                continue;
+            }
+            if (!solid(p.relative(d))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static int facePriority(Direction face) {

@@ -58,8 +58,9 @@ public class Centipede extends Monster {
     private static final double CRUMB_MAX = 0.5;
     private static final int TRACK_CAP = 160;
     private static final float NORMAL_EMA = 0.25F;
-    private static final int LUNGE_TICKS = 8;
     private static final double LUNGE_SPEED = 0.55;
+    private static final double LUNGE_MIN = 4.0;
+    private static final double LUNGE_MAX = 6.0;
     public static final float GAIT_FREQ = 3.0F;
     public static final float WAVE_LAMBDA = 0.6F;
 
@@ -114,6 +115,7 @@ public class Centipede extends Monster {
     private float shrivelAmount;
 
     private int lungeTicks;
+    private int lungeDuration;
     private double lungeDirX;
     private double lungeDirZ;
     private double lungeVelY;
@@ -356,13 +358,18 @@ public class Centipede extends Monster {
         return this.headSpeed;
     }
 
-    public void requestLunge(double dx, double dy, double dz) {
-        double l = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (l < 1.0E-6) return;
-        this.lungeDirX = dx / l;
-        this.lungeDirZ = dz / l;
-        this.lungeTicks = LUNGE_TICKS;
+    public boolean requestLunge(double dx, double dy, double dz) {
+        double d = Math.sqrt(dx * dx + dz * dz);
+        if (d < LUNGE_MIN || d > LUNGE_MAX) return false;
+        int n = Mth.clamp((int) Math.ceil(d / LUNGE_SPEED), 6, 14);
+        double speed = d / n;
+        this.lungeDirX = dx / d * speed;
+        this.lungeDirZ = dz / d * speed;
+        this.lungeVelY = Mth.clamp(dy / n + 0.08 * (n - 1) * 0.5, 0.05, 0.8);
+        this.lungeDuration = n;
+        this.lungeTicks = n;
         this.attached = false;
+        return true;
     }
 
     @Override
@@ -436,18 +443,15 @@ public class Centipede extends Monster {
     }
 
     private void lungeStep() {
-        if (this.lungeTicks == LUNGE_TICKS) {
-            this.lungeVelY = 0.45;
-        }
         this.lungeTicks--;
-        Vec3 motion = new Vec3(this.lungeDirX * LUNGE_SPEED, this.lungeVelY, this.lungeDirZ * LUNGE_SPEED);
+        Vec3 motion = new Vec3(this.lungeDirX, this.lungeVelY, this.lungeDirZ);
         this.lungeVelY -= 0.08;
         setSurfaceData();
         Vec3 before = position();
         this.move(MoverType.SELF, motion);
         setDeltaMovement(Vec3.ZERO);
         this.resetFallDistance();
-        if (this.lungeTicks < LUNGE_TICKS - 1 && position().distanceToSqr(before) < 0.0025) {
+        if (this.lungeTicks < this.lungeDuration - 1 && position().distanceToSqr(before) < 0.0025) {
             this.lungeTicks = 0;
         }
     }
@@ -556,6 +560,8 @@ public class Centipede extends Monster {
                 this.attached = false;
                 this.surfacePath = null;
                 setSurfaceData();
+                setDeltaMovement(this.headDir.x * 0.22 + (this.random.nextDouble() - 0.5) * 0.12, 0.32,
+                        this.headDir.z * 0.22 + (this.random.nextDouble() - 0.5) * 0.12);
             }
         } else {
             this.stuckTicks = 0;
@@ -690,8 +696,8 @@ public class Centipede extends Monster {
     }
 
     private Vec3 computeMoveDir(Vec3 pos) {
-        if (hasUnsupportedSegments()) {
-            return supportMove(pos);
+        if (needsSettling()) {
+            return settleMove(pos);
         }
         if (this.freezeTicks > 0) {
             return Vec3.ZERO;
@@ -757,35 +763,70 @@ public class Centipede extends Monster {
         return steer(pos, BlockPos.containing(this.moveTarget), this.moveTarget);
     }
 
-    private Vec3 supportMove(Vec3 pos) {
+    private Vec3 settleMove(Vec3 pos) {
+        Vec3 centroid = problemCentroid();
+        if (centroid == null) {
+            return this.headDir;
+        }
+        Vec3 dir = pos.subtract(centroid);
+        return dir.lengthSqr() > 1.0E-6 ? dir : this.headDir;
+    }
+
+    public boolean needsSettling() {
+        return problemCentroid() != null;
+    }
+
+    @Nullable
+    private Vec3 problemCentroid() {
         int count = getPieceCount();
+        boolean[] problem = new boolean[count];
+        for (int i = 1; i < count; i++) {
+            if (pieceUnsettled(i)) {
+                problem[i] = true;
+            }
+        }
+        boolean[] folded = new boolean[count];
+        double minSq = sq(SEGMENT_SPACING * 0.55);
+        for (int i = 0; i < count; i++) {
+            for (int j = i + 2; j < count; j++) {
+                if (sq(this.pieceX[i] - this.pieceX[j]) + sq(this.pieceY[i] - this.pieceY[j]) + sq(this.pieceZ[i] - this.pieceZ[j]) < minSq) {
+                    folded[i] = true;
+                    folded[j] = true;
+                }
+            }
+        }
+        int colliding = 0;
+        for (int i = 0; i < count; i++) {
+            if (folded[i]) {
+                colliding++;
+            }
+        }
         double ax = 0.0;
         double ay = 0.0;
         double az = 0.0;
         int n = 0;
-        for (int i = 1; i < count; i++) {
-            if (!hasNearbySolid(this.pieceX[i], this.pieceY[i], this.pieceZ[i])) {
+        for (int i = 0; i < count; i++) {
+            if (problem[i] || (colliding >= 3 && folded[i])) {
                 ax += this.pieceX[i];
                 ay += this.pieceY[i];
                 az += this.pieceZ[i];
                 n++;
             }
         }
-        if (n == 0) {
-            return Vec3.ZERO;
-        }
-        Vec3 dir = pos.subtract(ax / n, ay / n, az / n);
-        return dir.lengthSqr() > 1.0E-6 ? dir : this.headDir;
+        return n == 0 ? null : new Vec3(ax / n, ay / n, az / n);
     }
 
-    public boolean hasUnsupportedSegments() {
-        int count = getPieceCount();
-        for (int i = 1; i < count; i++) {
-            if (!hasNearbySolid(this.pieceX[i], this.pieceY[i], this.pieceZ[i])) {
-                return true;
-            }
+    private boolean pieceUnsettled(int i) {
+        if (this.pieceAir[i]) {
+            return true;
         }
-        return false;
+        double px = this.pieceX[i];
+        double py = this.pieceY[i];
+        double pz = this.pieceZ[i];
+        if (isSolidAt(px, py, pz)) {
+            return true;
+        }
+        return !isSolidAt(px - this.pieceNX[i] * 0.5, py - this.pieceNY[i] * 0.5, pz - this.pieceNZ[i] * 0.5);
     }
 
     private Vec3 steer(Vec3 pos, BlockPos goalBlock, Vec3 goalPos) {
@@ -908,10 +949,15 @@ public class Centipede extends Monster {
             if (holdsFrightening(p)) {
                 this.nerve = Math.min(1.0F, this.nerve + 0.06F);
             }
-            Vec3 toMe = position().subtract(p.position());
-            if (toMe.lengthSqr() > 1.0E-4 && toMe.lengthSqr() < 49.0
-                    && p.getDeltaMovement().dot(toMe.normalize()) < -0.25) {
-                this.nerve = Math.min(1.0F, this.nerve + 0.03F);
+            Vec3 fromPlayer = position().subtract(p.position());
+            Vec3 known = p.getKnownMovement();
+            if (fromPlayer.horizontalDistanceSqr() > 1.0E-4 && fromPlayer.horizontalDistanceSqr() < 49.0
+                    && known.horizontalDistanceSqr() > 0.01) {
+                double toward = new Vec3(known.x, 0.0, known.z).normalize()
+                        .dot(new Vec3(fromPlayer.x, 0.0, fromPlayer.z).normalize());
+                if (toward > 0.5) {
+                    this.nerve = Math.min(1.0F, this.nerve + 0.03F);
+                }
             }
         }
         this.nerve = Math.max(0.0F, this.nerve - 0.008F - sizeBrave * 0.01F);

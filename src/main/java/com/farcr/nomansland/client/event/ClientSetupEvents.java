@@ -242,6 +242,8 @@ public class ClientSetupEvents {
     @SubscribeEvent
     public static void registerShaders(final RegisterShadersEvent event) throws IOException {
         if (GraphicsCompat.customShadersSupported()) {
+            GraphicsCompat.tryRegister(event, "rendertype_clod", DefaultVertexFormat.NEW_ENTITY,
+                    shader -> ClodRenderer.CLOD_SHADER = shader);
             GraphicsCompat.tryRegister(event, "rendertype_moonlight", DefaultVertexFormat.NEW_ENTITY,
                     shader -> MoonlightRayParticle.MOONLIGHT_RENDER_SHADER = shader);
             GraphicsCompat.tryRegister(event, "rendertype_moonlight_glow", DefaultVertexFormat.POSITION_TEX,

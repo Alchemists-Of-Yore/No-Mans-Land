@@ -114,13 +114,13 @@ public class Clod extends Animal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new ClodInvestigateGoal(this, 1.0));
-        this.goalSelector.addGoal(1, new ClodFreezeGoal(this));
-        this.goalSelector.addGoal(2, new ClodAvoidThreatGoal(this, 1.5));
-        this.goalSelector.addGoal(3, new ClodAvoidSunGoal(this, 1.2));
-        this.goalSelector.addGoal(3, new RestrictSunGoal(this));
-        this.goalSelector.addGoal(4, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(5, new TemptGoal(this, 1.0, stack -> stack.is(NMLTags.CLOD_FOOD), false));
+        this.goalSelector.addGoal(1, new TemptGoal(this, 1.0, stack -> stack.is(NMLTags.CLOD_FOOD), false));
+        this.goalSelector.addGoal(2, new ClodInvestigateGoal(this, 1.0));
+        this.goalSelector.addGoal(2, new ClodFreezeGoal(this));
+        this.goalSelector.addGoal(3, new ClodAvoidThreatGoal(this, 1.5));
+        this.goalSelector.addGoal(4, new ClodAvoidSunGoal(this, 1.2));
+        this.goalSelector.addGoal(4, new RestrictSunGoal(this));
+        this.goalSelector.addGoal(5, new BreedGoal(this, 1.0));
         this.goalSelector.addGoal(6, new FollowParentGoal(this, 1.1));
         this.goalSelector.addGoal(7, new ClodGroupGoal(this, 0.9));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 0.8));
@@ -213,7 +213,9 @@ public class Clod extends Animal {
         if (entity == this || !entity.isAlive()) return false;
         if (entity instanceof Clod) return false;
         if (entity instanceof Player player) {
-            return !player.isCreative() && !player.isSpectator();
+            if (player.isCreative() || player.isSpectator()) return false;
+            if (player.getMainHandItem().is(NMLTags.CLOD_FOOD) || player.getOffhandItem().is(NMLTags.CLOD_FOOD)) return false;
+            return true;
         }
         if (entity instanceof Monster) return true;
         return entity instanceof Fox || entity instanceof Wolf || entity instanceof PolarBear

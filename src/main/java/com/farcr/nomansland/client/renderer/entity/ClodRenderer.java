@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -24,8 +25,27 @@ public class ClodRenderer extends MobRenderer<Clod, ClodModel<Clod>> {
     private static final ResourceLocation TEXTURE = NoMansLand.location("textures/entity/clod/clod.png");
     private static final float MIN_CLOSE_OPACITY = 0.25F;
 
-    private static final RenderType CLOD_RENDER_TYPE = RenderType.create(
-            "nomansland:clod",
+    public static ShaderInstance CLOD_SHADER;
+
+    private static final RenderType CLOD_DITHER = RenderType.create(
+            "nomansland:clod_dither",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            1536,
+            true,
+            false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> CLOD_SHADER))
+                    .setTextureState(new RenderStateShard.TextureStateShard(TEXTURE, false, false))
+                    .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setOverlayState(RenderStateShard.OVERLAY)
+                    .createCompositeState(true)
+    );
+
+    private static final RenderType CLOD_FADE_FALLBACK = RenderType.create(
+            "nomansland:clod_fade",
             DefaultVertexFormat.NEW_ENTITY,
             VertexFormat.Mode.QUADS,
             1536,
@@ -78,7 +98,9 @@ public class ClodRenderer extends MobRenderer<Clod, ClodModel<Clod>> {
 
     @Override
     protected RenderType getRenderType(Clod clod, boolean bodyVisible, boolean translucent, boolean glowing) {
-        return CLOD_RENDER_TYPE;
+        float alpha = this.getModel().alpha;
+        if (alpha >= 0.99F) return RenderType.entityCutoutNoCull(TEXTURE);
+        return CLOD_SHADER != null ? CLOD_DITHER : CLOD_FADE_FALLBACK;
     }
 
     @Override

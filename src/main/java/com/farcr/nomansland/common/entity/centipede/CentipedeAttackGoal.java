@@ -56,22 +56,24 @@ public class CentipedeAttackGoal extends Goal {
         }
 
         if (this.lungeCooldown <= 0 && this.centipede.onGround() && this.centipede.getRandom().nextInt(50) == 0) {
-            lungeTowards(target);
-            this.lungeCooldown = 80;
+            if (lungeTowards(target)) {
+                this.lungeCooldown = 80;
+            }
         }
     }
 
-    private void lungeTowards(LivingEntity target) {
-        Vec3 lead = target.position().add(target.getDeltaMovement().scale(6.0));
+    private boolean lungeTowards(LivingEntity target) {
+        Vec3 vel = target.getKnownMovement();
+        Vec3 lead = target.position().add(vel.x * 6.0, 0.0, vel.z * 6.0);
         double dx = lead.x - this.centipede.getX();
         double dz = lead.z - this.centipede.getZ();
         double h = Math.sqrt(dx * dx + dz * dz);
-        if (h < 1.0E-4) return;
+        if (h < 1.0E-4) return false;
         double ahead = Math.min(3.0, h);
         double lx = this.centipede.getX() + dx / h * ahead;
         double lz = this.centipede.getZ() + dz / h * ahead;
-        if (!hasGroundBelow(lx, this.centipede.getY() + 0.5, lz)) return;
-        this.centipede.requestLunge(dx, 0.3, dz);
+        if (!hasGroundBelow(lx, this.centipede.getY() + 0.5, lz)) return false;
+        return this.centipede.requestLunge(dx, target.getY() - this.centipede.getY(), dz);
     }
 
     private boolean hasGroundBelow(double x, double y, double z) {

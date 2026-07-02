@@ -152,7 +152,7 @@ public class Beetle extends Animal {
         if (isIncapacitated() || !hasFlightHeadroom()) return;
         abandonDungBall();
         setState(STATE_FLYING);
-        flightTicks = 50 + random.nextInt(30);
+        flightTicks = 100 + random.nextInt(60);
         flightGrace = 8;
         flightLeftGround = false;
         flightStartY = getY();
@@ -173,7 +173,7 @@ public class Beetle extends Animal {
             away = new Vec3(random.nextDouble() - 0.5, 0.0, random.nextDouble() - 0.5);
         }
         away = away.normalize();
-        startFlight(getX() + away.x * 7.0, getY(), getZ() + away.z * 7.0);
+        startFlight(getX() + away.x * 14.0, getY(), getZ() + away.z * 14.0);
     }
 
     private void updateSenses() {
@@ -432,6 +432,8 @@ public class Beetle extends Animal {
             double climbTo = Math.max(flightStartY, flightTargetY) + 2.0;
             if (getY() < climbTo) {
                 vy = Math.min(vy + 0.07, 0.32);
+            } else if (horizontal > 4.0) {
+                vy *= 0.8;
             } else {
                 vy = vy * 0.9 - 0.015;
             }

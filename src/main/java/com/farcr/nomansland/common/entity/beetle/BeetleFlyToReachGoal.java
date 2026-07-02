@@ -69,9 +69,9 @@ public class BeetleFlyToReachGoal extends Goal {
     @Nullable
     private BlockPos findUnreachableSpot() {
         for (int attempt = 0; attempt < 6; attempt++) {
-            int dx = beetle.getRandom().nextInt(17) - 8;
-            int dz = beetle.getRandom().nextInt(17) - 8;
-            if (Math.abs(dx) < 3 && Math.abs(dz) < 3) continue;
+            int dx = beetle.getRandom().nextInt(33) - 16;
+            int dz = beetle.getRandom().nextInt(33) - 16;
+            if (Math.abs(dx) < 6 && Math.abs(dz) < 6) continue;
             BlockPos stand = findStandable(beetle.blockPosition().offset(dx, 0, dz));
             if (stand == null) continue;
             Path path = beetle.getNavigation().createPath(stand, 0);

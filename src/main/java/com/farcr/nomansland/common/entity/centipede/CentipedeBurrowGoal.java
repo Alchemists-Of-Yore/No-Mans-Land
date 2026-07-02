@@ -70,7 +70,8 @@ public class CentipedeBurrowGoal extends Goal {
         SurfacePathfinder.Cell start = this.centipede.currentCell();
         if (start == null) return false;
         SurfacePathfinder pf = new SurfacePathfinder(this.centipede.level());
-        SurfacePathfinder.Cell emerge = pf.pickReachable(start, 3, 8, 400, this.centipede.getRandom());
+        if (!pf.fullyBuried(start)) return false;
+        SurfacePathfinder.Cell emerge = pf.pickReachable(start, 3, 8, 400, this.centipede.getRandom(), c -> pf.tunnelBuried(start, c));
         if (emerge == null) return false;
         this.startCell = start;
         this.emergeCell = emerge;
@@ -149,8 +150,9 @@ public class CentipedeBurrowGoal extends Goal {
             burstEffects(this.centipede.position().add(0.0, this.centipede.getBbHeight() * 0.5, 0.0), this.emergeCell.block());
             this.centipede.setTarget(this.pounceTarget);
             double dx = this.pounceTarget.getX() - this.centipede.getX();
+            double dy = this.pounceTarget.getY() - this.centipede.getY();
             double dz = this.pounceTarget.getZ() - this.centipede.getZ();
-            this.centipede.requestLunge(dx, 0.45, dz);
+            this.centipede.requestLunge(dx, dy, dz);
         }
         this.phase = null;
     }
