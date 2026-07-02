@@ -17,6 +17,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
+import org.lwjgl.glfw.GLFW;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,6 +114,20 @@ public class CarvingSelectionScreen extends Screen {
 
         this.onClose();
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode >= GLFW.GLFW_KEY_1 && keyCode <= GLFW.GLFW_KEY_9) {
+            int lastSelected = this.selectedIndex;
+            this.selectedIndex = Math.clamp(keyCode - GLFW.GLFW_KEY_1, 0, this.types.size() - 1);
+            lastSelectedType = this.types.get(this.selectedIndex);
+            if (this.selectedIndex != lastSelected) {
+                Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK.value, 0.3f, 1.1f);
+            }
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
