@@ -67,7 +67,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         Registry<PotVariant> registry = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
         List<Holder.Reference<PotVariant>> matching = registry.holders().filter(h -> h.value().size() == size).toList();
         variant = matching.get(level.getRandom().nextInt(matching.size())).value();
-        setChanged();
+        level.blockEntityChanged(worldPosition);
     }
 
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
