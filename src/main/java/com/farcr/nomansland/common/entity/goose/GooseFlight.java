@@ -15,16 +15,18 @@ public final class GooseFlight {
         float yaw = goose.getYRot();
         double dx = targetX - goose.getX();
         double dz = targetZ - goose.getZ();
+        float desiredYaw = yawTo(dx, dz);
         if (dx * dx + dz * dz > 0.25) {
-            yaw = Mth.approachDegrees(yaw, yawTo(dx, dz), turnRate);
+            yaw = Mth.approachDegrees(yaw, desiredYaw, turnRate);
         }
-        apply(goose, yaw, targetY, speed, accel, climbCap, climbCap);
+        apply(goose, yaw, targetY, turnBledSpeed(yaw, desiredYaw, speed), accel, climbCap, climbCap);
     }
 
     public static void alongHeading(Goose goose, Vec3 heading, double targetY,
                                     float speed, float turnRate, float accel, double climbCap) {
-        float yaw = Mth.approachDegrees(goose.getYRot(), yawTo(heading.x, heading.z), turnRate);
-        apply(goose, yaw, targetY, speed, accel, climbCap, climbCap);
+        float desiredYaw = yawTo(heading.x, heading.z);
+        float yaw = Mth.approachDegrees(goose.getYRot(), desiredYaw, turnRate);
+        apply(goose, yaw, targetY, turnBledSpeed(yaw, desiredYaw, speed), accel, climbCap, climbCap);
     }
 
     public static void spiral(Goose goose, float spin, double targetY, float speed, float accel, double climbCap) {
@@ -36,10 +38,23 @@ public final class GooseFlight {
         float yaw = goose.getYRot();
         double dx = targetX - goose.getX();
         double dz = targetZ - goose.getZ();
+        float desiredYaw = yawTo(dx, dz);
         if (dx * dx + dz * dz > 0.04) {
-            yaw = Mth.approachDegrees(yaw, yawTo(dx, dz), turnRate);
+            yaw = Mth.approachDegrees(yaw, desiredYaw, turnRate);
         }
-        apply(goose, yaw, targetY, speed, accel, climbCap, descentCap);
+        apply(goose, yaw, targetY, turnBledSpeed(yaw, desiredYaw, speed), accel, climbCap, descentCap);
+    }
+
+    private static float turnBledSpeed(float yaw, float desiredYaw, float speed) {
+        float misalign = Math.abs(Mth.degreesDifference(yaw, desiredYaw));
+        if (misalign <= 25.0F) return speed;
+        return speed * Math.max(0.45F, 1.0F - (misalign - 25.0F) / 140.0F);
+    }
+
+    public static void descend(Goose goose, double horizontalDamping, double accel, double descentCap) {
+        Vec3 velocity = goose.getDeltaMovement();
+        double newY = Math.max(velocity.y - accel, -descentCap);
+        goose.setDeltaMovement(velocity.x * horizontalDamping, newY, velocity.z * horizontalDamping);
     }
 
     public static double terrainAhead(ServerLevel level, double x, double z, double dirX, double dirZ, int near, int far) {

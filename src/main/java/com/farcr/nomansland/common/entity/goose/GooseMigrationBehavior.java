@@ -134,26 +134,30 @@ public class GooseMigrationBehavior extends Behavior<Goose> {
 
         Vec3 target = Vec3.atBottomCenterOf(landing);
         double horizontal = Math.sqrt(horizontalDistanceSqr(goose, target));
+        double groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, goose.getBlockX(), goose.getBlockZ());
+        double above = goose.getY() - groundY;
 
-        if (horizontal > 12.0) {
-            double glideY = landing.getY() + horizontal * 0.4;
-            double targetY = Math.max(glideY, terrainAhead(level, goose, headingVec(goose)) + 6);
-            GooseFlight.towardPoint(goose, target.x, target.z, targetY, APPROACH_SPEED, 6.0F, ACCEL, CLIMB_CAP);
-        } else if (horizontal > 1.5) {
-            double targetY = landing.getY() + horizontal * 0.8;
-            float speed = (float) Mth.clamp(horizontal * 0.09, 0.17, APPROACH_SPEED);
-            GooseFlight.approach(goose, target.x, target.z, targetY, speed, LANDING_TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
-        } else {
-            GooseFlight.approach(goose, target.x, target.z, landing.getY(), 0.04F, LANDING_TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
-        }
-
-        if (goose.onGround() || goose.isInWater()) {
+        if (goose.onGround() || goose.isInWater() || above <= 0.6 || (horizontal < 1.2 && goose.getY() - landing.getY() <= 1.4)) {
+            goose.flapBriefly();
             goose.finishMigrationFlight();
             goose.honk();
             if (landing.distSqr(goose.blockPosition()) > 9.0) {
                 goose.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
                         new WalkTarget(landing, 1.1F, 1));
             }
+            return;
+        }
+
+        if (horizontal > 12.0) {
+            double glideY = landing.getY() + horizontal * 0.4;
+            double targetY = Math.max(glideY, terrainAhead(level, goose, headingVec(goose)) + 6);
+            GooseFlight.towardPoint(goose, target.x, target.z, targetY, APPROACH_SPEED, 6.0F, ACCEL, CLIMB_CAP);
+        } else if (horizontal > 2.5) {
+            double targetY = landing.getY() + horizontal * 0.6;
+            float speed = (float) Mth.clamp(horizontal * 0.09, 0.17, APPROACH_SPEED);
+            GooseFlight.approach(goose, target.x, target.z, targetY, speed, LANDING_TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
+        } else {
+            GooseFlight.descend(goose, 0.75, 0.08, DESCENT_CAP);
         }
     }
 

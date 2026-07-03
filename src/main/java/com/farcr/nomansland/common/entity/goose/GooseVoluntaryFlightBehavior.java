@@ -36,6 +36,7 @@ public class GooseVoluntaryFlightBehavior extends Behavior<Goose> {
     private int phaseTicks;
     private int stuckTicks;
     private boolean liftedOff;
+    private boolean groupFlight;
     private long nextFlightTime;
 
     public GooseVoluntaryFlightBehavior() {
@@ -46,16 +47,28 @@ public class GooseVoluntaryFlightBehavior extends Behavior<Goose> {
     protected boolean checkExtraStartConditions(ServerLevel level, Goose goose) {
         if (goose.isBaby() || goose.isFlying() || goose.isMigrating() || goose.isPassenger()
                 || goose.isLeashed() || goose.isInLove() || goose.isCarrying() || goose.isStealing()) return false;
-        if (level.getGameTime() < nextFlightTime) return false;
         if (!goose.onGround()) return false;
         Brain<Goose> brain = goose.getBrain();
         if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
                 || brain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)
                 || brain.hasMemoryValue(MemoryModuleType.BREED_TARGET)) return false;
+
+        groupFlight = false;
+        Vec3 invited = goose.pendingFlightInvite();
+        if (invited != null) {
+            goose.clearFlightInvite();
+            destination = invited;
+            return true;
+        }
+
+        if (level.getGameTime() < nextFlightTime) return false;
         if (!level.canSeeSky(goose.blockPosition().above(2))) return false;
 
         destination = crossingDestination(level, goose, brain);
-        if (destination == null) destination = relocationDestination(level, goose, brain);
+        if (destination == null) {
+            destination = relocationDestination(level, goose, brain);
+            groupFlight = destination != null;
+        }
         return destination != null;
     }
 
@@ -66,12 +79,29 @@ public class GooseVoluntaryFlightBehavior extends Behavior<Goose> {
         brain.eraseMemory(MemoryModuleType.PATH);
         goose.getNavigation().stop();
         goose.setFlying(true);
+        goose.setDeltaMovement(goose.getDeltaMovement().add(0, 0.28, 0));
         goose.honk();
         phase = Phase.TAKEOFF;
         phaseTicks = 0;
         stuckTicks = 0;
         liftedOff = false;
         takeoffY = goose.getY();
+        if (groupFlight && destination != null) inviteFlock(goose);
+    }
+
+    private void inviteFlock(Goose goose) {
+        for (Goose other : goose.nearbyGeese(10.0)) {
+            if (other.isBaby() || other.isFlying() || other.isMigrating() || other.isPassenger()
+                    || other.isLeashed() || other.isInLove() || other.isCarrying() || other.isStealing()
+                    || !other.onGround()) continue;
+            Brain<Goose> otherBrain = other.getBrain();
+            if (otherBrain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
+                    || otherBrain.hasMemoryValue(MemoryModuleType.AVOID_TARGET)
+                    || otherBrain.hasMemoryValue(MemoryModuleType.BREED_TARGET)) continue;
+            double offsetX = (goose.getRandom().nextDouble() - 0.5) * 5.0;
+            double offsetZ = (goose.getRandom().nextDouble() - 0.5) * 5.0;
+            other.inviteFlight(destination.add(offsetX, 0, offsetZ));
+        }
     }
 
     @Override
@@ -150,12 +180,18 @@ public class GooseVoluntaryFlightBehavior extends Behavior<Goose> {
     private void land(Goose goose) {
         Vec3 target = destination != null ? destination : goose.position();
         double groundY = target.y;
+        double above = goose.getY() - groundY;
         double dist = Math.sqrt(horizontalDistanceSqr(goose, target));
-        if (dist < 1.5) {
-            GooseFlight.approach(goose, target.x, target.z, groundY, 0.04F, TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
+        if (above <= 0.6 || (dist < 1.2 && above <= 1.4)) {
+            goose.flapBriefly();
+            goose.setFlying(false);
+            return;
+        }
+        if (dist < 2.5) {
+            GooseFlight.descend(goose, 0.75, 0.08, DESCENT_CAP);
         } else {
-            double targetY = groundY + Math.min(dist * 0.7, FLY_HEIGHT);
-            float speed = (float) Mth.clamp(dist * 0.1, 0.15, CRUISE_SPEED);
+            double targetY = groundY + Math.min(dist * 0.45, FLY_HEIGHT);
+            float speed = (float) Mth.clamp(dist * 0.12, 0.15, CRUISE_SPEED);
             GooseFlight.approach(goose, target.x, target.z, targetY, speed, TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
         }
         if (phaseTicks > 90) {

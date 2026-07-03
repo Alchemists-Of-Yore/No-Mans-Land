@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.entity.goose;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
@@ -49,7 +50,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
 
         LivingEntity danger = pressingThreat(goose);
         if (danger == null) return false;
-        destination = escapeDestination(goose, danger);
+        destination = escapeDestination(level, goose, danger);
         return true;
     }
 
@@ -61,6 +62,7 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         brain.eraseMemory(MemoryModuleType.PATH);
         goose.getNavigation().stop();
         goose.setFlying(true);
+        goose.setDeltaMovement(goose.getDeltaMovement().add(0, 0.28, 0));
         goose.honkAfraid();
         phase = Phase.TAKEOFF;
         phaseTicks = 0;
@@ -147,12 +149,18 @@ public class GooseFlightBehavior extends Behavior<Goose> {
     private void land(ServerLevel level, Goose goose) {
         Vec3 target = destination != null ? destination : goose.position();
         double groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, goose.getBlockX(), goose.getBlockZ());
+        double above = goose.getY() - groundY;
         double dist = Math.sqrt(horizontalDistanceSqr(goose, target));
-        if (dist < 1.5) {
-            GooseFlight.approach(goose, target.x, target.z, groundY, 0.04F, TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
+        if (above <= 0.6 || (dist < 1.2 && above <= 1.4)) {
+            goose.flapBriefly();
+            goose.setFlying(false);
+            return;
+        }
+        if (dist < 2.5) {
+            GooseFlight.descend(goose, 0.75, 0.08, DESCENT_CAP);
         } else {
-            double targetY = groundY + Math.min(dist * 0.7, FLY_HEIGHT);
-            float speed = (float) Mth.clamp(dist * 0.1, 0.18, FLY_SPEED);
+            double targetY = groundY + Math.min(dist * 0.45, FLY_HEIGHT);
+            float speed = (float) Mth.clamp(dist * 0.12, 0.18, FLY_SPEED);
             GooseFlight.approach(goose, target.x, target.z, targetY, speed, TURN_RATE, ACCEL, LAND_CLIMB_CAP, DESCENT_CAP);
         }
         if (phaseTicks > 80) {
@@ -180,10 +188,20 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         if (hurtBy != null && hurtBy.isAlive() && goose.distanceToSqr(hurtBy) < 144.0) return hurtBy;
         LivingEntity avoided = brain.getMemory(MemoryModuleType.AVOID_TARGET).orElse(null);
         if (avoided != null && avoided.isAlive() && goose.distanceToSqr(avoided) < 36.0) return avoided;
+        return flockPanicThreat(goose);
+    }
+
+    @Nullable
+    private static LivingEntity flockPanicThreat(Goose goose) {
+        if (goose.getRandom().nextInt(2) == 0) return null;
+        for (Goose flockmate : goose.nearbyGeese(8.0)) {
+            LivingEntity attacker = flockmate.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY).orElse(null);
+            if (attacker != null && attacker.isAlive() && goose.distanceToSqr(attacker) < 100.0) return attacker;
+        }
         return null;
     }
 
-    private static Vec3 escapeDestination(Goose goose, LivingEntity danger) {
+    private static Vec3 escapeDestination(ServerLevel level, Goose goose, LivingEntity danger) {
         Vec3 away = goose.position().subtract(danger.position()).multiply(1, 0, 1);
         if (away.lengthSqr() < 1.0E-4) {
             double angle = goose.getRandom().nextDouble() * Math.PI * 2;
@@ -191,6 +209,31 @@ public class GooseFlightBehavior extends Behavior<Goose> {
         }
         float spread = (goose.getRandom().nextFloat() - 0.5F) * ((float) Math.PI / 3F);
         away = away.normalize().yRot(spread);
+        Vec3 water = waterToward(level, goose, away);
+        if (water != null) return water;
         return goose.position().add(away.scale(22.0 + goose.getRandom().nextInt(10)));
+    }
+
+    @Nullable
+    private static Vec3 waterToward(ServerLevel level, Goose goose, Vec3 direction) {
+        Vec3 side = new Vec3(-direction.z, 0, direction.x);
+        Vec3 best = null;
+        double bestScore = Double.MAX_VALUE;
+        for (int forward = 12; forward <= 32; forward += 4) {
+            for (int lateral = -8; lateral <= 8; lateral += 4) {
+                Vec3 point = goose.position().add(direction.scale(forward)).add(side.scale(lateral));
+                int x = Mth.floor(point.x);
+                int z = Mth.floor(point.z);
+                if (!level.isLoaded(new BlockPos(x, level.getMinBuildHeight(), z))) continue;
+                int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                if (!level.getFluidState(new BlockPos(x, surfaceY - 1, z)).is(FluidTags.WATER)) continue;
+                double score = Math.abs(forward - 24) + Math.abs(lateral);
+                if (score < bestScore) {
+                    bestScore = score;
+                    best = new Vec3(x + 0.5, surfaceY, z + 0.5);
+                }
+            }
+        }
+        return best;
     }
 }

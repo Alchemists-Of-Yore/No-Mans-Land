@@ -43,7 +43,7 @@ public class GooseCarryLayer extends RenderLayer<Goose, GooseModel<Goose>> {
         pose.pushPose();
         getParentModel().translateToBill(pose);
         if (isHandheld(stack.getItem())) {
-            pose.translate(0.1F, 0.0F, -0.4F);
+            pose.translate(0.0F, 0.0F, -0.4F);
             pose.scale(0.7F, 0.7F, 0.7F);
             pose.mulPose(Axis.XP.rotationDegrees(-90.0F));
             pose.mulPose(Axis.ZP.rotationDegrees(45.0F));

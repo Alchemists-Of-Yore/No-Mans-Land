@@ -16,6 +16,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
@@ -95,6 +96,10 @@ public class Goose extends Animal {
     private FlightPose flightPose = FlightPose.FORWARD;
     private FlightPose pendingFlightPose = FlightPose.FORWARD;
     private int pendingFlightPoseTicks;
+    private float flightRoll;
+    private float flightRollO;
+    private float flightPitch;
+    private float flightPitchO;
     private boolean migrating;
     private boolean arriving;
     private boolean migrationTransit;
@@ -106,6 +111,10 @@ public class Goose extends Animal {
     private double migrationCeiling;
     @Nullable
     private BlockPos landingSpot;
+    @Nullable
+    private Vec3 flightInvite;
+    private long flightInviteReady;
+    private long flightInviteExpiry;
 
     public Goose(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -162,6 +171,14 @@ public class Goose extends Animal {
 
     public FlightPose getFlightPose() {
         return flightPose;
+    }
+
+    public float getFlightRoll(float partialTick) {
+        return Mth.lerp(partialTick, flightRollO, flightRoll);
+    }
+
+    public float getFlightPitch(float partialTick) {
+        return Mth.lerp(partialTick, flightPitchO, flightPitch);
     }
 
     public boolean isMigrating() {
@@ -238,6 +255,28 @@ public class Goose extends Animal {
         setFlying(true);
         getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         getNavigation().stop();
+    }
+
+    public void inviteFlight(Vec3 destination) {
+        flightInvite = destination;
+        long now = level().getGameTime();
+        flightInviteReady = now + random.nextInt(12);
+        flightInviteExpiry = now + 100L;
+    }
+
+    @Nullable
+    public Vec3 pendingFlightInvite() {
+        if (flightInvite == null) return null;
+        long now = level().getGameTime();
+        if (now > flightInviteExpiry) {
+            flightInvite = null;
+            return null;
+        }
+        return now >= flightInviteReady ? flightInvite : null;
+    }
+
+    public void clearFlightInvite() {
+        flightInvite = null;
     }
 
     public void finishMigrationFlight() {
@@ -621,6 +660,10 @@ public class Goose extends Animal {
             heal(1.0F);
         }
 
+        if (!level().isClientSide && flying && !onGround() && tickCount % 11 == 0) {
+            playSound(SoundEvents.PARROT_FLY, 0.25F, 0.55F + random.nextFloat() * 0.1F);
+        }
+
         Vec3 vec3 = this.getDeltaMovement();
         if (!this.onGround() && vec3.y < 0 && !isFlying()) {
             this.setDeltaMovement(vec3.multiply(1, 0.6, 1));
@@ -685,6 +728,13 @@ public class Goose extends Animal {
         else grabAnimationState.ifStarted(AnimationState::stop);
 
         if (level().isClientSide) {
+            flightRollO = flightRoll;
+            flightPitchO = flightPitch;
+            float targetRoll = inFlight ? Mth.clamp(-Mth.degreesDifference(yRotO, getYRot()) * 4.0F, -35.0F, 35.0F) : 0.0F;
+            float targetPitch = inFlight ? (float) Mth.clamp(-(getY() - yo) * 28.0, -32.0, 32.0) : 0.0F;
+            flightRoll += (targetRoll - flightRoll) * 0.25F;
+            flightPitch += (targetPitch - flightPitch) * 0.25F;
+
             if (inFlight) {
                 flyingAnimationState.startIfStopped(tickCount);
                 updateFlightPose();

@@ -72,6 +72,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
 
     @Override
     protected void tick(ServerLevel level, Goose goose, long gameTime) {
+        if (goose.isFlying()) return;
         LivingEntity target = goose.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
         if (target == null) return;
         if (attackCooldown > 0) attackCooldown--;
@@ -122,6 +123,7 @@ public class GooseAttackBehavior extends Behavior<Goose> {
         }
         BehaviorUtils.setWalkAndLookTargetMemories(goose, target, CHASE_SPEED, 0);
         if (attackCooldown == 0 && goose.isWithinMeleeAttackRange(target)) {
+            goose.peck();
             if (goose.isArmed()) {
                 float damage = (float) goose.getAttributeValue(Attributes.ATTACK_DAMAGE)
                         + Mth.clamp(Goose.weaponBonus(goose.getCarriedItem()), 0, MAX_WEAPON_BONUS);

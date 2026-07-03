@@ -34,7 +34,7 @@ public class GooseMigration extends SavedData {
     private static final double FLYOVER_ALTITUDE = 46.0;
     private static final double CLUSTER_RADIUS_SQR = 400.0;
     private static final int UNDERGROUND_DEPTH = 10;
-    private static final int DEPARTURE_COOLDOWN = 16000;
+    private static final int DEPARTURE_COOLDOWN = 10000;
     private static final int ARRIVAL_COOLDOWN = 10000;
     private static final int FLYOVER_COOLDOWN = 4000;
     private static final int RETRY_DELAY = 800;

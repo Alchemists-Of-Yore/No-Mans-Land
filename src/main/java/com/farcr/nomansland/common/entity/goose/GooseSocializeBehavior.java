@@ -31,7 +31,7 @@ public class GooseSocializeBehavior extends Behavior<Goose> {
 
     @Override
     protected boolean canStillUse(ServerLevel level, Goose goose, long gameTime) {
-        return buddy != null && buddy.isAlive() && !goose.isCarrying() && !goose.isFlying()
+        return buddy != null && buddy.isAlive() && !buddy.isFlying() && !goose.isCarrying() && !goose.isFlying()
                 && goose.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
                 && goose.getBrain().getMemory(MemoryModuleType.AVOID_TARGET).isEmpty()
                 && goose.distanceToSqr(buddy) > COMFY_SQR;
@@ -55,6 +55,7 @@ public class GooseSocializeBehavior extends Behavior<Goose> {
         Goose closest = null;
         double best = Double.MAX_VALUE;
         for (Goose other : goose.nearbyGeese(NOTICE_RADIUS)) {
+            if (other.isFlying() || other.isMigrating()) continue;
             double distance = goose.distanceToSqr(other);
             if (distance > FAR_ENOUGH_SQR && distance < best) {
                 best = distance;

@@ -86,6 +86,15 @@ public class GooseCoreBehavior extends Behavior<Goose> {
                 for (Goose witness : goose.nearbyGeese(WITNESS_RADIUS)) {
                     holdGrudgeAndAnger(witness, attackerId);
                 }
+                if (!goose.canFight()) {
+                    for (Goose defender : goose.nearbyGeese(WITNESS_RADIUS)) {
+                        if (defender.canFight() && defender.isAttackReady() && !defender.isMigrating() && !defender.isFlying()
+                                && !defender.isStealing() && (!defender.isCarrying() || defender.isArmed())
+                                && defender.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {
+                            defender.beginAttack(attacker);
+                        }
+                    }
+                }
             }
 
             if (goose.canFight() && goose.isAttackReady() && !goose.isMigrating() && brain.getMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()) {

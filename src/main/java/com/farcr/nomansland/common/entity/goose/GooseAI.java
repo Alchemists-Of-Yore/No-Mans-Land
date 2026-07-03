@@ -66,7 +66,7 @@ public class GooseAI {
     }
 
     public static void updateActivity(Goose goose) {
-        if (goose.isFlying() && !goose.onGround()) {
+        if (goose.isFlying() && !goose.onGround() && !goose.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
             goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.RIDE));
         } else {
             goose.getBrain().setActiveActivityToFirstValid(ImmutableList.of(Activity.AVOID, Activity.FIGHT, Activity.IDLE));
@@ -82,6 +82,7 @@ public class GooseAI {
                         new MoveToTargetSink(),
                         new GooseCoreBehavior(),
                         new GooseMigrationBehavior(),
+                        new GooseChaseFlightBehavior(),
                         new GooseFlightBehavior(),
                         new GooseVoluntaryFlightBehavior(),
                         new GooseCarryBehavior(),
