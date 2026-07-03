@@ -13,11 +13,11 @@ public class NMLConfig {
     public static final String CATEGORY_OVERRIDES = "overrides";
     public static final String CATEGORY_RECIPES = "recipe_tweaks";
     public static final List<String> VANILLA_RECIPE_TWEAKS = List.of(
-            "andesite", "bookshelf", "diorite", "granite", "lectern",
+            "andesite", "diorite", "granite", "lectern",
             "light_blue_dye_from_blue_orchid", "light_gray_dye_from_white_tulip", "lodestone",
-            "mushroom_stew", "polished_deepslate", "rabbit_stew_from_red_mushroom",
+            "mushroom_stew", "rabbit_stew_from_red_mushroom",
             "red_dye_from_rose_bush", "red_sandstone", "sandstone", "scaffolding",
-            "smoker", "stone_bricks", "tnt"
+            "smoker"
     );
     public static final Map<String, ModConfigSpec.BooleanValue> RECIPE_TWEAKS = new HashMap<>();
     public static ModConfigSpec.BooleanValue MYCELIUM_SPREADS;

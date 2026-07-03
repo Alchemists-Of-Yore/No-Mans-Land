@@ -1,24 +1,17 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "nomansland:boolean_config",
-      "option": "stone_bricks",
-      "enabled_when": false
-    }
-  ],
   "type": "minecraft:crafting_shaped",
   "category": "building",
-  "key": {
-    "#": {
-      "item": "minecraft:stone"
-    }
-  },
   "pattern": [
     "##",
     "##"
   ],
+  "key": {
+    "#": {
+      "item": "nomansland:polished_stone"
+    }
+  },
   "result": {
-    "count": 4,
-    "id": "minecraft:stone_bricks"
+    "id": "minecraft:stone_bricks",
+    "count": 4
   }
 }
