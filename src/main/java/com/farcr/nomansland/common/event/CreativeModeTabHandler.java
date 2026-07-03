@@ -345,6 +345,8 @@ public class CreativeModeTabHandler {
             insertAfter(COAL_ORE, SULFUR_ORE);
             insertAfter(DEEPSLATE_COAL_ORE, DEEPSLATE_SULFUR_ORE);
             insertAfter(COAL_BLOCK, SULFUR_BLOCK);
+            insertAfter(SULFUR_BLOCK.asItem(), THERMAL_VENT);
+            insertAfter(THERMAL_VENT.asItem(), SULFURIC_VENT);
 
             insertAfter(HAY_BLOCK, TROPICAL_FISH_BARREL);
             insertAfter(HAY_BLOCK, PUFFERFISH_BARREL);

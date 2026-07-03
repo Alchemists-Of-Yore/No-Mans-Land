@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "nomansland:block/underground/sulfuric_vent",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "nomansland:block/underground/sulfuric_vent",
+      "x": 270
+    },
+    "facing=north": {
+      "model": "nomansland:block/underground/sulfuric_vent"
+    },
+    "facing=south": {
+      "model": "nomansland:block/underground/sulfuric_vent",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "nomansland:block/underground/sulfuric_vent",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "nomansland:block/underground/sulfuric_vent",
+      "y": 90
+    }
+  }
+}

@@ -385,6 +385,12 @@ public class NMLBlocks {
             BlockProperties.stoneLike());
     public static final BlockDefinition<ToxicGasBlock> TOXIC_GAS = registerNoItem("toxic_gas",
             () -> new ToxicGasBlock(of().replaceable().noCollission().noLootTable().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY).sound(SoundType.WOOL)));
+    public static final BlockDefinition<ThermalVentBlock> THERMAL_VENT = register("thermal_vent",
+            () -> new ThermalVentBlock(ofFullCopy(Blocks.BASALT).mapColor(MapColor.DEEPSLATE).strength(2.0F, 4.2F).requiresCorrectToolForDrops()),
+            BlockProperties.stoneLike());
+    public static final BlockDefinition<SulfuricVentBlock> SULFURIC_VENT = register("sulfuric_vent",
+            () -> new SulfuricVentBlock(ofFullCopy(Blocks.BASALT).mapColor(MapColor.COLOR_YELLOW).strength(2.0F, 4.2F).requiresCorrectToolForDrops()),
+            BlockProperties.stoneLike());
     public static final BlockDefinition<MinersGillBlock> MINERS_GILL = register("miners_gill",
             () -> new MinersGillBlock(of().mapColor(MapColor.COLOR_GREEN).noCollission().randomTicks().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY).offsetType(OffsetType.XZ)),
             new BlockProperties(new ShearsBlockLootType(), true));

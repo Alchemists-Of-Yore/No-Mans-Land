@@ -32,6 +32,7 @@
     "LivingEntityMixin",
     "LocateCommandMixin",
     "MinecraftServerMixin",
+    "MobEffectInstanceAccessor",
     "MobInvoker",
     "MobMixin",
     "NoiseBasedChunkGeneratorMixin",

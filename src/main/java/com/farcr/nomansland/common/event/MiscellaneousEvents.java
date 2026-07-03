@@ -4,7 +4,10 @@ import com.farcr.nomansland.NMLConfig;
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.SulfurOreBlock;
+import com.farcr.nomansland.common.block.SulfuricVentBlock;
 import com.farcr.nomansland.common.block.ToxicGasBlock;
+import com.farcr.nomansland.common.block.VentBlock;
+import com.farcr.nomansland.common.entity.ai.SoakInThermalWaterGoal;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.item.GasMaskItem;
 import com.farcr.nomansland.common.dreams.DreamManager;
@@ -65,7 +68,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.windcharge.AbstractWindCharge;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Witch;
@@ -410,6 +415,14 @@ public class MiscellaneousEvents {
 
     @SubscribeEvent
     public static void onFinalizeMobSpawn(FinalizeSpawnEvent event) {
+        MobCategory category = event.getEntity().getType().getCategory();
+        if ((category == MobCategory.WATER_CREATURE || category == MobCategory.WATER_AMBIENT
+                || category == MobCategory.UNDERGROUND_WATER_CREATURE || category == MobCategory.AXOLOTLS)
+                && (event.getSpawnType() == MobSpawnType.NATURAL || event.getSpawnType() == MobSpawnType.CHUNK_GENERATION)
+                && VentBlock.isAffectedBy(event.getLevel(), event.getEntity().blockPosition(), SulfuricVentBlock.class)) {
+            event.setSpawnCancelled(true);
+        }
+
         if (event.getLevel() instanceof ServerLevel serverLevel
                 && event.getSpawnType() == MobSpawnType.NATURAL
                 && event.getEntity() instanceof Enemy && !event.getEntity().getType().is(NMLTags.WARD_REPELLED_BLACKLIST)) {
@@ -728,6 +741,10 @@ public class MiscellaneousEvents {
 
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof Animal animal) {
+            animal.goalSelector.addGoal(6, new SoakInThermalWaterGoal(animal, 1.0));
+        }
+
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new ClientboundDimensionSyncPacket(serverPlayer.server.levelKeys()));
             SunDog.getOrDefault(serverPlayer.serverLevel()).informPlayerOfSunDogState(serverPlayer);

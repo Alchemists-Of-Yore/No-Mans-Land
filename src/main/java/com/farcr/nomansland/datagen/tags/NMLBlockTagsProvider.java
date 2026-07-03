@@ -140,6 +140,8 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
         addToTags(NMLBlocks.SULFUR_ORE.block(), BlockTags.NEEDS_STONE_TOOL);
         addToTags(NMLBlocks.DEEPSLATE_SULFUR_ORE.block(), BlockTags.NEEDS_STONE_TOOL);
         addToTags(NMLBlocks.SULFUR_BLOCK.block(), BlockTags.NEEDS_STONE_TOOL);
+        addToTags(NMLBlocks.THERMAL_VENT.block(), BlockTags.NEEDS_STONE_TOOL);
+        addToTags(NMLBlocks.SULFURIC_VENT.block(), BlockTags.NEEDS_STONE_TOOL);
         tag(Tags.Blocks.ORES).add(NMLBlocks.SULFUR_ORE.block(), NMLBlocks.DEEPSLATE_SULFUR_ORE.block());
         tag(Tags.Blocks.STORAGE_BLOCKS).add(NMLBlocks.SULFUR_BLOCK.block());
 
