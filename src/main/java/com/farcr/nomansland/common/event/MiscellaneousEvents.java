@@ -732,7 +732,7 @@ public class MiscellaneousEvents {
             if (event.getRayTraceResult() instanceof BlockHitResult hitResult) {
                 Level level = oilBottle.level();
                 BlockPos pos = hitResult.getBlockPos().above();
-                if (level.isEmptyBlock(pos)) {
+                if (level.getBlockState(pos).isAir() || level.getBlockState(pos).canBeReplaced()) {
                     level.setBlock(pos, NMLBlocks.OIL_PUDDLE.get().defaultBlockState(), Block.UPDATE_ALL);
                 }
             }

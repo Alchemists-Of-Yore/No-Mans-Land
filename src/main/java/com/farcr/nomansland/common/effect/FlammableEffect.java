@@ -2,16 +2,20 @@ package com.farcr.nomansland.common.effect;
 
 import com.farcr.nomansland.common.registry.NMLDamageTypes;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
@@ -28,6 +32,27 @@ public class FlammableEffect extends MobEffect {
     public FlammableEffect(MobEffectCategory category, int color) {
         super(category, color);
         this.particleFactory = mobEffectInstance -> NMLParticleTypes.OIL.get();
+    }
+
+    @Override
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
+        MobEffectInstance flammableEffectInstance = livingEntity.getEffect(NMLEffects.FLAMMABLE);
+        if (!(livingEntity.level() instanceof ServerLevel level)){
+            return true;
+        }
+        BlockPos current = livingEntity.blockPosition();
+        if (livingEntity.getRandom().nextInt(20) == 0) {
+
+            if (livingEntity.level().getBlockState(current).isAir() || livingEntity.level().getBlockState(current).canBeReplaced()) {
+                    livingEntity.level().setBlockAndUpdate(current, NMLBlocks.OIL_PUDDLE.get().defaultBlockState());
+                }
+            }
+
+        return true;
+    }
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        return true;
     }
 
     public static void dampenWhenWet(LivingEntity livingEntity) {
@@ -86,4 +111,9 @@ public class FlammableEffect extends MobEffect {
             }
         }
     }
+
+
+
+
+
 }
