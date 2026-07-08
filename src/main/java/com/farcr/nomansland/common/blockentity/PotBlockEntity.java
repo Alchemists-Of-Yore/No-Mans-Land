@@ -43,6 +43,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
     private long potionTableSeed = 0L;
     public boolean skipBreakEffects;
     public boolean shouldDropItems;
+    public boolean preventRegen;
     public long wobbleStartedAtTick;
     public @Nullable DecoratedPotBlockEntity.WobbleStyle lastWobbleStyle;
     private ItemStack item = ItemStack.EMPTY;
@@ -66,7 +67,7 @@ public class PotBlockEntity extends BlockEntity implements RandomizableContainer
         Registry<PotVariant> registry = level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
         List<Holder.Reference<PotVariant>> matching = registry.holders().filter(h -> h.value().size() == size).toList();
         variant = matching.get(level.getRandom().nextInt(matching.size())).value();
-        setChanged();
+        level.blockEntityChanged(worldPosition);
     }
 
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {

@@ -7,6 +7,7 @@ import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
 import com.farcr.nomansland.common.effect.StasisEffect;
+import com.farcr.nomansland.common.effect.FlammableEffect;
 import com.farcr.nomansland.common.entity.ai.WitchBowlStewGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
@@ -498,6 +499,19 @@ public class MiscellaneousEvents {
     }
 
     @SubscribeEvent
+    public static void onFlammableIgnite(LivingDamageEvent.Post event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.level().isClientSide())
+            return;
+        DamageSource source = event.getSource();
+        if (entity.hasEffect(NMLEffects.FLAMMABLE) && (source.is(NMLTags.IGNITES_FLAMMABLE) || (source.getWeaponItem() != null && source.getWeaponItem().is(NMLTags.FIRESTARTERS)))) {
+            if (source.getEntity() instanceof ServerPlayer serverPlayer)
+                NMLCriteriaTriggers.IGNITE_FLAMMABLE_ENTITY.get().trigger(serverPlayer, entity, source);
+            FlammableEffect.igniteFlammable(entity);
+        }
+    }
+
+    @SubscribeEvent
     public static void onKnockback(LivingKnockBackEvent event) {
         LivingEntity entity = event.getEntity();
         ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
@@ -511,6 +525,9 @@ public class MiscellaneousEvents {
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof LivingEntity entity) {
+            if (!entity.level().isClientSide())
+                FlammableEffect.dampenWhenWet(entity);
+
             ItemStack stack = entity.getItemBySlot(EquipmentSlot.HEAD);
             if (stack.is(NMLItems.ANCIENT_BRONZE_MASK)) {
                 int punchCooldown = stack.getOrDefault(NMLDataComponents.PUNCH_COOLDOWN, 0);

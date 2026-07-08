@@ -17,7 +17,8 @@ public enum Mods {
     EVERYCOMP,
     SNOWREALMAGIC,
     VANITY,
-    ETCHED;
+    ETCHED,
+    FIELDGUIDE;
 
     private final String id;
 

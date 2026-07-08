@@ -1375,6 +1375,22 @@
       }
     ]
   },
+  "entity.friend_moon.speak_bgr": {
+    "sounds": [
+      "nomansland:entity/friend_moon/speak_bgr1",
+      "nomansland:entity/friend_moon/speak_bgr2",
+      "nomansland:entity/friend_moon/speak_bgr3",
+      "nomansland:entity/friend_moon/speak_bgr4",
+      "nomansland:entity/friend_moon/speak_bgr5",
+      "nomansland:entity/friend_moon/speak_bgr6",
+      "nomansland:entity/friend_moon/speak_bgr7",
+      "nomansland:entity/friend_moon/speak_bgr8",
+      "nomansland:entity/friend_moon/speak_bgr9",
+      "nomansland:entity/friend_moon/speak_bgr10",
+      "nomansland:entity/friend_moon/speak_bgr11",
+      "nomansland:entity/friend_moon/speak_bgr12"
+    ]
+  },
   "entity.friend_moon.speak_sad": {
     "sounds": [
       "nomansland:entity/friend_moon/speak_sad1",
@@ -1926,6 +1942,11 @@
   "music.overworld.alchemist_ruins": {
     "sounds": [
       {
+        "name": "nomansland:music/nomad",
+        "stream": true,
+        "weight": 25
+      },
+      {
         "name": "music/game/oxygene",
         "stream": true,
         "weight": 5
@@ -1952,8 +1973,21 @@
       }
     ]
   },
+  "music.overworld.anachronistic": {
+    "sounds": [
+      {
+        "name": "nomansland:music/anachronistic",
+        "stream": true
+      }
+    ]
+  },
   "music.overworld.cave_depths": {
     "sounds": [
+      {
+        "name": "nomansland:music/drifter",
+        "stream": true,
+        "weight": 15
+      },
       {
         "name": "music/game/oxygene",
         "stream": true,
@@ -1995,6 +2029,10 @@
   },
   "music.overworld.caves": {
     "sounds": [
+      {
+        "name": "nomansland:music/drifter",
+        "stream": true
+      },
       {
         "name": "music/game/deeper",
         "stream": true,
@@ -2069,6 +2107,40 @@
         "name": "music/game/endless",
         "stream": true,
         "volume": 0.4
+      }
+    ]
+  },
+  "music.overworld.mushroom_biome": {
+    "sounds": [
+      {
+        "name": "nomansland:music/anachronistic",
+        "stream": true,
+        "volume": 0.7,
+        "weight": 15
+      },
+      {
+        "name": "music/game/puzzlebox",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 3
+      },
+      {
+        "name": "music/game/pokopoko",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 3
+      },
+      {
+        "name": "music/game/endless",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 5
+      },
+      {
+        "name": "music/game/swamp/firebugs",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 7
       }
     ]
   },

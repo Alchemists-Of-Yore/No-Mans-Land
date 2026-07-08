@@ -30,6 +30,7 @@ import com.farcr.nomansland.common.registry.items.NMLItems;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -225,9 +226,7 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.MALEVOLENT_EMBERS.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new EmbersParticle(clientLevel, d, e, f, g, h, i, sprites));
-        event.registerSpriteSet(NMLParticleTypes.MALEVOLENT_FLAME.get(), sprites
-                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-                -> new FlameParticle(clientLevel, d, e, f, g, h, i, sprites));
+        event.registerSpriteSet(NMLParticleTypes.MALEVOLENT_FLAME.get(), FlameParticle.Provider::new);
         event.registerSpriteSet(NMLParticleTypes.MILK_DROPLET.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new FluidFallingParticle(clientLevel, d, e, f, sprites, NMLParticleTypes.MILK_DROPLET_FLAT));

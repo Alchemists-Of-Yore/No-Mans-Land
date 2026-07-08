@@ -13,11 +13,11 @@ public class NMLConfig {
     public static final String CATEGORY_OVERRIDES = "overrides";
     public static final String CATEGORY_RECIPES = "recipe_tweaks";
     public static final List<String> VANILLA_RECIPE_TWEAKS = List.of(
-            "andesite", "bookshelf", "diorite", "granite", "lectern",
+            "andesite", "diorite", "granite", "lectern",
             "light_blue_dye_from_blue_orchid", "light_gray_dye_from_white_tulip", "lodestone",
-            "mushroom_stew", "polished_deepslate", "rabbit_stew_from_red_mushroom",
+            "mushroom_stew", "rabbit_stew_from_red_mushroom",
             "red_dye_from_rose_bush", "red_sandstone", "sandstone", "scaffolding",
-            "smoker", "stone_bricks", "tnt"
+            "smoker"
     );
     public static final Map<String, ModConfigSpec.BooleanValue> RECIPE_TWEAKS = new HashMap<>();
     public static ModConfigSpec.BooleanValue MYCELIUM_SPREADS;
@@ -26,6 +26,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue TRAMPLING;
     public static ModConfigSpec.BooleanValue TORCH_EXTINGUISHING;
     public static ModConfigSpec.BooleanValue GRASS_FROSTING;
+    public static ModConfigSpec.BooleanValue PATH_TWEAKS;
     public static final String CATEGORY_BIOMES = "biomes";
     public static ModConfigSpec.BooleanValue BIOMES;
     public static ModConfigSpec.BooleanValue CAVES_BIOMES;
@@ -113,6 +114,9 @@ public class NMLConfig {
         COMMON_BUILDER.comment("For configuring the mob remodels, go to the mixed litter startup config!");
 
         COMMON_BUILDER.push(CATEGORY_OVERRIDES);
+        PATH_TWEAKS = COMMON_BUILDER
+                .comment("If using a hoe/shovel on plants tills/paths the blocks below it")
+                .define("farmlandPathTweaks", true);
         GRASS_SPREADS = COMMON_BUILDER
                 .comment("If grass or mycelium spread to nearby dirt.")
                 .define("grassSpreads", true);

@@ -1,16 +1,9 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "nomansland:boolean_config",
-      "option": "polished_deepslate",
-      "enabled_when": false
-    }
-  ],
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
     "S": {
-      "item": "minecraft:cobbled_deepslate"
+      "item": "minecraft:deepslate"
     }
   },
   "pattern": [

@@ -167,12 +167,14 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
 
         //Friend Moon
         add(NMLSounds.FRIEND_MOON_SPEAK, s -> s.with(allSounds("entity/friend_moon/speak")));
+        add(NMLSounds.FRIEND_MOON_SPEAK_BGR, s -> s.subtitle(null).with(allSounds("entity/friend_moon/speak_bgr")));
         add(NMLSounds.FRIEND_MOON_SPEAK_SAD, s -> s.with(allSounds("entity/friend_moon/speak_sad")));
         add(NMLSounds.FRIEND_MOON_SPEAK_AMBIENT_LOOP, s -> s.with(sound("entity/friend_moon/speak_ambient_loop").stream()).subtitle(null));
         add(NMLSounds.FRIEND_MOON_OFFERING_LOOP, s -> s.with(sound("entity/friend_moon/offering_loop").stream()).subtitle(null));
 
         //Music
         add(NMLSounds.CAVE_MUSIC, s -> s.subtitle(null).with(
+                sound("nomansland:music/drifter").stream(),
                 sound("minecraft:music/game/deeper").stream().volume(0.4f),
                 sound("minecraft:music/game/oxygene").stream(),
                 sound("minecraft:music/game/key").stream(),
@@ -192,6 +194,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         ));
 
         add(NMLSounds.CAVE_DEPTH_MUSIC, s -> s.subtitle(null).with(
+                sound("nomansland:music/drifter").weight(15).stream(),
                 sound("minecraft:music/game/oxygene").weight(5).stream(),
                 sound("minecraft:music/game/key").weight(5).stream(),
                 sound("minecraft:music/game/minecraft").weight(3).stream(),
@@ -202,12 +205,23 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         ));
 
         add(NMLSounds.ALCHEMIST_RUINS_MUSIC, s -> s.subtitle(null).with(
+                sound("nomansland:music/nomad").weight(25).stream(),
                 sound("minecraft:music/game/oxygene").weight(5).stream(),
                 sound("minecraft:music/game/key").weight(5).stream(),
                 sound("minecraft:music/game/minecraft").weight(3).stream(),
                 sound("minecraft:music/game/mice_on_venus").weight(3).stream(),
                 sound("minecraft:music/game/dry_hands").weight(3).stream()
         ));
+
+        add(NMLSounds.MUSHROOM_BIOME_MUSIC, s -> s.subtitle(null).with(
+                sound("nomansland:music/anachronistic").weight(15).stream().volume(0.7f),
+                sound("minecraft:music/game/puzzlebox").weight(3).stream().volume(0.4f),
+                sound("minecraft:music/game/pokopoko").weight(3).stream().volume(0.4f),
+                sound("minecraft:music/game/endless").weight(5).stream().volume(0.4f),
+                sound("minecraft:music/game/swamp/firebugs").weight(7).stream().volume(0.4f)
+        ));
+
+        add(NMLSounds.ANACHRONISTIC_MUSIC, s -> s.subtitle(null).with(sound("music/anachronistic").stream()));
 
         add(NMLSounds.MUSIC_DISC_GUIDANCE, s -> s.subtitle(null).with(sound("records/guidance").stream()));
 

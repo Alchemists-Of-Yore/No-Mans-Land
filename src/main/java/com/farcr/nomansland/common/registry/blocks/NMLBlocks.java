@@ -314,7 +314,7 @@ public class NMLBlocks {
             () -> new MoonCarvingBlock(ofFullCopy(Blocks.STONE)));
 
     public static final BlockDefinition<InvertedBellBlock> INVERTED_BELL = registerNoItem("inverted_bell",
-            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).sound(SoundType.COPPER).noOcclusion()));
+            () -> new InvertedBellBlock(ofFullCopy(Blocks.BEDROCK).sound(SoundType.COPPER).noOcclusion().forceSolidOn()));
     //Tiles
     public static final BlockDefinition<Block> MUNDANE_TILES = register("mundane_tiles",
             () -> new Block(ofFullCopy(Blocks.STONE_BRICKS)), BlockProperties.stoneLike());
@@ -695,11 +695,17 @@ public class NMLBlocks {
             SIGN = registerNoItem(name + "_sign",
                     () -> new StandingSignBlock(woodType, ofFullCopy(Blocks.OAK_SIGN)), BlockProperties.sign());
             WALL_SIGN = registerNoItem(name + "_wall_sign",
-                    () -> new WallSignBlock(woodType, ofFullCopy(Blocks.OAK_WALL_SIGN).lootFrom(SIGN)), BlockProperties.custom(true));
+                    () -> {
+                        Block signBlock = SIGN.get();
+                        return new WallSignBlock(woodType, ofFullCopy(Blocks.OAK_WALL_SIGN).lootFrom(() -> signBlock));
+                    }, BlockProperties.custom(true));
             HANGING_SIGN = registerNoItem(name + "_hanging_sign",
                     () -> new CeilingHangingSignBlock(woodType, ofFullCopy(Blocks.OAK_HANGING_SIGN)), BlockProperties.hangingSign());
             HANGING_WALL_SIGN = registerNoItem(name + "_wall_hanging_sign",
-                    () -> new WallHangingSignBlock(woodType, ofFullCopy(Blocks.OAK_WALL_HANGING_SIGN).lootFrom(HANGING_SIGN)), BlockProperties.custom(true));
+                    () -> {
+                        Block hangingSignBlock = HANGING_SIGN.get();
+                        return new WallHangingSignBlock(woodType, ofFullCopy(Blocks.OAK_WALL_HANGING_SIGN).lootFrom(() -> hangingSignBlock));
+                    }, BlockProperties.custom(true));
         }
 
         public BlockDefinition<Block> planks() { return PLANKS; }

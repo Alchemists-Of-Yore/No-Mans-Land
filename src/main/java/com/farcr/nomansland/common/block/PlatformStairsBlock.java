@@ -3,7 +3,9 @@ package com.farcr.nomansland.common.block;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -86,9 +88,13 @@ public class PlatformStairsBlock extends Block implements SimpleWaterloggedBlock
 
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
         if (entity.onGround() && state.getValue(UNSTABLE)) {
-            level.destroyBlock(pos, false, entity);
-            level.playSound(null, pos, NMLSounds.WOODEN_PLATFORM_BREAKS.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.scheduleTick(pos, this, 1);
         }
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        PlatformBlock.collapse(level, pos, random);
     }
 
     @Override
