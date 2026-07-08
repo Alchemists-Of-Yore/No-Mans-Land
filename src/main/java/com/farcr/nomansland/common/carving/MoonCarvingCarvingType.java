@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
@@ -45,6 +46,10 @@ public class MoonCarvingCarvingType extends AncestralCarvingCarvingType {
         }
 
         BlockPos center = BlockPos.containing(max.subtract(min).getCenter().scale(0.5)).offset(min);
+        if(level.getBlockState(center).getBlock() instanceof InfestedBlock) {
+            level.destroyBlock(center, true, player);
+            return false;
+        }
         BlockState state = this.getStateForPlacement(player, center, start, end, direction);
         level.setBlock(center, state, 3);
         return false;

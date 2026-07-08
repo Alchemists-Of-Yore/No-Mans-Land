@@ -26,7 +26,7 @@ public class AncestralCarvingCarvingType implements CarvingType {
 
     @Override
     public boolean canReplace(BlockState state) {
-        return state.is(Blocks.STONE) || state.is(NMLBlocks.ANCESTRAL_CARVING);
+        return state.is(Blocks.STONE) || state.is(Blocks.INFESTED_STONE) || state.is(NMLBlocks.ANCESTRAL_CARVING);
     }
 
     @Override

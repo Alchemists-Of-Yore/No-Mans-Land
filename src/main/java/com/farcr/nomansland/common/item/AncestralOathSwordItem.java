@@ -7,7 +7,6 @@ import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.items.NMLDataComponents;
 import com.farcr.nomansland.common.registry.items.NMLItems;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -135,6 +134,7 @@ public class AncestralOathSwordItem extends SwordItem {
                     .scale(projectile.getDeltaMovement().length());
                 projectile.setDeltaMovement(newVelocity);
                 projectile.setPos(projectile.position().add(projectile.getDeltaMovement()));
+                createParticles(projectile, NMLParticleTypes.STASIS_HIT_PARRY, (PARTICLE_AMOUNT * 2));
             }
             for (LivingEntity livingEntity : level.getNearbyEntities(
                 LivingEntity.class, TargetingConditions.forNonCombat().range(STASIS_RANGE),
@@ -160,11 +160,11 @@ public class AncestralOathSwordItem extends SwordItem {
         }
     }
 
-    public static void createParticles(LivingEntity livingEntity, Supplier<SimpleParticleType> supplier, int amount) {
-        if (livingEntity.level() instanceof ServerLevel serverLevel) {
+    public static void createParticles(Entity entity, Supplier<SimpleParticleType> supplier, int amount) {
+        if (entity.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(supplier.get(),
-                livingEntity.getX(), livingEntity.getY(0.5),
-                livingEntity.getZ(), amount, 0.1,
+                entity.getX(), entity.getY(0.5),
+                entity.getZ(), amount, 0.1,
                 0.0, 0.1, 0.2
             );
         }

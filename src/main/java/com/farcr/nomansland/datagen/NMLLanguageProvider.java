@@ -231,6 +231,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("screen.nomansland.carving", "Scroll to select carving");
 
         add("item.nomansland.ancestral_oath_sword.refuse", "The sword refuses to violate its oath of pacifism...");
+        add("nomansland.carving.hint", "Right Click to carve, Left Click to cancel");
 
         add("commands.nomansland.dream.start.pass", "Successfully started dream %s for %s.");
         add("commands.nomansland.dream.start.pass_count", "Successfully started dream %s for %s players.");

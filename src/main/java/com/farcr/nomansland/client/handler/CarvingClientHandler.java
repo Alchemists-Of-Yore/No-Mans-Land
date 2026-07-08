@@ -15,11 +15,11 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -139,6 +139,11 @@ public class CarvingClientHandler {
         this.id = id;
         this.hand = hand;
         this.isChiseling = true;
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if(player != null) {
+            player.displayClientMessage(Component.translatable("nomansland.carving.hint"), true);
+        }
     }
 
     public void endChisel() {

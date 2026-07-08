@@ -43,9 +43,10 @@ public class RitualPickItem extends PickaxeItem {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
         if (entity instanceof Player player) {
+            entity.swing(entity.getUsedItemHand());
             boolean deep = timeCharged < MAX_CHARGE_TIME * (2.0 / 3.0);
-            int radius = deep ? 0 : 1,
-                depth = deep ? 16 : 5;
+            int radius = deep ? 1 : 2,
+                depth = deep ? 17 : 6;
             BlockHitResult raycast = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
             if (raycast.getType() == HitResult.Type.BLOCK && level.isClientSide()) {
                 PacketDistributor.sendToServer(

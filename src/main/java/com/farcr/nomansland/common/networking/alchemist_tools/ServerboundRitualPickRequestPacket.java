@@ -42,7 +42,7 @@ public record ServerboundRitualPickRequestPacket(BlockPos pos, Direction directi
 
     boolean validate(Player player) {
         // make sure the numbers are valid
-        if (radius > 1 || depth > 16) return false;
+        if (radius > 2 || depth > 17) return false;
 
         // make sure the item isn't on cooldown!!
         if (player.getCooldowns().isOnCooldown(NMLItems.RITUAL_PICK.get()))
@@ -61,7 +61,7 @@ public record ServerboundRitualPickRequestPacket(BlockPos pos, Direction directi
         return true;
     }
 
-    List<BlockPos> locateOreBlocks(Level level) {
+    List<BlockPos> locateOreBlocks(Level level, List<BlockPos> scannedPositions) {
         List<BlockPos> positions = new ArrayList<>(radius * radius * 4 * depth);
         BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos();
 
@@ -93,6 +93,7 @@ public record ServerboundRitualPickRequestPacket(BlockPos pos, Direction directi
                     if (state.is(NMLTags.OCCLUDES_RITUAL_PICKAXE_RESONANCE) || (state.isAir() && hasTouchedSolidThisColumn))
                         break;
 
+                    if (!state.isAir()) scannedPositions.add(mPos.immutable());
                     if (state.is(NMLTags.RESONATES_WITH_RITUAL_PICKAXE))
                         positions.add(mPos.immutable());
                     mPos.move(direction);
@@ -109,11 +110,12 @@ public record ServerboundRitualPickRequestPacket(BlockPos pos, Direction directi
             if (server == null) return;
             if (!validate(context.player())) return;
 
-            List<BlockPos> locatedBlocks = locateOreBlocks(server.getLevel(context.player().level().dimension()));
-            context.player().getCooldowns().addCooldown(NMLItems.RITUAL_PICK.item(), 3);
+            List<BlockPos> scannedBlocks = new ArrayList<>(radius * radius * 4 * depth);
+            List<BlockPos> locatedBlocks = locateOreBlocks(server.getLevel(context.player().level().dimension()), scannedBlocks);
+            context.player().getCooldowns().addCooldown(NMLItems.RITUAL_PICK.item(), 40);
             PacketDistributor.sendToPlayer(
                     (ServerPlayer) context.player(),
-                    new ClientboundRitualPickResponsePacket(locatedBlocks)
+                    new ClientboundRitualPickResponsePacket(locatedBlocks, scannedBlocks)
             );
         });
     }

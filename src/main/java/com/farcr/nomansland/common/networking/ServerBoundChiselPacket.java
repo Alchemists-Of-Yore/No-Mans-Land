@@ -78,11 +78,22 @@ public record ServerBoundChiselPacket(BlockPos start, BlockPos end, Direction di
         for (BlockPos pos : iterator) {
             Vec3 center = pos.getCenter();
             level.sendParticles(options, center.x, center.y, center.z, 50, 0.15, 0.15, 0.15, 1.0f);
+            sendOutlineParticles(level, options, pos);
         }
 
         Vec3 pos = placementBox.getCenter();
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.STONE_BREAK, SoundSource.BLOCKS);
 
         type.afterPlacement(player, min, max, this.direction);
+    }
+
+    private static void sendOutlineParticles(ServerLevel level, BlockParticleOption options, BlockPos pos) {
+        for (int a = 0; a <= 1; a++) {
+            for (int b = 0; b <= 1; b++) {
+                level.sendParticles(options, pos.getX() + 0.5, pos.getY() + a, pos.getZ() + b, 4, 0.5, 0.02, 0.02, 0.5f);
+                level.sendParticles(options, pos.getX() + a, pos.getY() + 0.5, pos.getZ() + b, 4, 0.02, 0.5, 0.02, 0.5f);
+                level.sendParticles(options, pos.getX() + a, pos.getY() + b, pos.getZ() + 0.5, 4, 0.02, 0.02, 0.5, 0.5f);
+            }
+        }
     }
 }

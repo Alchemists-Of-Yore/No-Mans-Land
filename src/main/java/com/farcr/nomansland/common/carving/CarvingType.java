@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.InfestedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
@@ -42,6 +43,10 @@ public interface CarvingType {
         }
 
         for (BlockPos pos : iterator) {
+            if(level.getBlockState(pos).getBlock() instanceof InfestedBlock) {
+                level.destroyBlock(pos, true, player);
+                continue;
+            }
             BlockState placementState = this.getStateForPlacement(player, pos, start, end, direction);
             level.setBlock(pos, placementState, 3);
         }

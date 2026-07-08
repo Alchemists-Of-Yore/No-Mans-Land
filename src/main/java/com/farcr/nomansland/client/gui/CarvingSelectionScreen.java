@@ -96,7 +96,7 @@ public class CarvingSelectionScreen extends Screen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int lastSelected = this.selectedIndex;
-        this.selectedIndex = (int) Math.clamp(this.selectedIndex + scrollY, 0, this.types.size() - 1);
+        this.selectedIndex = Math.floorMod(this.selectedIndex + (int) Math.signum(scrollY), this.types.size());
         lastSelectedType = this.types.get(this.selectedIndex);
         if(this.selectedIndex != lastSelected) {
             Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK.value, 0.3f, 1.1f);
@@ -105,15 +105,22 @@ public class CarvingSelectionScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        CarvingClientHandler handler = CarvingClientHandler.instance;
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if(button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            CarvingClientHandler handler = CarvingClientHandler.instance;
 
-        CarvingType type = this.types.get(this.selectedIndex);
-        ResourceLocation id = NMLRegistries.CARVING_TYPE.getKey(type);
-        handler.startChisel(this.startPos, this.face, this.hand, id);
+            CarvingType type = this.types.get(this.selectedIndex);
+            ResourceLocation id = NMLRegistries.CARVING_TYPE.getKey(type);
+            handler.startChisel(this.startPos, this.face, this.hand, id);
 
-        this.onClose();
-        return super.mouseReleased(mouseX, mouseY, button);
+            this.onClose();
+            return true;
+        }
+        if(button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            this.onClose();
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override

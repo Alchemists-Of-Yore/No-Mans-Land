@@ -803,8 +803,7 @@ public class MiscellaneousEvents {
                 livingEntity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 300));
                 AncestralOathSwordItem.createParticles(livingEntity,
                     NMLParticleTypes.STASIS_BREAK, (AncestralOathSwordItem.PARTICLE_AMOUNT * 2));
-//                event.setInvulnerabilityTicks(0);
-//                event.setAmount(0.0f);
+                event.setAmount(event.getAmount() * 1.5f);
                 return;
             }
             livingEntity.addEffect(
