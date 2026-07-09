@@ -386,7 +386,7 @@ public class MiscellaneousEvents {
     private static void mobTrackedEffectRemoved(MobEffectEvent.Remove event) {
         if (event.getEntity() instanceof LivingEntity livingEntity
             && livingEntity.level() instanceof ServerLevel serverLevel
-            && TRACKED_EFFECTS.contains(event.getEffectInstance().getEffect())
+            && TRACKED_EFFECTS.contains(event.getEffect())
         ) {
             serverLevel.getChunkSource().broadcast(livingEntity,
                 new ClientboundRemoveMobEffectPacket(livingEntity.getId(), event.getEffect()));
