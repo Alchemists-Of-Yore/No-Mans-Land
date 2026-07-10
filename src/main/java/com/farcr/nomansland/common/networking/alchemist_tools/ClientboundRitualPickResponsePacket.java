@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.networking.alchemist_tools;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.registry.NMLParticleTypes;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -59,6 +61,12 @@ public record ClientboundRitualPickResponsePacket(List<BlockPos> positions, List
                         center.y + (level.random.nextFloat() - 0.5) * resonanceSpread,
                         center.z + (level.random.nextFloat() - 0.5) * resonanceSpread,
                         0, 0, 0
+                );
+
+                level.playLocalSound(
+                        center.x, center.y, center.z,
+                        NMLSounds.RITUAL_PICK_GLINT.get(), SoundSource.PLAYERS,
+                        0.6F, 0.9F + level.random.nextFloat() * 0.3F, false
                 );
 
                 double dustSpread = 0.4;

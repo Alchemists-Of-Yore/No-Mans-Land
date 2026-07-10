@@ -2,6 +2,7 @@ package com.farcr.nomansland.common.networking.alchemist_tools;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.item.RitualPickItem;
+import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
 import com.farcr.nomansland.common.registry.items.NMLItems;
 import io.netty.buffer.ByteBuf;
@@ -11,12 +12,15 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -110,8 +114,16 @@ public record ServerboundRitualPickRequestPacket(BlockPos pos, Direction directi
             if (server == null) return;
             if (!validate(context.player())) return;
 
+            ServerLevel level = server.getLevel(context.player().level().dimension());
+            if (level == null) return;
+
+            BlockState struck = level.getBlockState(pos);
+            SoundType soundType = struck.getSoundType(level, pos, context.player());
+            level.playSound(null, pos, soundType.getHitSound(), SoundSource.BLOCKS, 0.9F, soundType.getPitch() * 0.9F);
+            level.playSound(null, pos, NMLSounds.RITUAL_PICK_LOCATE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+
             List<BlockPos> scannedBlocks = new ArrayList<>(radius * radius * 4 * depth);
-            List<BlockPos> locatedBlocks = locateOreBlocks(server.getLevel(context.player().level().dimension()), scannedBlocks);
+            List<BlockPos> locatedBlocks = locateOreBlocks(level, scannedBlocks);
             context.player().getCooldowns().addCooldown(NMLItems.RITUAL_PICK.item(), 40);
             PacketDistributor.sendToPlayer(
                     (ServerPlayer) context.player(),

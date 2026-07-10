@@ -83,6 +83,8 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.BANDAGE_WRAP, s -> s.with(sound("item/bandage/wrap")));
         add(NMLSounds.OATH_BLOCK, s -> s.with(allSounds("item/ancestral_oath_sword/block")));
         add(NMLSounds.OATH_PARRY, s -> s.with(allSounds("item/ancestral_oath_sword/parry")));
+        add(NMLSounds.RITUAL_PICK_LOCATE, s -> s.with(sound("item/ritual_pick/ritual_pick_locate")));
+        add(NMLSounds.RITUAL_PICK_GLINT, s -> s.with(sound("item/ritual_pick/glint")));
         add(NMLSounds.BOMB_PRIMED, s -> s.with(sound("minecraft:item/crossbow/loading_end"), sound("minecraft:item/crossbow/loading_end").pitch(1.3f)));
 
         //Cauldron Interactions

@@ -592,6 +592,8 @@
   "nomansland.subtitle.item.bandage.wrap": "Bandage wraps",
   "nomansland.subtitle.item.bomb.primed": "Bomb primed",
   "nomansland.subtitle.item.generic.consumed": "Item consumed",
+  "nomansland.subtitle.item.ritual_pick.glint": "Block resonates",
+  "nomansland.subtitle.item.ritual_pick.locate": "Ritual Pick resonates",
   "nomansland.subtitle.particle.droplet.fall": "Droplet falls",
   "nomansland.tooltip.mask.regeneration": "Slowly regenerates health",
   "painting.nomansland.sun.author": "Farcr",
