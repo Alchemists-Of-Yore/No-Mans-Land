@@ -62,6 +62,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Witch;
@@ -484,16 +485,14 @@ public class MiscellaneousEvents {
         }
 
         ItemStack helmet = entity.getItemBySlot(EquipmentSlot.HEAD);
-        if (helmet.is(NMLItems.ANCIENT_BRONZE_MASK)) {
-            if (source.getEntity() instanceof Player) {
-                int punchCount = helmet.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0);
-                if (punchCount >= 4) {
-                    entity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
-                    entity.spawnAtLocation(helmet.copy());
-                } else {
-                    helmet.set(NMLDataComponents.PUNCH_COUNT, punchCount + 1);
-                    helmet.set(NMLDataComponents.PUNCH_COOLDOWN, 100);
-                }
+        if (!(entity instanceof Player || entity instanceof ArmorStand) && helmet.is(NMLItems.ANCIENT_BRONZE_MASK) && source.getEntity() instanceof Player) {
+            int punchCount = helmet.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0);
+            if (punchCount >= 4) {
+                entity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                entity.spawnAtLocation(helmet.copy());
+            } else {
+                helmet.set(NMLDataComponents.PUNCH_COUNT, punchCount + 1);
+                helmet.set(NMLDataComponents.PUNCH_COOLDOWN, 100);
             }
         }
     }
