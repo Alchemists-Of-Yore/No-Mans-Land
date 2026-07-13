@@ -290,7 +290,7 @@
             }
           ],
           "name": "nomansland:ancestral_oath_sword",
-          "weight": 7
+          "weight": 4
         },
         {
           "type": "minecraft:item",
@@ -306,7 +306,7 @@
             }
           ],
           "name": "nomansland:ritual_pick",
-          "weight": 10
+          "weight": 6
         },
         {
           "type": "minecraft:item",

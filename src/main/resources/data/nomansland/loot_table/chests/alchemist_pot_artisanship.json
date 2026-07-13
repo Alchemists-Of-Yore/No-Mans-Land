@@ -258,7 +258,7 @@
             }
           ],
           "name": "nomansland:ancient_bronze_chisel",
-          "weight": 10
+          "weight": 6
         },
         {
           "type": "minecraft:item",
@@ -274,7 +274,7 @@
             }
           ],
           "name": "nomansland:ritual_pick",
-          "weight": 7
+          "weight": 3
         },
         {
           "type": "minecraft:item",
