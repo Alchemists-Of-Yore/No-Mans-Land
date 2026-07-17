@@ -19,13 +19,13 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.FOREST,
                     NMLBiomes.MAPLE_FOREST,
-                    0.2
+                    0.25
             );
 
             BiomePlacement.replaceOverworld(
                     Biomes.GROVE,
                     NMLBiomes.MAPLE_GROVE,
-                    0.2
+                    0.4
             );
 
             BiomePlacement.addSubOverworld(
@@ -83,6 +83,12 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.OLD_GROWTH_BIRCH_FOREST,
                     NMLBiomes.OLD_GROWTH_FOREST,
+                    0.3
+            );
+
+            BiomePlacement.replaceOverworld(
+                    Biomes.FOREST,
+                    NMLBiomes.OLD_GROWTH_FOREST,
                     0.2
             );
 
@@ -94,7 +100,7 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.FOREST,
                     NMLBiomes.AUTUMNAL_FOREST,
-                    0.2
+                    0.3
             );
         }
 
@@ -102,13 +108,13 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.TAIGA,
                     NMLBiomes.BOREAL_FOREST,
-                    0.25
+                    0.4
             );
 
             BiomePlacement.replaceOverworld(
                     Biomes.FOREST,
                     NMLBiomes.BOREAL_FOREST,
-                    0.1
+                    0.2
             );
 
             transitionalBiome(
@@ -170,12 +176,12 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.DARK_FOREST,
                     NMLBiomes.DARK_SWAMP,
-                    0.1
+                    0.2
             );
             BiomePlacement.replaceOverworld(
                     Biomes.SWAMP,
                     NMLBiomes.DARK_SWAMP,
-                    0.2
+                    0.4
             );
         }
 
@@ -203,7 +209,7 @@ public class NMLBiomePlacements {
             BiomePlacement.replaceOverworld(
                     Biomes.SWAMP,
                     NMLBiomes.BOG,
-                    0.2
+                    0.3
             );
 
             BiomePlacement.replaceOverworld(
