@@ -1,6 +1,7 @@
 {
 	"format_version": "1.21.11",
 	"credit": "Made by Farcr",
+	"parent": "block/block",
 	"textures": {
 		"0": "nomansland:block/underground/sulfuric_fumarole_top",
 		"1": "nomansland:block/underground/sulfuric_fumarole_side",
