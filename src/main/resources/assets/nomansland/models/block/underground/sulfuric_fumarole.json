@@ -2,9 +2,9 @@
 	"format_version": "1.21.11",
 	"credit": "Made by Farcr",
 	"textures": {
-		"0": "nomansland:block/underground/thermal_vent_top",
-		"1": "nomansland:block/underground/thermal_vent_side",
-		"2": "minecraft:block/stone",
+		"0": "nomansland:block/underground/sulfuric_fumarole_top",
+		"1": "nomansland:block/underground/sulfuric_fumarole_side",
+		"2": "nomansland:block/underground/siltstone",
 		"particle": "#2"
 	},
 	"elements": [

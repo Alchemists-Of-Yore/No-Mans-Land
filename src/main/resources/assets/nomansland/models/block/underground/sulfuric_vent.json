@@ -1,9 +1,0 @@
-{
-  "parent": "minecraft:block/orientable_with_bottom",
-  "textures": {
-    "top": "nomansland:block/underground/sulfuric_vent_side",
-    "bottom": "nomansland:block/underground/sulfuric_vent_side",
-    "side": "nomansland:block/underground/sulfuric_vent_side",
-    "front": "nomansland:block/underground/sulfuric_vent_front"
-  }
-}
