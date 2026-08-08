@@ -71,7 +71,8 @@ public record ServerboundRitualPickRequestPacket(BlockPos pos, Direction directi
 
         // fetch axis by direction...
         Direction uAxis = switch (direction.getAxis()) {
-            case X, Z -> Direction.SOUTH;
+            case X -> Direction.SOUTH;
+            case Z -> Direction.EAST;
             case Y -> Direction.EAST;
         };
         Direction vAxis = switch (direction.getAxis()) {
