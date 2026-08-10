@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "nomansland:item_conditional",
+        "items": "nomansland:ancestral_oath_sword"
+    },
+    "weight": 1,
+    "text": "WIP!"
+}
