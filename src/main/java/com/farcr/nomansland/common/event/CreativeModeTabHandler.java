@@ -498,8 +498,6 @@ public class CreativeModeTabHandler {
             insertAfter(NETHERITE_HOE, ANCIENT_BRONZE_CHISEL);
             insertAfter(NETHERITE_HOE, RITUAL_PICK);
 
-            insertAfter(NETHERITE_SWORD, ANCESTRAL_OATH_SWORD);
-
             event.getParameters().holders().lookup(Registries.POTION).ifPresent(
                 potionLookup -> generateBandageEffectTypes(
                     event,
@@ -524,6 +522,7 @@ public class CreativeModeTabHandler {
             insertAfter(TURTLE_HELMET, TORTOISE_SHELL);
             insertAfter(TURTLE_HELMET, ANCIENT_BRONZE_MASK);
             insertAfter(SPECTRAL_ARROW, INCENDIARY_ARROW);
+            insertAfter(NETHERITE_SWORD, ANCESTRAL_OATH_SWORD);
         }
 
         if (tab == CreativeModeTabs.INGREDIENTS) {
