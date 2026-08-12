@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "parent": "minecraft:block/outer_stairs",
   "textures": {
     "bottom": "nomansland:block/underground/ivory_limestone_top",
     "side": "nomansland:block/underground/ivory_limestone",
