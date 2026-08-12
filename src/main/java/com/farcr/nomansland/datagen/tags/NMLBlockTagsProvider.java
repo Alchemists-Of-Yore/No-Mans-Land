@@ -120,6 +120,32 @@ public class NMLBlockTagsProvider extends BlockTagsProvider {
                 BlockTags.STONE_ORE_REPLACEABLES,
                 BlockTags.DRIPSTONE_REPLACEABLE
         );
+        addToTags(NMLBlocks.LIMESTONE.block(),
+                BlockTags.OVERWORLD_CARVER_REPLACEABLES,
+                BlockTags.LUSH_GROUND_REPLACEABLE,
+                BlockTags.MOSS_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
+                BlockTags.SNAPS_GOAT_HORN,
+                BlockTags.BASE_STONE_OVERWORLD,
+                BlockTags.GOATS_SPAWNABLE_ON,
+                BlockTags.AZALEA_ROOT_REPLACEABLE,
+                BlockTags.STONE_ORE_REPLACEABLES,
+                BlockTags.DRIPSTONE_REPLACEABLE
+        );
+        addToTags(NMLBlocks.IVORY_LIMESTONE.block(),
+                BlockTags.OVERWORLD_CARVER_REPLACEABLES,
+                BlockTags.LUSH_GROUND_REPLACEABLE,
+                BlockTags.MOSS_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE,
+                BlockTags.SCULK_REPLACEABLE_WORLD_GEN,
+                BlockTags.SNAPS_GOAT_HORN,
+                BlockTags.BASE_STONE_OVERWORLD,
+                BlockTags.GOATS_SPAWNABLE_ON,
+                BlockTags.AZALEA_ROOT_REPLACEABLE,
+                BlockTags.STONE_ORE_REPLACEABLES,
+                BlockTags.DRIPSTONE_REPLACEABLE
+        );
 
         addToTags(NMLBlocks.CRUDE_DOOR.block(),
                 BlockTags.WOODEN_DOORS
