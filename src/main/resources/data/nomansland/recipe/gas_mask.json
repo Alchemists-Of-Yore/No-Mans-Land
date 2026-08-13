@@ -8,7 +8,8 @@
   },
   "pattern": [
     "LIL",
-    "LFL"
+    "LFL",
+    " L "
   ],
   "result": {
     "id": "nomansland:gas_mask",

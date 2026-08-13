@@ -48,8 +48,8 @@ public class NMLArmorMaterials {
     public static final Holder<ArmorMaterial> GAS_MASK = register(
             "gas_mask",
             ArmorItem.Type.HELMET,
-            () -> 3,
-            9,
+            () -> 1,
+            7,
             SoundEvents.ARMOR_EQUIP_LEATHER,
             () -> Ingredient.of(Items.LEATHER),
             "gas_mask",
@@ -57,9 +57,9 @@ public class NMLArmorMaterials {
             () -> 0F
     );
 
-    public static Holder<ArmorMaterial> register(String name, ArmorItem.Type armorType, Supplier<Integer> armorValue, int enchantmnetValue, Holder<SoundEvent> soundEvent, Supplier<Ingredient> repairIngredient, String armorLayer, Supplier<Float> toughness, Supplier<Float> knockbackResistance) {
+    public static Holder<ArmorMaterial> register(String name, ArmorItem.Type armorType, Supplier<Integer> armorValue, int enchantmentValue, Holder<SoundEvent> soundEvent, Supplier<Ingredient> repairIngredient, String armorLayer, Supplier<Float> toughness, Supplier<Float> knockbackResistance) {
         return register(name, () -> new ArmorMaterial(
-                Util.make(new EnumMap<>(ArmorItem.Type.class), map -> map.put(armorType, armorValue.get())), enchantmnetValue, soundEvent, repairIngredient,
+                Util.make(new EnumMap<>(ArmorItem.Type.class), map -> map.put(armorType, armorValue.get())), enchantmentValue, soundEvent, repairIngredient,
                 List.of(
                         new ArmorMaterial.Layer(NoMansLand.location(armorLayer)),
                         new ArmorMaterial.Layer(NoMansLand.location(armorLayer), "_overlay", false)
