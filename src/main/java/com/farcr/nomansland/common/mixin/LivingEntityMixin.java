@@ -149,6 +149,10 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     }
 
     @Unique private void nml$setVisualTickMultiplier(float visualTickMultiplier) {
+        if (visualTickMultiplier == this.nml$getVisualTickMultiplier()) {
+            return;
+        }
+
         this.setData(NMLEntityDataAttachments.STASIS_TICK_MULTIPLIER, visualTickMultiplier);
     }
 

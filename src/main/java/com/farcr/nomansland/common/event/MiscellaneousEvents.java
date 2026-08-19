@@ -701,7 +701,7 @@ public class MiscellaneousEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             DreamManager manager = DreamManager.getOrDefault(event.getEntity().getServer());
             DreamingPlayer dreamingPlayer = manager.getDreamingPlayer(serverPlayer);
-            if (dreamingPlayer != null) dreamingPlayer.discardTether();
+            if (dreamingPlayer != null) dreamingPlayer.discardTether(false);
         }
     }
 

@@ -82,11 +82,9 @@ public class NMLConfig {
     public static ModConfigSpec.IntValue MIN_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS;
     public static ModConfigSpec.IntValue MAX_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS;
     public static ModConfigSpec.IntValue BELL_CELL_SIZE_CHUNKS;
-//    public static ModConfigSpec.
 
     public static final String CATEGORY_MISC = "miscellaneous";
     public static ModConfigSpec.DoubleValue BURIED_SPAWNING_CHANCE;
-    public static ModConfigSpec.BooleanValue WALK_THROUGH_LEAVES;
     public static ModConfigSpec.BooleanValue WITCHES_EAT_STEW;
 
     public static ModConfigSpec CLIENT_CONFIG;
@@ -309,9 +307,6 @@ public class NMLConfig {
                 .comment("The chance a buried is spawned upon brushing a remains block.")
                 .comment("This chance is multiplied by 4 when the block is broken and by 10 when the block falls.")
                 .defineInRange("buriedSpawningChance", 0.05, 0, 1);
-//        WALK_THROUGH_LEAVES = COMMON_BUILDER
-//                .comment("If leaves can be walked through slowly")
-//                .define("walkThroughLeaves", true);
         WITCHES_EAT_STEW = COMMON_BUILDER
                 .comment("Witches use bowls to drain cauldrons of witch stew.")
                 .define("witchesEatStew", true);

@@ -34,12 +34,12 @@ public class EmptyWitchStewCauldron extends Block {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
-
-        player.addItem(Items.BONE_MEAL.getDefaultInstance());
-
-        level.playSound(null, pos, NMLSounds.WITCH_STEW_CAULDRON_CLEAN.value(), SoundSource.BLOCKS);
-        return InteractionResult.SUCCESS;
+        if (!level.isClientSide) {
+            level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
+            player.addItem(Items.BONE_MEAL.getDefaultInstance());
+            level.playSound(null, pos, NMLSounds.WITCH_STEW_CAULDRON_CLEAN.value(), SoundSource.BLOCKS);
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override

@@ -68,7 +68,9 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, Fallable {
@@ -311,20 +313,24 @@ public class PotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock,
     }
 
     private static final VoxelShape SMALL_FALLBACK = Shapes.box(2.0 / 16, 0, 2.0 / 16, 14.0 / 16, 1, 14.0 / 16);
+    private static final Map<VoxelShape, VoxelShape> LIVING_COLLISION_CACHE = new ConcurrentHashMap<>();
+
+    public static VoxelShape variantShapeOf(@Nullable PotBlockEntity pot, VoxelShape fallback) {
+        if (pot == null || pot.variant == null) return fallback;
+        VoxelShape variantShape = pot.variant.shape();
+        return variantShape != null && !variantShape.isEmpty() ? variantShape : fallback;
+    }
 
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (level.getBlockEntity(pos) instanceof PotBlockEntity pot && pot.variant != null) {
-            VoxelShape variantShape = pot.variant.shape();
-            if (variantShape != null && !variantShape.isEmpty()) return variantShape;
-        }
-        return SMALL_FALLBACK;
+        return variantShapeOf(level.getBlockEntity(pos) instanceof PotBlockEntity pot ? pot : null, SMALL_FALLBACK);
     }
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape shape = getShape(state, level, pos, context);
-        if (!(level.getBlockEntity(pos) instanceof PotBlockEntity pot) || !pot.isLiving()) return shape;
-        return shape.isEmpty() ? shape : Shapes.create(shape.bounds().deflate(0.05));
+        PotBlockEntity pot = level.getBlockEntity(pos) instanceof PotBlockEntity p ? p : null;
+        VoxelShape shape = variantShapeOf(pot, SMALL_FALLBACK);
+        if (pot == null || !pot.isLiving() || shape.isEmpty()) return shape;
+        return LIVING_COLLISION_CACHE.computeIfAbsent(shape, s -> Shapes.create(s.bounds().deflate(0.05)));
     }
 
     @Override
