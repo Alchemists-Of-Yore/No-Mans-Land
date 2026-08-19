@@ -6,20 +6,17 @@ import com.farcr.nomansland.client.renderer.dreams.ClientDreamRenderer;
 import com.farcr.nomansland.common.block.torches.ExtinguishableBlockPairing;
 import com.farcr.nomansland.common.dreams.DreamManager;
 import com.farcr.nomansland.common.dreams.dreamlevel.DreamingPlayer;
+import com.farcr.nomansland.common.effect.StasisEffect;
 import com.farcr.nomansland.common.effect.FlammableEffect;
 import com.farcr.nomansland.common.entity.ai.WitchBowlStewGoal;
 import com.farcr.nomansland.common.entity.bombs.Explosive;
-import com.farcr.nomansland.common.entity.buddy.Buddy;
 import com.farcr.nomansland.common.entity.frienderman.Frienderman;
 import com.farcr.nomansland.common.friend.FriendMoon;
 import com.farcr.nomansland.common.handler.InvertedBellServerHandler;
 import com.farcr.nomansland.common.integration.Mods;
-import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
+import com.farcr.nomansland.common.item.AncestralOathSwordItem;
 import com.farcr.nomansland.common.networking.dream.ClientboundDimensionSyncPacket;
-import com.farcr.nomansland.common.registry.NMLCriteriaTriggers;
-import com.farcr.nomansland.common.registry.NMLRegistries;
-import com.farcr.nomansland.common.registry.NMLSounds;
-import com.farcr.nomansland.common.registry.NMLTags;
+import com.farcr.nomansland.common.registry.*;
 import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
@@ -35,11 +32,14 @@ import com.farcr.nomansland.common.worldevent.SunDog;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -55,11 +55,14 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Witch;
@@ -78,17 +81,15 @@ import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -102,6 +103,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.farcr.nomansland.common.block.FrostedGrassBlock.SNOWLOGGED;
 import static net.minecraft.world.level.block.SnowyDirtBlock.SNOWY;
@@ -347,6 +349,10 @@ public class MiscellaneousEvents {
         }
     }
 
+    private static final List<Holder<MobEffect>> TRACKED_EFFECTS = List.of(
+        NMLEffects.HAPPINESS, NMLEffects.STASIS
+    );
+
     /*
     * To be clear, this exists because Minecraft doesn't actually sync mob effects
     * with the player. it just handles everything related to them on the server
@@ -356,25 +362,35 @@ public class MiscellaneousEvents {
     * on respawn or otherwise if the player wasn't there to witness its application
     */
     @SubscribeEvent
-    private static void happinessTrackingPacket(PlayerEvent.StartTracking event) {
+    private static void mobEffectTrackingPacket(PlayerEvent.StartTracking event) {
         if (!(event.getEntity() instanceof ServerPlayer tracker)) return;
-        if (event.getTarget() instanceof Buddy buddy && buddy.hasEffect(NMLEffects.HAPPINESS)) {
-            MobEffectInstance effectInstance = buddy.getEffect(NMLEffects.HAPPINESS);
-            PacketDistributor.sendToPlayer(tracker,
-                new ClientboundBuddyUpdateEffectsPacket(buddy.getId(), effectInstance));
-        } else if (event.getTarget() instanceof ServerPlayer player && player.hasEffect(NMLEffects.HAPPINESS)) {
-            MobEffectInstance effectInstance = player.getEffect(NMLEffects.HAPPINESS);
-            tracker.connection.send(
-                new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance, false));
+        for (Holder<MobEffect> effect : TRACKED_EFFECTS) {
+            if (event.getTarget() instanceof LivingEntity livingEntity && livingEntity.hasEffect(effect)) {
+                MobEffectInstance effectInstance = livingEntity.getEffect(effect);
+                tracker.connection.send(new ClientboundUpdateMobEffectPacket(livingEntity.getId(), effectInstance, false));
+            }
         }
     }
 
     @SubscribeEvent
-    private static void playerHappinessAdded(MobEffectEvent.Added event) {
-        if (event.getEntity() instanceof ServerPlayer player
-            && event.getEffectInstance().getEffect().value() == NMLEffects.HAPPINESS.value()) {
-            ((ServerLevel) player.level()).getChunkSource().broadcast(player,
-                new ClientboundUpdateMobEffectPacket(player.getId(), event.getEffectInstance(), true));
+    private static void mobTrackedEffectAdded(MobEffectEvent.Added event) {
+        if (event.getEntity() instanceof LivingEntity livingEntity
+            && livingEntity.level() instanceof ServerLevel serverLevel
+            && TRACKED_EFFECTS.contains(event.getEffectInstance().getEffect())
+        ) {
+            serverLevel.getChunkSource().broadcast(livingEntity,
+                new ClientboundUpdateMobEffectPacket(livingEntity.getId(), event.getEffectInstance(), true));
+        }
+    }
+
+    @SubscribeEvent
+    private static void mobTrackedEffectRemoved(MobEffectEvent.Remove event) {
+        if (event.getEntity() instanceof LivingEntity livingEntity
+            && livingEntity.level() instanceof ServerLevel serverLevel
+            && TRACKED_EFFECTS.contains(event.getEffect())
+        ) {
+            serverLevel.getChunkSource().broadcast(livingEntity,
+                new ClientboundRemoveMobEffectPacket(livingEntity.getId(), event.getEffect()));
         }
     }
 
@@ -469,16 +485,14 @@ public class MiscellaneousEvents {
         }
 
         ItemStack helmet = entity.getItemBySlot(EquipmentSlot.HEAD);
-        if (helmet.is(NMLItems.ANCIENT_BRONZE_MASK)) {
-            if (source.getEntity() instanceof Player) {
-                int punchCount = helmet.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0);
-                if (punchCount >= 4) {
-                    entity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
-                    entity.spawnAtLocation(helmet.copy());
-                } else {
-                    helmet.set(NMLDataComponents.PUNCH_COUNT, punchCount + 1);
-                    helmet.set(NMLDataComponents.PUNCH_COOLDOWN, 100);
-                }
+        if (!(entity instanceof Player || entity instanceof ArmorStand) && helmet.is(NMLItems.ANCIENT_BRONZE_MASK) && source.getEntity() instanceof Player) {
+            int punchCount = helmet.getOrDefault(NMLDataComponents.PUNCH_COUNT, 0);
+            if (punchCount >= 4) {
+                entity.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                entity.spawnAtLocation(helmet.copy());
+            } else {
+                helmet.set(NMLDataComponents.PUNCH_COUNT, punchCount + 1);
+                helmet.set(NMLDataComponents.PUNCH_COOLDOWN, 100);
             }
         }
     }
@@ -523,6 +537,8 @@ public class MiscellaneousEvents {
 
                 if (entity instanceof Enemy) entity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 200, 0, false, true, true));
             }
+            
+            AncestralOathSwordItem.updateUseTime(entity);
         }
     }
 
@@ -685,7 +701,7 @@ public class MiscellaneousEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             DreamManager manager = DreamManager.getOrDefault(event.getEntity().getServer());
             DreamingPlayer dreamingPlayer = manager.getDreamingPlayer(serverPlayer);
-            if (dreamingPlayer != null) dreamingPlayer.discardTether();
+            if (dreamingPlayer != null) dreamingPlayer.discardTether(false);
         }
     }
 
@@ -722,5 +738,79 @@ public class MiscellaneousEvents {
         if (stack.get(NMLDataComponents.TIME_WHEN_DISABLED) == null)
             return false;
         return (entity.level().getGameTime() - stack.get(NMLDataComponents.TIME_WHEN_DISABLED)) > 100L;
+    }
+
+    @SubscribeEvent
+    public static void onAttack(AttackEntityEvent event) {
+        if (event.getEntity().getItemInHand(InteractionHand.MAIN_HAND).is(NMLItems.ANCESTRAL_OATH_SWORD)
+        && !AncestralOathSwordItem.canHurtUnderOath(event.getTarget())) {
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                AncestralOathSwordItem.setUseTime(serverPlayer, AncestralOathSwordItem.MAX_GLINT_ANIMATE, true);
+                serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(
+                    Component.translatable("item.nomansland.ancestral_oath_sword.refuse")
+                        .withColor(0xFFF8D473))
+                );
+            }
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingBlockEvent(LivingShieldBlockEvent event) {
+        LivingEntity livingEntity = event.getEntity();
+        if (!livingEntity.getUseItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) return;
+        event.setBlocked(false);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        if (event.getTarget() instanceof LivingEntity livingEntity
+        && livingEntity.hasEffect(NMLEffects.STASIS)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void disableParticleEvent(EffectParticleModificationEvent event) {
+        if (event.getEffect().is(NMLEffects.STASIS)) event.setVisible(false);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        if (event.getEntity().hasEffect(NMLEffects.STASIS)
+        || DreamManager.getAmbiguousDreamTypeInstance(event.getEntity()) != null)
+            event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncomingDamageStasis(LivingIncomingDamageEvent event) {
+        LivingEntity livingEntity = event.getEntity();
+        if (livingEntity.getUseItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
+            ((AncestralOathSwordItem) livingEntity.getUseItem().getItem())
+                .handleBlockingEvent(event, livingEntity.getUseItem());
+        }
+        if (livingEntity.hasEffect(NMLEffects.STASIS)) {
+            if (Objects.requireNonNull(livingEntity.getEffect(NMLEffects.STASIS)).getAmplifier() >= 1) {
+                event.setCanceled(true);
+                return;
+            }
+            if (NMLEffects.STASIS.get() instanceof StasisEffect effect
+            && effect.immuneToDamage(event.getSource(), event.getEntity().level())) {
+                event.setCanceled(true);
+                return;
+            }
+            livingEntity.removeEffect(NMLEffects.STASIS);
+            if (event.getSource().getWeaponItem() != null && event.getSource().getWeaponItem().is(NMLItems.ANCESTRAL_OATH_SWORD)) {
+                livingEntity.addEffect(new MobEffectInstance(NMLEffects.PACIFIED, 300));
+                AncestralOathSwordItem.createParticles(livingEntity,
+                    NMLParticleTypes.STASIS_BREAK, (AncestralOathSwordItem.PARTICLE_AMOUNT * 2));
+                event.setAmount(event.getAmount() * 1.5f);
+                return;
+            }
+            livingEntity.addEffect(
+                new MobEffectInstance(
+                    MobEffects.MOVEMENT_SLOWDOWN, 60, 2,
+                    true, false, false
+                )
+            );
+        }
     }
 }

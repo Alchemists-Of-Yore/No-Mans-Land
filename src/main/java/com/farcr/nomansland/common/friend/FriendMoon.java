@@ -11,6 +11,7 @@ import com.farcr.nomansland.common.friend.condition.MoonlightGreetingConditions;
 import com.farcr.nomansland.common.friend.condition.MoonlightLeavingConditions;
 import com.farcr.nomansland.common.friend.dialogue.DialogueLocation;
 import com.farcr.nomansland.common.friend.dialogue.DialoguePool;
+import com.farcr.nomansland.common.friend.dialogue.DialogueTracker;
 import com.farcr.nomansland.common.friend.dialogue.DialogueUtil;
 import com.farcr.nomansland.common.friend.offering.OfferingContext;
 import com.farcr.nomansland.common.friend.offering.OfferingType;
@@ -31,6 +32,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -616,7 +618,9 @@ public class FriendMoon extends SavedData {
     }
 
     public static boolean hasMetWithPlayer(ServerPlayer player) {
-        AdvancementHolder meetAdvancement = player.level().getServer().getAdvancements().get(MEET_MOON_ADVANCEMENT);
+        MinecraftServer server = player.level().getServer();
+        if (DialogueTracker.getOrDefault(server).hasHeardFrom(player.getUUID(), NMLRegistries.GREETING_DIALOGUE_KEY.location())) return true;
+        AdvancementHolder meetAdvancement = server.getAdvancements().get(MEET_MOON_ADVANCEMENT);
         return (meetAdvancement != null && player.getAdvancements().getOrStartProgress(meetAdvancement).isDone());
     }
 
@@ -692,6 +696,8 @@ public class FriendMoon extends SavedData {
                                 (registry) -> greetingFilter(registry, wokenUpBy)
                             ).setTargetPlayer(wokenUpBy).dispatch(level, getFriendshipPlayers())
                         );
+                        forFriendshipPlayers((player) ->
+                            NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(player));
                         getState().getMoonConsumer().accept(this);
                         // just in case I dont want it softlocking players if they log off please
                     } else if (awake) {
@@ -789,7 +795,6 @@ public class FriendMoon extends SavedData {
             if (dreamAdvancement != null && serverPlayer.getAdvancements().getOrStartProgress(dreamAdvancement).isDone())
                 filteredDialogue = MoonlightGreetingConditions.DreamGreetingConditional.DREAM_ARRAY;
         }
-        NMLCriteriaTriggers.MEET_FRIEND_MOON.get().trigger(serverPlayer);
         return DialogueUtil.getWeightedEntry(filteredDialogue, level.getRandom());
     }
 

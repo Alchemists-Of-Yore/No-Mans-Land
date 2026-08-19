@@ -1,7 +1,6 @@
 package com.farcr.nomansland.common.entity.buddy;
 
 import com.farcr.nomansland.common.entity.variant_action.SetBuddyMushroom;
-import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.registry.NMLRegistries;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.entities.NMLEffects;
@@ -16,10 +15,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -42,6 +43,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.ChunkSource;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
@@ -274,8 +276,6 @@ public class Buddy extends PathfinderMob implements Npc {
                         NMLEffects.HAPPINESS, foodResult.get().happinessTicks(),
                         0, true, false);
                     this.addEffect(effectInstance);
-                    PacketDistributor.sendToPlayersTrackingEntity(this,
-                        new ClientboundBuddyUpdateEffectsPacket(this.getId(), effectInstance));
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             }

@@ -43,32 +43,23 @@ public class GroundPickupBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!(player.isCreative() && player.getInventory().hasAnyMatching(stack -> stack.getItem() == this.asItem()))) {
-            ItemStack item = new ItemStack(this);
-            if (!player.addItem(item) ) {
-                player.drop(item, false);
-            } else {
-                level.playSound(player,
-                        player.getX(),
-                        player.getY(),
-                        player.getZ(),
-                        SoundEvents.ITEM_PICKUP,
-                        SoundSource.PLAYERS,
-                        0.2F,
-                        (level.random.nextFloat() - level.random.nextFloat()) * 1.4F + 2.0F);
+        if (!level.isClientSide) {
+            if (!(player.isCreative() && player.getInventory().hasAnyMatching(stack -> stack.getItem() == this.asItem()))) {
+                ItemStack item = new ItemStack(this);
+                if (!player.addItem(item)) player.drop(item, false);
             }
-        } else {
-            level.playSound(player,
-                    player.getX(),
-                    player.getY(),
-                    player.getZ(),
-                    SoundEvents.ITEM_PICKUP,
-                    SoundSource.PLAYERS,
-                    0.2F,
-                    (level.random.nextFloat() - level.random.nextFloat()) * 1.4F + 2.0F);
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
-    level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-    return InteractionResult.sidedSuccess(level.isClientSide);
+
+        level.playSound(player,
+                player.getX(),
+                player.getY(),
+                player.getZ(),
+                SoundEvents.ITEM_PICKUP,
+                SoundSource.PLAYERS,
+                0.2F,
+                (level.random.nextFloat() - level.random.nextFloat()) * 1.4F + 2.0F);
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {

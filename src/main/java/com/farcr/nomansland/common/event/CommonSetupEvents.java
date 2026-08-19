@@ -27,8 +27,8 @@ import com.farcr.nomansland.common.integration.create.CreateIntegration;
 import com.farcr.nomansland.common.item.ThrowableBombItem;
 import com.farcr.nomansland.common.mixin.BlockBehaviourAccessModifier;
 import com.farcr.nomansland.common.networking.*;
+import com.farcr.nomansland.common.networking.alchemist_tools.*;
 import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyCrouchPacket;
-import com.farcr.nomansland.common.networking.buddy.ClientboundBuddyUpdateEffectsPacket;
 import com.farcr.nomansland.common.friend.dialogue.DialogueTracker;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialoguePacket;
 import com.farcr.nomansland.common.networking.dialogue.ClientboundDialogueRegistrySyncPacket;
@@ -47,6 +47,7 @@ import com.farcr.nomansland.common.registry.blocks.NMLBlocks;
 import com.farcr.nomansland.common.registry.blocks.NMLFlammables;
 import com.farcr.nomansland.common.registry.entities.NMLEntities;
 import com.farcr.nomansland.common.registry.items.NMLItems;
+import com.farcr.nomansland.common.registry.items.NMLPotions;
 import com.farcr.nomansland.common.world.generation.NMLBiomePlacements;
 import com.farcr.nomansland.common.world.generation.NMLDensityModifications;
 import com.farcr.nomansland.common.world.generation.NMLSurfaceRules;
@@ -146,6 +147,7 @@ public class CommonSetupEvents {
         event.register(NMLRegistries.DREAM_TYPE);
         event.register(NMLRegistries.EXTINGUISHABLE_BLOCKS);
         event.register(NMLRegistries.DIALOGUE_CONDITIONAL_TYPE);
+        event.register(NMLRegistries.CARVING_TYPE);
     }
 
     @SubscribeEvent
@@ -205,6 +207,9 @@ public class CommonSetupEvents {
     @SubscribeEvent
     public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
         event.getBuilder().addMix(Potions.WATER, NMLItems.AWKWARD_RESIDUE.get(), Potions.AWKWARD);
+
+        event.getBuilder().addStartMix(Items.NAUTILUS_SHELL, NMLPotions.STASIS);
+        event.getBuilder().addMix(NMLPotions.STASIS, Items.REDSTONE, NMLPotions.LONG_STASIS);
 
         event.getBuilder().addRecipe(new AwkwardResidueDowngradeRecipe());
         event.getBuilder().addRecipe(new BandageInfusionRecipe());
@@ -325,7 +330,6 @@ public class CommonSetupEvents {
         registrar.playToServer(ServerboundDreamAcknowledgePacket.TYPE, ServerboundDreamAcknowledgePacket.STREAM_CODEC, ServerboundDreamAcknowledgePacket::handleData);
 
         registrar.playToClient(ClientboundBuddyCrouchPacket.TYPE, ClientboundBuddyCrouchPacket.STREAM_CODEC, ClientboundBuddyCrouchPacket::handleData);
-        registrar.playToClient(ClientboundBuddyUpdateEffectsPacket.TYPE, ClientboundBuddyUpdateEffectsPacket.STREAM_CODEC, ClientboundBuddyUpdateEffectsPacket::handleData);
 
         registrar.playToClient(ClientboundZoomEffectPacket.TYPE, ClientboundZoomEffectPacket.STREAM_CODEC, ClientboundZoomEffectPacket::handleData);
 
@@ -336,6 +340,16 @@ public class CommonSetupEvents {
         registrar.playToClient(ClientboundDistantChunkPacket.TYPE, ClientboundDistantChunkPacket.STREAM_CODEC, ClientboundDistantChunkPacket::handleData);
 
         registrar.playToClient(ClientboundBandageSoundPacket.TYPE, ClientboundBandageSoundPacket.STREAM_CODEC, ClientboundBandageSoundPacket::handleData);
+
+        // ancestral oath sword packets
+        registrar.playToClient(ClientboundOathSwordAnimate.TYPE, ClientboundOathSwordAnimate.STREAM_CODEC, ClientboundOathSwordAnimate::handleData);
+        registrar.playToClient(ClientboundOathSwordParry.TYPE, ClientboundOathSwordParry.STREAM_CODEC, ClientboundOathSwordParry::handleData);
+        registrar.playToServer(ServerboundOathSwordAnimate.TYPE, ServerboundOathSwordAnimate.STREAM_CODEC, ServerboundOathSwordAnimate::handleData);
+
+        // ritual pickaxe packets
+        registrar.playToServer(ServerboundRitualPickRequestPacket.TYPE, ServerboundRitualPickRequestPacket.STREAM_CODEC, ServerboundRitualPickRequestPacket::handleData);
+        registrar.playToClient(ClientboundRitualPickResponsePacket.TYPE, ClientboundRitualPickResponsePacket.STREAM_CODEC, ClientboundRitualPickResponsePacket::handleData);
+        registrar.playToServer(ServerBoundChiselPacket.TYPE, ServerBoundChiselPacket.STREAM_CODEC, ServerBoundChiselPacket::handleData);
     }
 
     @SubscribeEvent

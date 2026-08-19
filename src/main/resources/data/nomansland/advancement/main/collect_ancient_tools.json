@@ -5,10 +5,10 @@
       "components": {}
     },
     "title": {
-      "translate": "nomansland.advancements.meet_friend_moon.title"
+      "translate": "nomansland.advancements.collect_ancient_tools.title"
     },
     "description": {
-      "translate": "nomansland.advancements.meet_friend_moon.description"
+      "translate": "nomansland.advancements.collect_ancient_tools.description"
     },
     "frame": "goal",
     "show_toast": true,

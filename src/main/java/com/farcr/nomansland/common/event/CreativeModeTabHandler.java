@@ -112,6 +112,14 @@ public class CreativeModeTabHandler {
         //-Farcr
         
         if (tab == CreativeModeTabs.BUILDING_BLOCKS) {
+
+            insertAfter(REINFORCED_DEEPSLATE, SOLAR_TILES);
+            insertAfter(REINFORCED_DEEPSLATE, LARGE_SOLAR_TILE);
+            insertAfter(REINFORCED_DEEPSLATE, LUNAR_TILES);
+            insertAfter(REINFORCED_DEEPSLATE, LARGE_LUNAR_TILE);
+            insertAfter(REINFORCED_DEEPSLATE, STELLAR_TILES);
+            insertAfter(REINFORCED_DEEPSLATE, LARGE_STELLAR_TILE);
+
             insertAfter(STONE_BRICKS, FADED_STONE_BRICKS);
             insertBefore(STONE_BRICKS, POLISHED_STONE);
             insertBefore(STONE_BRICKS, POLISHED_STONE_STAIRS);
@@ -487,6 +495,9 @@ public class CreativeModeTabHandler {
             insertAfter(TNT_MINECART, ANTIDOTE_BANDAGE);
             insertAfter(TNT_MINECART, BANDAGE);
 
+            insertAfter(NETHERITE_HOE, ANCIENT_BRONZE_CHISEL);
+            insertAfter(NETHERITE_HOE, RITUAL_PICK);
+
             event.getParameters().holders().lookup(Registries.POTION).ifPresent(
                 potionLookup -> generateBandageEffectTypes(
                     event,
@@ -511,6 +522,7 @@ public class CreativeModeTabHandler {
             insertAfter(TURTLE_HELMET, TORTOISE_SHELL);
             insertAfter(TURTLE_HELMET, ANCIENT_BRONZE_MASK);
             insertAfter(SPECTRAL_ARROW, INCENDIARY_ARROW);
+            insertAfter(NETHERITE_SWORD, ANCESTRAL_OATH_SWORD);
         }
 
         if (tab == CreativeModeTabs.INGREDIENTS) {
