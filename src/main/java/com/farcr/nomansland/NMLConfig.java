@@ -13,11 +13,11 @@ public class NMLConfig {
     public static final String CATEGORY_OVERRIDES = "overrides";
     public static final String CATEGORY_RECIPES = "recipe_tweaks";
     public static final List<String> VANILLA_RECIPE_TWEAKS = List.of(
-            "andesite", "bookshelf", "diorite", "granite", "lectern",
+            "andesite", "diorite", "granite", "lectern",
             "light_blue_dye_from_blue_orchid", "light_gray_dye_from_white_tulip", "lodestone",
-            "mushroom_stew", "polished_deepslate", "rabbit_stew_from_red_mushroom",
+            "mushroom_stew", "rabbit_stew_from_red_mushroom",
             "red_dye_from_rose_bush", "red_sandstone", "sandstone", "scaffolding",
-            "smoker", "stone_bricks", "tnt"
+            "smoker"
     );
     public static final Map<String, ModConfigSpec.BooleanValue> RECIPE_TWEAKS = new HashMap<>();
     public static ModConfigSpec.BooleanValue MYCELIUM_SPREADS;
@@ -26,6 +26,7 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue TRAMPLING;
     public static ModConfigSpec.BooleanValue TORCH_EXTINGUISHING;
     public static ModConfigSpec.BooleanValue GRASS_FROSTING;
+    public static ModConfigSpec.BooleanValue PATH_TWEAKS;
     public static final String CATEGORY_BIOMES = "biomes";
     public static ModConfigSpec.BooleanValue BIOMES;
     public static ModConfigSpec.BooleanValue CAVES_BIOMES;
@@ -76,16 +77,15 @@ public class NMLConfig {
     public static final String CATEGORY_MEETING_POINT = "meeting_point";
     public static ModConfigSpec.IntValue MIN_MEETING_POINT_DISTANCE;
     public static ModConfigSpec.IntValue MAX_MEETING_POINT_DISTANCE;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> FRIEND_MOON_DIMENSIONS;
 
     public static final String BELL_SANCTUARIES = "bell_sanctuaries";
     public static ModConfigSpec.IntValue MIN_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS;
     public static ModConfigSpec.IntValue MAX_BELL_SANCTUARY_PAIR_DISTANCE_CHUNKS;
     public static ModConfigSpec.IntValue BELL_CELL_SIZE_CHUNKS;
-//    public static ModConfigSpec.
 
     public static final String CATEGORY_MISC = "miscellaneous";
     public static ModConfigSpec.DoubleValue BURIED_SPAWNING_CHANCE;
-    public static ModConfigSpec.BooleanValue WALK_THROUGH_LEAVES;
     public static ModConfigSpec.BooleanValue WITCHES_EAT_STEW;
 
     public static ModConfigSpec CLIENT_CONFIG;
@@ -94,6 +94,8 @@ public class NMLConfig {
     public static ModConfigSpec.BooleanValue CAVE_BIOME_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue DEEP_DARK_FOG_MODIFIER;
     public static ModConfigSpec.BooleanValue FOGGY_BIOME_FOG_MODIFIER;
+    public static ModConfigSpec.BooleanValue SURFACE_FOG_MODIFIER;
+    public static ModConfigSpec.DoubleValue SURFACE_FOG_INTENSITY;
 
     public static final String INVERTED_BELL_CLIENT = "inverted_bell_client";
     public static ModConfigSpec.BooleanValue INVERTED_BELL_BLUR;
@@ -113,6 +115,9 @@ public class NMLConfig {
         COMMON_BUILDER.comment("For configuring the mob remodels, go to the mixed litter startup config!");
 
         COMMON_BUILDER.push(CATEGORY_OVERRIDES);
+        PATH_TWEAKS = COMMON_BUILDER
+                .comment("If using a hoe/shovel on plants tills/paths the blocks below it")
+                .define("farmlandPathTweaks", true);
         GRASS_SPREADS = COMMON_BUILDER
                 .comment("If grass or mycelium spread to nearby dirt.")
                 .define("grassSpreads", true);
@@ -285,6 +290,9 @@ public class NMLConfig {
         MAX_MEETING_POINT_DISTANCE = COMMON_BUILDER
                 .comment("The maximum distance, from the center of the world, the Meeting Point should spawn at.")
                 .defineInRange("maxMeetingPointDistance", 2500, 0, Integer.MAX_VALUE);
+        FRIEND_MOON_DIMENSIONS = COMMON_BUILDER
+                .comment("Dimensions the Friend Moon watches over, as full dimension ids such as \"minecraft:overworld\". Leave empty to use every dimension that shares the overworld's dimension type, which covers most custom overworld-like dimensions.")
+                .defineListAllowEmpty("friendMoonDimensions", List.of(), () -> "", (entry) -> entry instanceof String);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push(BELL_SANCTUARIES);
@@ -305,9 +313,6 @@ public class NMLConfig {
                 .comment("The chance a buried is spawned upon brushing a remains block.")
                 .comment("This chance is multiplied by 4 when the block is broken and by 10 when the block falls.")
                 .defineInRange("buriedSpawningChance", 0.05, 0, 1);
-//        WALK_THROUGH_LEAVES = COMMON_BUILDER
-//                .comment("If leaves can be walked through slowly")
-//                .define("walkThroughLeaves", true);
         WITCHES_EAT_STEW = COMMON_BUILDER
                 .comment("Witches use bowls to drain cauldrons of witch stew.")
                 .define("witchesEatStew", true);
@@ -339,6 +344,12 @@ public class NMLConfig {
         FOGGY_BIOME_FOG_MODIFIER = CLIENT_BUILDER
                 .comment("If the foggy biome fog modifier is enabled")
                 .define("foggyBiomeFogModifier", true);
+        SURFACE_FOG_MODIFIER = CLIENT_BUILDER
+                .comment("If the general fog modifier applied everywhere, is enabled")
+                .define("surfaceFogModifier", true);
+        SURFACE_FOG_INTENSITY = CLIENT_BUILDER
+                .comment("How strongly the general fog modifier pulls fog towards the camera; 0 disables it entirely, 1 is the default look")
+                .defineInRange("surfaceFogIntensity", 1.0, 0.1, 1.0);
         CLIENT_BUILDER.pop();
 
         CLIENT_BUILDER.push(INVERTED_BELL_CLIENT);

@@ -9,9 +9,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.minecraft.util.Unit;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class NMLDataComponents {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, NoMansLand.MODID);
@@ -51,5 +54,9 @@ public class NMLDataComponents {
             "pot_modifiers", builder -> builder
                     .persistent(Codec.STRING.listOf())
                     .networkSynchronized(ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()))
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> OATH_SWORD_USE_TIME = DATA_COMPONENTS.registerComponentType(
+        "oath_sword_use_time", builder -> builder.networkSynchronized(ByteBufCodecs.INT)
     );
 }

@@ -95,17 +95,59 @@ public class WardedSpacesData extends SavedData {
         }
     }
 
-    public boolean isWarded(final Level level, final BlockPos pos) {
-        if (this.wardedSpaces.containsKey(pos.asLong())) return true;
-        final BlockPos.MutableBlockPos wardedPos = new BlockPos.MutableBlockPos();
+    private long snapshotTick = Long.MIN_VALUE;
+    private int snapshotSize = -1;
 
+    private double[] snapshotX = new double[0];
+    private double[] snapshotY = new double[0];
+    private double[] snapshotZ = new double[0];
+
+    private double[] snapshotRange = new double[0];
+
+    private void refreshSnapshot(final Level level) {
+        final long tick = level.getGameTime();
+        if (this.snapshotTick == tick && this.snapshotSize == this.wardedSpaces.size()) {
+            return;
+        }
+
+        this.snapshotTick = tick;
+        this.snapshotSize = this.wardedSpaces.size();
+        if (this.snapshotX.length != this.snapshotSize) {
+            this.snapshotX = new double[this.snapshotSize];
+            this.snapshotY = new double[this.snapshotSize];
+            this.snapshotZ = new double[this.snapshotSize];
+            this.snapshotRange = new double[this.snapshotSize];
+        }
+
+        final BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        final Vector3d raw = new Vector3d();
+        final Vector3d projected = new Vector3d();
+        int index = 0;
         for (final Long2IntMap.Entry entry : this.wardedSpaces.long2IntEntrySet()) {
-            wardedPos.set(entry.getLongKey());
+            cursor.set(entry.getLongKey());
+            JOMLConversion.atBottomCenterOf(cursor, raw);
+            SableCompanion.INSTANCE.projectOutOfSubLevel(level, raw, projected);
+            this.snapshotX[index] = projected.x;
+            this.snapshotY[index] = projected.y;
+            this.snapshotZ[index] = projected.z;
+            this.snapshotRange[index] = Mth.square((double) entry.getIntValue());
+            index++;
+        }
+    }
 
-            final Vector3d vecA = JOMLConversion.atBottomCenterOf(wardedPos, TEMP_POS_A);
-            final Vector3d vecB = JOMLConversion.atBottomCenterOf(pos, TEMP_POS_B);
+    public boolean isWarded(final Level level, final BlockPos pos) {
+        if (this.wardedSpaces.isEmpty()) return false;
+        if (this.wardedSpaces.containsKey(pos.asLong())) return true;
 
-            if (SableCompanion.INSTANCE.distanceSquaredWithSubLevels(level, vecA, vecB) <= Mth.square(entry.getIntValue())) {
+        this.refreshSnapshot(level);
+        JOMLConversion.atBottomCenterOf(pos, TEMP_POS_B);
+        SableCompanion.INSTANCE.projectOutOfSubLevel(level, TEMP_POS_B, TEMP_POS_A);
+
+        for (int index = 0; index < this.snapshotSize; index++) {
+            final double dx = TEMP_POS_A.x - this.snapshotX[index];
+            final double dy = TEMP_POS_A.y - this.snapshotY[index];
+            final double dz = TEMP_POS_A.z - this.snapshotZ[index];
+            if (dx * dx + dy * dy + dz * dz <= this.snapshotRange[index]) {
                 return true;
             }
         }
