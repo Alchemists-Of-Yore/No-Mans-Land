@@ -103,7 +103,7 @@ public abstract class LivingEntityMixin extends EntityMixin implements LivingEnt
     }
 
     @Inject(method = "dropAllDeathLoot", at = @At("HEAD"), cancellable = true)
-    private void trySkipDroppingDeathLoot(ServerLevel p_level, DamageSource damageSource, CallbackInfo ci) {
+    private void trySkipDroppingDeathLoot(ServerLevel level, DamageSource damageSource, CallbackInfo ci) {
         if (this.nomansland$skipDroppingDeathLoot) {
             ci.cancel();
         }

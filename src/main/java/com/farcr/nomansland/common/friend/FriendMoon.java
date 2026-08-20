@@ -32,6 +32,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import com.farcr.nomansland.NMLConfig;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -427,8 +428,27 @@ public class FriendMoon extends SavedData {
         return lastFriendshipPlayers.containsKey(player);
     }
 
+    public static boolean isFriendMoonDimension(ServerLevel candidate) {
+        MinecraftServer server = candidate.getServer();
+        if (server == null) return false;
+
+        List<? extends String> configured = NMLConfig.FRIEND_MOON_DIMENSIONS.get();
+        if (!configured.isEmpty())
+            return configured.contains(candidate.dimension().location().toString());
+
+        return candidate.dimensionTypeRegistration().equals(server.overworld().dimensionTypeRegistration());
+    }
+
     public List<ServerPlayer> getFriendshipPlayers() {
-        return level.getPlayers(this::playerHasFriendship);
+        if (level == null) return List.of();
+        MinecraftServer server = level.getServer();
+        if (server == null) return level.getPlayers(this::playerHasFriendship);
+
+        List<ServerPlayer> players = new ArrayList<>();
+        for (ServerLevel candidate : server.getAllLevels())
+            if (isFriendMoonDimension(candidate))
+                players.addAll(candidate.getPlayers(this::playerHasFriendship));
+        return players;
     }
 
     private final HashMap<ServerPlayer, Integer> lastFriendshipPlayers = new HashMap<>();
@@ -561,7 +581,11 @@ public class FriendMoon extends SavedData {
     public void updateMeetingPointInformation(ServerLevel level) {
         if (isNightTime(level)) {
             if (!updatedShadow) {
-                level.players().forEach((player) -> updatePlayerFriendShadow(player));
+                MinecraftServer server = level.getServer();
+                if (server == null) level.players().forEach((player) -> updatePlayerFriendShadow(player));
+                else for (ServerLevel candidate : server.getAllLevels())
+                    if (isFriendMoonDimension(candidate))
+                        candidate.players().forEach((player) -> updatePlayerFriendShadow(player));
                 updatedShadow = true;
             }
         } else updatedShadow = false;

@@ -29,13 +29,13 @@ public class EntityRenderDispatcherMixin<T extends Entity> {
         )
     )
     private void nml$wrapRenderer(
-        EntityRenderer instance, T p_entity,
+        EntityRenderer instance, T entity,
         float entityYaw, float partialTick,
         PoseStack poseStack, MultiBufferSource bufferSource,
         int packedLight, Operation<Void> original
     ) {
-        StasisEntityContext.setEntityContext(p_entity);
-        original.call(instance, StasisEntityContext.getEntitySnapshot(p_entity), entityYaw, partialTick, poseStack, bufferSource, packedLight);
+        StasisEntityContext.setEntityContext(entity);
+        original.call(instance, StasisEntityContext.getEntitySnapshot(entity), entityYaw, partialTick, poseStack, bufferSource, packedLight);
         StasisEntityContext.clearEntityContext();
     }
 }

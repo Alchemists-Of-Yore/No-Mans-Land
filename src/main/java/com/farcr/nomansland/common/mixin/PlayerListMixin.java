@@ -15,19 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
-    @WrapOperation(
-        method = "placeNewPlayer",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"
-        )
-    )
-    private ServerLevel nml$restoreFromDreamOnRejoin(
-        MinecraftServer server, ResourceKey<Level> resourceKey, Operation<ServerLevel> original,
-        @Local(argsOnly = true) ServerPlayer player
-    ) {
-        if (DreamLevelHandler.keyToDream(resourceKey).isEmpty())
-            return original.call(server, resourceKey);
+    @WrapOperation(method = "placeNewPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
+    private ServerLevel nml$restoreFromDreamOnRejoin(MinecraftServer server, ResourceKey<Level> resourceKey, Operation<ServerLevel> original, @Local(argsOnly = true) ServerPlayer player) {
+        if (DreamLevelHandler.keyToDream(resourceKey).isEmpty()) return original.call(server, resourceKey);
         return DreamLevelHandler.playerLoadFallback(player);
     }
 }

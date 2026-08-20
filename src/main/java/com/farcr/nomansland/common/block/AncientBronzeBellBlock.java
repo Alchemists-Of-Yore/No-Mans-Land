@@ -25,8 +25,6 @@ import java.util.Map;
 
 public class AncientBronzeBellBlock extends Block {
 
-    public static final MapCodec<AncientBronzeBellBlock> CODEC = simpleCodec(AncientBronzeBellBlock::new);
-
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<BellAttachType> ATTACHMENT = BlockStateProperties.BELL_ATTACHMENT;
 
@@ -56,6 +54,8 @@ public class AncientBronzeBellBlock extends Block {
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ATTACHMENT, BellAttachType.FLOOR));
     }
+
+    public static final MapCodec<AncientBronzeBellBlock> CODEC = simpleCodec(AncientBronzeBellBlock::new);
 
     @Override
     protected MapCodec<? extends Block> codec() {

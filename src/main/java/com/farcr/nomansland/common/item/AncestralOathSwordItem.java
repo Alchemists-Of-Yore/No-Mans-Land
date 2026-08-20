@@ -79,9 +79,9 @@ public class AncestralOathSwordItem extends SwordItem {
         if (livingEntity.level().isClientSide) return;
         for (ItemStack itemStack : livingEntity.getHandSlots()) {
             if (!itemStack.is(NMLItems.ANCESTRAL_OATH_SWORD)) continue;
-            itemStack.set(NMLDataComponents.OATH_SWORD_USE_TIME,
-                itemStack.getOrDefault(NMLDataComponents.OATH_SWORD_USE_TIME, 0) - 1
-            );
+            int useTime = itemStack.getOrDefault(NMLDataComponents.OATH_SWORD_USE_TIME, 0);
+            if (useTime <= 0) continue;
+            itemStack.set(NMLDataComponents.OATH_SWORD_USE_TIME, useTime - 1);
         }
     }
 

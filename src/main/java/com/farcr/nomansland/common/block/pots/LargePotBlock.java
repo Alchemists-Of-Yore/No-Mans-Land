@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.block.pots;
 
+import com.mojang.serialization.MapCodec;
 import com.farcr.nomansland.common.blockentity.PotBlockEntity;
 import com.farcr.nomansland.common.entity.FallingPotEntity;
 import com.farcr.nomansland.common.registry.NMLRegistries;
@@ -54,6 +55,11 @@ public class LargePotBlock extends PotBlock {
     public LargePotBlock(Properties properties) {
         super(PotSize.LARGE, properties);
         registerDefaultState(defaultBlockState().setValue(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    public MapCodec<LargePotBlock> codec() {
+        return simpleCodec(LargePotBlock::new);
     }
 
     @Override
@@ -191,7 +197,6 @@ public class LargePotBlock extends PotBlock {
     }
 
     private static final Map<VoxelShape, VoxelShape> UPPER_SHAPE_CACHE = new ConcurrentHashMap<>();
-    private static final Map<VoxelShape, VoxelShape> COLLISION_CACHE = new ConcurrentHashMap<>();
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -203,9 +208,7 @@ public class LargePotBlock extends PotBlock {
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape shape = getShape(state, level, pos, context);
-        if (shape.isEmpty()) return shape;
-        return COLLISION_CACHE.computeIfAbsent(shape, s -> Shapes.create(s.bounds().deflate(0.02)));
+        return PotBlock.collisionShapeOf(getShape(state, level, pos, context));
     }
 
     @Override

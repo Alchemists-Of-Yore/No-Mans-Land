@@ -39,9 +39,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class FourLayeredCauldronBlock extends AbstractCauldronBlock {
-    public static final MapCodec<FourLayeredCauldronBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BuiltInRegistries.PARTICLE_TYPE.holderByNameCodec().fieldOf("particle_type").forGetter(f -> f.particleType)
-    ).apply(instance, FourLayeredCauldronBlock::new));
 
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 1, 4);
     public final @Nullable Holder<ParticleType<?>> particleType;
@@ -52,14 +49,18 @@ public class FourLayeredCauldronBlock extends AbstractCauldronBlock {
         this.particleType = particleType;
     }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LEVEL);
-    }
+    public static final MapCodec<FourLayeredCauldronBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BuiltInRegistries.PARTICLE_TYPE.holderByNameCodec().fieldOf("particle_type").forGetter(f -> f.particleType)
+    ).apply(instance, FourLayeredCauldronBlock::new));
 
     @Override
     protected MapCodec<? extends FourLayeredCauldronBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(LEVEL);
     }
 
     @Override

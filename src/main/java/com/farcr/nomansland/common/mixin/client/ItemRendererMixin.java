@@ -48,7 +48,7 @@ public abstract class ItemRendererMixin {
         boolean leftHand, PoseStack poseStack,
         MultiBufferSource bufferSource,
         int combinedLight, int combinedOverlay,
-        BakedModel p_model, CallbackInfo callbackInfo
+        BakedModel model, CallbackInfo callbackInfo
     ) {
         MoonlightGlowRenderType.setContext(itemStack);
     }
@@ -107,7 +107,7 @@ public abstract class ItemRendererMixin {
     private void nml$renderTail(
         ItemStack itemStack, ItemDisplayContext displayContext,
         boolean leftHand, PoseStack poseStack, MultiBufferSource bufferSource,
-        int combinedLight, int combinedOverlay, BakedModel p_model, CallbackInfo ci
+        int combinedLight, int combinedOverlay, BakedModel model, CallbackInfo ci
     ) {
         nml$BAKED_MODEL_OPACITY_CONTEXT = null;
     }

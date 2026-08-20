@@ -30,6 +30,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -77,6 +80,9 @@ public class Buddy extends PathfinderMob implements Npc {
 
     private static final int SUSPICIOUS_STEW_MULTIPLIER = 10;
 
+    private static final int HOME_RADIUS = 12;
+    private static final int KIDNAPPED_DISTANCE = 64;
+
     private BlockPos anchorPosition;
     public boolean isNaturallySpawned() {
         return (anchorPosition != null);
@@ -88,7 +94,24 @@ public class Buddy extends PathfinderMob implements Npc {
 
     public void prepareAnchor(BlockPos anchorPosition) {
         this.anchorPosition = anchorPosition;
-        this.restrictTo(anchorPosition, 5);
+        this.restrictTo(anchorPosition, HOME_RADIUS);
+    }
+
+    private void keepPathingNearAnchor() {
+        if (anchorPosition == null) return;
+        if (!anchorPosition.closerToCenterThan(this.position(), KIDNAPPED_DISTANCE)) return;
+
+        Optional<WalkTarget> walkTarget = this.getBrain().getMemory(MemoryModuleType.WALK_TARGET);
+        if (walkTarget.isEmpty()) return;
+
+        Vec3 anchorCenter = Vec3.atCenterOf(anchorPosition);
+        Vec3 target = Vec3.atCenterOf(walkTarget.get().getTarget().currentBlockPosition());
+        double distance = target.distanceTo(anchorCenter);
+        if (distance <= HOME_RADIUS) return;
+
+        Vec3 clamped = anchorCenter.add(target.subtract(anchorCenter).scale(HOME_RADIUS / distance));
+        this.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(
+            BlockPos.containing(clamped), walkTarget.get().getSpeedModifier(), walkTarget.get().getCloseEnoughDist()));
     }
 
     public int getAscensionTicks() {
@@ -211,6 +234,7 @@ public class Buddy extends PathfinderMob implements Npc {
             return;
         ServerLevel level = (ServerLevel) this.level();
         getBrain().tick(level, this);
+        keepPathingNearAnchor();
         BuddyAI.updateActivity(this);
         super.customServerAiStep();
     }
