@@ -1,5 +1,6 @@
 package com.farcr.nomansland.common.block;
 
+import com.mojang.serialization.MapCodec;
 import com.farcr.nomansland.common.registry.NMLDamageTypes;
 import com.farcr.nomansland.common.registry.NMLSounds;
 import com.farcr.nomansland.common.registry.NMLTags;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
@@ -30,11 +32,17 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class IciclesBlock extends Block implements Fallable {
+
     public static final DirectionProperty TIP_DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
 
     public IciclesBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(TIP_DIRECTION, Direction.DOWN));
+    }
+
+    @Override
+    public MapCodec<IciclesBlock> codec() {
+        return simpleCodec(IciclesBlock::new);
     }
 
     @Override
@@ -68,11 +76,13 @@ public class IciclesBlock extends Block implements Fallable {
     }
 
     @NotNull
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        if (pState.getValue(TIP_DIRECTION) == Direction.UP)
-            return Block.box(3.0D, 0.0D, 3.0D, 13.0D, 7.0D, 14.0D);
+    private static final VoxelShape UPWARD_SHAPE = Block.box(3.0D, 0.0D, 3.0D, 13.0D, 7.0D, 14.0D);
+    private static final VoxelShape DOWNWARD_SHAPE = Block.box(3.0D, 9.0D, 3.0D, 13.0D, 16.0D, 14.0D);
 
-        return Block.box(3.0D, 9.0D, 3.0D, 13.0D, 16.0D, 14.0D);
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        Vec3 offset = state.getOffset(level, pos);
+        VoxelShape shape = state.getValue(TIP_DIRECTION) == Direction.UP ? UPWARD_SHAPE : DOWNWARD_SHAPE;
+        return shape.move(offset.x, offset.y, offset.z);
     }
 
     @Override
@@ -93,12 +103,12 @@ public class IciclesBlock extends Block implements Fallable {
 
     @NotNull
     @Override
-    protected BlockState updateShape(BlockState state, Direction p_direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (!this.canSurvive(state, level, pos)) {
             level.scheduleTick(pos, this, 2);
         }
 
-        super.updateShape(state, p_direction, neighborState, level, pos, neighborPos);
+        super.updateShape(state, direction, neighborState, level, pos, neighborPos);
         return state;
     }
 

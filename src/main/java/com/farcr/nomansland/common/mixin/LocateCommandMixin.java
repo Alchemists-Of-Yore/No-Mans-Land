@@ -2,59 +2,38 @@ package com.farcr.nomansland.common.mixin;
 
 import com.farcr.nomansland.NoMansLand;
 import com.farcr.nomansland.common.friend.FriendMoon;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ResourceOrTagKeyArgument;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.LocateCommand;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Optional;
 
 @Mixin(LocateCommand.class)
 public class LocateCommandMixin {
-    @Unique
-    private static final ResourceLocation MEETING_POINT = NoMansLand.location("meeting_point");
+    @Unique private static final ResourceLocation MEETING_POINT = NoMansLand.location("meeting_point");
 
-    @Shadow private static float dist(int x1, int z1, int x2, int z2) {
-        throw new NotImplementedException();
-    }
+    @WrapOperation(method = "locateStructure", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/ChunkGenerator;findNearestMapStructure(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/HolderSet;Lnet/minecraft/core/BlockPos;IZ)Lcom/mojang/datafixers/util/Pair;"))
+    private static Pair<BlockPos, Holder<Structure>> nml$locateMeetingPoint(ChunkGenerator generator, ServerLevel level, HolderSet<Structure> structures, BlockPos origin, int searchRadius, boolean skipKnownStructures, Operation<Pair<BlockPos, Holder<Structure>>> original) {
+        Pair<BlockPos, Holder<Structure>> found = original.call(generator, level, structures, origin, searchRadius, skipKnownStructures);
+        if (found != null) return found;
 
-    @Inject(method = "locateStructure", at = @At("HEAD"), cancellable = true)
-    private static void nml$locateStructure(
-        CommandSourceStack source, ResourceOrTagKeyArgument.Result<Structure> structure,
-        CallbackInfoReturnable<Integer> cir
-    ) {
-        structure.unwrap().left().ifPresent((key) -> {
-            if (key.location().equals(MEETING_POINT)) {
-                ServerLevel serverlevel = source.getLevel();
-                BlockPos blockPos = FriendMoon.getMeetingPointPosition(serverlevel);
-                if (blockPos == null)
-                    return;
+        Optional<Holder<Structure>> meetingPoint = structures.stream().filter((holder) -> holder.is(MEETING_POINT)).findFirst();
+        if (meetingPoint.isEmpty()) return null;
 
-                BlockPos sourcePosition = BlockPos.containing(source.getPosition());
-                int i = Mth.floor(dist(sourcePosition.getX(), sourcePosition.getZ(), blockPos.getX(), blockPos.getZ()));
-                String s = "~";
-                Component component = ComponentUtils.wrapInSquareBrackets(Component.translatable("chat.coordinates",
-                        blockPos.getX(), s, blockPos.getZ())).withStyle((p_214489_) -> p_214489_.withColor(ChatFormatting.GREEN)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ()))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip")))
-                );
-                source.sendSuccess(() -> Component.translatable("commands.locate.structure.success", MEETING_POINT.toString(), component, i), false);
-                cir.cancel();
-            }
-        });
+        BlockPos meetingPointPosition = FriendMoon.getMeetingPointPosition(level);
+        if (meetingPointPosition == null) return null;
+
+        return Pair.of(meetingPointPosition, meetingPoint.get());
     }
 }

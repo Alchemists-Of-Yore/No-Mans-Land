@@ -33,12 +33,14 @@
     "MinecraftServerMixin",
     "MobInvoker",
     "MobMixin",
+    "NaturalSpawnerWardMixin",
     "NoiseBasedChunkGeneratorMixin",
     "NoiseRouterAccessModifier",
     "PatrolSpawnerMixin",
     "PlayerChunkSenderInvoker",
     "PlayerListMixin",
     "PlayerMixin",
+    "PlayerRendererMixin",
     "RailStateMixin",
     "RandomStrollGoalMixin",
     "RegistryFileCodecMixin",
@@ -61,6 +63,7 @@
     "WaterlilyBlockMixin",
     "WitchMixin",
     "bell_sanctuary.JigsawPlacementMixin",
+    "caves.ClimateRTreeNodeAccessor",
     "caves.DimensionBiomePlacementMixin",
     "caves.MultiNoiseBiomeSourceMixin",
     "integration.PloughMovementBehaviorMixin",
@@ -73,7 +76,13 @@
     "integration.VanillaFluidTargetsMixin"
   ],
   "client": [
+    "ItemInHandLayerMixin",
+    "ItemInHandRendererMixin",
+    "ParticleEngineMixin",
     "client.AbstractSoundInstanceMixin",
+    "client.AnimationUtilsMixin",
+    "client.AppleSkinHealthMixin",
+    "client.AppleSkinHeldFoodMixin",
     "client.BlockItemMixin",
     "client.BrewingStandScreenMixin",
     "client.CameraTypeMixin",
@@ -81,6 +90,7 @@
     "client.ClientChunkCacheMixin",
     "client.ClientChunkCacheStorageMixin",
     "client.ClientLevelMixin",
+    "client.EntityRenderDispatcherMixin",
     "client.EntityRendererMixin",
     "client.GameRendererInvoker",
     "client.GameRendererMixin",
@@ -105,7 +115,8 @@
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
     "client.SoundInstanceMixin",
-    "client.WitchModelMixin"
+    "client.WitchModelMixin",
+    "client.integration.StellarViewOverworldEffectsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

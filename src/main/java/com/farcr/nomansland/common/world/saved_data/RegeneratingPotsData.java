@@ -91,16 +91,17 @@ public class RegeneratingPotsData extends SavedData {
 
         while (iter.hasNext()) {
             final Long2ObjectMap.Entry<Entry> mapEntry = iter.next();
-            final BlockPos pos = mutableBlockPos.set(mapEntry.getLongKey());
             final Entry entry = mapEntry.getValue();
 
-            if (!this.level.getBlockState(pos).isAir()) {
-                iter.remove();
-                changed = true;
+            if (entry.delay > 0) {
+                entry.delay--;
                 continue;
             }
 
-            if (entry.delay <= 0) {
+            final BlockPos pos = mutableBlockPos.set(mapEntry.getLongKey());
+            if (!this.level.hasChunksAt(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))) continue;
+
+            if (this.level.getBlockState(pos).isAir()) {
                 this.level.setBlockAndUpdate(pos, entry.data.state());
                 if (this.level.getBlockEntity(pos) instanceof final PotBlockEntity pot) {
                     final Registry<PotVariant> variants = this.level.registryAccess().registryOrThrow(NMLRegistries.POT_VARIANT_KEY);
@@ -112,13 +113,10 @@ public class RegeneratingPotsData extends SavedData {
                         pot.addModifier(mod);
                     }
                 }
-
-                iter.remove();
-                changed = true;
-                continue;
             }
 
-            entry.delay--;
+            iter.remove();
+            changed = true;
         }
 
         if (changed) this.setDirty();

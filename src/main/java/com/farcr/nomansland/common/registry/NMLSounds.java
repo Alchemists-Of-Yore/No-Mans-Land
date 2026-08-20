@@ -60,6 +60,10 @@ public class NMLSounds {
     //Items
     public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_PRIMED = registerSound("item.bomb.primed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> OATH_BLOCK = registerSound("item.ancestral_oath_sword.block");
+    public static final DeferredHolder<SoundEvent, SoundEvent> OATH_PARRY = registerSound("item.ancestral_oath_sword.parry");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_PICK_LOCATE = registerSound("item.ritual_pick.locate");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_PICK_GLINT = registerSound("item.ritual_pick.glint");
 
     //Cauldron Interactions
     public static final DeferredHolder<SoundEvent, SoundEvent> HONEYCOMB_CONSUMED = registerSound("item.honeycomb.consumed");
@@ -137,6 +141,7 @@ public class NMLSounds {
 
     //Friend Moon
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK = registerSound("entity.friend_moon.speak");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_BGR = registerSound("entity.friend_moon.speak_bgr");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_SAD = registerSound("entity.friend_moon.speak_sad");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_SPEAK_AMBIENT_LOOP = registerSound("entity.friend_moon.speak_ambient_loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> FRIEND_MOON_OFFERING_LOOP = registerSound("entity.friend_moon.offering_loop");
@@ -145,6 +150,8 @@ public class NMLSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_MUSIC = registerSound("music.overworld.caves");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAVE_DEPTH_MUSIC = registerSound("music.overworld.cave_depths");
     public static final DeferredHolder<SoundEvent, SoundEvent> ALCHEMIST_RUINS_MUSIC = registerSound("music.overworld.alchemist_ruins");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MUSHROOM_BIOME_MUSIC = registerSound("music.overworld.mushroom_biome");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANACHRONISTIC_MUSIC = registerSound("music.overworld.anachronistic");
 
     public static final DeferredHolder<SoundEvent, SoundEvent> MUSIC_DISC_GUIDANCE = registerSound("music_disc.guidance");
 

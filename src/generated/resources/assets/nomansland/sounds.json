@@ -1375,6 +1375,22 @@
       }
     ]
   },
+  "entity.friend_moon.speak_bgr": {
+    "sounds": [
+      "nomansland:entity/friend_moon/speak_bgr1",
+      "nomansland:entity/friend_moon/speak_bgr2",
+      "nomansland:entity/friend_moon/speak_bgr3",
+      "nomansland:entity/friend_moon/speak_bgr4",
+      "nomansland:entity/friend_moon/speak_bgr5",
+      "nomansland:entity/friend_moon/speak_bgr6",
+      "nomansland:entity/friend_moon/speak_bgr7",
+      "nomansland:entity/friend_moon/speak_bgr8",
+      "nomansland:entity/friend_moon/speak_bgr9",
+      "nomansland:entity/friend_moon/speak_bgr10",
+      "nomansland:entity/friend_moon/speak_bgr11",
+      "nomansland:entity/friend_moon/speak_bgr12"
+    ]
+  },
   "entity.friend_moon.speak_sad": {
     "sounds": [
       "nomansland:entity/friend_moon/speak_sad1",
@@ -1853,6 +1869,24 @@
     ],
     "subtitle": "nomansland.subtitle.entity.tortoise.swim"
   },
+  "item.ancestral_oath_sword.block": {
+    "sounds": [
+      "nomansland:item/ancestral_oath_sword/block1",
+      "nomansland:item/ancestral_oath_sword/block2",
+      "nomansland:item/ancestral_oath_sword/block3",
+      "nomansland:item/ancestral_oath_sword/block4"
+    ],
+    "subtitle": "nomansland.subtitle.item.ancestral_oath_sword.block"
+  },
+  "item.ancestral_oath_sword.parry": {
+    "sounds": [
+      "nomansland:item/ancestral_oath_sword/parry1",
+      "nomansland:item/ancestral_oath_sword/parry2",
+      "nomansland:item/ancestral_oath_sword/parry3",
+      "nomansland:item/ancestral_oath_sword/parry4"
+    ],
+    "subtitle": "nomansland.subtitle.item.ancestral_oath_sword.parry"
+  },
   "item.armor.equip_ancient_bronze_mask": {
     "sounds": [
       {
@@ -1905,8 +1939,25 @@
     ],
     "subtitle": "nomansland.subtitle.item.generic.consumed"
   },
+  "item.ritual_pick.glint": {
+    "sounds": [
+      "nomansland:item/ritual_pick/glint"
+    ],
+    "subtitle": "nomansland.subtitle.item.ritual_pick.glint"
+  },
+  "item.ritual_pick.locate": {
+    "sounds": [
+      "nomansland:item/ritual_pick/ritual_pick_locate"
+    ],
+    "subtitle": "nomansland.subtitle.item.ritual_pick.locate"
+  },
   "music.overworld.alchemist_ruins": {
     "sounds": [
+      {
+        "name": "nomansland:music/nomad",
+        "stream": true,
+        "weight": 25
+      },
       {
         "name": "music/game/oxygene",
         "stream": true,
@@ -1934,8 +1985,21 @@
       }
     ]
   },
+  "music.overworld.anachronistic": {
+    "sounds": [
+      {
+        "name": "nomansland:music/anachronistic",
+        "stream": true
+      }
+    ]
+  },
   "music.overworld.cave_depths": {
     "sounds": [
+      {
+        "name": "nomansland:music/drifter",
+        "stream": true,
+        "weight": 15
+      },
       {
         "name": "music/game/oxygene",
         "stream": true,
@@ -1977,6 +2041,10 @@
   },
   "music.overworld.caves": {
     "sounds": [
+      {
+        "name": "nomansland:music/drifter",
+        "stream": true
+      },
       {
         "name": "music/game/deeper",
         "stream": true,
@@ -2051,6 +2119,40 @@
         "name": "music/game/endless",
         "stream": true,
         "volume": 0.4
+      }
+    ]
+  },
+  "music.overworld.mushroom_biome": {
+    "sounds": [
+      {
+        "name": "nomansland:music/anachronistic",
+        "stream": true,
+        "volume": 0.7,
+        "weight": 15
+      },
+      {
+        "name": "music/game/puzzlebox",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 3
+      },
+      {
+        "name": "music/game/pokopoko",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 3
+      },
+      {
+        "name": "music/game/endless",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 5
+      },
+      {
+        "name": "music/game/swamp/firebugs",
+        "stream": true,
+        "volume": 0.4,
+        "weight": 7
       }
     ]
   },

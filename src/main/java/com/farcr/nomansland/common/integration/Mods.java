@@ -16,7 +16,9 @@ public enum Mods {
     NIRVANA,
     EVERYCOMP,
     SNOWREALMAGIC,
-    VANITY;
+    VANITY,
+    ETCHED,
+    FIELDGUIDE;
 
     private final String id;
 

@@ -1,7 +1,6 @@
-- Added config options for bandages
-- Added config options for warding effigy range
-- Added config options for ancient bronze mask healing
-- Fixed inverted bells in sanctuaries not teleporting the player properly
-- Fixed new music pools not playing properly
-- Fixed darkness and blindness effect not working as intended underground
-- Fixed all potion ingredients downgrading potions, not just the awkward residue
+- Fixed occasional music-related crash
+- Improved meeting point generation
+- Fixed trimmed planks item tag being incomplete
+- Fixed parts of the inverted bell being broken by water
+- Fixed several bugs with the tortoise and improved their performance
+- Fixed some pot performance issues

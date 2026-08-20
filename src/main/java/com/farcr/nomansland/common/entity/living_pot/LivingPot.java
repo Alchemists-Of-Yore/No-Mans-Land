@@ -632,7 +632,7 @@ public class LivingPot extends PathfinderMob implements NeutralMob, ContainerSin
         if (!level().isClientSide) {
             PotBlock.applyBreakEffects((ServerLevel) level(), position(),
                     getBlockState(), getVariant(), getModifiers(),
-                    getStoredPotion(), isLarge());
+                    getStoredPotion(), isLarge(), true);
             discard();
         }
     }

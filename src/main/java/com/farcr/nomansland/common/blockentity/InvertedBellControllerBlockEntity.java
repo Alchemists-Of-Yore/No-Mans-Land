@@ -117,25 +117,19 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
             return;
         }
         this.recheckAttempted = true;
-        this.setChanged();
 
         final BellSanctuaryGrid grid = BellSanctuaryGridHandler.getGrid(serverLevel.getSeed());
         final ChunkPos partnerArea = getLikelyOtherSanctuary(grid, this.getBlockPos());
         if (partnerArea == null) {
+            this.setChanged();
             return;
         }
 
-        final InvertedBellControllerBlockEntity partner = handleTheSearch(serverLevel, partnerArea);
-        if (partner == null || partner == this) {
-            return;
-        }
-
-        // don't be a homewrecker
-        if (partner.targetBell != null && !partner.targetBell.equals(this.getBlockPos())) {
-            return;
-        }
-
-        this.link(partner, true);
+        this.targetArea = partnerArea;
+        this.escalationTimer = 10;
+        this.escalationValue = ChunkPyramid.GENERATION_PYRAMID.steps().size();
+        this.state = PositionState.CHUNK;
+        this.setChanged();
     }
 
     @Override
@@ -204,27 +198,46 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
         if (ibbe.escalationValue < ChunkPyramid.GENERATION_PYRAMID.steps().size()) {
             ibbe.escalationTimer++;
             if (ibbe.escalationTimer > 10) {
-                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 0, ibbe.targetArea);
+                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 1, ibbe.targetArea);
                 ibbe.escalationTimer = 0;
                 ibbe.escalationValue++;
+                ibbe.setChanged();
             }
         } else {
+            if (!isSearchAreaLoaded(serverLevel, ibbe.targetArea)) {
+                serverLevel.getChunkSource().addRegionTicket(BELL_TICKET, ibbe.targetArea, 1, ibbe.targetArea);
+                return;
+            }
             final InvertedBellControllerBlockEntity otherIbbe = handleTheSearch(serverLevel, ibbe.targetArea);
-            if (otherIbbe != null) {
-                ibbe.link(otherIbbe);
+            if (otherIbbe != null && otherIbbe != ibbe
+                    && (otherIbbe.targetBell == null || otherIbbe.targetBell.equals(ibbe.getBlockPos()))) {
+                ibbe.link(otherIbbe, true);
             } else {
                 ibbe.failureType = FAIL_TYPE.NO_BLOCK_ENTITY_POS;
                 NoMansLand.LOGGER.error(ibbe.failureType);
                 NoMansLand.LOGGER.error("Inverted Bell at {} || {} failed to find paired bell block position around chunk {} || {}", pos, new ChunkPos(pos), ibbe.targetArea.getBlockAt(8, 0, 8), ibbe.targetArea);
                 ibbe.state = PositionState.DONT_SEARCH;
+                ibbe.setChanged();
             }
         }
+    }
+
+    private static boolean isSearchAreaLoaded(final ServerLevel level, final ChunkPos target) {
+        for (int x = -1; x < 2; x++) {
+            for (int z = -1; z < 2; z++) {
+                if (level.getChunkSource().getChunkNow(target.x + x, target.z + z) == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private static @Nullable InvertedBellControllerBlockEntity handleTheSearch(final ServerLevel level, final ChunkPos target) {
         for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
-                final LevelChunk chunk = level.getChunk(target.x + x, target.z + z);
+                final LevelChunk chunk = level.getChunkSource().getChunkNow(target.x + x, target.z + z);
+                if (chunk == null) continue;
                 for (final BlockPos bePos : chunk.getBlockEntitiesPos()) {
                     if (chunk.getBlockEntity(bePos) instanceof final InvertedBellControllerBlockEntity ibbe) {
                         return ibbe;
@@ -247,6 +260,8 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
             case CHUNK -> {
                 tag.putInt("chunkX", this.targetArea.x);
                 tag.putInt("chunkZ", this.targetArea.z);
+                tag.putInt("EscalationTimer", this.escalationTimer);
+                tag.putInt("EscalationValue", this.escalationValue);
             }
             case BLOCK_POS -> {
                 tag.putInt("targetX", this.targetBell.getX());
@@ -274,6 +289,8 @@ public class InvertedBellControllerBlockEntity extends BlockEntity {
                         tag.getInt("chunkX"),
                         tag.getInt("chunkZ")
                 );
+                this.escalationTimer = tag.contains("EscalationTimer") ? tag.getInt("EscalationTimer") : 10;
+                this.escalationValue = tag.getInt("EscalationValue");
             }
             case BLOCK_POS -> {
                 this.targetBell = new BlockPos(
