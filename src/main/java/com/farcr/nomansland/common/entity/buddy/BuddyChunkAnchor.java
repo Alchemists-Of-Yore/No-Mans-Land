@@ -30,34 +30,11 @@ public class BuddyChunkAnchor extends SavedData {
     public final Map<BlockPos, BuddyData> buddyAnchors = new ConcurrentHashMap<>();
 
     private static final ConcurrentHashMap<ResourceKey<Level>, ConcurrentLinkedQueue<BlockPos>> PENDING_ANCHORS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<ResourceKey<Level>, Set<Long>> CLAIMED_CHUNKS = new ConcurrentHashMap<>();
+
+    private final Set<BlockPos> pendingAnchors = ConcurrentHashMap.newKeySet();
 
     public static void queuePendingAnchor(ResourceKey<Level> dimension, BlockPos pos) {
         PENDING_ANCHORS.computeIfAbsent(dimension, k -> new ConcurrentLinkedQueue<>()).offer(pos);
-    }
-
-    public static boolean tryClaimArea(ResourceKey<Level> dimension, BlockPos center, int radiusChunks) {
-        Set<Long> claimed = CLAIMED_CHUNKS.computeIfAbsent(dimension, k -> ConcurrentHashMap.newKeySet());
-        int cx = center.getX() >> 4;
-        int cz = center.getZ() >> 4;
-        long centerKey = ChunkPos.asLong(cx, cz);
-        synchronized (claimed) {
-            if (claimed.contains(centerKey)) return false;
-            int radiusSqr = radiusChunks * radiusChunks;
-            for (int dx = -radiusChunks; dx <= radiusChunks; dx++) {
-                for (int dz = -radiusChunks; dz <= radiusChunks; dz++) {
-                    if (dx * dx + dz * dz < radiusSqr) {
-                        claimed.add(ChunkPos.asLong(cx + dx, cz + dz));
-                    }
-                }
-            }
-            return true;
-        }
-    }
-
-    private void releaseClaim(ChunkPos chunkPos) {
-        Set<Long> claimed = CLAIMED_CHUNKS.get(level.dimension());
-        if (claimed != null) claimed.remove(chunkPos.toLong());
     }
 
     public static BuddyChunkAnchor getOrDefault(ServerLevel level) {
@@ -86,6 +63,14 @@ public class BuddyChunkAnchor extends SavedData {
             listTag.add(entryTag);
         }
         tag.put("BuddySpawnAnchors", listTag);
+
+        ListTag pendingTag = new ListTag();
+        for (BlockPos pos : pendingAnchors) {
+            CompoundTag posTag = new CompoundTag();
+            posTag.put("Pos", NbtUtils.writeBlockPos(pos));
+            pendingTag.add(posTag);
+        }
+        tag.put("PendingBuddyAnchors", pendingTag);
         return tag;
     }
 
@@ -99,6 +84,11 @@ public class BuddyChunkAnchor extends SavedData {
                 buddyAnchors.put(anchorPosition, buddyData);
             }
         }
+        pendingAnchors.clear();
+        for (Tag pendingTag : tag.getList("PendingBuddyAnchors", 10)) {
+            if (pendingTag instanceof CompoundTag posTag)
+                NbtUtils.readBlockPos(posTag, "Pos").ifPresent(pendingAnchors::add);
+        }
         return this;
     }
 
@@ -108,23 +98,22 @@ public class BuddyChunkAnchor extends SavedData {
     }
 
     public void tickChunk(LevelChunk chunk) {
+        drainQueuedAnchors();
+
         LevelChunkExtension extensionChunk = (LevelChunkExtension) chunk;
         if (extensionChunk.nml$shouldIgnoreBuddyAnchor()) return;
 
         ChunkPos chunkPos = chunk.getPos();
-        releaseClaim(chunkPos);
-
         boolean chunkHasAnchor = false;
 
-        ConcurrentLinkedQueue<BlockPos> pending = PENDING_ANCHORS.get(level.dimension());
-        if (pending != null) {
-            Iterator<BlockPos> it = pending.iterator();
-            while (it.hasNext()) {
-                BlockPos pos = it.next();
-                if (chunkContains(chunkPos, pos)) {
-                    it.remove();
-                    attemptSpawn(pos);
-                    chunkHasAnchor = true;
+        Iterator<BlockPos> pending = pendingAnchors.iterator();
+        while (pending.hasNext()) {
+            BlockPos pos = pending.next();
+            if (chunkContains(chunkPos, pos)) {
+                chunkHasAnchor = true;
+                if (attemptSpawn(pos)) {
+                    pending.remove();
+                    setDirty();
                 }
             }
         }
@@ -144,6 +133,15 @@ public class BuddyChunkAnchor extends SavedData {
         }
     }
 
+    private void drainQueuedAnchors() {
+        ConcurrentLinkedQueue<BlockPos> queued = PENDING_ANCHORS.get(level.dimension());
+        if (queued == null) return;
+        BlockPos pos;
+        while ((pos = queued.poll()) != null) {
+            if (!buddyAnchors.containsKey(pos) && pendingAnchors.add(pos)) setDirty();
+        }
+    }
+
     private static boolean chunkContains(ChunkPos chunkPos, BlockPos blockPos) {
         return (blockPos.getX() >> 4) == chunkPos.x && (blockPos.getZ() >> 4) == chunkPos.z;
     }
@@ -157,10 +155,10 @@ public class BuddyChunkAnchor extends SavedData {
         return existingBuddyData.getShouldRespawn() && (getCurrentMoonCycle(level.getDayTime()) > existingBuddyData.getMoonCycle());
     }
 
-    private void attemptSpawn(BlockPos spawnBlock) {
+    private boolean attemptSpawn(BlockPos spawnBlock) {
         BuddyData existingBuddyData = buddyAnchors.get(spawnBlock);
         boolean shouldSpawn = (existingBuddyData == null || tryRespawning(existingBuddyData));
-        if (!shouldSpawn) return;
+        if (!shouldSpawn) return false;
 
         // Try spawning the buddy !!!
         Buddy buddy = NMLEntities.BUDDY.get().create(level);
@@ -194,7 +192,10 @@ public class BuddyChunkAnchor extends SavedData {
             // Replace last anchor
             updateAnchors(spawnBlock, createData());
             level.addFreshEntity(buddy);
+            return true;
         }
+
+        return false;
     }
 
     public void updateAnchors(BlockPos anchorPosition, BuddyData newData) {

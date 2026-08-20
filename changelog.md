@@ -1,7 +1,6 @@
-- Fixed anachronistic soundtrack playing at all times in high elevation
-- Fixed coarse dirt placing inside modded trees
-- Added compatibility with Stellar View to render the Friend Moon over their sky
-- Tagged biomes with overworld-specific biome tags, fixing some incompatibilities
-- Fixed the ascension ritual sometimes not properly resetting the buddy when aborted
-- Fixed a wall sign related crash on startup with certain mods
-- Fixed the flammable effect crashing if already on fire
+- Fixed occasional music-related crash
+- Improved meeting point generation
+- Fixed trimmed planks item tag being incomplete
+- Fixed parts of the inverted bell being broken by water
+- Fixed several bugs with the tortoise and improved their performance
+- Fixed some pot performance issues
