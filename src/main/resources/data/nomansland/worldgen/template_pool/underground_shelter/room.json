@@ -2,7 +2,7 @@
   "fallback": "minecraft:empty",
   "elements": [
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/bed",
         "processors": "nomansland:underground_shelter",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/bunks",
         "processors": "nomansland:underground_shelter",
@@ -20,7 +20,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/contraption",
         "processors": "nomansland:underground_shelter",
@@ -38,7 +38,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/large_pond",
         "processors": "nomansland:underground_shelter",
@@ -47,7 +47,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/large_pond_hallway",
         "processors": "nomansland:underground_shelter",
@@ -56,7 +56,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/ledges",
         "processors": "nomansland:underground_shelter",
@@ -65,7 +65,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/mineshaft",
         "processors": "nomansland:underground_shelter",
@@ -74,7 +74,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/mineshaft_curve",
         "processors": "nomansland:underground_shelter",
@@ -83,7 +83,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/mineshaft_long",
         "processors": "nomansland:underground_shelter",
@@ -92,7 +92,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/mineshaft_short",
         "processors": "nomansland:underground_shelter",
@@ -101,7 +101,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/narrow",
         "processors": "nomansland:underground_shelter",
@@ -110,7 +110,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/narrow_split",
         "processors": "nomansland:underground_shelter",
@@ -119,7 +119,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/plant",
         "processors": "nomansland:underground_shelter",
@@ -128,7 +128,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/pond",
         "processors": "nomansland:underground_shelter",
@@ -137,7 +137,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/scaffolding",
         "processors": "nomansland:underground_shelter",
@@ -146,7 +146,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/scaffolding_split",
         "processors": "nomansland:underground_shelter",
@@ -155,7 +155,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/short",
         "processors": "nomansland:underground_shelter",
@@ -164,7 +164,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/small_warehouse",
         "processors": "nomansland:underground_shelter",
@@ -173,7 +173,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 5,
       "element": {
         "location": "nomansland:underground_shelter/split",
         "processors": "nomansland:underground_shelter",
@@ -182,7 +182,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/tnt",
         "processors": "nomansland:underground_shelter",
@@ -191,7 +191,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/warehouse",
         "processors": "nomansland:underground_shelter",

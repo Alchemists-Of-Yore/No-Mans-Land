@@ -2,7 +2,7 @@
   "fallback": "minecraft:empty",
   "elements": [
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/entrance/door_1",
         "processors": "nomansland:underground_shelter",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/entrance/door_2",
         "processors": "nomansland:underground_shelter",
@@ -20,7 +20,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 2,
       "element": {
         "location": "nomansland:underground_shelter/entrance/door_3",
         "processors": "nomansland:underground_shelter",

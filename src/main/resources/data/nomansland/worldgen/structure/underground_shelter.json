@@ -17,5 +17,5 @@
   },
   "spawn_overrides": {},
   "exposure": "encase",
-  "preserve": true
+  "preserve": false
 }
