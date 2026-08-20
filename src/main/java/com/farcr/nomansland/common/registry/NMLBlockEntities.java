@@ -49,7 +49,7 @@ public class NMLBlockEntities {
 
     public static final Supplier<BlockEntityType<VentBlockEntity>> VENT =
         BLOCK_ENTITIES.register("vent", () ->
-            BlockEntityType.Builder.of(VentBlockEntity::new, NMLBlocks.THERMAL_VENT.get(), NMLBlocks.SULFURIC_VENT.get()).build(null));
+            BlockEntityType.Builder.of(VentBlockEntity::new, NMLBlocks.THERMAL_VENT.get(), NMLBlocks.SULFURIC_FUMAROLE.get()).build(null));
 
     public static void addBlockEntities(final BlockEntityTypeAddBlocksEvent event) {
         event.modify(

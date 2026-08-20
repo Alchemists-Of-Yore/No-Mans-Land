@@ -280,12 +280,9 @@ public class ClientSetupEvents {
         event.registerSpriteSet(NMLParticleTypes.VENT_BUBBLE_POP.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
                 -> new BubblePopParticle(clientLevel, d, e, f, g, h, i, sprites));
-        event.registerSpriteSet(NMLParticleTypes.SULFUR_BUBBLE.get(), sprites
+        event.registerSpriteSet(NMLParticleTypes.SULFURIC_FUMAROLE.get(), sprites
                 -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-                -> new VentBubbleParticle(clientLevel, d, e, f, g, h, i, sprites, NMLParticleTypes.SULFUR_BUBBLE_POP));
-        event.registerSpriteSet(NMLParticleTypes.SULFUR_BUBBLE_POP.get(), sprites
-                -> (simpleParticleType, clientLevel, d, e, f, g, h, i)
-                -> new BubblePopParticle(clientLevel, d, e, f, g, h, i, sprites));
+                -> new SulfuricFumaroleParticle(clientLevel, d, e, f, g, h, i, sprites));
     }
 
     @SubscribeEvent

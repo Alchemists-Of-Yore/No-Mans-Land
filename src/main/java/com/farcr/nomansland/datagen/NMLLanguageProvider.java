@@ -186,12 +186,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("effect.nomansland.friendship", "Friendship");
         add("effect.nomansland.happiness", "Happiness");
         add("effect.nomansland.stasis", "Stasis");
-        add("effect.nomansland.corrosion", "Corrosion");
         add("block.nomansland.miners_gill", "Miner's Gill");
-        add("item.minecraft.potion.effect.corrosion", "Potion of Corrosion");
-        add("item.minecraft.splash_potion.effect.corrosion", "Splash Potion of Corrosion");
-        add("item.minecraft.lingering_potion.effect.corrosion", "Lingering Potion of Corrosion");
-        add("item.minecraft.tipped_arrow.effect.corrosion", "Arrow of Corrosion");
         add("item.nomansland.bandage.with_effect", "%s Bandage");
         add("item.nomansland.bandage.effect.harming", "Harming Bandage");
         add("item.nomansland.bandage.effect.healing", "Healing Bandage");

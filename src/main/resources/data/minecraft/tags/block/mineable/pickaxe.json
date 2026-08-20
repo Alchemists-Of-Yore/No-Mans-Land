@@ -94,7 +94,11 @@
     "nomansland:lunar_tiles",
     "nomansland:large_solar_tile",
     "nomansland:solar_tiles",
+    "nomansland:sulfur_ore",
+    "nomansland:deepslate_sulfur_ore",
     "nomansland:thermal_vent",
-    "nomansland:sulfuric_vent"
+    "nomansland:sulfur_block",
+    "nomansland:sulfuric_fumarole",
+    "nomansland:ancient_bronze_bell"
   ]
 }

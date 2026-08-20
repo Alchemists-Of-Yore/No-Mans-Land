@@ -17,7 +17,7 @@
     "length": {
       "type": "uniform",
       "min_inclusive": 8,
-      "max_inclusive": 14
+      "max_inclusive": 18
     },
     "thicken_chance": 0.25
   }

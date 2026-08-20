@@ -22,11 +22,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DirectionalBlock;
 
-public class SulfuricVentBlock extends VentBlock {
-    public static final MapCodec<SulfuricVentBlock> CODEC = simpleCodec(SulfuricVentBlock::new);
-    private static final String SULFURIC_TICKS_KEY = "SulfuricVentTicks";
+public class SulfuricFumaroleBlock extends VentBlock {
+    public static final MapCodec<SulfuricFumaroleBlock> CODEC = simpleCodec(SulfuricFumaroleBlock::new);
+    private static final String SULFURIC_TICKS_KEY = "SulfuricFumaroleTicks";
 
-    public SulfuricVentBlock(Properties properties) {
+    public SulfuricFumaroleBlock(Properties properties) {
         super(properties);
     }
 
@@ -36,8 +36,8 @@ public class SulfuricVentBlock extends VentBlock {
     }
 
     @Override
-    public ParticleOptions getBubbleParticle() {
-        return NMLParticleTypes.SULFUR_BUBBLE.get();
+    public ParticleOptions getVentParticle() {
+        return NMLParticleTypes.SULFURIC_FUMAROLE.get();
     }
 
     @Override
@@ -73,14 +73,14 @@ public class SulfuricVentBlock extends VentBlock {
         if (!itemEntity.isInWater() || itemEntity.getItem().is(NMLTags.DOES_NOT_CORRODE)) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        serverLevel.sendParticles(NMLParticleTypes.SULFUR_BUBBLE.get(),
+        serverLevel.sendParticles(NMLParticleTypes.VENT_BUBBLE.get(),
                 itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
                 8, 0.2, 0.2, 0.2, 0.1);
 
         int ticks = itemEntity.getPersistentData().getInt(SULFURIC_TICKS_KEY) + 20;
         itemEntity.getPersistentData().putInt(SULFURIC_TICKS_KEY, ticks);
         if (ticks >= 120 + 30 * (distance - 1)) {
-            serverLevel.sendParticles(NMLParticleTypes.SULFUR_BUBBLE_POP.get(),
+            serverLevel.sendParticles(NMLParticleTypes.VENT_BUBBLE_POP.get(),
                     itemEntity.getX(), itemEntity.getY() + 0.2, itemEntity.getZ(),
                     12, 0.25, 0.25, 0.25, 0.05);
             level.playSound(null, itemEntity.blockPosition(), SoundEvents.GENERIC_BURN, SoundSource.BLOCKS, 0.5F, 1.4F);

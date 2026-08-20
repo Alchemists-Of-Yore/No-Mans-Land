@@ -1,10 +1,8 @@
 package com.farcr.nomansland.common.block;
 
 import com.farcr.nomansland.common.mixin.MobEffectInstanceAccessor;
-import com.farcr.nomansland.common.registry.NMLParticleTypes;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -25,11 +23,6 @@ public class ThermalVentBlock extends VentBlock {
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
         return CODEC;
-    }
-
-    @Override
-    public ParticleOptions getBubbleParticle() {
-        return NMLParticleTypes.VENT_BUBBLE.get();
     }
 
     @Override
