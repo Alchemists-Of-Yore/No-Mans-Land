@@ -36,6 +36,7 @@ public class TapBlockEntity extends BlockEntity {
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, TapBlockEntity tap) {
+        if(state.getValue(CLOSED)) return;
 
         // Ensure there is a cauldron within 3 blocks under the tap
         BlockPos cauldronPos = getCauldronPos(level, pos);

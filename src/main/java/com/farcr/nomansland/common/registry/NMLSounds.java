@@ -57,6 +57,8 @@ public class NMLSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> ICICLE_SHATTER = registerSound("block.icicle.shatter");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> TAP_CLOSE = registerSound("block.tap.close");
+
     //Items
     public static final DeferredHolder<SoundEvent, SoundEvent> BANDAGE_WRAP = registerSound("item.bandage.wrap");
     public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_PRIMED = registerSound("item.bomb.primed");
