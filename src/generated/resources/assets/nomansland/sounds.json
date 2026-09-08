@@ -244,11 +244,11 @@
     ],
     "subtitle": "nomansland.subtitle.block.icicle.shatter"
   },
-  "block.tap.close": {
+  "block.tap.turns": {
     "sounds": [
-      "nomansland:block/tap/close"
+      "nomansland:block/tap/turns"
     ],
-    "subtitle": "nomansland.subtitle.block.tap.close"
+    "subtitle": "nomansland.subtitle.block.tap.turns"
   },
   "block.inverted_bell.blackout": {
     "sounds": [

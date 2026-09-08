@@ -123,7 +123,7 @@ public class NMLLanguageProvider extends LanguageProvider {
         add("nomansland.subtitle.entity.friend_moon.speak", "Friend Moon speaks");
         add("nomansland.subtitle.entity.friend_moon.speak_sad", "Friend Moon speaks sadly");
         add("nomansland.subtitle.block.icicle.shatter", "Icicle shatters");
-        add("nomansland.subtitle.block.tap.close", "Tap closes");
+        add("nomansland.subtitle.block.tap.turns", "Tap turns");
         add("nomansland.subtitle.entity.living_pot.charge", "Living Pot charges");
 
         add("item.nomansland.billhook_bass_bucket", "Bucket of Billhook Bass");

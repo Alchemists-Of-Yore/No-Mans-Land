@@ -78,7 +78,7 @@ public class NMLSoundProvider extends LodestoneBlockSoundEventSystem {
         add(NMLSounds.CRUDE_TRAPDOOR_CLOSE, s -> s.subtitle("subtitles.block.trapdoor.toggle").with(allSounds("block/crude_door/close")));
 
         add(NMLSounds.ICICLE_SHATTER, s -> s.subtitle("nomansland.subtitle.block.icicle.shatter").with(sound("block.glass.break", EVENT)));
-        add(NMLSounds.TAP_CLOSE, s -> s.subtitle("nomansland.subtitle.block.tap.close").with(sound("block/tap/close", EVENT)));
+        add(NMLSounds.TAP_TURNS, s -> s.subtitle("nomansland.subtitle.block.tap.turns").with(sound("block/tap/turn", EVENT)));
 
         //Items
         add(NMLSounds.BANDAGE_WRAP, s -> s.with(sound("item/bandage/wrap")));

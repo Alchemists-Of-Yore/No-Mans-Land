@@ -300,6 +300,6 @@ public class TapBlock extends BaseEntityBlock {
 
     protected static void playSound(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState state) {
         float f = state.getValue(CLOSED) ? 0.6F : 0.5F;
-        level.playSound(player, pos, NMLSounds.TAP_CLOSE.get(), SoundSource.BLOCKS, 0.3F, f);
+        level.playSound(player, pos, NMLSounds.TAP_TURNS.get(), SoundSource.BLOCKS, 0.3F, f);
     }
 }

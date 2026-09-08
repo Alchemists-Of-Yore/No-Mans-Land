@@ -534,7 +534,7 @@
   "nomansland.filled_map.bell_sanctuary": "Ancestral Sanctuary Map",
   "nomansland.filled_map.mineshaft": "Lost Miner's Map",
   "nomansland.subtitle.block.icicle.shatter": "Icicle shatters",
-  "nomansland.subtitle.block.tap.close": "Tap closes",
+  "nomansland.subtitle.block.tap.turns": "Tap turns",
   "nomansland.subtitle.block.inverted_bell.ring": "Inverted Bell rings",
   "nomansland.subtitle.block.monster_anchor.activate": "Monster anchor activates",
   "nomansland.subtitle.block.monster_anchor.deactivate": "Monster anchor deactivates",
