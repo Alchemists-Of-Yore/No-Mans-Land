@@ -244,12 +244,6 @@
     ],
     "subtitle": "nomansland.subtitle.block.icicle.shatter"
   },
-  "block.tap.turns": {
-    "sounds": [
-      "nomansland:block/tap/turns"
-    ],
-    "subtitle": "nomansland.subtitle.block.tap.turns"
-  },
   "block.inverted_bell.blackout": {
     "sounds": [
       "nomansland:block/inverted_bell/blackout1",
@@ -805,6 +799,15 @@
       }
     ],
     "subtitle": "nomansland.subtitle.block.spike_trap.retract"
+  },
+  "block.tap.turns": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "nomansland:block/tap/turn"
+      }
+    ],
+    "subtitle": "nomansland.subtitle.block.tap.turns"
   },
   "block.thatch.break": {
     "sounds": [
