@@ -27,7 +27,6 @@
     "LeaveVineDecoratorMixin",
     "LevelChunkMixin",
     "LivingEntityMixin",
-    "LocateCommandMixin",
     "MinecraftServerMixin",
     "MobInvoker",
     "MobMixin",
