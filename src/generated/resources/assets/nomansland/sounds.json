@@ -802,10 +802,7 @@
   },
   "block.tap.turns": {
     "sounds": [
-      {
-        "type": "event",
-        "name": "nomansland:block/tap/turn"
-      }
+      "nomansland:block/tap/turns"
     ],
     "subtitle": "nomansland.subtitle.block.tap.turns"
   },

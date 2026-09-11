@@ -50,7 +50,13 @@ public class TapBlockEntity extends BlockEntity {
         boolean waterloggedSource = stateBehind.hasProperty(WATERLOGGED) && stateBehind.getValue(WATERLOGGED);
 
         if (!cauldronFound) {
-            if (waterloggedSource) spawnDrippingParticles(level, pos, state, ParticleTypes.FALLING_WATER);
+            ParticleType<?> leaking = sourceDripParticle(level, state, posBehind, stateBehind, waterloggedSource);
+            if (leaking != null) spawnDrippingParticles(level, pos, state, leaking);
+            return;
+        }
+
+        if (waterloggedSource) {
+            fillFromWaterloggedSource(level, pos, state, tap, cauldronPos, cauldronState);
             return;
         }
 
@@ -73,14 +79,34 @@ public class TapBlockEntity extends BlockEntity {
         }
 
         if (drainFromUnregisteredCauldron(level, pos, state, tap, posBehind, stateBehind, cauldronPos, cauldronState)) return;
-        if (drainIntoCauldron(level, pos, state, tap, posBehind, stateBehind, cauldronPos, cauldronState)) return;
-        if (waterloggedSource) spawnDrippingParticles(level, pos, state, ParticleTypes.FALLING_WATER);
+        drainIntoCauldron(level, pos, state, tap, posBehind, stateBehind, cauldronPos, cauldronState);
+    }
+
+    private static void fillFromWaterloggedSource(Level level, BlockPos pos, BlockState state, TapBlockEntity tap, BlockPos cauldronPos, BlockState cauldronState) {
+        spawnDrippingParticles(level, pos, state, ParticleTypes.FALLING_WATER);
+
+        Block cauldronBlock = cauldronState.getBlock();
+        if (((AbstractCauldronBlock) cauldronBlock).isFull(cauldronState)) return;
+        if (!(cauldronBlock instanceof CauldronBlock) && !cauldronState.is(Blocks.WATER_CAULDRON)) return;
+
+        tap.timeEmptying++;
+        if (tap.timeEmptying <= NMLConfig.TICKS_TO_FILL_CAULDRON.get()) return;
+
+        tap.timeEmptying = 0;
+        if (cauldronState.hasProperty(LayeredCauldronBlock.LEVEL))
+            level.setBlockAndUpdate(cauldronPos, cauldronState.setValue(LayeredCauldronBlock.LEVEL, cauldronState.getValue(LayeredCauldronBlock.LEVEL) + 1));
+        else level.setBlockAndUpdate(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState());
+
+        level.gameEvent(GameEvent.BLOCK_CHANGE, cauldronPos, GameEvent.Context.of(level.getBlockState(cauldronPos)));
     }
 
     private static boolean drainFromUnregisteredCauldron(Level level, BlockPos pos, BlockState state, TapBlockEntity tap, BlockPos posBehind, BlockState stateBehind, BlockPos cauldronPos, BlockState cauldronState) {
         if (!(stateBehind.getBlock() instanceof FourLayeredCauldronBlock sourceCauldron)) return false;
         if (CauldronFluidContent.getForBlock(sourceCauldron) != null) return false;
-        if (((AbstractCauldronBlock) cauldronState.getBlock()).isFull(cauldronState)) return true;
+        if (((AbstractCauldronBlock) cauldronState.getBlock()).isFull(cauldronState)) {
+            if (sourceCauldron.particleType != null) spawnDrippingParticles(level, pos, state, sourceCauldron.particleType.value());
+            return true;
+        }
 
         tap.timeEmptying++;
         if (tap.timeEmptying < NMLConfig.TICKS_TO_FILL_CAULDRON.get()) {
@@ -132,6 +158,19 @@ public class TapBlockEntity extends BlockEntity {
         level.gameEvent(GameEvent.BLOCK_CHANGE, cauldronPos, GameEvent.Context.of(level.getBlockState(cauldronPos)));
         level.gameEvent(GameEvent.BLOCK_CHANGE, posBehind, GameEvent.Context.of(level.getBlockState(posBehind)));
         return true;
+    }
+
+    @Nullable
+    private static ParticleType<?> sourceDripParticle(Level level, BlockState state, BlockPos posBehind, BlockState stateBehind, boolean waterloggedSource) {
+        IFluidHandler source = Capabilities.FluidHandler.BLOCK.getCapability(level, posBehind, stateBehind, null, state.getValue(FACING));
+        if (source != null) {
+            FluidStack available = source.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+            if (!available.isEmpty()) {
+                ParticleType<?> particleType = dripParticleFor(available.getFluid());
+                if (particleType != null) return particleType;
+            }
+        }
+        return waterloggedSource ? ParticleTypes.FALLING_WATER : null;
     }
 
     @Nullable

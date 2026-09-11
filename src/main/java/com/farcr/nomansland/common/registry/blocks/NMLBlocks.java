@@ -296,7 +296,7 @@ public class NMLBlocks {
                     .sound(SoundType.CHERRY_WOOD)
             ));
     public static final BlockDefinition<AncestralEffigyBlock> ANCESTRAL_EFFIGY = register("ancestral_effigy",
-          () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape()));
+          () -> new AncestralEffigyBlock(ofFullCopy(Blocks.STONE).offsetType(OffsetType.XYZ).dynamicShape().noOcclusion()));
     public static final BlockDefinition<AncestralCarvingBlock> ANCESTRAL_CARVING = register("ancestral_carving",
           () -> new AncestralCarvingBlock(ofFullCopy(Blocks.STONE)));
 
